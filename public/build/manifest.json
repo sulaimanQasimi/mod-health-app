@@ -13,103 +13,103 @@
     "file": "assets/AdviceSection-CLfLkI1n.css",
     "src": "_AdviceSection-CLfLkI1n.css"
   },
-  "_Alert-9nlgd8ix.js": {
-    "file": "assets/Alert-9nlgd8ix.js",
+  "_Alert-D2xDeEj8.js": {
+    "file": "assets/Alert-D2xDeEj8.js",
     "name": "Alert",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_AppointmentPagination-DVFfaiiP.js": {
-    "file": "assets/AppointmentPagination-DVFfaiiP.js",
+  "_AppointmentPagination-CXXdSr7x.js": {
+    "file": "assets/AppointmentPagination-CXXdSr7x.js",
     "name": "AppointmentPagination",
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPagination-Brci1pPx.js"
+      "_SettingsPagination-n2Z6cDG-.js"
     ]
   },
-  "_AppointmentTableActions-CNyZr54d.js": {
-    "file": "assets/AppointmentTableActions-CNyZr54d.js",
+  "_AppointmentTableActions-BN5YjO48.js": {
+    "file": "assets/AppointmentTableActions-BN5YjO48.js",
     "name": "AppointmentTableActions",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
-  "_BackArrowIcon-BZIMeKyq.js": {
-    "file": "assets/BackArrowIcon-BZIMeKyq.js",
+  "_BackArrowIcon-DEMC2Zkq.js": {
+    "file": "assets/BackArrowIcon-DEMC2Zkq.js",
     "name": "BackArrowIcon",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js"
+      "_useTranslation-Em4ebb6R.js"
     ]
   },
-  "_BackLink-B2VgAhVX.js": {
-    "file": "assets/BackLink-B2VgAhVX.js",
+  "_BackLink-7ClYe23H.js": {
+    "file": "assets/BackLink-7ClYe23H.js",
     "name": "BackLink",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_Button-DAJpfNU-.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_Badge-Be6OUGz4.js": {
-    "file": "assets/Badge-Be6OUGz4.js",
+  "_Badge-CYOkIyPG.js": {
+    "file": "assets/Badge-CYOkIyPG.js",
     "name": "Badge",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_BedForm-CNP69F_a.js": {
-    "file": "assets/BedForm-CNP69F_a.js",
+  "_BedForm-Bn34lJnj.js": {
+    "file": "assets/BedForm-Bn34lJnj.js",
     "name": "BedForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Checkbox-Cq8OIYsp.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Checkbox-o5BWSR6-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_BranchForm-C3rfuA-t.js": {
-    "file": "assets/BranchForm-C3rfuA-t.js",
+  "_BranchForm-CkCCLZJ3.js": {
+    "file": "assets/BranchForm-CkCCLZJ3.js",
     "name": "BranchForm",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_Button-DAJpfNU-.js": {
-    "file": "assets/Button-DAJpfNU-.js",
+  "_Button-CUKJj3kK.js": {
+    "file": "assets/Button-CUKJj3kK.js",
     "name": "Button",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
-  "_Card-CMhMP03u.js": {
-    "file": "assets/Card-CMhMP03u.js",
+  "_Card-Ck_WTkOS.js": {
+    "file": "assets/Card-Ck_WTkOS.js",
     "name": "Card",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_Checkbox-Cq8OIYsp.js": {
-    "file": "assets/Checkbox-Cq8OIYsp.js",
+  "_Checkbox-o5BWSR6-.js": {
+    "file": "assets/Checkbox-o5BWSR6-.js",
     "name": "Checkbox",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
   "_ConsultationSection-BDVCI-jw.js": {
@@ -127,240 +127,240 @@
     "file": "assets/ConsultationSection-Dix3BxDs.css",
     "src": "_ConsultationSection-Dix3BxDs.css"
   },
-  "_DashboardLayout-CsoOyRMq.js": {
-    "file": "assets/DashboardLayout-CsoOyRMq.js",
+  "_DashboardLayout-DOlpSWjI.js": {
+    "file": "assets/DashboardLayout-DOlpSWjI.js",
     "name": "DashboardLayout",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Button-DAJpfNU-.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_DepartmentForm-CETn-Ec9.js": {
-    "file": "assets/DepartmentForm-CETn-Ec9.js",
+  "_DepartmentForm-DbZOZPz5.js": {
+    "file": "assets/DepartmentForm-DbZOZPz5.js",
     "name": "DepartmentForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_DiseaseForm-DUvvnOqB.js": {
-    "file": "assets/DiseaseForm-DUvvnOqB.js",
+  "_DiseaseForm-DS5CvjZ6.js": {
+    "file": "assets/DiseaseForm-DS5CvjZ6.js",
     "name": "DiseaseForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_DoctorForm-B934x_gS.js": {
-    "file": "assets/DoctorForm-B934x_gS.js",
+  "_DoctorForm-1lXRn0_j.js": {
+    "file": "assets/DoctorForm-1lXRn0_j.js",
     "name": "DoctorForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Checkbox-Cq8OIYsp.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Checkbox-o5BWSR6-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_FloorForm-DzsikzxF.js": {
-    "file": "assets/FloorForm-DzsikzxF.js",
+  "_FloorForm-HL8195r1.js": {
+    "file": "assets/FloorForm-HL8195r1.js",
     "name": "FloorForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_FoodTypeForm-Bio4icOj.js": {
-    "file": "assets/FoodTypeForm-Bio4icOj.js",
+  "_FoodTypeForm-B0yBWA93.js": {
+    "file": "assets/FoodTypeForm-B0yBWA93.js",
     "name": "FoodTypeForm",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_FormField-D8irAITe.js": {
-    "file": "assets/FormField-D8irAITe.js",
+  "_FormField-BvKlm_po.js": {
+    "file": "assets/FormField-BvKlm_po.js",
     "name": "FormField",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js"
     ]
   },
-  "_Label-DZp1O9YT.js": {
-    "file": "assets/Label-DZp1O9YT.js",
+  "_Label-DbQ-oN9b.js": {
+    "file": "assets/Label-DbQ-oN9b.js",
     "name": "Label",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_LaboratoryPageHeader-BmQnYHgO.js": {
-    "file": "assets/LaboratoryPageHeader-BmQnYHgO.js",
+  "_LaboratoryPageHeader-06jJ7LOO.js": {
+    "file": "assets/LaboratoryPageHeader-06jJ7LOO.js",
     "name": "LaboratoryPageHeader",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js"
+      "_useTranslation-Em4ebb6R.js"
     ]
   },
-  "_LaboratoryStatusBadge-BW_MiUT4.js": {
-    "file": "assets/LaboratoryStatusBadge-BW_MiUT4.js",
+  "_LaboratoryStatusBadge-DzJfl3KR.js": {
+    "file": "assets/LaboratoryStatusBadge-DzJfl3KR.js",
     "name": "LaboratoryStatusBadge",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Badge-Be6OUGz4.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Badge-CYOkIyPG.js"
     ]
   },
-  "_MedicineForm-cZLbTtSc.js": {
-    "file": "assets/MedicineForm-cZLbTtSc.js",
+  "_MedicineForm-C8kAD0Pf.js": {
+    "file": "assets/MedicineForm-C8kAD0Pf.js",
     "name": "MedicineForm",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_MedicineTypeForm-f1dCSnhE.js": {
-    "file": "assets/MedicineTypeForm-f1dCSnhE.js",
+  "_MedicineTypeForm-BGUAMuWV.js": {
+    "file": "assets/MedicineTypeForm-BGUAMuWV.js",
     "name": "MedicineTypeForm",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_MedicineUsageTypeForm-SywBevHo.js": {
-    "file": "assets/MedicineUsageTypeForm-SywBevHo.js",
+  "_MedicineUsageTypeForm-C7U3mmVS.js": {
+    "file": "assets/MedicineUsageTypeForm-C7U3mmVS.js",
     "name": "MedicineUsageTypeForm",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_MiliteryTypeForm-Dj4mfLOZ.js": {
-    "file": "assets/MiliteryTypeForm-Dj4mfLOZ.js",
+  "_MiliteryTypeForm-E2ffDOE_.js": {
+    "file": "assets/MiliteryTypeForm-E2ffDOE_.js",
     "name": "MiliteryTypeForm",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_ModalHeader-9tmOM0hN.js": {
-    "file": "assets/ModalHeader-9tmOM0hN.js",
+  "_ModalHeader-D7saOluD.js": {
+    "file": "assets/ModalHeader-D7saOluD.js",
     "name": "ModalHeader",
     "imports": [
       "resources/js/app.tsx",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Button-DAJpfNU-.js"
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_MyVisitFilters-B3mfpCvN.js": {
-    "file": "assets/MyVisitFilters-B3mfpCvN.js",
+  "_MyVisitFilters-CG2DMV99.js": {
+    "file": "assets/MyVisitFilters-CG2DMV99.js",
     "name": "MyVisitFilters",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_NurseForm-DNhaO3ON.js": {
-    "file": "assets/NurseForm-DNhaO3ON.js",
+  "_NurseForm-OYzQ38x9.js": {
+    "file": "assets/NurseForm-OYzQ38x9.js",
     "name": "NurseForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_OperationTypeForm-DjVKgKBr.js": {
-    "file": "assets/OperationTypeForm-DjVKgKBr.js",
+  "_OperationTypeForm-CSSIYt2l.js": {
+    "file": "assets/OperationTypeForm-CSSIYt2l.js",
     "name": "OperationTypeForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_PharmacyForm-DJFPHPab.js": {
-    "file": "assets/PharmacyForm-DJFPHPab.js",
+  "_PharmacyForm-BCMw0osE.js": {
+    "file": "assets/PharmacyForm-BCMw0osE.js",
     "name": "PharmacyForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_PharmacyFulfillmentForm-BYi5pw8h.js": {
-    "file": "assets/PharmacyFulfillmentForm-BYi5pw8h.js",
+  "_PharmacyFulfillmentForm-DmQ4Aa8a.js": {
+    "file": "assets/PharmacyFulfillmentForm-DmQ4Aa8a.js",
     "name": "PharmacyFulfillmentForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
       "_inertiaSubmit-BS7Rs7yT.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
   "_PrescriptionShowApp-CqLsQG9M.js": {
@@ -379,209 +379,209 @@
     "file": "assets/PrescriptionShowApp-DYo5VbqH.css",
     "src": "_PrescriptionShowApp-DYo5VbqH.css"
   },
-  "_ProcedureTypeForm-Dd1iQWQU.js": {
-    "file": "assets/ProcedureTypeForm-Dd1iQWQU.js",
+  "_ProcedureTypeForm-GO133h21.js": {
+    "file": "assets/ProcedureTypeForm-GO133h21.js",
     "name": "ProcedureTypeForm",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_RecipientForm-PhuEKaYz.js": {
-    "file": "assets/RecipientForm-PhuEKaYz.js",
+  "_RecipientForm-DhlsFkYu.js": {
+    "file": "assets/RecipientForm-DhlsFkYu.js",
     "name": "RecipientForm",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_RelationForm-CaEbfxp5.js": {
-    "file": "assets/RelationForm-CaEbfxp5.js",
+  "_RelationForm-DDl8pvoe.js": {
+    "file": "assets/RelationForm-DDl8pvoe.js",
     "name": "RelationForm",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_RoomForm-CTRZifwy.js": {
-    "file": "assets/RoomForm-CTRZifwy.js",
+  "_RoomForm-C7KR1uqz.js": {
+    "file": "assets/RoomForm-C7KR1uqz.js",
     "name": "RoomForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_SearchableMultiSelect-DBUGfg5N.js": {
-    "file": "assets/SearchableMultiSelect-DBUGfg5N.js",
+  "_SearchableMultiSelect-gE_Px4Lc.js": {
+    "file": "assets/SearchableMultiSelect-gE_Px4Lc.js",
     "name": "SearchableMultiSelect",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js"
+      "_useTranslation-Em4ebb6R.js"
     ]
   },
-  "_SearchableSelect-CYSLJ7In.js": {
-    "file": "assets/SearchableSelect-CYSLJ7In.js",
+  "_SearchableSelect-gEROy1i0.js": {
+    "file": "assets/SearchableSelect-gEROy1i0.js",
     "name": "SearchableSelect",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js"
+      "_useTranslation-Em4ebb6R.js"
     ]
   },
-  "_SectionForm-GHmZipLy.js": {
-    "file": "assets/SectionForm-GHmZipLy.js",
+  "_SectionForm-BjqJ1TOv.js": {
+    "file": "assets/SectionForm-BjqJ1TOv.js",
     "name": "SectionForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_Select-BEgE3xLu.js": {
-    "file": "assets/Select-BEgE3xLu.js",
+  "_Select-Blw8xyAd.js": {
+    "file": "assets/Select-Blw8xyAd.js",
     "name": "Select",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_SettingsFilterActions-CjKi9n94.js": {
-    "file": "assets/SettingsFilterActions-CjKi9n94.js",
+  "_SettingsFilterActions-DcfKPFga.js": {
+    "file": "assets/SettingsFilterActions-DcfKPFga.js",
     "name": "SettingsFilterActions",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_SettingsPageHeader-C-16qvmR.js": {
-    "file": "assets/SettingsPageHeader-C-16qvmR.js",
+  "_SettingsPageHeader-CdG05Bnf.js": {
+    "file": "assets/SettingsPageHeader-CdG05Bnf.js",
     "name": "SettingsPageHeader",
     "imports": [
       "resources/js/app.tsx",
-      "_BackLink-B2VgAhVX.js"
+      "_BackLink-7ClYe23H.js"
     ]
   },
-  "_SettingsPagination-Brci1pPx.js": {
-    "file": "assets/SettingsPagination-Brci1pPx.js",
+  "_SettingsPagination-n2Z6cDG-.js": {
+    "file": "assets/SettingsPagination-n2Z6cDG-.js",
     "name": "SettingsPagination",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
-  "_Spinner-C0vxPBWY.js": {
-    "file": "assets/Spinner-C0vxPBWY.js",
+  "_Spinner-B8svB6VH.js": {
+    "file": "assets/Spinner-B8svB6VH.js",
     "name": "Spinner",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_StatCard-BkBzDoDu.js": {
-    "file": "assets/StatCard-BkBzDoDu.js",
+  "_StatCard-R2IFalJh.js": {
+    "file": "assets/StatCard-R2IFalJh.js",
     "name": "StatCard",
     "imports": [
       "resources/js/app.tsx",
-      "_Card-CMhMP03u.js"
+      "_Card-Ck_WTkOS.js"
     ]
   },
-  "_Table-B55okIDk.js": {
-    "file": "assets/Table-B55okIDk.js",
+  "_Table-BV1fSwZC.js": {
+    "file": "assets/Table-BV1fSwZC.js",
     "name": "Table",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
-  "_Tabs-iIgbAsWO.js": {
-    "file": "assets/Tabs-iIgbAsWO.js",
+  "_Tabs-z4RRomGo.js": {
+    "file": "assets/Tabs-z4RRomGo.js",
     "name": "Tabs",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_TextInput-DWx1KBP0.js": {
-    "file": "assets/TextInput-DWx1KBP0.js",
+  "_TextInput-Cot1pHTE.js": {
+    "file": "assets/TextInput-Cot1pHTE.js",
     "name": "TextInput",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_Textarea-C0uFGA91.js": {
-    "file": "assets/Textarea-C0uFGA91.js",
+  "_Textarea-CH_b-uO-.js": {
+    "file": "assets/Textarea-CH_b-uO-.js",
     "name": "Textarea",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_ToggleSwitch-lBE47Z-m.js": {
-    "file": "assets/ToggleSwitch-lBE47Z-m.js",
+  "_ToggleSwitch-CDoBtuFE.js": {
+    "file": "assets/ToggleSwitch-CDoBtuFE.js",
     "name": "ToggleSwitch",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_TokenModal-BKNMroF-.js": {
-    "file": "assets/TokenModal-BKNMroF-.js",
+  "_TokenModal-D1cQ3r4e.js": {
+    "file": "assets/TokenModal-D1cQ3r4e.js",
     "name": "TokenModal",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_ModalHeader-9tmOM0hN.js",
-      "_Button-DAJpfNU-.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_ModalHeader-D7saOluD.js",
+      "_Button-CUKJj3kK.js"
     ]
   },
-  "_UserForm-CXvE129N.js": {
-    "file": "assets/UserForm-CXvE129N.js",
+  "_UserForm-CiPfuOk5.js": {
+    "file": "assets/UserForm-CiPfuOk5.js",
     "name": "UserForm",
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableMultiSelect-DBUGfg5N.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SearchableMultiSelect-gE_Px4Lc.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
       "_inertiaSubmit-BS7Rs7yT.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Checkbox-Cq8OIYsp.js",
-      "_Spinner-C0vxPBWY.js"
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Checkbox-o5BWSR6-.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
-  "_VitalSignTypeForm-wH-dfM_Y.js": {
-    "file": "assets/VitalSignTypeForm-wH-dfM_Y.js",
+  "_VitalSignTypeForm-CSYOkubw.js": {
+    "file": "assets/VitalSignTypeForm-CSYOkubw.js",
     "name": "VitalSignTypeForm",
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js"
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js"
     ]
   },
   "__commonjsHelpers-DsqdWQfm.js": {
@@ -634,8 +634,8 @@
     "file": "assets/sweetalert2.esm.all-DzlfzZPw.js",
     "name": "sweetalert2.esm.all"
   },
-  "_useTranslation-B813D8Hw.js": {
-    "file": "assets/useTranslation-B813D8Hw.js",
+  "_useTranslation-Em4ebb6R.js": {
+    "file": "assets/useTranslation-Em4ebb6R.js",
     "name": "useTranslation",
     "imports": [
       "resources/js/app.tsx"
@@ -904,7 +904,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-BvkJRf11.css",
+    "file": "assets/app-u4ICwFgd.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -912,1122 +912,1121 @@
     ]
   },
   "resources/js/Pages/Appointments/Completed.tsx": {
-    "file": "assets/Completed-cn9sBhgH.js",
+    "file": "assets/Completed-COA_Fr-d.js",
     "name": "Completed",
     "src": "resources/js/Pages/Appointments/Completed.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AppointmentTableActions-CNyZr54d.js",
-      "_MyVisitFilters-B3mfpCvN.js",
-      "_AppointmentPagination-DVFfaiiP.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_AppointmentTableActions-BN5YjO48.js",
+      "_MyVisitFilters-CG2DMV99.js",
+      "_AppointmentPagination-CXXdSr7x.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_SettingsPagination-Brci1pPx.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_SettingsPagination-n2Z6cDG-.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Appointments/Department.tsx": {
-    "file": "assets/Department-C-itqnA9.js",
+    "file": "assets/Department-VUTcnKld.js",
     "name": "Department",
     "src": "resources/js/Pages/Appointments/Department.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AppointmentTableActions-CNyZr54d.js",
-      "_MyVisitFilters-B3mfpCvN.js",
-      "_AppointmentPagination-DVFfaiiP.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_ModalHeader-9tmOM0hN.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_Card-CMhMP03u.js",
-      "_Badge-Be6OUGz4.js",
+      "_AppointmentTableActions-BN5YjO48.js",
+      "_MyVisitFilters-CG2DMV99.js",
+      "_AppointmentPagination-CXXdSr7x.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_ModalHeader-D7saOluD.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_Card-Ck_WTkOS.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_TextInput-DWx1KBP0.js",
-      "_SettingsPagination-Brci1pPx.js"
+      "_TextInput-Cot1pHTE.js",
+      "_SettingsPagination-n2Z6cDG-.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Appointments/Doctor.tsx": {
-    "file": "assets/Doctor-CTuVjUR_.js",
+    "file": "assets/Doctor-xgHvEYHf.js",
     "name": "Doctor",
     "src": "resources/js/Pages/Appointments/Doctor.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AppointmentTableActions-CNyZr54d.js",
-      "_MyVisitFilters-B3mfpCvN.js",
-      "_AppointmentPagination-DVFfaiiP.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Badge-Be6OUGz4.js",
+      "_AppointmentTableActions-BN5YjO48.js",
+      "_MyVisitFilters-CG2DMV99.js",
+      "_AppointmentPagination-CXXdSr7x.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_SettingsPagination-Brci1pPx.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_SettingsPagination-n2Z6cDG-.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Appointments/Edit.tsx": {
-    "file": "assets/Edit-8NXhU13O.js",
+    "file": "assets/Edit-BMkvwoRO.js",
     "name": "Edit",
     "src": "resources/js/Pages/Appointments/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_FormField-D8irAITe.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Alert-9nlgd8ix.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_Card-CMhMP03u.js",
+      "_FormField-BvKlm_po.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Alert-D2xDeEj8.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js"
+      "_SearchableSelect-gEROy1i0.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Appointments/Index.tsx": {
-    "file": "assets/Index-DtkQZUao.js",
+    "file": "assets/Index-CUd1eIuX.js",
     "name": "Index",
     "src": "resources/js/Pages/Appointments/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AppointmentTableActions-CNyZr54d.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_Badge-Be6OUGz4.js",
+      "_AppointmentTableActions-BN5YjO48.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Appointments/Show.tsx": {
-    "file": "assets/Show-CuKdISvt.js",
+    "file": "assets/Show-DVknBsLC.js",
     "name": "Show",
     "src": "resources/js/Pages/Appointments/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Badge-Be6OUGz4.js",
-      "_Spinner-C0vxPBWY.js",
-      "_Button-DAJpfNU-.js",
-      "_ModalHeader-9tmOM0hN.js",
-      "_Label-DZp1O9YT.js",
-      "_Textarea-C0uFGA91.js",
-      "_TextInput-DWx1KBP0.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_SearchableMultiSelect-DBUGfg5N.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_Card-CMhMP03u.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Badge-CYOkIyPG.js",
+      "_Spinner-B8svB6VH.js",
+      "_Button-CUKJj3kK.js",
+      "_ModalHeader-D7saOluD.js",
+      "_Label-DbQ-oN9b.js",
+      "_Textarea-CH_b-uO-.js",
+      "_TextInput-Cot1pHTE.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_SearchableMultiSelect-gE_Px4Lc.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Appointments/Trashed.tsx": {
-    "file": "assets/Trashed-CDQ09sqx.js",
+    "file": "assets/Trashed-CnTL1UF2.js",
     "name": "Trashed",
     "src": "resources/js/Pages/Appointments/Trashed.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AppointmentTableActions-CNyZr54d.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
+      "_AppointmentTableActions-BN5YjO48.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Beds/Create.tsx": {
-    "file": "assets/Create-D4mdqI-K.js",
+    "file": "assets/Create-CtGj0Hkf.js",
     "name": "Create",
     "src": "resources/js/Pages/Beds/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_BedForm-CNP69F_a.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_BedForm-Bn34lJnj.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Checkbox-Cq8OIYsp.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Checkbox-o5BWSR6-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Beds/Edit.tsx": {
-    "file": "assets/Edit-CXPye5OX.js",
+    "file": "assets/Edit-DnVBCaoP.js",
     "name": "Edit",
     "src": "resources/js/Pages/Beds/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_BedForm-CNP69F_a.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_BedForm-Bn34lJnj.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Checkbox-Cq8OIYsp.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Checkbox-o5BWSR6-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Beds/Index.tsx": {
-    "file": "assets/Index-CpkhTf0W.js",
+    "file": "assets/Index-4v2_2TOJ.js",
     "name": "Index",
     "src": "resources/js/Pages/Beds/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Badge-Be6OUGz4.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Branches/Create.tsx": {
-    "file": "assets/Create-vFk1GP5l.js",
+    "file": "assets/Create-D33_NqzF.js",
     "name": "Create",
     "src": "resources/js/Pages/Branches/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_BranchForm-C3rfuA-t.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_BranchForm-CkCCLZJ3.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Branches/Edit.tsx": {
-    "file": "assets/Edit-CF5-Tby1.js",
+    "file": "assets/Edit-D-gyZMCG.js",
     "name": "Edit",
     "src": "resources/js/Pages/Branches/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_BranchForm-C3rfuA-t.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_BranchForm-CkCCLZJ3.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Branches/Index.tsx": {
-    "file": "assets/Index-BS2caKjO.js",
+    "file": "assets/Index-CHRr3tHW.js",
     "name": "Index",
     "src": "resources/js/Pages/Branches/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Dashboard.tsx": {
-    "file": "assets/Dashboard-Cu6Cqevi.js",
+    "file": "assets/Dashboard-CJY1mU2d.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/Dashboard.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Card-CMhMP03u.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_StatCard-BkBzDoDu.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Spinner-C0vxPBWY.js",
-      "_Alert-9nlgd8ix.js",
-      "_Label-DZp1O9YT.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Card-Ck_WTkOS.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_StatCard-R2IFalJh.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Spinner-B8svB6VH.js",
+      "_Alert-D2xDeEj8.js",
+      "_Label-DbQ-oN9b.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Departments/Create.tsx": {
-    "file": "assets/Create-V4-f46tK.js",
+    "file": "assets/Create-BRI_Clqo.js",
     "name": "Create",
     "src": "resources/js/Pages/Departments/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DepartmentForm-CETn-Ec9.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_DepartmentForm-DbZOZPz5.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Departments/Edit.tsx": {
-    "file": "assets/Edit-D_pNmne9.js",
+    "file": "assets/Edit-BE2Pnqg3.js",
     "name": "Edit",
     "src": "resources/js/Pages/Departments/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DepartmentForm-CETn-Ec9.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_DepartmentForm-DbZOZPz5.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Departments/Index.tsx": {
-    "file": "assets/Index-DnMGODCW.js",
+    "file": "assets/Index-ChoHlXBe.js",
     "name": "Index",
     "src": "resources/js/Pages/Departments/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Departments/Show.tsx": {
-    "file": "assets/Show-DoYsccns.js",
+    "file": "assets/Show-DQ6C5FOm.js",
     "name": "Show",
     "src": "resources/js/Pages/Departments/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Diseases/Create.tsx": {
-    "file": "assets/Create-8YvV7MVy.js",
+    "file": "assets/Create-Cos7hic9.js",
     "name": "Create",
     "src": "resources/js/Pages/Diseases/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DiseaseForm-DUvvnOqB.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_DiseaseForm-DS5CvjZ6.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Diseases/Edit.tsx": {
-    "file": "assets/Edit-VOQ07-0B.js",
+    "file": "assets/Edit-h6UN2c5V.js",
     "name": "Edit",
     "src": "resources/js/Pages/Diseases/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DiseaseForm-DUvvnOqB.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_DiseaseForm-DS5CvjZ6.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Diseases/Index.tsx": {
-    "file": "assets/Index-BUxGxfg6.js",
+    "file": "assets/Index-CaHZkPhG.js",
     "name": "Index",
     "src": "resources/js/Pages/Diseases/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Tabs-iIgbAsWO.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Tabs-z4RRomGo.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Doctors/Create.tsx": {
-    "file": "assets/Create-DZOYagat.js",
+    "file": "assets/Create-DSk5gFBn.js",
     "name": "Create",
     "src": "resources/js/Pages/Doctors/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DoctorForm-B934x_gS.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
+      "_DoctorForm-1lXRn0_j.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Checkbox-Cq8OIYsp.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Checkbox-o5BWSR6-.js",
+      "_Spinner-B8svB6VH.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Doctors/Edit.tsx": {
-    "file": "assets/Edit-BOqrKtgF.js",
+    "file": "assets/Edit-C-bxPNyL.js",
     "name": "Edit",
     "src": "resources/js/Pages/Doctors/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DoctorForm-B934x_gS.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
+      "_DoctorForm-1lXRn0_j.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Checkbox-Cq8OIYsp.js",
-      "_Spinner-C0vxPBWY.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Checkbox-o5BWSR6-.js",
+      "_Spinner-B8svB6VH.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Doctors/Index.tsx": {
-    "file": "assets/Index-CgYo16Yc.js",
+    "file": "assets/Index-DD3Cg9Pt.js",
     "name": "Index",
     "src": "resources/js/Pages/Doctors/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_ToggleSwitch-lBE47Z-m.js",
-      "_Badge-Be6OUGz4.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_ToggleSwitch-CDoBtuFE.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Doctors/Show.tsx": {
-    "file": "assets/Show-CIErH9_F.js",
+    "file": "assets/Show-iXIpryQx.js",
     "name": "Show",
     "src": "resources/js/Pages/Doctors/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Badge-Be6OUGz4.js",
-      "_Button-DAJpfNU-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Badge-CYOkIyPG.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Example.tsx": {
-    "file": "assets/Example-zunC10cc.js",
+    "file": "assets/Example-I1QOj2P6.js",
     "name": "Example",
     "src": "resources/js/Pages/Example.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Alert-9nlgd8ix.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Alert-D2xDeEj8.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Floors/Create.tsx": {
-    "file": "assets/Create-xoBfEKuo.js",
+    "file": "assets/Create-DA_k1GF4.js",
     "name": "Create",
     "src": "resources/js/Pages/Floors/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_FloorForm-DzsikzxF.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_FloorForm-HL8195r1.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Floors/Edit.tsx": {
-    "file": "assets/Edit-BdEI0acy.js",
+    "file": "assets/Edit-CjyYALvs.js",
     "name": "Edit",
     "src": "resources/js/Pages/Floors/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_FloorForm-DzsikzxF.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_FloorForm-HL8195r1.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Floors/Index.tsx": {
-    "file": "assets/Index-d2eoLbnE.js",
+    "file": "assets/Index-NV9HmXmn.js",
     "name": "Index",
     "src": "resources/js/Pages/Floors/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/FoodTypes/Create.tsx": {
-    "file": "assets/Create-CqQ4ZL88.js",
+    "file": "assets/Create-B5TUHtlT.js",
     "name": "Create",
     "src": "resources/js/Pages/FoodTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_FoodTypeForm-Bio4icOj.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_FoodTypeForm-B0yBWA93.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/FoodTypes/Edit.tsx": {
-    "file": "assets/Edit-L6DAiIHd.js",
+    "file": "assets/Edit-B2GCAO5L.js",
     "name": "Edit",
     "src": "resources/js/Pages/FoodTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_FoodTypeForm-Bio4icOj.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_FoodTypeForm-B0yBWA93.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/FoodTypes/Index.tsx": {
-    "file": "assets/Index-DFhjrlZ_.js",
+    "file": "assets/Index-Cs65695P.js",
     "name": "Index",
     "src": "resources/js/Pages/FoodTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Incomes/Create.tsx": {
-    "file": "assets/Create-BPLen9TX.js",
+    "file": "assets/Create-D5izpXb0.js",
     "name": "Create",
     "src": "resources/js/Pages/Incomes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Incomes/Index.tsx": {
-    "file": "assets/Index-DTjraSXm.js",
+    "file": "assets/Index-Ds9ioXVY.js",
     "name": "Index",
     "src": "resources/js/Pages/Incomes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Badge-Be6OUGz4.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Laboratory/Registrations/Report.tsx": {
-    "file": "assets/Report-cBXc4ETh.js",
+    "file": "assets/Report-Db1etW2M.js",
     "name": "Report",
     "src": "resources/js/Pages/Laboratory/Registrations/Report.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AppointmentPagination-DVFfaiiP.js",
-      "_LaboratoryPageHeader-BmQnYHgO.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Select-BEgE3xLu.js",
-      "_Button-DAJpfNU-.js",
+      "_AppointmentPagination-CXXdSr7x.js",
+      "_LaboratoryPageHeader-06jJ7LOO.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Select-Blw8xyAd.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SettingsPagination-Brci1pPx.js"
+      "_SettingsPagination-n2Z6cDG-.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Laboratory/Registrations/ReportDetailed.tsx": {
-    "file": "assets/ReportDetailed-DNN2jzwF.js",
+    "file": "assets/ReportDetailed-DOtTik_X.js",
     "name": "ReportDetailed",
     "src": "resources/js/Pages/Laboratory/Registrations/ReportDetailed.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AppointmentPagination-DVFfaiiP.js",
-      "_LaboratoryPageHeader-BmQnYHgO.js",
-      "_LaboratoryStatusBadge-BW_MiUT4.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Select-BEgE3xLu.js",
-      "_Button-DAJpfNU-.js",
+      "_AppointmentPagination-CXXdSr7x.js",
+      "_LaboratoryPageHeader-06jJ7LOO.js",
+      "_LaboratoryStatusBadge-DzJfl3KR.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Select-Blw8xyAd.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_Badge-Be6OUGz4.js"
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_Badge-CYOkIyPG.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Laboratory/Reports/Print.tsx": {
-    "file": "assets/Print-ClcyL2aG.js",
+    "file": "assets/Print-DiwsNO5B.js",
     "name": "Print",
     "src": "resources/js/Pages/Laboratory/Reports/Print.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
+      "_useTranslation-Em4ebb6R.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
       "assets/Print-kmgi8RG-.css",
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Laboratory/Results/Grouped.tsx": {
-    "file": "assets/Grouped-DMFC5oSL.js",
+    "file": "assets/Grouped-DLySTP5P.js",
     "name": "Grouped",
     "src": "resources/js/Pages/Laboratory/Results/Grouped.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AppointmentPagination-DVFfaiiP.js",
-      "_LaboratoryPageHeader-BmQnYHgO.js",
-      "_LaboratoryStatusBadge-BW_MiUT4.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Select-BEgE3xLu.js",
-      "_Button-DAJpfNU-.js",
-      "_Badge-Be6OUGz4.js",
+      "_AppointmentPagination-CXXdSr7x.js",
+      "_LaboratoryPageHeader-06jJ7LOO.js",
+      "_LaboratoryStatusBadge-DzJfl3KR.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Select-Blw8xyAd.js",
+      "_Button-CUKJj3kK.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SettingsPagination-Brci1pPx.js"
+      "_SettingsPagination-n2Z6cDG-.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Laboratory/Results/Index.tsx": {
-    "file": "assets/Index-D3PhoE3k.js",
+    "file": "assets/Index-D1KMtrqw.js",
     "name": "Index",
     "src": "resources/js/Pages/Laboratory/Results/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AppointmentPagination-DVFfaiiP.js",
-      "_LaboratoryPageHeader-BmQnYHgO.js",
-      "_Table-B55okIDk.js",
-      "_LaboratoryStatusBadge-BW_MiUT4.js",
-      "_AppointmentTableActions-CNyZr54d.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Badge-Be6OUGz4.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Select-BEgE3xLu.js",
-      "_Button-DAJpfNU-.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Alert-9nlgd8ix.js",
+      "_AppointmentPagination-CXXdSr7x.js",
+      "_LaboratoryPageHeader-06jJ7LOO.js",
+      "_Table-BV1fSwZC.js",
+      "_LaboratoryStatusBadge-DzJfl3KR.js",
+      "_AppointmentTableActions-BN5YjO48.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Badge-CYOkIyPG.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Select-Blw8xyAd.js",
+      "_Button-CUKJj3kK.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Alert-D2xDeEj8.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SettingsPagination-Brci1pPx.js"
+      "_SettingsPagination-n2Z6cDG-.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Laboratory/Results/Show.tsx": {
-    "file": "assets/Show-BP5fFWkv.js",
+    "file": "assets/Show-SrvbID9Q.js",
     "name": "Show",
     "src": "resources/js/Pages/Laboratory/Results/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_LaboratoryPageHeader-BmQnYHgO.js",
-      "_LaboratoryStatusBadge-BW_MiUT4.js",
+      "_LaboratoryPageHeader-06jJ7LOO.js",
+      "_LaboratoryStatusBadge-DzJfl3KR.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_ckeditor5-CmugbGP-.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Alert-9nlgd8ix.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Badge-Be6OUGz4.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Label-DZp1O9YT.js",
-      "_Textarea-C0uFGA91.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Alert-D2xDeEj8.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Badge-CYOkIyPG.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Label-DbQ-oN9b.js",
+      "_Textarea-CH_b-uO-.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Laboratory/Scan.tsx": {
-    "file": "assets/Scan-DFE8FG-x.js",
+    "file": "assets/Scan-Cg_FwGXv.js",
     "name": "Scan",
     "src": "resources/js/Pages/Laboratory/Scan.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_LaboratoryPageHeader-BmQnYHgO.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_LaboratoryPageHeader-06jJ7LOO.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Alert-9nlgd8ix.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
+      "_Card-Ck_WTkOS.js",
+      "_Alert-D2xDeEj8.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Layout.tsx": {
-    "file": "assets/Layout-D_RgH2Kt.js",
+    "file": "assets/Layout-8XbLjAmA.js",
     "name": "Layout",
     "src": "resources/js/Pages/Layout.tsx",
     "isDynamicEntry": true,
@@ -2038,633 +2037,633 @@
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/MedicineTypes/Create.tsx": {
-    "file": "assets/Create-FbO-TNet.js",
+    "file": "assets/Create-DukoTcdC.js",
     "name": "Create",
     "src": "resources/js/Pages/MedicineTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_MedicineTypeForm-f1dCSnhE.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_MedicineTypeForm-BGUAMuWV.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/MedicineTypes/Edit.tsx": {
-    "file": "assets/Edit-CJTLlvLL.js",
+    "file": "assets/Edit-Xmoc-C7U.js",
     "name": "Edit",
     "src": "resources/js/Pages/MedicineTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_MedicineTypeForm-f1dCSnhE.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_MedicineTypeForm-BGUAMuWV.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/MedicineTypes/Index.tsx": {
-    "file": "assets/Index-ayncOHKt.js",
+    "file": "assets/Index-BO3JQZLl.js",
     "name": "Index",
     "src": "resources/js/Pages/MedicineTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/MedicineUsageTypes/Create.tsx": {
-    "file": "assets/Create-I06NDG2l.js",
+    "file": "assets/Create-CIFPVgjf.js",
     "name": "Create",
     "src": "resources/js/Pages/MedicineUsageTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_MedicineUsageTypeForm-SywBevHo.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_MedicineUsageTypeForm-C7U3mmVS.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/MedicineUsageTypes/Edit.tsx": {
-    "file": "assets/Edit-DcCuKdUZ.js",
+    "file": "assets/Edit-D2IeGL0V.js",
     "name": "Edit",
     "src": "resources/js/Pages/MedicineUsageTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_MedicineUsageTypeForm-SywBevHo.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_MedicineUsageTypeForm-C7U3mmVS.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/MedicineUsageTypes/Index.tsx": {
-    "file": "assets/Index--GTTEY3K.js",
+    "file": "assets/Index-B2aUFdQ6.js",
     "name": "Index",
     "src": "resources/js/Pages/MedicineUsageTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Medicines/Create.tsx": {
-    "file": "assets/Create-CXGvaWb6.js",
+    "file": "assets/Create-Na9NbaPf.js",
     "name": "Create",
     "src": "resources/js/Pages/Medicines/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_MedicineForm-cZLbTtSc.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_MedicineForm-C8kAD0Pf.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Medicines/Edit.tsx": {
-    "file": "assets/Edit-DNzNL5DN.js",
+    "file": "assets/Edit-Db4BazjX.js",
     "name": "Edit",
     "src": "resources/js/Pages/Medicines/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_MedicineForm-cZLbTtSc.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_MedicineForm-C8kAD0Pf.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Medicines/Index.tsx": {
-    "file": "assets/Index-Db_clael.js",
+    "file": "assets/Index-zizVUEyP.js",
     "name": "Index",
     "src": "resources/js/Pages/Medicines/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/MiliteryTypes/Create.tsx": {
-    "file": "assets/Create-Izk8K0Tq.js",
+    "file": "assets/Create-BOwC6nF6.js",
     "name": "Create",
     "src": "resources/js/Pages/MiliteryTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_MiliteryTypeForm-Dj4mfLOZ.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_MiliteryTypeForm-E2ffDOE_.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/MiliteryTypes/Edit.tsx": {
-    "file": "assets/Edit-CNVkgbxA.js",
+    "file": "assets/Edit-xEWPjNcf.js",
     "name": "Edit",
     "src": "resources/js/Pages/MiliteryTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_MiliteryTypeForm-Dj4mfLOZ.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_MiliteryTypeForm-E2ffDOE_.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/MiliteryTypes/Index.tsx": {
-    "file": "assets/Index-BkAIjvLc.js",
+    "file": "assets/Index-mWhp2hn9.js",
     "name": "Index",
     "src": "resources/js/Pages/MiliteryTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Nurses/Create.tsx": {
-    "file": "assets/Create-CtmZqETB.js",
+    "file": "assets/Create-iIwzynX6.js",
     "name": "Create",
     "src": "resources/js/Pages/Nurses/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_NurseForm-DNhaO3ON.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_NurseForm-OYzQ38x9.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Nurses/Edit.tsx": {
-    "file": "assets/Edit-O__zMsOf.js",
+    "file": "assets/Edit-Nkul-4ZA.js",
     "name": "Edit",
     "src": "resources/js/Pages/Nurses/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_NurseForm-DNhaO3ON.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_NurseForm-OYzQ38x9.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Nurses/Index.tsx": {
-    "file": "assets/Index-DToIfypt.js",
+    "file": "assets/Index-C84hY_Xa.js",
     "name": "Index",
     "src": "resources/js/Pages/Nurses/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Badge-Be6OUGz4.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Nurses/Show.tsx": {
-    "file": "assets/Show-Bk9ZX4fZ.js",
+    "file": "assets/Show-BkO-7-UX.js",
     "name": "Show",
     "src": "resources/js/Pages/Nurses/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Badge-Be6OUGz4.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/OperationTypes/Create.tsx": {
-    "file": "assets/Create-OyJGwkId.js",
+    "file": "assets/Create-co7MQqFG.js",
     "name": "Create",
     "src": "resources/js/Pages/OperationTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_OperationTypeForm-DjVKgKBr.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_OperationTypeForm-CSSIYt2l.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/OperationTypes/Edit.tsx": {
-    "file": "assets/Edit-BFLPCOZw.js",
+    "file": "assets/Edit-CZuyH32L.js",
     "name": "Edit",
     "src": "resources/js/Pages/OperationTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_OperationTypeForm-DjVKgKBr.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_OperationTypeForm-CSSIYt2l.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/OperationTypes/Index.tsx": {
-    "file": "assets/Index-DrL6UK9f.js",
+    "file": "assets/Index-LOyBOKHM.js",
     "name": "Index",
     "src": "resources/js/Pages/OperationTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Outcomes/Index.tsx": {
-    "file": "assets/Index-AFtVB-BY.js",
+    "file": "assets/Index-DSyd6GnK.js",
     "name": "Index",
     "src": "resources/js/Pages/Outcomes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Outcomes/Report.tsx": {
-    "file": "assets/Report-K0Va_LMT.js",
+    "file": "assets/Report-Co3hqiYz.js",
     "name": "Report",
     "src": "resources/js/Pages/Outcomes/Report.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Patients/Create.tsx": {
-    "file": "assets/Create-xMJXUXOO.js",
+    "file": "assets/Create-eDWn91Iw.js",
     "name": "Create",
     "src": "resources/js/Pages/Patients/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_BackLink-B2VgAhVX.js",
-      "_useTranslation-B813D8Hw.js",
-      "_FormField-D8irAITe.js",
-      "_TokenModal-BKNMroF-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Alert-9nlgd8ix.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js",
-      "_DashboardLayout-CsoOyRMq.js",
+      "_BackLink-7ClYe23H.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_FormField-BvKlm_po.js",
+      "_TokenModal-D1cQ3r4e.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Alert-D2xDeEj8.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js",
+      "_DashboardLayout-DOlpSWjI.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_ModalHeader-9tmOM0hN.js"
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_ModalHeader-D7saOluD.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Patients/Edit.tsx": {
-    "file": "assets/Edit-BcQD7Ffy.js",
+    "file": "assets/Edit-6vLS0A27.js",
     "name": "Edit",
     "src": "resources/js/Pages/Patients/Edit.tsx",
     "isDynamicEntry": true,
@@ -2674,1216 +2673,1216 @@
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_useTranslation-B813D8Hw.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_Button-DAJpfNU-.js",
-      "_FormField-D8irAITe.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_TokenModal-BKNMroF-.js",
-      "_ModalHeader-9tmOM0hN.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Alert-9nlgd8ix.js",
-      "_Spinner-C0vxPBWY.js"
+      "_BackLink-7ClYe23H.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_Button-CUKJj3kK.js",
+      "_FormField-BvKlm_po.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_TokenModal-D1cQ3r4e.js",
+      "_ModalHeader-D7saOluD.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Alert-D2xDeEj8.js",
+      "_Spinner-B8svB6VH.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Patients/Index.tsx": {
-    "file": "assets/Index-DObNnu9a.js",
+    "file": "assets/Index-7Jdq3HeL.js",
     "name": "Index",
     "src": "resources/js/Pages/Patients/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Table-B55okIDk.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Table-BV1fSwZC.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Patients/Show.tsx": {
-    "file": "assets/Show-8Dk7pzxE.js",
+    "file": "assets/Show-CIVm8fMV.js",
     "name": "Show",
     "src": "resources/js/Pages/Patients/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_useTranslation-B813D8Hw.js",
-      "_TokenModal-BKNMroF-.js",
-      "_FormField-D8irAITe.js",
-      "_ModalHeader-9tmOM0hN.js",
-      "_Alert-9nlgd8ix.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_TokenModal-D1cQ3r4e.js",
+      "_FormField-BvKlm_po.js",
+      "_ModalHeader-D7saOluD.js",
+      "_Alert-D2xDeEj8.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js",
       "_browser-CXdaRMTm.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_Table-B55okIDk.js",
-      "_Badge-Be6OUGz4.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_BackLink-7ClYe23H.js",
+      "_Table-BV1fSwZC.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Pharmacies/Create.tsx": {
-    "file": "assets/Create-BRSsaNld.js",
+    "file": "assets/Create-DzDELOcj.js",
     "name": "Create",
     "src": "resources/js/Pages/Pharmacies/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_PharmacyForm-DJFPHPab.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_PharmacyForm-BCMw0osE.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Pharmacies/Edit.tsx": {
-    "file": "assets/Edit-DBaazLkC.js",
+    "file": "assets/Edit-CLuQ7jaF.js",
     "name": "Edit",
     "src": "resources/js/Pages/Pharmacies/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_PharmacyForm-DJFPHPab.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_PharmacyForm-BCMw0osE.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Pharmacies/Index.tsx": {
-    "file": "assets/Index-Dpa1GJzb.js",
+    "file": "assets/Index-DQX5y2Do.js",
     "name": "Index",
     "src": "resources/js/Pages/Pharmacies/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Badge-Be6OUGz4.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Pharmacies/ManageUsers.tsx": {
-    "file": "assets/ManageUsers-DbziK0Vd.js",
+    "file": "assets/ManageUsers-kKLgAmC5.js",
     "name": "ManageUsers",
     "src": "resources/js/Pages/Pharmacies/ManageUsers.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Badge-Be6OUGz4.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js",
-      "_Label-DZp1O9YT.js",
+      "_Card-Ck_WTkOS.js",
+      "_Badge-CYOkIyPG.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js",
+      "_Label-DbQ-oN9b.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Pharmacies/Show.tsx": {
-    "file": "assets/Show-E4q4gqZS.js",
+    "file": "assets/Show-B_Or_uUU.js",
     "name": "Show",
     "src": "resources/js/Pages/Pharmacies/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Badge-Be6OUGz4.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/PharmacyFulfillments/Create.tsx": {
-    "file": "assets/Create-BwfC6SBr.js",
+    "file": "assets/Create-Bi1N3cgC.js",
     "name": "Create",
     "src": "resources/js/Pages/PharmacyFulfillments/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_PharmacyFulfillmentForm-BYi5pw8h.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_PharmacyFulfillmentForm-DmQ4Aa8a.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
+      "_SearchableSelect-gEROy1i0.js",
       "_inertiaSubmit-BS7Rs7yT.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/PharmacyFulfillments/Edit.tsx": {
-    "file": "assets/Edit-xkyWVQVv.js",
+    "file": "assets/Edit-CwloRTZ8.js",
     "name": "Edit",
     "src": "resources/js/Pages/PharmacyFulfillments/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_PharmacyFulfillmentForm-BYi5pw8h.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_PharmacyFulfillmentForm-DmQ4Aa8a.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
+      "_SearchableSelect-gEROy1i0.js",
       "_inertiaSubmit-BS7Rs7yT.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/PharmacyFulfillments/Index.tsx": {
-    "file": "assets/Index-CVkmQSc_.js",
+    "file": "assets/Index-B68b1vZT.js",
     "name": "Index",
     "src": "resources/js/Pages/PharmacyFulfillments/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/PharmacyFulfillments/Show.tsx": {
-    "file": "assets/Show-DI14ggbH.js",
+    "file": "assets/Show-CGHmNCBO.js",
     "name": "Show",
     "src": "resources/js/Pages/PharmacyFulfillments/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/PharmacyFulfillments/Stock.tsx": {
-    "file": "assets/Stock-CS3zB90r.js",
+    "file": "assets/Stock-D99S7Tyv.js",
     "name": "Stock",
     "src": "resources/js/Pages/PharmacyFulfillments/Stock.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_StatCard-BkBzDoDu.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_StatCard-R2IFalJh.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Placeholder.tsx": {
-    "file": "assets/Placeholder-DKvCxM3U.js",
+    "file": "assets/Placeholder-CxPurFy6.js",
     "name": "Placeholder",
     "src": "resources/js/Pages/Placeholder.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Button-DAJpfNU-.js"
+      "_Button-CUKJj3kK.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/PrescriptionStocks/Index.tsx": {
-    "file": "assets/Index-DoCh7vre.js",
+    "file": "assets/Index-CwENIXHu.js",
     "name": "Index",
     "src": "resources/js/Pages/PrescriptionStocks/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Badge-Be6OUGz4.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Prescriptions/Index.tsx": {
-    "file": "assets/Index-CSKpQwBg.js",
+    "file": "assets/Index-i-4wwgLP.js",
     "name": "Index",
     "src": "resources/js/Pages/Prescriptions/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_Checkbox-Cq8OIYsp.js",
-      "_Badge-Be6OUGz4.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_Checkbox-o5BWSR6-.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Prescriptions/Report.tsx": {
-    "file": "assets/Report-csKoT-sP.js",
+    "file": "assets/Report-CStuMuuL.js",
     "name": "Report",
     "src": "resources/js/Pages/Prescriptions/Report.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Prescriptions/ScanCode.tsx": {
-    "file": "assets/ScanCode-CsfXcJ-Y.js",
+    "file": "assets/ScanCode-C1ZAqqpo.js",
     "name": "ScanCode",
     "src": "resources/js/Pages/Prescriptions/ScanCode.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Alert-9nlgd8ix.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Button-DAJpfNU-.js",
+      "_Card-Ck_WTkOS.js",
+      "_Alert-D2xDeEj8.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Prescriptions/Show.tsx": {
-    "file": "assets/Show-BewfalsH.js",
+    "file": "assets/Show-C2dfT2Ai.js",
     "name": "Show",
     "src": "resources/js/Pages/Prescriptions/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_ModalHeader-9tmOM0hN.js",
-      "_Tabs-iIgbAsWO.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js",
-      "_Badge-Be6OUGz4.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Card-CMhMP03u.js",
-      "_Alert-9nlgd8ix.js",
+      "_ModalHeader-D7saOluD.js",
+      "_Tabs-z4RRomGo.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js",
+      "_Badge-CYOkIyPG.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Card-Ck_WTkOS.js",
+      "_Alert-D2xDeEj8.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/ProcedureTypes/Create.tsx": {
-    "file": "assets/Create-fCE4WFzj.js",
+    "file": "assets/Create-CtMuop4a.js",
     "name": "Create",
     "src": "resources/js/Pages/ProcedureTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_ProcedureTypeForm-Dd1iQWQU.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_ProcedureTypeForm-GO133h21.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/ProcedureTypes/Edit.tsx": {
-    "file": "assets/Edit-Dfru0NJG.js",
+    "file": "assets/Edit-PlYra27v.js",
     "name": "Edit",
     "src": "resources/js/Pages/ProcedureTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_ProcedureTypeForm-Dd1iQWQU.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_ProcedureTypeForm-GO133h21.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/ProcedureTypes/Index.tsx": {
-    "file": "assets/Index-Cs7Fj1El.js",
+    "file": "assets/Index-BOEVUkwB.js",
     "name": "Index",
     "src": "resources/js/Pages/ProcedureTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Recipients/Create.tsx": {
-    "file": "assets/Create-DMqh0sho.js",
+    "file": "assets/Create-CyteASSY.js",
     "name": "Create",
     "src": "resources/js/Pages/Recipients/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_RecipientForm-PhuEKaYz.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_RecipientForm-DhlsFkYu.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Recipients/Edit.tsx": {
-    "file": "assets/Edit-DMcm0roL.js",
+    "file": "assets/Edit-CyGnXVtS.js",
     "name": "Edit",
     "src": "resources/js/Pages/Recipients/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_RecipientForm-PhuEKaYz.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_RecipientForm-DhlsFkYu.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Textarea-C0uFGA91.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Textarea-CH_b-uO-.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Recipients/Index.tsx": {
-    "file": "assets/Index-B9sShwcl.js",
+    "file": "assets/Index-D_io__pX.js",
     "name": "Index",
     "src": "resources/js/Pages/Recipients/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Relations/Create.tsx": {
-    "file": "assets/Create-CIQ-gGZs.js",
+    "file": "assets/Create-DJBqSTdS.js",
     "name": "Create",
     "src": "resources/js/Pages/Relations/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_RelationForm-CaEbfxp5.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_RelationForm-DDl8pvoe.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Relations/Edit.tsx": {
-    "file": "assets/Edit-Bqjf1-E8.js",
+    "file": "assets/Edit-BBPd6RVc.js",
     "name": "Edit",
     "src": "resources/js/Pages/Relations/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_RelationForm-CaEbfxp5.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_RelationForm-DDl8pvoe.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Relations/Index.tsx": {
-    "file": "assets/Index-C1hXRUGx.js",
+    "file": "assets/Index-CbN5q5yS.js",
     "name": "Index",
     "src": "resources/js/Pages/Relations/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Rooms/Create.tsx": {
-    "file": "assets/Create-BqspkUY6.js",
+    "file": "assets/Create-Do212wU_.js",
     "name": "Create",
     "src": "resources/js/Pages/Rooms/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_RoomForm-CTRZifwy.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_RoomForm-C7KR1uqz.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Rooms/Edit.tsx": {
-    "file": "assets/Edit-DLny5Yj2.js",
+    "file": "assets/Edit-DBVqhyCi.js",
     "name": "Edit",
     "src": "resources/js/Pages/Rooms/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_RoomForm-CTRZifwy.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_RoomForm-C7KR1uqz.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Rooms/Index.tsx": {
-    "file": "assets/Index-Bg2DaXZX.js",
+    "file": "assets/Index-CcYDnKPM.js",
     "name": "Index",
     "src": "resources/js/Pages/Rooms/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Rooms/Show.tsx": {
-    "file": "assets/Show-DnwSh34M.js",
+    "file": "assets/Show-LFTMp13N.js",
     "name": "Show",
     "src": "resources/js/Pages/Rooms/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Badge-Be6OUGz4.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Sections/Create.tsx": {
-    "file": "assets/Create-DCPle4Zv.js",
+    "file": "assets/Create-XPdqxuBY.js",
     "name": "Create",
     "src": "resources/js/Pages/Sections/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SectionForm-GHmZipLy.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_SectionForm-BjqJ1TOv.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Sections/Edit.tsx": {
-    "file": "assets/Edit-DMWIfksY.js",
+    "file": "assets/Edit-Dt5GtCCE.js",
     "name": "Edit",
     "src": "resources/js/Pages/Sections/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SectionForm-GHmZipLy.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_SectionForm-BjqJ1TOv.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_SearchableSelect-gEROy1i0.js",
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Sections/Index.tsx": {
-    "file": "assets/Index-Co9fuB-9.js",
+    "file": "assets/Index-ISnbNJh6.js",
     "name": "Index",
     "src": "resources/js/Pages/Sections/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Users/Create.tsx": {
-    "file": "assets/Create-BLUCRDIH.js",
+    "file": "assets/Create-BDHPUPpy.js",
     "name": "Create",
     "src": "resources/js/Pages/Users/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_UserForm-CXvE129N.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
+      "_UserForm-CiPfuOk5.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableMultiSelect-DBUGfg5N.js",
-      "_SearchableSelect-CYSLJ7In.js",
+      "_SearchableMultiSelect-gE_Px4Lc.js",
+      "_SearchableSelect-gEROy1i0.js",
       "_inertiaSubmit-BS7Rs7yT.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Checkbox-Cq8OIYsp.js",
-      "_Spinner-C0vxPBWY.js"
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Checkbox-o5BWSR6-.js",
+      "_Spinner-B8svB6VH.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Users/Edit.tsx": {
-    "file": "assets/Edit-B5eZxS-b.js",
+    "file": "assets/Edit-DxePR5_n.js",
     "name": "Edit",
     "src": "resources/js/Pages/Users/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_UserForm-CXvE129N.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_BackArrowIcon-BZIMeKyq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
+      "_UserForm-CiPfuOk5.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_BackArrowIcon-DEMC2Zkq.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_SearchableMultiSelect-DBUGfg5N.js",
-      "_SearchableSelect-CYSLJ7In.js",
+      "_SearchableMultiSelect-gE_Px4Lc.js",
+      "_SearchableSelect-gEROy1i0.js",
       "_inertiaSubmit-BS7Rs7yT.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Checkbox-Cq8OIYsp.js",
-      "_Spinner-C0vxPBWY.js"
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Checkbox-o5BWSR6-.js",
+      "_Spinner-B8svB6VH.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Users/Index.tsx": {
-    "file": "assets/Index-Tk7E6dzs.js",
+    "file": "assets/Index-DIc-IR_K.js",
     "name": "Index",
     "src": "resources/js/Pages/Users/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_Badge-Be6OUGz4.js",
-      "_ToggleSwitch-lBE47Z-m.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_Badge-CYOkIyPG.js",
+      "_ToggleSwitch-CDoBtuFE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/VitalSignTypes/Create.tsx": {
-    "file": "assets/Create-DI_adrce.js",
+    "file": "assets/Create-CafeUwAL.js",
     "name": "Create",
     "src": "resources/js/Pages/VitalSignTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_VitalSignTypeForm-wH-dfM_Y.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_VitalSignTypeForm-CSYOkubw.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/VitalSignTypes/Edit.tsx": {
-    "file": "assets/Edit-BIXCIBcB.js",
+    "file": "assets/Edit-COsX33Gr.js",
     "name": "Edit",
     "src": "resources/js/Pages/VitalSignTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_VitalSignTypeForm-wH-dfM_Y.js",
-      "_SettingsPageHeader-C-16qvmR.js",
+      "_VitalSignTypeForm-CSYOkubw.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
       "_settingsUi-CcnNFSQq.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
-      "_Card-CMhMP03u.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
+      "_Card-Ck_WTkOS.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Label-DZp1O9YT.js",
-      "_Button-DAJpfNU-.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Label-DbQ-oN9b.js",
+      "_Button-CUKJj3kK.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/VitalSignTypes/Index.tsx": {
-    "file": "assets/Index-BTNzZsJW.js",
+    "file": "assets/Index-Bppmh5pT.js",
     "name": "Index",
     "src": "resources/js/Pages/VitalSignTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/VitalSignTypes/Show.tsx": {
-    "file": "assets/Show-x8IbzfFI.js",
+    "file": "assets/Show-C4qttcBr.js",
     "name": "Show",
     "src": "resources/js/Pages/VitalSignTypes/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Button-DAJpfNU-.js",
+      "_Card-Ck_WTkOS.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/VitalSigns/Index.tsx": {
-    "file": "assets/Index-Ceoc_ssh.js",
+    "file": "assets/Index-BfLqJgra.js",
     "name": "Index",
     "src": "resources/js/Pages/VitalSigns/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsFilterActions-CjKi9n94.js",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_SettingsPagination-Brci1pPx.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_SearchableSelect-CYSLJ7In.js",
-      "_Table-B55okIDk.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsFilterActions-DcfKPFga.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_SettingsPagination-n2Z6cDG-.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_SearchableSelect-gEROy1i0.js",
+      "_Table-BV1fSwZC.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Label-DZp1O9YT.js",
-      "_TextInput-DWx1KBP0.js",
-      "_Badge-Be6OUGz4.js",
+      "_Card-Ck_WTkOS.js",
+      "_Label-DbQ-oN9b.js",
+      "_TextInput-Cot1pHTE.js",
+      "_Badge-CYOkIyPG.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_Button-DAJpfNU-.js",
-      "_Spinner-C0vxPBWY.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_Button-CUKJj3kK.js",
+      "_Spinner-B8svB6VH.js",
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/VitalSigns/Show.tsx": {
-    "file": "assets/Show-Bo2iKKNI.js",
+    "file": "assets/Show-40EcWIQh.js",
     "name": "Show",
     "src": "resources/js/Pages/VitalSigns/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_SettingsPageHeader-C-16qvmR.js",
-      "_DashboardLayout-CsoOyRMq.js",
-      "_useTranslation-B813D8Hw.js",
+      "_SettingsPageHeader-CdG05Bnf.js",
+      "_DashboardLayout-DOlpSWjI.js",
+      "_useTranslation-Em4ebb6R.js",
       "_settingsUi-CcnNFSQq.js",
-      "_Card-CMhMP03u.js",
-      "_Badge-Be6OUGz4.js",
-      "_Button-DAJpfNU-.js",
+      "_Card-Ck_WTkOS.js",
+      "_Badge-CYOkIyPG.js",
+      "_Button-CUKJj3kK.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
       "_set-DtTOySoq.js",
-      "_BackLink-B2VgAhVX.js",
-      "_BackArrowIcon-BZIMeKyq.js"
+      "_BackLink-7ClYe23H.js",
+      "_BackArrowIcon-DEMC2Zkq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/Pages/Welcome.tsx": {
-    "file": "assets/Welcome-CEen-S16.js",
+    "file": "assets/Welcome-D4rI6YZY.js",
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.tsx",
     "isDynamicEntry": true,
@@ -3894,7 +3893,7 @@
       "_set-DtTOySoq.js"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/app.js": {
@@ -3907,7 +3906,7 @@
     ]
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-DDUcgWWB.js",
+    "file": "assets/app-BAaIM2cQ.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -4028,7 +4027,7 @@
       "resources/js/Pages/Welcome.tsx"
     ],
     "css": [
-      "assets/app-BvkJRf11.css"
+      "assets/app-u4ICwFgd.css"
     ]
   },
   "resources/js/ckeditor.js": {

@@ -1,11 +1,11 @@
 import { Head, router } from '@inertiajs/react';
-import { Fragment } from 'react';
-import { Alert, Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, TextInput } from 'flowbite-react';
+import { Alert, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, TextInput } from 'flowbite-react';
 import { useState } from 'react';
 import AlternativesModal from '../../Components/Prescriptions/AlternativesModal';
+import PrescriptionItemsTable from '../../Components/Prescriptions/PrescriptionItemsTable';
+import PrescriptionShowStats from '../../Components/Prescriptions/PrescriptionShowStats';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
     PrescriptionDetail,
@@ -14,7 +14,7 @@ import {
     PrescriptionShowPermissions,
     PrescriptionShowUrls,
 } from '../../types/prescription';
-import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface ShowPrescriptionProps {
     prescription: PrescriptionDetail;
@@ -119,214 +119,135 @@ export default function ShowPrescription({
     return (
         <DashboardLayout>
             <Head title={`${t('global.prescription')} #${prescription.id}`} />
-            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide}`}>
-                <Card className="shadow-sm">
-                    <SettingsPageHeader
-                        title={t('global.prescription_details')}
-                        subtitle={`#${prescription.id} · ${prescription.patient_name}`}
-                        icon="bx-receipt"
-                        accent="from-emerald-500 to-teal-600"
-                        backHref={urls.index}
-                        backLabel={t('global.back')}
-                        action={
-                            <div className="flex flex-wrap gap-2">
-                                <Button color="success" as="a" href={urls.thermalReceipt} target="_blank">
-                                    <i className="bx bx-printer me-2" />
-                                    {t('global.thermal_print')}
-                                </Button>
-                                {!readonly && permissions.edit && (
-                                    <>
-                                        <Button color="warning" onClick={markAllDelivered} disabled={processing}>
-                                            {t('global.mark_delivered')}
-                                        </Button>
-                                        <Button color="success" onClick={completePrescription} disabled={processing}>
-                                            {t('global.complete_prescription')}
-                                        </Button>
-                                    </>
-                                )}
-                                {permissions.delete && (
-                                    <Button color="failure" onClick={handleDelete} disabled={processing}>
-                                        {t('global.delete')}
-                                    </Button>
-                                )}
-                            </div>
-                        }
-                    />
 
-                    <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-gray-700/60 dark:bg-gray-800/40">
-                            <p className="text-xs font-semibold uppercase text-gray-500">{t('global.patient_name')}</p>
-                            <p className="mt-1 font-medium">{prescription.patient_name}</p>
-                        </div>
-                        <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-gray-700/60 dark:bg-gray-800/40">
-                            <p className="text-xs font-semibold uppercase text-gray-500">{t('global.doctor_name')}</p>
-                            <p className="mt-1 font-medium">{prescription.doctor_name}</p>
-                        </div>
-                        <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-gray-700/60 dark:bg-gray-800/40">
-                            <p className="text-xs font-semibold uppercase text-gray-500">{t('global.status')}</p>
-                            <Badge color={prescription.is_completed ? 'success' : 'warning'} className="mt-1 w-fit">
-                                {prescription.is_completed ? t('global.completed') : t('global.in_progress')}
-                            </Badge>
-                        </div>
-                        <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-gray-700/60 dark:bg-gray-800/40">
-                            <p className="text-xs font-semibold uppercase text-gray-500">{t('global.created_at')}</p>
-                            <p className="mt-1 font-medium">{prescription.created_at ?? '—'}</p>
-                        </div>
+            <div className={`mx-auto space-y-6 ${SETTINGS_INDEX_WIDTH.wide}`}>
+                <Card className="overflow-hidden border-0 shadow-md">
+                    <div className="border-b border-gray-100 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent px-6 py-5 dark:border-gray-700 [&>div]:mb-0 [&>div]:border-0 [&>div]:pb-0">
+                        <SettingsPageHeader
+                            title={t('global.prescription_details')}
+                            subtitle={`#${prescription.id} · ${prescription.patient_name}`}
+                            icon="bx-receipt"
+                            accent="from-emerald-500 to-teal-600"
+                            backHref={urls.index}
+                            backLabel={t('global.back')}
+                            action={
+                                <div className="flex flex-wrap gap-2">
+                                    <Button
+                                        color="light"
+                                        as="a"
+                                        href={urls.thermalReceipt}
+                                        target="_blank"
+                                        className="border border-emerald-200 bg-white hover:bg-emerald-50 dark:border-emerald-800 dark:bg-gray-800"
+                                    >
+                                        <i className="bx bx-printer me-2" />
+                                        {t('global.thermal_print')}
+                                    </Button>
+                                    {!readonly && permissions.edit && (
+                                        <>
+                                            <Button
+                                                color="warning"
+                                                onClick={markAllDelivered}
+                                                disabled={processing}
+                                            >
+                                                <i className="bx bx-check-double me-2" />
+                                                {t('global.mark_delivered')}
+                                            </Button>
+                                            <Button
+                                                color="success"
+                                                onClick={completePrescription}
+                                                disabled={processing}
+                                            >
+                                                <i className="bx bx-badge-check me-2" />
+                                                {t('global.complete_prescription')}
+                                            </Button>
+                                        </>
+                                    )}
+                                    {permissions.delete && (
+                                        <Button color="failure" outline onClick={handleDelete} disabled={processing}>
+                                            <i className="bx bx-trash me-2" />
+                                            {t('global.delete')}
+                                        </Button>
+                                    )}
+                                </div>
+                            }
+                        />
                     </div>
 
-                    {prescription.is_completed && (
-                        <Alert color="success" className="mb-6">
-                            <span className="font-medium">{t('global.prescription_completed')}</span>
-                            <p className="text-sm">{t('global.prescription_readonly_notice')}</p>
-                        </Alert>
-                    )}
+                    <div className="p-6">
+                        <PrescriptionShowStats prescription={prescription} />
 
-                    <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-                        {t('global.prescription_details')}
-                    </h2>
+                        {prescription.is_completed && (
+                            <Alert color="success" className="mb-6 border border-emerald-200 bg-emerald-50/80 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+                                <div className="flex items-start gap-3">
+                                    <i className="bx bx-check-shield mt-0.5 text-xl text-emerald-600" />
+                                    <div>
+                                        <span className="font-semibold text-emerald-900 dark:text-emerald-100">
+                                            {t('global.prescription_completed')}
+                                        </span>
+                                        <p className="mt-1 text-sm text-emerald-800/90 dark:text-emerald-200/90">
+                                            {t('global.prescription_readonly_notice')}
+                                        </p>
+                                    </div>
+                                </div>
+                            </Alert>
+                        )}
 
-                    <Table>
-                        <TableHead>
-                            <TableRow variant="header">
-                                <TableHeader>#</TableHeader>
-                                <TableHeader>{t('global.type')}</TableHeader>
-                                <TableHeader>{t('global.name')}</TableHeader>
-                                <TableHeader>{t('global.usage_type')}</TableHeader>
-                                <TableHeader>{t('global.dosage')}</TableHeader>
-                                <TableHeader>{t('global.frequency')}</TableHeader>
-                                <TableHeader>{t('global.amount')}</TableHeader>
-                                <TableHeader>{t('global.status')}</TableHeader>
-                                <TableHeader align="center">{t('global.alternatives')}</TableHeader>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {prescription.items.map((item, index) => (
-                                <Fragment key={item.id}>
-                                    <TableRow>
-                                        <TableCell>
-                                            <Badge color="blue">{index + 1}</Badge>
-                                        </TableCell>
-                                        <TableCell muted>{item.medicine_type ?? '—'}</TableCell>
-                                        <TableCell>
-                                            <div className="font-medium">{item.medicine_name}</div>
-                                            {item.selected_alternative && (
-                                                <Badge color="warning" className="mt-1">
-                                                    {t('global.original')}
-                                                </Badge>
-                                            )}
-                                        </TableCell>
-                                        <TableCell muted>{item.usage_type_name ?? '—'}</TableCell>
-                                        <TableCell>{item.dosage}</TableCell>
-                                        <TableCell>{item.frequency}</TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <span>{item.amount}</span>
-                                                {!readonly && (
-                                                    <button
-                                                        type="button"
-                                                        className={settingsActionClasses.edit}
-                                                        onClick={() => openAmountModal(item)}
-                                                    >
-                                                        <i className="bx bx-edit text-lg" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            {item.selected_alternative ? (
-                                                <Badge color="warning">{t('global.not_used')}</Badge>
-                                            ) : (
-                                                <button
-                                                    type="button"
-                                                    disabled={readonly || processing}
-                                                    className={item.is_delivered ? settingsActionClasses.view : settingsActionClasses.delete}
-                                                    onClick={() => toggleItemStatus(item)}
-                                                >
-                                                    <i className={`bx ${item.is_delivered ? 'bx-check' : 'bx-x'} text-lg`} />
-                                                </button>
-                                            )}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <button
-                                                type="button"
-                                                className={settingsActionClasses.view}
-                                                onClick={() => setAlternativesItem(item)}
-                                            >
-                                                <i className="bx bx-list-ul text-lg" />
-                                            </button>
-                                            {item.alternatives_count > 0 && (
-                                                <Badge color="info" className="ms-1">
-                                                    {item.alternatives_count}
-                                                </Badge>
-                                            )}
-                                        </TableCell>
-                                    </TableRow>
-                                    {item.selected_alternative && (
-                                        <TableRow className="bg-emerald-50/50 dark:bg-emerald-900/10">
-                                            <TableCell>
-                                                <Badge color="success">{index + 1}.1</Badge>
-                                            </TableCell>
-                                            <TableCell muted>{item.selected_alternative.medicine_type ?? '—'}</TableCell>
-                                            <TableCell>
-                                                <div className="font-medium">{item.selected_alternative.medicine_name}</div>
-                                                <Badge color="success" className="mt-1">
-                                                    {t('global.selected_alternative')}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell muted>{item.selected_alternative.usage_type_name ?? '—'}</TableCell>
-                                            <TableCell>{item.selected_alternative.dosage}</TableCell>
-                                            <TableCell>{item.selected_alternative.frequency}</TableCell>
-                                            <TableCell>{item.selected_alternative.amount}</TableCell>
-                                            <TableCell>
-                                                <button
-                                                    type="button"
-                                                    disabled={readonly || processing}
-                                                    className={
-                                                        item.selected_alternative.is_delivered
-                                                            ? settingsActionClasses.view
-                                                            : settingsActionClasses.delete
-                                                    }
-                                                    onClick={() =>
-                                                        toggleAlternativeStatus(
-                                                            item.selected_alternative!.id,
-                                                            item.selected_alternative!.is_delivered,
-                                                        )
-                                                    }
-                                                >
-                                                    <i
-                                                        className={`bx ${item.selected_alternative.is_delivered ? 'bx-check' : 'bx-x'} text-lg`}
-                                                    />
-                                                </button>
-                                            </TableCell>
-                                            <TableCell align="center">
-                                                <button
-                                                    type="button"
-                                                    className={settingsActionClasses.view}
-                                                    onClick={() => setAlternativesItem(item)}
-                                                >
-                                                    <i className="bx bx-list-ul text-lg" />
-                                                </button>
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </Fragment>
-                            ))}
-                        </TableBody>
-                    </Table>
-
-                    {processing && (
-                        <div className="mt-4 flex justify-center">
-                            <Spinner />
+                        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex items-center gap-2">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                    <i className="bx bx-capsule text-lg" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                                        {t('global.prescription_items')}
+                                    </h2>
+                                    <p className="text-sm text-gray-500">
+                                        {prescription.items.length} {t('global.items')}
+                                    </p>
+                                </div>
+                            </div>
+                            {processing && (
+                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                    <Spinner size="sm" />
+                                </div>
+                            )}
                         </div>
-                    )}
+
+                        <PrescriptionItemsTable
+                            items={prescription.items}
+                            readonly={readonly}
+                            processing={processing}
+                            onToggleItemStatus={toggleItemStatus}
+                            onToggleAlternativeStatus={toggleAlternativeStatus}
+                            onEditAmount={openAmountModal}
+                            onOpenAlternatives={setAlternativesItem}
+                        />
+                    </div>
                 </Card>
             </div>
 
-            <Modal show={amountModalOpen} onClose={() => setAmountModalOpen(false)}>
-                <ModalHeader>{t('global.edit_amount')}</ModalHeader>
+            <Modal show={amountModalOpen} onClose={() => setAmountModalOpen(false)} size="md">
+                <ModalHeader>
+                    <div className="flex items-center gap-2">
+                        <i className="bx bx-edit text-emerald-600" />
+                        {t('global.edit_amount')}
+                    </div>
+                </ModalHeader>
                 <ModalBody>
-                    <Label>{t('global.amount')}</Label>
-                    <TextInput value={amountValue} onChange={(e) => setAmountValue(e.target.value)} />
+                    {amountItem && (
+                        <p className="mb-4 text-sm text-gray-500">
+                            {amountItem.medicine_name}
+                        </p>
+                    )}
+                    <Label htmlFor="prescription-amount">{t('global.amount')}</Label>
+                    <TextInput
+                        id="prescription-amount"
+                        type="number"
+                        min={0}
+                        value={amountValue}
+                        onChange={(e) => setAmountValue(e.target.value)}
+                        className="mt-1"
+                    />
                 </ModalBody>
                 <ModalFooter>
                     <Button color="light" onClick={() => setAmountModalOpen(false)}>

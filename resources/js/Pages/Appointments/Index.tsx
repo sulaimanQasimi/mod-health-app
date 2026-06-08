@@ -1,6 +1,12 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import {
+    AppointmentActionGroup,
+    AppointmentIconAnchor,
+    AppointmentIconButton,
+    AppointmentIconLink,
+} from '../../Components/Appointments/AppointmentTableActions';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
@@ -387,45 +393,40 @@ export default function IndexAppointment({
                                         </TableCell>
                                         <TableCell muted>{appointment.processed_by ?? '—'}</TableCell>
                                         <TableCell align="center">
-                                            <div className="flex items-center justify-center gap-1">
+                                            <AppointmentActionGroup>
                                                 {appointment.permissions.view && (
-                                                    <Link
+                                                    <AppointmentIconLink
                                                         href={`${urls.show}/${appointment.id}`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                                                        icon="bx-expand"
                                                         title={t('global.view')}
-                                                    >
-                                                        <i className="bx bx-expand text-lg" />
-                                                    </Link>
+                                                        variant="view"
+                                                    />
                                                 )}
                                                 {appointment.permissions.history && appointment.patient_id && (
-                                                    <a
+                                                    <AppointmentIconAnchor
                                                         href={`${urls.patientHistory}/${appointment.patient_id}`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-violet-600 hover:bg-violet-50 dark:text-violet-400 dark:hover:bg-violet-900/30"
+                                                        icon="bx-history"
                                                         title={t('global.history')}
-                                                    >
-                                                        <i className="bx bx-history text-lg" />
-                                                    </a>
+                                                        variant="history"
+                                                    />
                                                 )}
                                                 {appointment.permissions.edit && (
-                                                    <Link
+                                                    <AppointmentIconLink
                                                         href={`${urls.edit}/${appointment.id}/edit`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30"
+                                                        icon="bx-edit"
                                                         title={t('global.edit')}
-                                                    >
-                                                        <i className="bx bx-edit text-lg" />
-                                                    </Link>
+                                                        variant="edit"
+                                                    />
                                                 )}
                                                 {appointment.permissions.delete && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleDelete(appointment.id)}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
+                                                    <AppointmentIconButton
+                                                        icon="bx-trash"
                                                         title={t('global.delete')}
-                                                    >
-                                                        <i className="bx bx-trash text-lg" />
-                                                    </button>
+                                                        variant="delete"
+                                                        onClick={() => handleDelete(appointment.id)}
+                                                    />
                                                 )}
-                                            </div>
+                                            </AppointmentActionGroup>
                                         </TableCell>
                                     </TableRow>
                                 ))

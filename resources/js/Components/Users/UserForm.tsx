@@ -5,6 +5,7 @@ import SearchableMultiSelect from '../ui/SearchableMultiSelect';
 import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { UserFormData, UserFormUrls, UserFormValues } from '../../types/user';
+import { isUploadedFile, submitOptionsWithOptionalFile } from '../../utils/inertiaSubmit';
 
 interface UserFormProps {
     mode: 'create' | 'edit';
@@ -115,11 +116,8 @@ export default function UserForm({ mode, formData, urls, user }: UserFormProps) 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
 
-        const hasAvatar = data.avatar instanceof File;
-        const options = {
-            preserveScroll: true,
-            ...(hasAvatar ? { forceFormData: true as const } : {}),
-        };
+        const hasAvatar = isUploadedFile(data.avatar);
+        const options = submitOptionsWithOptionalFile(hasAvatar);
 
         transform((formValues) => {
             const payload = { ...formValues };

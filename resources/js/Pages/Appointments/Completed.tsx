@@ -1,6 +1,11 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Card } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import {
+    AppointmentActionGroup,
+    AppointmentIconAnchor,
+    AppointmentIconLink,
+} from '../../Components/Appointments/AppointmentTableActions';
 import AppointmentPageHeader from '../../Components/Appointments/AppointmentPageHeader';
 import AppointmentPagination from '../../Components/Appointments/AppointmentPagination';
 import MyVisitFilters, { MyVisitFilterValues } from '../../Components/Appointments/MyVisitFilters';
@@ -145,26 +150,24 @@ export default function Completed({
                                         <TableCell muted>{appointment.date ?? '—'}</TableCell>
                                         <TableCell muted>{appointment.time ?? '—'}</TableCell>
                                         <TableCell align="center">
-                                            <div className="flex items-center justify-center gap-1">
+                                            <AppointmentActionGroup>
                                                 {appointment.permissions.view && (
-                                                    <Link
+                                                    <AppointmentIconLink
                                                         href={`${urls.show}/${appointment.id}`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                                                        icon="bx-expand"
                                                         title={t('global.view')}
-                                                    >
-                                                        <i className="bx bx-expand text-lg" />
-                                                    </Link>
+                                                        variant="view"
+                                                    />
                                                 )}
                                                 {appointment.permissions.history && appointment.patient_id && (
-                                                    <a
+                                                    <AppointmentIconAnchor
                                                         href={`${urls.patientHistory}/${appointment.patient_id}`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-violet-600 hover:bg-violet-50 dark:text-violet-400 dark:hover:bg-violet-900/30"
+                                                        icon="bx-history"
                                                         title={t('global.history')}
-                                                    >
-                                                        <i className="bx bx-history text-lg" />
-                                                    </a>
+                                                        variant="history"
+                                                    />
                                                 )}
-                                            </div>
+                                            </AppointmentActionGroup>
                                         </TableCell>
                                     </TableRow>
                                 ))

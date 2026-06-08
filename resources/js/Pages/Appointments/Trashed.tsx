@@ -1,6 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import {
+    AppointmentActionGroup,
+    AppointmentPillButton,
+} from '../../Components/Appointments/AppointmentTableActions';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import BackArrowIcon from '../../Components/ui/BackArrowIcon';
 import {
@@ -284,15 +288,14 @@ export default function TrashedAppointments({
                                         <TableCell muted>{appointment.deleted_at ?? '—'}</TableCell>
                                         <TableCell align="center">
                                             {appointment.permissions.restore && permissions.restore && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleRestore(appointment.id)}
-                                                    className="inline-flex h-8 items-center gap-1 rounded-lg px-2 text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/30"
-                                                    title={t('global.restore')}
-                                                >
-                                                    <i className="bx bx-undo text-lg" />
-                                                    <span className="text-xs font-medium">{t('global.restore')}</span>
-                                                </button>
+                                                <AppointmentActionGroup>
+                                                    <AppointmentPillButton
+                                                        icon="bx-undo"
+                                                        label={t('global.restore')}
+                                                        variant="restore"
+                                                        onClick={() => handleRestore(appointment.id)}
+                                                    />
+                                                </AppointmentActionGroup>
                                             )}
                                         </TableCell>
                                     </TableRow>

@@ -4,6 +4,7 @@ import { FormEvent, useRef } from 'react';
 import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem } from '../../types/settings';
+import { isUploadedFile, submitOptionsWithOptionalFile } from '../../utils/inertiaSubmit';
 
 interface PharmacyFulfillmentFormProps {
     mode: 'create' | 'edit';
@@ -32,7 +33,7 @@ export default function PharmacyFulfillmentForm({
     const isEdit = mode === 'edit';
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const { data, setData, post, put, processing, errors } = useForm({
+    const { data, setData, post, put, processing, errors, transform } = useForm({
         medicine_id: fulfillment?.medicine_id ?? '',
         unit_type: fulfillment?.unit_type ?? '',
         amount: fulfillment?.amount ?? '',
@@ -43,9 +44,24 @@ export default function PharmacyFulfillmentForm({
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
-        const options = { forceFormData: true, preserveScroll: true };
-        if (isEdit) put(urls.update, options);
-        else post(urls.store, options);
+
+        const hasFile = isUploadedFile(data.form);
+        const options = submitOptionsWithOptionalFile(hasFile);
+
+        transform((formValues) => {
+            const payload = { ...formValues };
+            if (!hasFile) {
+                delete (payload as { form?: File | null }).form;
+            }
+            return payload;
+        });
+
+        if (isEdit) {
+            put(urls.update, options);
+            return;
+        }
+
+        post(urls.store, options);
     };
 
     return (

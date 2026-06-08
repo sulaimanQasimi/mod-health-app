@@ -19,7 +19,7 @@ export default function UserForm({ mode, formData, urls, user }: UserFormProps) 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [avatarPreview, setAvatarPreview] = useState(user?.avatar_url ?? formData.defaultAvatar);
 
-    const { data, setData, post, put, processing, errors } = useForm({
+    const { data, setData, post, put, processing, errors, transform } = useForm({
         name: user?.name ?? '',
         last_name: user?.last_name ?? '',
         email: user?.email ?? '',
@@ -37,22 +37,48 @@ export default function UserForm({ mode, formData, urls, user }: UserFormProps) 
     });
 
     const departmentOptions = useMemo(() => {
-        if (!data.branch_id) {
-            return formData.departments;
+        const filtered = data.branch_id
+            ? formData.departments.filter(
+                  (department) => String(department.branch_id) === data.branch_id,
+              )
+            : formData.departments;
+
+        if (!data.department_id) {
+            return filtered;
         }
-        return formData.departments.filter(
-            (department) => String(department.branch_id) === data.branch_id,
+
+        const selected = formData.departments.find(
+            (department) => String(department.id) === data.department_id,
         );
-    }, [data.branch_id, formData.departments]);
+
+        if (selected && !filtered.some((department) => department.id === selected.id)) {
+            return [selected, ...filtered];
+        }
+
+        return filtered;
+    }, [data.branch_id, data.department_id, formData.departments]);
 
     const sectionOptions = useMemo(() => {
-        if (!data.department_id) {
-            return formData.sections;
+        const filtered = data.department_id
+            ? formData.sections.filter(
+                  (section) => String(section.department_id) === data.department_id,
+              )
+            : formData.sections;
+
+        if (!data.section_id) {
+            return filtered;
         }
-        return formData.sections.filter(
-            (section) => String(section.department_id) === data.department_id,
+
+        const selected = formData.sections.find(
+            (section) => String(section.id) === data.section_id,
         );
-    }, [data.department_id, formData.sections]);
+
+        if (selected && !filtered.some((section) => section.id === selected.id)) {
+            return [selected, ...filtered];
+        }
+
+        return filtered;
+    }, [data.department_id, data.section_id, formData.sections]);
 
     const roleOptions = useMemo(
         () =>
@@ -89,10 +115,26 @@ export default function UserForm({ mode, formData, urls, user }: UserFormProps) 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
 
+        const hasAvatar = data.avatar instanceof File;
         const options = {
-            forceFormData: true,
             preserveScroll: true,
+            ...(hasAvatar ? { forceFormData: true as const } : {}),
         };
+
+        transform((formValues) => {
+            const payload = { ...formValues };
+
+            if (!hasAvatar) {
+                delete (payload as { avatar?: File | null }).avatar;
+            }
+
+            if (isEdit && !payload.password) {
+                delete (payload as { password?: string }).password;
+                delete (payload as { password_confirmation?: string }).password_confirmation;
+            }
+
+            return payload;
+        });
 
         if (isEdit) {
             put(urls.update, options);

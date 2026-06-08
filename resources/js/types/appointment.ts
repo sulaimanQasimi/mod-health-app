@@ -155,3 +155,93 @@ export interface DoctorOption {
     id: number;
     name: string;
 }
+
+export interface DepartmentAppointmentItem {
+    id: number;
+    patient_id: number | null;
+    department_id: number | null;
+    id_card: string | null;
+    patient_name: string | null;
+    father_name: string | null;
+    department_name: string | null;
+    date: string | null;
+    time: string | null;
+    is_accepted: boolean;
+    refferal_remarks: string | null;
+    referring_doctor_name: string | null;
+    permissions: {
+        accept: boolean;
+        changeDepartment: boolean;
+        view: boolean;
+        history: boolean;
+    };
+}
+
+export interface DoctorAppointmentItem {
+    id: number;
+    patient_id: number | null;
+    id_card: string | null;
+    patient_name: string | null;
+    father_name: string | null;
+    doctor_name: string | null;
+    referring_doctor_name: string | null;
+    date: string | null;
+    time: string | null;
+    permissions: {
+        view: boolean;
+        history: boolean;
+    };
+}
+
+export interface DepartmentAppointmentFilters {
+    search: string;
+    token_id: string;
+    patient_id: string;
+}
+
+export interface MyVisitAppointmentFilters {
+    token_id: string;
+    patient_id: string;
+    patient_name?: string;
+}
+
+export interface MyVisitPermissions {
+    view: boolean;
+    history: boolean;
+}
+
+export interface MyVisitUrls {
+    department: string;
+    doctor: string;
+    completed: string;
+    show: string;
+    patientHistory: string;
+    accept: string;
+    changeDepartment: string;
+}
+
+export interface PaginatedDepartmentAppointments {
+    data: DepartmentAppointmentItem[];
+    links: PaginationLink[];
+    meta: {
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+        from: number | null;
+        to: number | null;
+    };
+}
+
+export interface PaginatedDoctorAppointments {
+    data: DoctorAppointmentItem[];
+    links: PaginationLink[];
+    meta: {
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+        from: number | null;
+        to: number | null;
+    };
+}

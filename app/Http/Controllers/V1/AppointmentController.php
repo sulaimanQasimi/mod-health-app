@@ -433,24 +433,357 @@ class AppointmentController extends Controller
         return $this->renderPage('global.department_report');
     }
 
-    public function department()
+    public function department(Request $request): Response
     {
-        return $this->renderPage('global.department_appointments');
+        $this->authorize('viewMyVisits', Appointment::class);
+
+        $user = $request->user();
+        $appointmentId = $this->parseNumericFilter($request->input('token_id'));
+        $filterPatientId = $this->parseNumericFilter($request->input('patient_id'));
+        $userClinicType = $user->clinic_type;
+        $filterByClinicType = $userClinicType && $userClinicType !== 'both';
+
+        if ($appointmentId !== null) {
+            $query = Appointment::query()->where('id', $appointmentId);
+            if ($filterByClinicType) {
+                $query->where('clinic_type', $userClinicType);
+            }
+        } else {
+            $query = Appointment::query()
+                ->whereNull('doctor_id')
+                ->whereNull('processed_by');
+            if ($filterByClinicType) {
+                $query->where('clinic_type', $userClinicType);
+            }
+            $query->when($user->doctor, function ($departmentQuery) use ($user) {
+                $departmentQuery->where('department_id', $user->doctor->department_id);
+            });
+        }
+
+        $query->with([
+            'patient:id,name,last_name,father_name,id_card',
+            'department:id,name',
+            'referringDoctor:id,name',
+            'processedBy:id,name,last_name',
+        ]);
+
+        if ($filterPatientId !== null) {
+            $query->where('patient_id', $filterPatientId);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('patient', function ($patientQuery) use ($search) {
+                $patientQuery->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('last_name', 'like', '%'.$search.'%')
+                    ->orWhere('id_card', 'like', '%'.$search.'%')
+                    ->orWhere('phone', 'like', '%'.$search.'%')
+                    ->orWhere('father_name', 'like', '%'.$search.'%')
+                    ->orWhere('nid', 'like', '%'.$search.'%');
+            });
+        }
+
+        $paginator = $query->latest()->paginate(25)->withQueryString();
+
+        return Inertia::render('Appointments/Department', [
+            'appointments' => $this->paginatedResponse(
+                $paginator,
+                fn (Appointment $appointment) => $this->transformDepartmentAppointment($appointment, $user),
+            ),
+            'filters' => [
+                'search' => (string) $request->input('search', ''),
+                'token_id' => (string) $request->input('token_id', ''),
+                'patient_id' => (string) $request->input('patient_id', ''),
+            ],
+            'filterOptions' => [
+                'departments' => $this->departmentsForUser($user),
+            ],
+            'permissions' => $this->myVisitPermissions($user),
+            'urls' => $this->myVisitUrls(),
+        ]);
     }
 
-    public function doctor()
+    public function doctor(Request $request): Response
     {
-        return $this->renderPage('global.ongoing_appointments');
+        $this->authorize('viewMyVisits', Appointment::class);
+
+        $user = $request->user();
+        $query = Appointment::query()
+            ->where('processed_by', $user->id)
+            ->where('is_completed', '0')
+            ->with([
+                'patient:id,name,last_name,father_name,id_card',
+                'doctor:id,name',
+                'referringDoctor:id,name',
+            ]);
+
+        $this->applyMyVisitFilters($query, $request);
+
+        $paginator = $query->latest()->paginate(25)->withQueryString();
+
+        return Inertia::render('Appointments/Doctor', [
+            'appointments' => $this->paginatedResponse(
+                $paginator,
+                fn (Appointment $appointment) => $this->transformDoctorAppointment($appointment, $user),
+            ),
+            'filters' => $this->myVisitFiltersFromRequest($request),
+            'permissions' => $this->myVisitPermissions($user),
+            'urls' => $this->myVisitUrls(),
+        ]);
     }
 
-    public function completed()
+    public function completed(Request $request): Response
     {
-        return $this->renderPage('global.completed_appointments');
+        $this->authorize('viewMyVisits', Appointment::class);
+
+        $user = $request->user();
+        $query = Appointment::query()
+            ->where('processed_by', $user->id)
+            ->where('is_completed', '1')
+            ->with([
+                'patient:id,name,last_name,father_name,id_card',
+                'doctor:id,name',
+                'referringDoctor:id,name',
+            ]);
+
+        $this->applyMyVisitFilters($query, $request, includePatientName: true);
+
+        $paginator = $query->latest()->paginate(25)->withQueryString();
+
+        return Inertia::render('Appointments/Completed', [
+            'appointments' => $this->paginatedResponse(
+                $paginator,
+                fn (Appointment $appointment) => $this->transformDoctorAppointment($appointment, $user),
+            ),
+            'filters' => $this->myVisitFiltersFromRequest($request, includePatientName: true),
+            'permissions' => $this->myVisitPermissions($user),
+            'urls' => $this->myVisitUrls(),
+        ]);
+    }
+
+    public function accept(Request $request, Appointment $appointment): RedirectResponse
+    {
+        $this->authorize('accept', $appointment);
+
+        $userDoctor = Doctor::query()->where('user_id', $request->user()->id)->first();
+        $updateData = ['processed_by' => $request->user()->id];
+
+        if ($userDoctor) {
+            $updateData['doctor_id'] = $userDoctor->id;
+        }
+
+        $appointment->update($updateData);
+
+        return redirect()
+            ->back()
+            ->with('success', localize('global.appointment_accepted_successfully'));
+    }
+
+    public function changeDepartment(Request $request, Appointment $appointment): RedirectResponse
+    {
+        $this->authorize('changeDepartment', $appointment);
+
+        $validated = $request->validate([
+            'department_id' => 'required|exists:departments,id',
+        ]);
+
+        $appointment->update([
+            'department_id' => $validated['department_id'],
+        ]);
+
+        if ($appointment->doctor_id) {
+            $doctor = Doctor::find($appointment->doctor_id);
+            if ($doctor && (int) $doctor->department_id !== (int) $validated['department_id']) {
+                $appointment->update(['doctor_id' => null]);
+            }
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', localize('global.department_updated_successfully'));
     }
 
     public function report()
     {
         return $this->renderPage('global.reports');
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<Appointment>  $query
+     */
+    private function applyMyVisitFilters($query, Request $request, bool $includePatientName = false): void
+    {
+        $appointmentId = $this->parseNumericFilter($request->input('token_id'));
+        $filterPatientId = $this->parseNumericFilter($request->input('patient_id'));
+
+        if ($appointmentId !== null) {
+            $query->where('id', $appointmentId);
+        }
+
+        if ($filterPatientId !== null) {
+            $query->where('patient_id', $filterPatientId);
+        }
+
+        if ($includePatientName && $request->filled('patient_name')) {
+            $term = '%'.$request->patient_name.'%';
+            $query->whereHas('patient', function ($patientQuery) use ($term) {
+                $patientQuery->where('name', 'like', $term)
+                    ->orWhere('last_name', 'like', $term)
+                    ->orWhere('father_name', 'like', $term);
+            });
+        }
+    }
+
+    private function parseNumericFilter(mixed $value): ?int
+    {
+        if ($value === null || trim((string) $value) === '') {
+            return null;
+        }
+
+        $trimmed = trim((string) $value);
+
+        if (is_numeric($trimmed) && (int) $trimmed > 0) {
+            return (int) $trimmed;
+        }
+
+        $numericId = preg_replace('/[^0-9]/', '', $trimmed);
+
+        if ($numericId !== '' && is_numeric($numericId) && (int) $numericId > 0) {
+            return (int) $numericId;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function myVisitFiltersFromRequest(Request $request, bool $includePatientName = false): array
+    {
+        $filters = [
+            'token_id' => (string) $request->input('token_id', ''),
+            'patient_id' => (string) $request->input('patient_id', ''),
+        ];
+
+        if ($includePatientName) {
+            $filters['patient_name'] = (string) $request->input('patient_name', '');
+        }
+
+        return $filters;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function paginatedResponse($paginator, callable $transformer): array
+    {
+        return [
+            'data' => collect($paginator->items())
+                ->map($transformer)
+                ->values()
+                ->all(),
+            'links' => $paginator->linkCollection()->toArray(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem(),
+            ],
+        ];
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string}>
+     */
+    private function departmentsForUser($user): array
+    {
+        $query = $user->category_id
+            ? Department::query()->where('category_id', $user->category_id)
+            : Department::query();
+
+        return $query->orderBy('name')->get(['id', 'name'])->all();
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    private function myVisitPermissions($user): array
+    {
+        return [
+            'view' => $user->can('viewAny', Appointment::class),
+            'history' => $user->can('viewAny', Appointment::class),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function myVisitUrls(): array
+    {
+        return [
+            'department' => route('react.appointments.department'),
+            'doctor' => route('react.appointments.doctor'),
+            'completed' => route('react.appointments.completed'),
+            'show' => url('/react/appointments'),
+            'patientHistory' => url('/patients/history'),
+            'accept' => url('/react/appointments'),
+            'changeDepartment' => url('/react/appointments'),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformDepartmentAppointment(Appointment $appointment, $user): array
+    {
+        $patient = $appointment->patient;
+
+        return [
+            'id' => $appointment->id,
+            'patient_id' => $appointment->patient_id,
+            'department_id' => $appointment->department_id,
+            'id_card' => $patient?->id_card,
+            'patient_name' => $patient?->name,
+            'father_name' => $patient?->father_name,
+            'department_name' => $appointment->department?->name,
+            'date' => $appointment->date ? verta($appointment->date)->format('Y-m-d') : null,
+            'time' => $appointment->time,
+            'is_accepted' => (bool) $appointment->processed_by,
+            'refferal_remarks' => $appointment->refferal_remarks,
+            'referring_doctor_name' => $appointment->referringDoctor?->name,
+            'permissions' => [
+                'accept' => $user->can('accept', $appointment),
+                'changeDepartment' => $user->can('changeDepartment', $appointment),
+                'view' => $user->can('view', $appointment),
+                'history' => $patient && $user->can('view', $patient),
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformDoctorAppointment(Appointment $appointment, $user): array
+    {
+        $patient = $appointment->patient;
+
+        return [
+            'id' => $appointment->id,
+            'patient_id' => $appointment->patient_id,
+            'id_card' => $patient?->id_card,
+            'patient_name' => $patient?->name,
+            'father_name' => $patient?->father_name,
+            'doctor_name' => $appointment->doctor?->name,
+            'referring_doctor_name' => $appointment->referringDoctor?->name,
+            'date' => $appointment->date ? verta($appointment->date)->format('Y-m-d') : null,
+            'time' => $appointment->time,
+            'permissions' => [
+                'view' => $user->can('view', $appointment),
+                'history' => $patient && $user->can('view', $patient),
+            ],
+        ];
     }
 
     /**

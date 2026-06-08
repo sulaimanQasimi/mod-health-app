@@ -45,8 +45,8 @@ class CreateUserRequest extends FormRequest
     {
 
         return [
-            'name_en.required' => localize('global.user_name_en_required'),
-            'name_dr.required' => localize('global.user_name_dr_required'),
+            'name.required' => localize('global.user_name_en_required'),
+            'last_name.required' => localize('global.user_name_dr_required'),
             'email.required' => localize('global.user_email_required'),
             'password.required' => localize('global.user_password_required'),
         ];

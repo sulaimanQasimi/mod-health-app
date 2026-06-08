@@ -14,6 +14,25 @@ class AppointmentPolicy
             || $user->hasPermissionTo('show-my-visits-menu');
     }
 
+    public function viewMyVisits(User $user): bool
+    {
+        return $user->hasRole(['super_admin', 'admin'])
+            || $user->hasPermissionTo('show-my-visits-menu');
+    }
+
+    public function accept(User $user, Appointment $appointment): bool
+    {
+        return $this->viewMyVisits($user)
+            && $this->belongsToUserBranch($user, $appointment)
+            && ! $appointment->processed_by;
+    }
+
+    public function changeDepartment(User $user, Appointment $appointment): bool
+    {
+        return $this->viewMyVisits($user)
+            && $this->belongsToUserBranch($user, $appointment);
+    }
+
     public function view(User $user, Appointment $appointment): bool
     {
         return $this->belongsToUserBranch($user, $appointment)

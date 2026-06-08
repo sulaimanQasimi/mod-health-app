@@ -161,6 +161,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('dentist', [AppointmentDentistController::class, 'index'])->name('dentist.index');
             Route::get('nephrology', [AppointmentNephrologyController::class, 'index'])->name('nephrology.index');
         });
+        Route::post('/{appointment}/accept', [AppointmentController::class, 'accept'])->name('accept');
+        Route::put('/{appointment}/change-department', [AppointmentController::class, 'changeDepartment'])->name('change-department');
         Route::get('/{appointment}/edit', [AppointmentController::class, 'edit'])->name('edit');
         Route::match(['put', 'post'], '/{appointment}', [AppointmentController::class, 'update'])->name('update');
         Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');

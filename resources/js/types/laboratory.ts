@@ -194,3 +194,37 @@ export interface LaboratoryResultShowRegistration {
     notes: string | null;
 }
 
+export interface LaboratoryPrintPatient {
+    name: string;
+    father_name: string | null;
+    age: string | number | null;
+    phone: string | null;
+    gender: string | null;
+    id_number: string | null;
+    date_of_birth: string | null;
+    email: string | null;
+    emergency_contact: string | null;
+}
+
+export interface LaboratoryPrintRegistration {
+    ref_no: string;
+    lab_type_name: string | null;
+    category_name: string | null;
+    doctor_name: string | null;
+    assigned_to_name: string | null;
+    assigned_section_name: string | null;
+    registration_date: string | null;
+    completed_at: string | null;
+}
+
+export interface LaboratoryPrintResultRow {
+    parameter_name: string | null;
+    result: string | null;
+    unit: string | null;
+    normal_range: string | null;
+}
+
+export interface LaboratoryPrintAssets {
+    leftLogo: string;
+    rightLogo: string;
+}

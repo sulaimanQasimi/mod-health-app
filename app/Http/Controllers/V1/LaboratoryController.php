@@ -118,7 +118,7 @@ class LaboratoryController extends Controller
         }
 
         if ($registration->status === 'completed') {
-            return redirect()->route('laboratory.reports.print', $registration->ref_no);
+            return redirect()->route('react.laboratory.reports.print', $registration->ref_no);
         }
 
         return redirect()->route('react.laboratory.results.show', $registration);
@@ -141,7 +141,7 @@ class LaboratoryController extends Controller
             ->findOrFail($registration->id);
 
         if ($registration->status === 'completed') {
-            return redirect()->route('laboratory.reports.print', $registration->ref_no);
+            return redirect()->route('react.laboratory.reports.print', $registration->ref_no);
         }
 
         $patient = $registration->testable?->patient;
@@ -207,13 +207,111 @@ class LaboratoryController extends Controller
             'urls' => [
                 'update' => route('react.laboratory.results.update', $registration),
                 'accept' => route('react.laboratory.results.accept', $registration),
-                'print' => route('laboratory.reports.print', $registration->ref_no),
+                'print' => route('react.laboratory.reports.print', $registration->ref_no),
                 'back' => route('react.laboratory.results.in-progress'),
             ],
             'flash' => [
                 'success' => session('success'),
                 'error' => session('error'),
                 'completed' => session('completed'),
+            ],
+        ]);
+    }
+
+    public function printReport(Request $request, string $ref_no): Response
+    {
+        $this->authorize('manageResults', PatientTestRegistration::class);
+
+        $user = $request->user();
+
+        $testRegistration = $this->scopedRegistrationQuery($user)
+            ->where('ref_no', $ref_no)
+            ->with([
+                'labType.category',
+                'labType.directLabTestParameters',
+                'testable.patient',
+                'doctor',
+                'assignedTo',
+                'assignedSection',
+            ])
+            ->firstOrFail();
+
+        $patient = $testRegistration->testable?->patient;
+
+        $results = PatientTestResult::with('parameter')
+            ->where('ref_no', $ref_no)
+            ->get();
+
+        if ($results->isEmpty() && $testRegistration->labType?->directLabTestParameters) {
+            foreach ($testRegistration->labType->directLabTestParameters as $parameter) {
+                $results->push(new PatientTestResult([
+                    'lab_parameter_id' => $parameter->id,
+                    'parameter' => $parameter,
+                    'unit' => $parameter->unit,
+                    'normal_range' => $parameter->normal_range,
+                    'result' => null,
+                ]));
+            }
+        }
+
+        $hasParameters = ($testRegistration->labType?->directLabTestParameters?->count() ?? 0) > 0;
+        $textResult = $results->first(fn ($row) => $row->text_result !== null)?->text_result;
+        $hasTextResult = $textResult !== null && $textResult !== '';
+
+        return Inertia::render('Laboratory/Reports/Print', [
+            'patient' => $patient ? [
+                'name' => trim("{$patient->name} {$patient->last_name}"),
+                'father_name' => $patient->father_name,
+                'age' => $patient->age,
+                'phone' => $patient->phone,
+                'gender' => $patient->gender,
+                'id_number' => $patient->id_number ?? null,
+                'date_of_birth' => $patient->date_of_birth
+                    ? verta($patient->date_of_birth)->formatJalaliDate()
+                    : null,
+                'email' => $patient->email ?? null,
+                'emergency_contact' => $patient->emergency_contact ?? null,
+            ] : null,
+            'registration' => [
+                'ref_no' => $testRegistration->ref_no,
+                'lab_type_name' => $testRegistration->labType?->name,
+                'category_name' => $testRegistration->labType?->category?->name,
+                'doctor_name' => $testRegistration->doctor?->name,
+                'assigned_to_name' => $testRegistration->assignedTo?->name,
+                'assigned_section_name' => $testRegistration->assignedSection?->name,
+                'registration_date' => $testRegistration->registration_date
+                    ? verta($testRegistration->registration_date)->formatJalaliDate()
+                    : null,
+                'completed_at' => $testRegistration->completed_at
+                    ? verta($testRegistration->completed_at)->formatJalaliDate()
+                    : null,
+            ],
+            'results' => $results
+                ->filter(fn ($row) => $row->parameter !== null)
+                ->map(fn ($row) => [
+                    'parameter_name' => $row->parameter?->parameter_name,
+                    'result' => $row->result,
+                    'unit' => $row->unit ?? $row->parameter?->unit,
+                    'normal_range' => $row->normal_range ?? $row->parameter?->normal_range,
+                ])
+                ->values()
+                ->all(),
+            'hasParameters' => $hasParameters,
+            'hasTextResult' => $hasTextResult,
+            'textResult' => $hasTextResult ? $textResult : null,
+            'expectedParameters' => $testRegistration->labType?->directLabTestParameters
+                ?->map(fn ($parameter) => [
+                    'parameter_name' => $parameter->parameter_name,
+                    'result' => null,
+                    'unit' => $parameter->unit,
+                    'normal_range' => $parameter->normal_range,
+                ])
+                ->values()
+                ->all() ?? [],
+            'generatedAt' => verta()->format('Y/m/d H:i:s'),
+            'assets' => [
+                'leftLogo' => asset('images/logos/لوگو قومنداني.JPG'),
+                'rightLogo' => asset('images/logos/لوگوی جدید وزارت دفاع ملی.png'),
             ],
         ]);
     }
@@ -237,7 +335,7 @@ class LaboratoryController extends Controller
 
         if ($registration->status === 'completed') {
             return redirect()
-                ->route('laboratory.reports.print', $registration->ref_no)
+                ->route('react.laboratory.reports.print', $registration->ref_no)
                 ->with('error', localize('global.cannot_update_completed_test'));
         }
 
@@ -311,7 +409,7 @@ class LaboratoryController extends Controller
             $registration->markCompleted();
 
             return redirect()
-                ->route('laboratory.reports.print', $registration->ref_no)
+                ->route('react.laboratory.reports.print', $registration->ref_no)
                 ->with('success', localize('global.results_updated_successfully'))
                 ->with('completed', true);
         }
@@ -386,7 +484,7 @@ class LaboratoryController extends Controller
                             'status' => $registration->status,
                             'priority' => $registration->priority,
                             'doctor_name' => $registration->doctor?->name,
-                            'print_url' => route('laboratory.reports.print', $registration->ref_no),
+                            'print_url' => route('react.laboratory.reports.print', $registration->ref_no),
                         ])
                         ->values()
                         ->all(),

@@ -223,7 +223,7 @@ trait ManagesLaboratoryRegistrations
             'urls' => [
                 'accept' => route('react.laboratory.results.accept', $registration),
                 'enterResults' => route('react.laboratory.results.show', $registration),
-                'print' => route('laboratory.reports.print', $registration->ref_no),
+                'print' => route('react.laboratory.reports.print', $registration->ref_no),
                 'markCompleted' => route('react.laboratory.registrations.mark-completed', $registration),
                 'cancel' => route('react.laboratory.registrations.cancel', $registration),
             ],

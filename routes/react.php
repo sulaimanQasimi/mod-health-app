@@ -324,6 +324,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/{registration}/mark-completed', [LaboratoryController::class, 'markCompleted'])->name('mark-completed');
             Route::post('/{registration}/cancel', [LaboratoryController::class, 'cancel'])->name('cancel');
         });
+        Route::get('/reports/print/{ref_no}', [LaboratoryController::class, 'printReport'])->name('reports.print');
     });
 
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');

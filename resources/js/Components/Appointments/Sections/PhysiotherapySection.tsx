@@ -517,7 +517,7 @@ export default function PhysiotherapySection({ appointmentId }: PhysiotherapySec
                                         className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40"
                                     >
                                         <p className="text-xs text-gray-500">{label}</p>
-                                        <p className="font-semibold">{value ?? '—'}</p>
+                                        <p>{value ?? '—'}</p>
                                     </div>
                                 ))}
                             </div>

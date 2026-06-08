@@ -414,7 +414,7 @@ export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
                             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
                                     <p className="text-xs text-gray-500">{t('global.lab_type')}</p>
-                                    <p className="font-semibold">{selectedRegistration.test_name ?? '—'}</p>
+                                    <p>{selectedRegistration.test_name ?? '—'}</p>
                                 </div>
                                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
                                     <p className="text-xs text-gray-500">{t('global.status')}</p>
@@ -424,11 +424,11 @@ export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
                                 </div>
                                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
                                     <p className="text-xs text-gray-500">{t('global.doctor_name')}</p>
-                                    <p className="font-semibold">{selectedRegistration.doctor_name ?? '—'}</p>
+                                    <p>{selectedRegistration.doctor_name ?? '—'}</p>
                                 </div>
                                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
                                     <p className="text-xs text-gray-500">{t('global.assigned_to')}</p>
-                                    <p className="font-semibold">{selectedRegistration.assigned_to_name ?? '—'}</p>
+                                    <p>{selectedRegistration.assigned_to_name ?? '—'}</p>
                                 </div>
                             </div>
 

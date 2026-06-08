@@ -12,6 +12,20 @@ interface AppointmentSectionAccordionProps {
     children: ReactNode;
 }
 
+function mergeClasses(...classes: (string | false | null | undefined)[]) {
+    return classes.filter(Boolean).join(' ');
+}
+
+function borderClassFromIcon(iconClassName: string): string {
+    const match = iconClassName.match(/text-((?:\w+)-\d+)/);
+
+    if (match) {
+        return `border-${match[1]}`;
+    }
+
+    return 'border-gray-200 dark:border-gray-700';
+}
+
 export default function AppointmentSectionAccordion({
     id,
     icon,
@@ -24,8 +38,10 @@ export default function AppointmentSectionAccordion({
 }: AppointmentSectionAccordionProps) {
     const [open, setOpen] = useState(defaultOpen);
 
+    const borderClass = borderClassFromIcon(iconClassName);
+
     return (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className={mergeClasses('overflow-hidden rounded-xl border bg-white !shadow-sm dark:bg-gray-800', borderClass)}>
             <button
                 type="button"
                 id={`${id}-header`}
@@ -34,7 +50,7 @@ export default function AppointmentSectionAccordion({
                 onClick={() => setOpen((current) => !current)}
                 className="flex w-full items-center justify-between gap-3 bg-gray-50 px-4 py-3.5 text-start transition hover:bg-gray-100 dark:bg-gray-800/80 dark:hover:bg-gray-700/60"
             >
-                <span className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                <span className="flex items-center gap-2 text-sm text-gray-900 dark:text-white">
                     <i className={`bx ${icon} text-lg ${iconClassName}`} />
                     {title}
                     {count !== undefined && (

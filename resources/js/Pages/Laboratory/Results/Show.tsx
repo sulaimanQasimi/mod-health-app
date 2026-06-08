@@ -16,7 +16,6 @@ import {
 } from '../../../Components/ui/Table';
 import { useTranslation } from '../../../hooks/useTranslation';
 import {
-    LaboratoryRelatedTest,
     LaboratoryResultParameter,
     LaboratoryResultShowPatient,
     LaboratoryResultShowRegistration,
@@ -28,10 +27,6 @@ interface ShowProps {
     is_parametered: boolean;
     results: LaboratoryResultParameter[];
     text_result: string;
-    relatedTests: {
-        pending: LaboratoryRelatedTest[];
-        completed: LaboratoryRelatedTest[];
-    };
     permissions: {
         accept: boolean;
         canSave: boolean;
@@ -64,7 +59,6 @@ export default function Show({
     is_parametered,
     results,
     text_result: initialTextResult,
-    relatedTests,
     permissions,
     urls,
     flash,
@@ -205,204 +199,156 @@ export default function Show({
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
-                <Card className="shadow-sm">
-                    {permissions.accept && (
-                        <Alert color="warning" className="mb-4">
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                    <p className="font-semibold">{t('global.test_not_assigned')}</p>
-                                    <p className="text-sm">{t('global.accept_test_to_continue')}</p>
-                                </div>
-                                <Button color="success" size="sm" onClick={handleAccept}>
-                                    <i className="bx bx-check me-1" />
-                                    {t('global.accept_test')}
-                                </Button>
-                            </div>
-                        </Alert>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-4 dark:border-gray-700">
+            <Card className="shadow-sm">
+                {permissions.accept && (
+                    <Alert color="warning" className="mb-4">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                                    {registration.lab_type_name}
-                                </h2>
-                                {registration.category_name && (
-                                    <p className="text-sm text-gray-500">{registration.category_name}</p>
-                                )}
+                                <p className="font-semibold">{t('global.test_not_assigned')}</p>
+                                <p className="text-sm">{t('global.accept_test_to_continue')}</p>
                             </div>
-                            <div className="flex flex-wrap gap-2 text-sm text-gray-500">
-                                {registration.doctor_name && (
-                                    <Badge color="gray">
-                                        {t('global.doctor')}: {registration.doctor_name}
-                                    </Badge>
-                                )}
-                                {registration.registration_date && (
-                                    <Badge color="gray">
-                                        {t('global.date')}: {registration.registration_date}
-                                    </Badge>
-                                )}
-                            </div>
+                            <Button color="success" size="sm" onClick={handleAccept}>
+                                <i className="bx bx-check me-1" />
+                                {t('global.accept_test')}
+                            </Button>
                         </div>
+                    </Alert>
+                )}
 
-                        {is_parametered ? (
-                            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-                                <Table>
-                                    <TableHeader>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-4 dark:border-gray-700">
+                        <div>
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                                {registration.lab_type_name}
+                            </h2>
+                            {registration.category_name && (
+                                <p className="text-sm text-gray-500">{registration.category_name}</p>
+                            )}
+                        </div>
+                        <div className="flex flex-wrap gap-2 text-sm text-gray-500">
+                            {registration.doctor_name && (
+                                <Badge color="gray">
+                                    {t('global.doctor')}: {registration.doctor_name}
+                                </Badge>
+                            )}
+                            {registration.registration_date && (
+                                <Badge color="gray">
+                                    {t('global.date')}: {registration.registration_date}
+                                </Badge>
+                            )}
+                        </div>
+                    </div>
+
+                    {is_parametered ? (
+                        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>{t('global.parameter_name')}</TableHead>
+                                        <TableHead>{t('global.result')}</TableHead>
+                                        <TableHead>{t('global.unit')}</TableHead>
+                                        <TableHead>{t('global.normal_range')}</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {results.length === 0 ? (
                                         <TableRow>
-                                            <TableHead>{t('global.parameter_name')}</TableHead>
-                                            <TableHead>{t('global.result')}</TableHead>
-                                            <TableHead>{t('global.unit')}</TableHead>
-                                            <TableHead>{t('global.normal_range')}</TableHead>
+                                            <TableCell colSpan={4} className="text-center text-gray-500">
+                                                {t('global.no_item_is_found')}
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {results.length === 0 ? (
-                                            <TableRow>
-                                                <TableCell colSpan={4} className="text-center text-gray-500">
-                                                    {t('global.no_item_is_found')}
+                                    ) : (
+                                        results.map((row) => (
+                                            <TableRow key={row.lab_parameter_id}>
+                                                <TableCell className="font-medium">
+                                                    {row.parameter_name ?? '—'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TextInput
+                                                        value={
+                                                            parameterResults[
+                                                                String(row.lab_parameter_id)
+                                                            ] ?? ''
+                                                        }
+                                                        onChange={(e) =>
+                                                            setParameterResults((current) => ({
+                                                                ...current,
+                                                                [String(row.lab_parameter_id)]:
+                                                                    e.target.value,
+                                                            }))
+                                                        }
+                                                        disabled={!permissions.canSave}
+                                                        className="min-w-[140px]"
+                                                    />
+                                                </TableCell>
+                                                <TableCell className="text-gray-500">
+                                                    {row.unit ?? '—'}
+                                                </TableCell>
+                                                <TableCell className="text-gray-500">
+                                                    {row.normal_range ?? '—'}
                                                 </TableCell>
                                             </TableRow>
-                                        ) : (
-                                            results.map((row) => (
-                                                <TableRow key={row.lab_parameter_id}>
-                                                    <TableCell className="font-medium">
-                                                        {row.parameter_name ?? '—'}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <TextInput
-                                                            value={
-                                                                parameterResults[
-                                                                    String(row.lab_parameter_id)
-                                                                ] ?? ''
-                                                            }
-                                                            onChange={(e) =>
-                                                                setParameterResults((current) => ({
-                                                                    ...current,
-                                                                    [String(row.lab_parameter_id)]:
-                                                                        e.target.value,
-                                                                }))
-                                                            }
-                                                            disabled={!permissions.canSave}
-                                                            className="min-w-[140px]"
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell className="text-gray-500">
-                                                        {row.unit ?? '—'}
-                                                    </TableCell>
-                                                    <TableCell className="text-gray-500">
-                                                        {row.normal_range ?? '—'}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </div>
-                        ) : (
-                            <div>
-                                <Label className="mb-2 block">{t('global.test_result')}</Label>
-                                {permissions.canSave ? (
-                                    <LaboratoryRichTextEditor
-                                        value={textResult}
-                                        onChange={setTextResult}
-                                    />
-                                ) : (
-                                    <Textarea
-                                        value={textResult}
-                                        rows={8}
-                                        readOnly
-                                        className="font-mono text-sm"
-                                    />
-                                )}
-                            </div>
-                        )}
-
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    ) : (
                         <div>
-                            <Label htmlFor="lab-notes">{t('global.notes')}</Label>
-                            <Textarea
-                                id="lab-notes"
-                                rows={3}
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                placeholder={t('global.add_notes_here') || t('global.notes')}
-                                disabled={!permissions.canSave}
-                            />
+                            <Label className="mb-2 block">{t('global.test_result')}</Label>
+                            {permissions.canSave ? (
+                                <LaboratoryRichTextEditor
+                                    value={textResult}
+                                    onChange={setTextResult}
+                                />
+                            ) : (
+                                <Textarea
+                                    value={textResult}
+                                    rows={8}
+                                    readOnly
+                                    className="font-mono text-sm"
+                                />
+                            )}
                         </div>
-
-                        <div className="flex flex-wrap justify-center gap-3 border-t border-gray-100 pt-4 dark:border-gray-700">
-                            <Button type="button" color="light" onClick={() => router.get(urls.back)}>
-                                <i className="bx bx-x me-1" />
-                                {t('global.cancel')}
-                            </Button>
-                            <Button
-                                type="submit"
-                                color="blue"
-                                disabled={!permissions.canSave || processing}
-                            >
-                                <i className="bx bx-save me-1" />
-                                {t('global.save')}
-                            </Button>
-                            <a
-                                href={urls.print}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-700 hover:bg-cyan-100 dark:border-cyan-800 dark:bg-cyan-950/40 dark:text-cyan-300"
-                            >
-                                <i className="bx bx-printer" />
-                                {t('global.print_report')}
-                            </a>
-                        </div>
-                    </form>
-                </Card>
-
-                <div className="space-y-4">
-                    {relatedTests.pending.length > 0 && (
-                        <Card className="shadow-sm">
-                            <h3 className="mb-3 flex items-center gap-2 font-semibold text-gray-900 dark:text-white">
-                                <i className="bx bx-hourglass text-amber-500" />
-                                {t('global.pending_tests')}
-                            </h3>
-                            <div className="space-y-2">
-                                {relatedTests.pending.map((test) => (
-                                    <Link
-                                        key={test.id}
-                                        href={test.url}
-                                        className="block rounded-lg border border-gray-200 p-3 transition hover:border-teal-300 hover:bg-teal-50/50 dark:border-gray-700 dark:hover:bg-teal-950/20"
-                                    >
-                                        <p className="font-medium">{test.lab_type_name}</p>
-                                        <p className="font-mono text-xs text-gray-500">{test.ref_no}</p>
-                                    </Link>
-                                ))}
-                            </div>
-                        </Card>
                     )}
 
-                    {relatedTests.completed.length > 0 && (
-                        <Card className="shadow-sm">
-                            <h3 className="mb-3 flex items-center gap-2 font-semibold text-gray-900 dark:text-white">
-                                <i className="bx bx-check-double text-emerald-500" />
-                                {t('global.completed_tests')}
-                            </h3>
-                            <div className="space-y-2">
-                                {relatedTests.completed.map((test) => (
-                                    <a
-                                        key={test.id}
-                                        href={test.url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="block rounded-lg border border-gray-200 p-3 transition hover:border-emerald-300 hover:bg-emerald-50/50 dark:border-gray-700 dark:hover:bg-emerald-950/20"
-                                    >
-                                        <p className="font-medium">{test.lab_type_name}</p>
-                                        <p className="font-mono text-xs text-gray-500">{test.ref_no}</p>
-                                    </a>
-                                ))}
-                            </div>
-                        </Card>
-                    )}
-                </div>
-            </div>
+                    <div>
+                        <Label htmlFor="lab-notes">{t('global.notes')}</Label>
+                        <Textarea
+                            id="lab-notes"
+                            rows={3}
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder={t('global.add_notes_here') || t('global.notes')}
+                            disabled={!permissions.canSave}
+                        />
+                    </div>
+
+                    <div className="flex flex-wrap justify-center gap-3 border-t border-gray-100 pt-4 dark:border-gray-700">
+                        <Button type="button" color="light" onClick={() => router.get(urls.back)}>
+                            <i className="bx bx-x me-1" />
+                            {t('global.cancel')}
+                        </Button>
+                        <Button
+                            type="submit"
+                            color="blue"
+                            disabled={!permissions.canSave || processing}
+                        >
+                            <i className="bx bx-save me-1" />
+                            {t('global.save')}
+                        </Button>
+                        <a
+                            href={urls.print}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-700 hover:bg-cyan-100 dark:border-cyan-800 dark:bg-cyan-950/40 dark:text-cyan-300"
+                        >
+                            <i className="bx bx-printer" />
+                            {t('global.print_report')}
+                        </a>
+                    </div>
+                </form>
+            </Card>
         </DashboardLayout>
     );
 }

@@ -162,8 +162,6 @@ class LaboratoryController extends Controller
                 ->value('text_result');
         }
 
-        $relatedTests = $this->relatedPatientTests($user, $patient->id, $registration->id);
-
         $needsAccept = $registration->status === 'pending' && ! $registration->assigned_to;
         $canSave = ! $needsAccept && $user->can('fillResults', $registration);
 
@@ -202,7 +200,6 @@ class LaboratoryController extends Controller
                     ->all()
                 : [],
             'text_result' => $textResult ?? '',
-            'relatedTests' => $relatedTests,
             'permissions' => [
                 'accept' => $user->can('accept', $registration),
                 'canSave' => $canSave,
@@ -829,40 +826,6 @@ class LaboratoryController extends Controller
             'assigned_section_name' => $row->assignedSection?->name,
             'department_name' => $row->assignedSection?->department?->name,
             'notes' => $row->notes,
-        ];
-    }
-
-    /**
-     * @return array{pending: array<int, array<string, mixed>>, completed: array<int, array<string, mixed>>}
-     */
-    private function relatedPatientTests(User $user, int $patientId, int $excludeRegistrationId): array
-    {
-        $baseQuery = fn (string $status) => $this->scopedRegistrationQuery($user)
-            ->where('id', '!=', $excludeRegistrationId)
-            ->where('status', $status)
-            ->whereHas('testable', function ($testableQuery) use ($patientId) {
-                $testableQuery->whereHas('patient', function ($patientQuery) use ($patientId) {
-                    $patientQuery->where('id', $patientId);
-                });
-            })
-            ->with(['labType'])
-            ->latest()
-            ->limit(8)
-            ->get()
-            ->map(fn (PatientTestRegistration $row) => [
-                'id' => $row->id,
-                'ref_no' => $row->ref_no,
-                'lab_type_name' => $row->labType?->name,
-                'status' => $row->status,
-                'url' => $row->status === 'completed'
-                    ? route('laboratory.reports.print', $row->ref_no)
-                    : route('react.laboratory.results.show', $row),
-            ])
-            ->all();
-
-        return [
-            'pending' => $baseQuery('pending'),
-            'completed' => $baseQuery('completed'),
         ];
     }
 

@@ -194,10 +194,3 @@ export interface LaboratoryResultShowRegistration {
     notes: string | null;
 }
 
-export interface LaboratoryRelatedTest {
-    id: number;
-    ref_no: string;
-    lab_type_name: string | null;
-    status: LaboratoryStatus;
-    url: string;
-}

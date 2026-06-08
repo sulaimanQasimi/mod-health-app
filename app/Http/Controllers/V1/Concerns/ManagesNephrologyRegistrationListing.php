@@ -240,7 +240,7 @@ trait ManagesNephrologyRegistrationListing
             'duration_minutes' => $session->duration_minutes,
             'doctor_name' => $session->doctor?->name,
             'status' => $session->status,
-            'show_url' => route('hemodialysis-sessions.show', $session),
+            'show_url' => route('react.hemodialysis-sessions.show', $session),
         ];
     }
 

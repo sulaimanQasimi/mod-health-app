@@ -218,11 +218,11 @@ class NephrologyRegistrationController extends Controller
             'appointment' => $nephrologyRegistration->appointment_id
                 ? route('react.appointments.show', $nephrologyRegistration->appointment_id)
                 : null,
-            'hemodialysisCreate' => route('hemodialysis-sessions.create', [
+            'hemodialysisCreate' => route('react.hemodialysis-sessions.create', [
                 'nephrology_registration_id' => $nephrologyRegistration->id,
                 'patient_id' => $patientId,
             ]),
-            'hemodialysisIndex' => route('hemodialysis-sessions.index', [
+            'hemodialysisIndex' => route('react.hemodialysis-sessions.index', [
                 'patient_id' => $patientId,
             ]),
         ];

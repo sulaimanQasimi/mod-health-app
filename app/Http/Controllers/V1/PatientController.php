@@ -173,7 +173,7 @@ class PatientController extends Controller
                         : null,
                     'duration_minutes' => $session->duration_minutes,
                     'status' => $session->status,
-                    'show_url' => route('hemodialysis-sessions.show', $session),
+                    'show_url' => route('react.hemodialysis-sessions.show', $session),
                 ])
                 ->values()
                 ->all();
@@ -234,8 +234,8 @@ class PatientController extends Controller
                 'webcam' => route('patients.webcam', $patient),
                 'appointmentStore' => route('appointments.store'),
                 'doctorsByDepartment' => url('/react/patients/doctors-by-department'),
-                'hemodialysisCreate' => route('hemodialysis-sessions.create', ['patient_id' => $patient->id]),
-                'hemodialysisIndex' => route('hemodialysis-sessions.index', ['patient_id' => $patient->id]),
+                'hemodialysisCreate' => route('react.hemodialysis-sessions.create', ['patient_id' => $patient->id]),
+                'hemodialysisIndex' => route('react.hemodialysis-sessions.index', ['patient_id' => $patient->id]),
             ],
         ]);
     }

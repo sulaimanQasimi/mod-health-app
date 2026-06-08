@@ -234,7 +234,15 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{nephrologyRegistration}/accept', [NephrologyRegistrationController::class, 'accept'])->name('accept');
         Route::post('/{nephrologyRegistration}/cancel', [NephrologyRegistrationController::class, 'cancel'])->name('cancel');
     });
-    Route::get('/hemodialysis-sessions', [HemodialysisSessionController::class, 'index'])->name('hemodialysis-sessions.index');
+    Route::prefix('hemodialysis-sessions')->name('hemodialysis-sessions.')->group(function () {
+        Route::get('/', [HemodialysisSessionController::class, 'index'])->name('index');
+        Route::get('/create', [HemodialysisSessionController::class, 'create'])->name('create');
+        Route::post('/', [HemodialysisSessionController::class, 'store'])->name('store');
+        Route::get('/{hemodialysisSession}', [HemodialysisSessionController::class, 'show'])->name('show');
+        Route::get('/{hemodialysisSession}/edit', [HemodialysisSessionController::class, 'edit'])->name('edit');
+        Route::put('/{hemodialysisSession}', [HemodialysisSessionController::class, 'update'])->name('update');
+        Route::delete('/{hemodialysisSession}', [HemodialysisSessionController::class, 'destroy'])->name('destroy');
+    });
     Route::get('/consultations', [ConsultationController::class, 'index'])->name('consultations.index');
 
     Route::prefix('prescriptions')->name('prescriptions.')->group(function () {

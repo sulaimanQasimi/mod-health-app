@@ -4,7 +4,7 @@ import { ReactNode, useState } from 'react';
 import CreateAppointmentModal from '../../Components/Patients/CreateAppointmentModal';
 import PatientQrCode from '../../Components/Patients/PatientQrCode';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import BackArrowIcon from '../../Components/ui/BackArrowIcon';
+import BackLink from '../../Components/ui/BackLink';
 import {
     Table,
     TableBody,
@@ -213,10 +213,7 @@ export default function ShowPatient({
                             </div>
                         </div>
                         <div className="flex shrink-0 flex-wrap gap-2">
-                            <Button color="light" as={Link} href={urls.index}>
-                                <BackArrowIcon className="me-2 text-lg" />
-                                {t('global.back')}
-                            </Button>
+                            <BackLink href={urls.index}>{t('global.back')}</BackLink>
                             {permissions.edit && (
                                 <Button color="warning" as={Link} href={urls.edit}>
                                     <i className="bx bx-edit me-2 text-lg" />

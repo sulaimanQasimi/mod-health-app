@@ -1,6 +1,5 @@
-import { Link } from '@inertiajs/react';
-import { Button } from 'flowbite-react';
 import { ReactNode } from 'react';
+import BackLink from '../ui/BackLink';
 
 interface SettingsPageHeaderProps {
     title: string;
@@ -37,12 +36,7 @@ export default function SettingsPageHeader({
                 </div>
             </div>
             <div className="flex flex-wrap gap-2">
-                {backHref && (
-                    <Button color="light" as={Link} href={backHref} className="w-fit">
-                        <i className="bx bx-arrow-back me-2 text-lg" />
-                        {backLabel}
-                    </Button>
-                )}
+                {backHref && <BackLink href={backHref}>{backLabel}</BackLink>}
                 {action}
             </div>
         </div>

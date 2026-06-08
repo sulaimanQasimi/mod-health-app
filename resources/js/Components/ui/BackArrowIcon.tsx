@@ -1,3 +1,5 @@
+import { useTranslation } from '../../hooks/useTranslation';
+
 function mergeClasses(...classes: (string | false | null | undefined)[]) {
     return classes.filter(Boolean).join(' ');
 }
@@ -7,5 +9,15 @@ interface BackArrowIconProps {
 }
 
 export default function BackArrowIcon({ className = '' }: BackArrowIconProps) {
-    return <i className={mergeClasses('bx bx-arrow-back rtl:rotate-180', className)} />;
+    const { direction } = useTranslation();
+
+    return (
+        <i
+            className={mergeClasses(
+                'bx bx-arrow-back',
+                direction === 'rtl' && 'rotate-180',
+                className,
+            )}
+        />
+    );
 }

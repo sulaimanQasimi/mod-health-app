@@ -23,14 +23,16 @@ import SearchableMultiSelect from '../../ui/SearchableMultiSelect';
 import SearchableSelect from '../../ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
-import AppointmentSectionAccordion, {
+import {
     SectionEmptyState,
     SectionLoadingState,
+    SectionShell,
 } from './AppointmentSectionAccordion';
 import { SectionActionButton } from './SimpleTableSection';
 
 interface LabTestSectionProps {
     appointmentId: number;
+    embedded?: boolean;
 }
 
 interface LabTestListItem {
@@ -101,7 +103,7 @@ const PRIORITY_COLORS: Record<string, 'gray' | 'warning' | 'failure'> = {
     stat: 'failure',
 };
 
-export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
+export default function LabTestSection({ appointmentId, embedded = false }: LabTestSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
     const baseUrl = `/react/appointments/${appointmentId}/lab-tests`;
@@ -250,7 +252,8 @@ export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
     };
 
     return (
-        <AppointmentSectionAccordion
+        <SectionShell
+            embedded={embedded}
             id={`lab-tests-${appointmentId}`}
             icon="bx-test-tube"
             iconClassName="text-violet-500"
@@ -492,6 +495,6 @@ export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
                     </Button>
                 </ModalFooter>
             </Modal>
-        </AppointmentSectionAccordion>
+        </SectionShell>
     );
 }

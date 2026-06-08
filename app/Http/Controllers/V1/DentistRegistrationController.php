@@ -298,11 +298,12 @@ class DentistRegistrationController extends Controller
             'appointment' => $dentistRegistration->appointment_id
                 ? route('react.appointments.show', $dentistRegistration->appointment_id)
                 : null,
-            'legacyChartCreate' => route('dental-charts.create', $dentistRegistration),
-            'legacyChartHistory' => route('dental-charts.history', $dentistRegistration),
-            'legacyChartPrint' => route('dental-charts.print', $dentistRegistration),
-            'legacyChartExport' => route('dental-charts.export', $dentistRegistration),
-            'legacyShow' => route('dentist-registrations.show', $dentistRegistration),
+            'chartIndex' => route('react.dental-charts.index', $dentistRegistration),
+            'chartCreate' => route('react.dental-charts.create', $dentistRegistration),
+            'chartHistory' => route('react.dental-charts.history', $dentistRegistration),
+            'chartCompare' => route('react.dental-charts.compare', $dentistRegistration),
+            'chartPrint' => route('react.dental-charts.print', $dentistRegistration),
+            'chartExport' => route('react.dental-charts.export', $dentistRegistration),
         ];
     }
 }

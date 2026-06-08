@@ -92,7 +92,7 @@ export interface DentalChartEntry {
     bleeding: boolean;
     mobility: string | null;
     chart_date: string | null;
-    legacy_edit_url: string;
+    edit_url: string;
 }
 
 export interface DentistRegistrationDetail {

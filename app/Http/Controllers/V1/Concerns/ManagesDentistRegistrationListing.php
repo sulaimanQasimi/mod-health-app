@@ -253,7 +253,7 @@ trait ManagesDentistRegistrationListing
             'bleeding' => (bool) $chart->bleeding,
             'mobility' => $chart->mobility,
             'chart_date' => $chart->chart_date ? verta($chart->chart_date)->format('Y-m-d') : null,
-            'legacy_edit_url' => route('dental-charts.edit', $chart->id),
+            'edit_url' => route('react.dental-charts.edit', $chart->id),
         ];
     }
 

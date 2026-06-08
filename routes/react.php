@@ -29,6 +29,7 @@ use App\Http\Controllers\V1\BranchController;
 use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\ConsultationController;
 use App\Http\Controllers\V1\DashboardController;
+use App\Http\Controllers\V1\DentalChartController;
 use App\Http\Controllers\V1\DentistRegistrationController;
 use App\Http\Controllers\V1\DepartmentController;
 use App\Http\Controllers\V1\DepotController;
@@ -207,6 +208,20 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{dentistRegistration}/notes', [DentistRegistrationController::class, 'storeNote'])->name('notes.store');
         Route::delete('/{dentistRegistration}/notes/{dentalNote}', [DentistRegistrationController::class, 'destroyNote'])->name('notes.destroy');
     });
+
+    Route::prefix('dental-charts')->name('dental-charts.')->group(function () {
+        Route::get('/{dentistRegistration}', [DentalChartController::class, 'index'])->name('index');
+        Route::get('/{dentistRegistration}/create', [DentalChartController::class, 'create'])->name('create');
+        Route::post('/{dentistRegistration}', [DentalChartController::class, 'store'])->name('store');
+        Route::get('/{dentistRegistration}/history', [DentalChartController::class, 'history'])->name('history');
+        Route::get('/{dentistRegistration}/compare', [DentalChartController::class, 'compare'])->name('compare');
+        Route::get('/{dentistRegistration}/print', [DentalChartController::class, 'print'])->name('print');
+        Route::get('/{dentistRegistration}/export', [DentalChartController::class, 'export'])->name('export');
+        Route::get('/entry/{dentalChart}/edit', [DentalChartController::class, 'edit'])->name('edit');
+        Route::put('/entry/{dentalChart}', [DentalChartController::class, 'update'])->name('update');
+        Route::delete('/entry/{dentalChart}', [DentalChartController::class, 'destroy'])->name('destroy');
+    });
+
     Route::get('/nephrology-registrations', [NephrologyRegistrationController::class, 'index'])->name('nephrology-registrations.index');
     Route::get('/hemodialysis-sessions', [HemodialysisSessionController::class, 'index'])->name('hemodialysis-sessions.index');
     Route::get('/consultations', [ConsultationController::class, 'index'])->name('consultations.index');

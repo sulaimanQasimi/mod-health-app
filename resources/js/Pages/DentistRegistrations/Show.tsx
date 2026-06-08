@@ -63,7 +63,14 @@ export default function ShowDentistRegistration({
 }: ShowDentistRegistrationProps) {
     const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
-    const [activeTab, setActiveTab] = useState<TabKey>('examinations');
+    const initialTab = (): TabKey => {
+        if (typeof window === 'undefined') return 'examinations';
+        const tab = new URLSearchParams(window.location.search).get('tab');
+        const allowed: TabKey[] = ['examinations', 'treatments', 'xrays', 'notes', 'prescription', 'dental_chart'];
+        return allowed.includes(tab as TabKey) ? (tab as TabKey) : 'examinations';
+    };
+
+    const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
     const [editOpen, setEditOpen] = useState(false);
     const [treatmentOpen, setTreatmentOpen] = useState(false);
     const [xrayOpen, setXrayOpen] = useState(false);
@@ -355,7 +362,7 @@ export default function ShowDentistRegistration({
 
                     <div className="p-4">
                         {activeTab === 'examinations' && registration.appointment_id && (
-                            <LabTestSection appointmentId={registration.appointment_id} />
+                            <LabTestSection appointmentId={registration.appointment_id} embedded />
                         )}
 
                         {activeTab === 'treatments' && (
@@ -521,32 +528,44 @@ export default function ShowDentistRegistration({
                         )}
 
                         {activeTab === 'prescription' && registration.appointment_id && (
-                            <PrescriptionSection appointmentId={registration.appointment_id} />
+                            <PrescriptionSection appointmentId={registration.appointment_id} embedded />
                         )}
 
                         {activeTab === 'dental_chart' && (
                             <div className="space-y-4">
                                 <div className="flex flex-wrap gap-2">
-                                    {urls.legacyChartHistory && (
-                                        <Button as="a" href={urls.legacyChartHistory} color="light" size="sm">
+                                    {urls.chartIndex && (
+                                        <Button as={Link} href={urls.chartIndex} color="light" size="sm">
+                                            <i className="bx bx-list-ul me-2" />
+                                            {t('global.dental_chart')}
+                                        </Button>
+                                    )}
+                                    {urls.chartHistory && (
+                                        <Button as={Link} href={urls.chartHistory} color="light" size="sm">
                                             <i className="bx bx-history me-2" />
                                             {t('global.history')}
                                         </Button>
                                     )}
-                                    {urls.legacyChartPrint && (
-                                        <Button as="a" href={urls.legacyChartPrint} target="_blank" color="light" size="sm">
+                                    {urls.chartCompare && (
+                                        <Button as={Link} href={urls.chartCompare} color="light" size="sm">
+                                            <i className="bx bx-git-compare me-2" />
+                                            {t('global.compare_dates')}
+                                        </Button>
+                                    )}
+                                    {urls.chartPrint && (
+                                        <Button as="a" href={urls.chartPrint} target="_blank" color="light" size="sm">
                                             <i className="bx bx-printer me-2" />
                                             {t('global.print')}
                                         </Button>
                                     )}
-                                    {urls.legacyChartExport && (
-                                        <Button as="a" href={urls.legacyChartExport} color="light" size="sm">
+                                    {urls.chartExport && (
+                                        <Button as="a" href={urls.chartExport} color="light" size="sm">
                                             <i className="bx bx-download me-2" />
                                             {t('global.export_pdf')}
                                         </Button>
                                     )}
-                                    {urls.legacyChartCreate && (
-                                        <Button as="a" href={urls.legacyChartCreate} color="blue" size="sm">
+                                    {urls.chartCreate && (
+                                        <Button as={Link} href={urls.chartCreate} color="blue" size="sm">
                                             <i className="bx bx-plus me-2" />
                                             {t('global.add_tooth_record')}
                                         </Button>
@@ -575,8 +594,8 @@ export default function ShowDentistRegistration({
                                                     </TableCell>
                                                     <TableCell align="center">
                                                         <Button
-                                                            as="a"
-                                                            href={item.legacy_edit_url}
+                                                            as={Link}
+                                                            href={item.edit_url}
                                                             size="xs"
                                                             color="warning"
                                                         >
@@ -594,14 +613,6 @@ export default function ShowDentistRegistration({
                                 <p className="text-center text-xs text-gray-500">
                                     {t('global.visual_tooth_chart')}
                                 </p>
-                                {urls.legacyShow && (
-                                    <div className="flex justify-center">
-                                        <Button as="a" href={urls.legacyShow} target="_blank" color="light" size="sm">
-                                            <i className="bx bx-expand me-2" />
-                                            {t('global.view_details')}
-                                        </Button>
-                                    </div>
-                                )}
                             </div>
                         )}
                     </div>

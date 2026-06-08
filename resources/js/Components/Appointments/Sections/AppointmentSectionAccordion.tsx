@@ -12,6 +12,18 @@ interface AppointmentSectionAccordionProps {
     children: ReactNode;
 }
 
+interface SectionShellProps extends AppointmentSectionAccordionProps {
+    embedded?: boolean;
+}
+
+export function SectionShell({ embedded = false, children, ...accordionProps }: SectionShellProps) {
+    if (embedded) {
+        return <div className="space-y-4">{children}</div>;
+    }
+
+    return <AppointmentSectionAccordion {...accordionProps}>{children}</AppointmentSectionAccordion>;
+}
+
 export default function AppointmentSectionAccordion({
     id,
     icon,

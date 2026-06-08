@@ -24,6 +24,7 @@ export interface SettingsPermissions {
     edit: boolean;
     delete: boolean;
     view?: boolean;
+    manage_users?: boolean;
 }
 
 export interface OptionItem {

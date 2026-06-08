@@ -67,8 +67,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <div
                 className={mergeClasses(
-                    'flex min-h-screen min-w-0 flex-col',
-                    isRtl ? 'lg:pr-72' : 'lg:pl-72',
+                    'flex min-h-screen w-full min-w-0 max-w-full flex-col',
+                    isRtl ? 'lg:pr-[16.25rem]' : 'lg:pl-[16.25rem]',
                 )}
             >
                 <Navbar onMenuToggle={toggleSidebar} sidebarOpen={sidebarOpen} />

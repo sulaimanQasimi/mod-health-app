@@ -5,8 +5,6 @@ import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem } from '../../types/settings';
-import { SETTINGS_FORM_WIDTH } from '../../utils/settingsUi';
-
 export default function CreateIncome({
     formData,
     urls,
@@ -19,7 +17,7 @@ export default function CreateIncome({
     return (
         <DashboardLayout>
             <Head title={t('global.create_income_record')} />
-            <div className={`mx-auto ${SETTINGS_FORM_WIDTH}`}>
+            <div className="mx-auto max-w-5xl">
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.create_income_record')}

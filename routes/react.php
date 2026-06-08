@@ -224,7 +224,16 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/entry/{dentalChart}', [DentalChartController::class, 'destroy'])->name('destroy');
     });
 
-    Route::get('/nephrology-registrations', [NephrologyRegistrationController::class, 'index'])->name('nephrology-registrations.index');
+    Route::prefix('nephrology-registrations')->name('nephrology-registrations.')->group(function () {
+        Route::get('/', [NephrologyRegistrationController::class, 'index'])->name('index');
+        Route::get('/{nephrologyRegistration}', [NephrologyRegistrationController::class, 'show'])->name('show');
+        Route::put('/{nephrologyRegistration}', [NephrologyRegistrationController::class, 'update'])->name('update');
+        Route::delete('/{nephrologyRegistration}', [NephrologyRegistrationController::class, 'destroy'])->name('destroy');
+        Route::post('/{nephrologyRegistration}/mark-completed', [NephrologyRegistrationController::class, 'markCompleted'])->name('mark-completed');
+        Route::post('/{nephrologyRegistration}/mark-in-progress', [NephrologyRegistrationController::class, 'markInProgress'])->name('mark-in-progress');
+        Route::post('/{nephrologyRegistration}/accept', [NephrologyRegistrationController::class, 'accept'])->name('accept');
+        Route::post('/{nephrologyRegistration}/cancel', [NephrologyRegistrationController::class, 'cancel'])->name('cancel');
+    });
     Route::get('/hemodialysis-sessions', [HemodialysisSessionController::class, 'index'])->name('hemodialysis-sessions.index');
     Route::get('/consultations', [ConsultationController::class, 'index'])->name('consultations.index');
 

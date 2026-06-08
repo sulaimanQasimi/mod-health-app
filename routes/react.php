@@ -177,6 +177,13 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('physiotherapy-procedures')->name('physiotherapy-procedures.')->group(function () {
         Route::get('/', [PhysiotherapyProcedureController::class, 'index'])->name('index');
         Route::get('/my-procedures', [PhysiotherapyProcedureController::class, 'myProcedures'])->name('my-procedures');
+        Route::get('/{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'show'])->name('show');
+        Route::put('/{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'update'])->name('update');
+        Route::delete('/{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'destroy'])->name('destroy');
+        Route::post('/{physiotherapyProcedure}/update-counter', [PhysiotherapyProcedureController::class, 'updateCounter'])->name('update-counter');
+        Route::post('/{physiotherapyProcedure}/reviews', [PhysiotherapyProcedureController::class, 'storeReview'])->name('reviews.store');
+        Route::put('/{physiotherapyProcedure}/reviews/{review}', [PhysiotherapyProcedureController::class, 'updateReview'])->name('reviews.update');
+        Route::delete('/{physiotherapyProcedure}/reviews/{review}', [PhysiotherapyProcedureController::class, 'destroyReview'])->name('reviews.destroy');
     });
 
     Route::get('/physiotherapy-reports', [PhysiotherapyReportController::class, 'index'])->name('physiotherapy-reports.index');

@@ -1,5 +1,9 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import vue from '@vitejs/plugin-vue';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -49,7 +53,8 @@ export default defineConfig({
     resolve: {
         alias: {
             'vue': 'vue/dist/vue.esm-bundler.js',
-            '@': '/resources/js'
+            '@': '/resources/js',
+            'ckeditor5/ckeditor5.css': path.resolve(__dirname, 'node_modules/ckeditor5/dist/ckeditor5.css'),
         }
     },
     build: {

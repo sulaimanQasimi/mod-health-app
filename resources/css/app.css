@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+.laboratory-ck-editor .ck-editor__editable:not(.ck-editor__nested-editable) {
+    min-height: 280px;
+}
+
+.laboratory-ck-editor .ck.ck-editor__main > .ck-editor__editable {
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.laboratory-ck-editor .ck.ck-toolbar {
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";

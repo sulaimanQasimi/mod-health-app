@@ -13,6 +13,7 @@
     "file": "assets/AdviceSection-CLfLkI1n.css",
     "src": "_AdviceSection-CLfLkI1n.css"
   },
+<<<<<<< Updated upstream
   "_Alert-Cx2gwwib.js": {
     "file": "assets/Alert-Cx2gwwib.js",
     "name": "Alert",
@@ -23,11 +24,39 @@
   },
   "_BackArrowIcon-BPOLEMNA.js": {
     "file": "assets/BackArrowIcon-BPOLEMNA.js",
+=======
+  "_Alert-CIq-quGH.js": {
+    "file": "assets/Alert-CIq-quGH.js",
+    "name": "Alert",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_AppointmentPagination-D-mVLKbn.js": {
+    "file": "assets/AppointmentPagination-D-mVLKbn.js",
+    "name": "AppointmentPagination",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SettingsPagination-b9AhCiF1.js"
+    ]
+  },
+  "_AppointmentTableActions-rTQT0b4x.js": {
+    "file": "assets/AppointmentTableActions-rTQT0b4x.js",
+    "name": "AppointmentTableActions",
+    "imports": [
+      "resources/js/app.tsx"
+    ]
+  },
+  "_BackArrowIcon-BkUe1T0d.js": {
+    "file": "assets/BackArrowIcon-BkUe1T0d.js",
+>>>>>>> Stashed changes
     "name": "BackArrowIcon",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
+<<<<<<< Updated upstream
   "_Badge-Cprziz8i.js": {
     "file": "assets/Badge-Cprziz8i.js",
     "name": "Badge",
@@ -65,11 +94,51 @@
   },
   "_Button-CJw-BINd.js": {
     "file": "assets/Button-CJw-BINd.js",
+=======
+  "_Badge-iS7ME2Ow.js": {
+    "file": "assets/Badge-iS7ME2Ow.js",
+    "name": "Badge",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_BedForm-CRCmg3_0.js": {
+    "file": "assets/BedForm-CRCmg3_0.js",
+    "name": "BedForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Checkbox-FULboo5W.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_BranchForm-BEC3CBpf.js": {
+    "file": "assets/BranchForm-BEC3CBpf.js",
+    "name": "BranchForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_Button-K6MWj98e.js": {
+    "file": "assets/Button-K6MWj98e.js",
+>>>>>>> Stashed changes
     "name": "Button",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
+<<<<<<< Updated upstream
   "_Card-8kicsux2.js": {
     "file": "assets/Card-8kicsux2.js",
     "name": "Card",
@@ -84,6 +153,22 @@
     "imports": [
       "resources/js/app.tsx",
       "_Button-CJw-BINd.js"
+=======
+  "_Card-DoCa12LE.js": {
+    "file": "assets/Card-DoCa12LE.js",
+    "name": "Card",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_Checkbox-FULboo5W.js": {
+    "file": "assets/Checkbox-FULboo5W.js",
+    "name": "Checkbox",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+>>>>>>> Stashed changes
     ]
   },
   "_ConsultationSection-BDVCI-jw.js": {
@@ -101,6 +186,7 @@
     "file": "assets/ConsultationSection-Dix3BxDs.css",
     "src": "_ConsultationSection-Dix3BxDs.css"
   },
+<<<<<<< Updated upstream
   "_DashboardLayout-CvOh0uy6.js": {
     "file": "assets/DashboardLayout-CvOh0uy6.js",
     "name": "DashboardLayout",
@@ -317,6 +403,241 @@
       "_TextInput-BYNAk0Q6.js",
       "_Button-CJw-BINd.js",
       "_Spinner-DbmRZcs2.js"
+=======
+  "_DashboardLayout-B8QEOknI.js": {
+    "file": "assets/DashboardLayout-B8QEOknI.js",
+    "name": "DashboardLayout",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_DepartmentForm-uMCyFJer.js": {
+    "file": "assets/DepartmentForm-uMCyFJer.js",
+    "name": "DepartmentForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_DiseaseForm-BRdFHYvr.js": {
+    "file": "assets/DiseaseForm-BRdFHYvr.js",
+    "name": "DiseaseForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_DoctorForm-zhdSYoW6.js": {
+    "file": "assets/DoctorForm-zhdSYoW6.js",
+    "name": "DoctorForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Checkbox-FULboo5W.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_FloorForm-Cacp_yvp.js": {
+    "file": "assets/FloorForm-Cacp_yvp.js",
+    "name": "FloorForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_FoodTypeForm-k1IWFTMJ.js": {
+    "file": "assets/FoodTypeForm-k1IWFTMJ.js",
+    "name": "FoodTypeForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_FormField-C1WiMGha.js": {
+    "file": "assets/FormField-C1WiMGha.js",
+    "name": "FormField",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js"
+    ]
+  },
+  "_Label-BD_PFblc.js": {
+    "file": "assets/Label-BD_PFblc.js",
+    "name": "Label",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_LaboratoryPageHeader-BW82Reyg.js": {
+    "file": "assets/LaboratoryPageHeader-BW82Reyg.js",
+    "name": "LaboratoryPageHeader",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js"
+    ]
+  },
+  "_LaboratoryStatusBadge-CcH02AVD.js": {
+    "file": "assets/LaboratoryStatusBadge-CcH02AVD.js",
+    "name": "LaboratoryStatusBadge",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Badge-iS7ME2Ow.js"
+    ]
+  },
+  "_MedicineForm-CzL4RQPq.js": {
+    "file": "assets/MedicineForm-CzL4RQPq.js",
+    "name": "MedicineForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_MedicineTypeForm-BNMD0sbh.js": {
+    "file": "assets/MedicineTypeForm-BNMD0sbh.js",
+    "name": "MedicineTypeForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_MedicineUsageTypeForm-B010Kw-8.js": {
+    "file": "assets/MedicineUsageTypeForm-B010Kw-8.js",
+    "name": "MedicineUsageTypeForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_MiliteryTypeForm-DTp22NDr.js": {
+    "file": "assets/MiliteryTypeForm-DTp22NDr.js",
+    "name": "MiliteryTypeForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_ModalHeader-CtOFeG1E.js": {
+    "file": "assets/ModalHeader-CtOFeG1E.js",
+    "name": "ModalHeader",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_MyVisitFilters-BNWP0HeP.js": {
+    "file": "assets/MyVisitFilters-BNWP0HeP.js",
+    "name": "MyVisitFilters",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_NurseForm-Bn7o585k.js": {
+    "file": "assets/NurseForm-Bn7o585k.js",
+    "name": "NurseForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_OperationTypeForm-ikDbteGe.js": {
+    "file": "assets/OperationTypeForm-ikDbteGe.js",
+    "name": "OperationTypeForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_PharmacyForm-yLy45__s.js": {
+    "file": "assets/PharmacyForm-yLy45__s.js",
+    "name": "PharmacyForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_PharmacyFulfillmentForm-CFJZKJA-.js": {
+    "file": "assets/PharmacyFulfillmentForm-CFJZKJA-.js",
+    "name": "PharmacyFulfillmentForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_inertiaSubmit-BS7Rs7yT.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+>>>>>>> Stashed changes
     ]
   },
   "_PrescriptionShowApp-CqLsQG9M.js": {
@@ -335,6 +656,7 @@
     "file": "assets/PrescriptionShowApp-DYo5VbqH.css",
     "src": "_PrescriptionShowApp-DYo5VbqH.css"
   },
+<<<<<<< Updated upstream
   "_ProcedureTypeForm-BBp7aY4_.js": {
     "file": "assets/ProcedureTypeForm-BBp7aY4_.js",
     "name": "ProcedureTypeForm",
@@ -426,11 +748,121 @@
   },
   "_SettingsPagination-BeLFYQ6b.js": {
     "file": "assets/SettingsPagination-BeLFYQ6b.js",
+=======
+  "_ProcedureTypeForm-BjhaakmP.js": {
+    "file": "assets/ProcedureTypeForm-BjhaakmP.js",
+    "name": "ProcedureTypeForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_RecipientForm-DrYYc4H-.js": {
+    "file": "assets/RecipientForm-DrYYc4H-.js",
+    "name": "RecipientForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_RelationForm-CrKhBbqj.js": {
+    "file": "assets/RelationForm-CrKhBbqj.js",
+    "name": "RelationForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_RoomForm-IkpySLcP.js": {
+    "file": "assets/RoomForm-IkpySLcP.js",
+    "name": "RoomForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_SearchableMultiSelect-B0B-7lvc.js": {
+    "file": "assets/SearchableMultiSelect-B0B-7lvc.js",
+    "name": "SearchableMultiSelect",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js"
+    ]
+  },
+  "_SearchableSelect-D6H-_SxL.js": {
+    "file": "assets/SearchableSelect-D6H-_SxL.js",
+    "name": "SearchableSelect",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js"
+    ]
+  },
+  "_SectionForm-BNbmjXWQ.js": {
+    "file": "assets/SectionForm-BNbmjXWQ.js",
+    "name": "SectionForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_Select-CT8H11Ro.js": {
+    "file": "assets/Select-CT8H11Ro.js",
+    "name": "Select",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_SettingsFilterActions-81zUXfYd.js": {
+    "file": "assets/SettingsFilterActions-81zUXfYd.js",
+    "name": "SettingsFilterActions",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_SettingsPageHeader-bxmvMPs6.js": {
+    "file": "assets/SettingsPageHeader-bxmvMPs6.js",
+    "name": "SettingsPageHeader",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_SettingsPagination-b9AhCiF1.js": {
+    "file": "assets/SettingsPagination-b9AhCiF1.js",
+>>>>>>> Stashed changes
     "name": "SettingsPagination",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
+<<<<<<< Updated upstream
   "_Spinner-DbmRZcs2.js": {
     "file": "assets/Spinner-DbmRZcs2.js",
     "name": "Spinner",
@@ -449,11 +881,32 @@
   },
   "_Table-DwOExBn1.js": {
     "file": "assets/Table-DwOExBn1.js",
+=======
+  "_Spinner-Dw_QhPYn.js": {
+    "file": "assets/Spinner-Dw_QhPYn.js",
+    "name": "Spinner",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_StatCard-DaeaB0rU.js": {
+    "file": "assets/StatCard-DaeaB0rU.js",
+    "name": "StatCard",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Card-DoCa12LE.js"
+    ]
+  },
+  "_Table-B5MLvM6m.js": {
+    "file": "assets/Table-B5MLvM6m.js",
+>>>>>>> Stashed changes
     "name": "Table",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
+<<<<<<< Updated upstream
   "_Tabs-D8MysgLb.js": {
     "file": "assets/Tabs-D8MysgLb.js",
     "name": "Tabs",
@@ -521,6 +974,76 @@
       "_TextInput-BYNAk0Q6.js",
       "_Button-CJw-BINd.js",
       "_Spinner-DbmRZcs2.js"
+=======
+  "_Tabs-BjgwCgiH.js": {
+    "file": "assets/Tabs-BjgwCgiH.js",
+    "name": "Tabs",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_TextInput-D7t4OsfQ.js": {
+    "file": "assets/TextInput-D7t4OsfQ.js",
+    "name": "TextInput",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_Textarea-C3ik-bUL.js": {
+    "file": "assets/Textarea-C3ik-bUL.js",
+    "name": "Textarea",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_ToggleSwitch-KFRiUDXu.js": {
+    "file": "assets/ToggleSwitch-KFRiUDXu.js",
+    "name": "ToggleSwitch",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_TokenModal-CUF-Ukk6.js": {
+    "file": "assets/TokenModal-CUF-Ukk6.js",
+    "name": "TokenModal",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_ModalHeader-CtOFeG1E.js",
+      "_Button-K6MWj98e.js"
+    ]
+  },
+  "_UserForm-BkKnndPM.js": {
+    "file": "assets/UserForm-BkKnndPM.js",
+    "name": "UserForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_SearchableMultiSelect-B0B-7lvc.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_inertiaSubmit-BS7Rs7yT.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Checkbox-FULboo5W.js",
+      "_Spinner-Dw_QhPYn.js"
+    ]
+  },
+  "_VitalSignTypeForm-D-A286_e.js": {
+    "file": "assets/VitalSignTypeForm-D-A286_e.js",
+    "name": "VitalSignTypeForm",
+    "imports": [
+      "resources/js/app.tsx",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+>>>>>>> Stashed changes
     ]
   },
   "__commonjsHelpers-DsqdWQfm.js": {
@@ -538,10 +1061,26 @@
       "__commonjsHelpers-DsqdWQfm.js"
     ]
   },
+  "_ckeditor5-CmugbGP-.js": {
+    "file": "assets/ckeditor5-CmugbGP-.js",
+    "name": "ckeditor5",
+    "imports": [
+      "_set-DtTOySoq.js",
+      "__commonjsHelpers-DsqdWQfm.js"
+    ],
+    "css": [
+      "assets/ckeditor5-suRLtPDw.css"
+    ]
+  },
+  "_ckeditor5-suRLtPDw.css": {
+    "file": "assets/ckeditor5-suRLtPDw.css",
+    "src": "_ckeditor5-suRLtPDw.css"
+  },
   "_index-BetwS6Uc.js": {
     "file": "assets/index-BetwS6Uc.js",
     "name": "index"
   },
+<<<<<<< Updated upstream
   "_settingsUi-B7h6jwNx.js": {
     "file": "assets/settingsUi-B7h6jwNx.js",
     "name": "settingsUi",
@@ -549,6 +1088,19 @@
       "resources/js/app.tsx",
       "_Button-CJw-BINd.js"
     ]
+=======
+  "_inertiaSubmit-BS7Rs7yT.js": {
+    "file": "assets/inertiaSubmit-BS7Rs7yT.js",
+    "name": "inertiaSubmit"
+  },
+  "_set-DtTOySoq.js": {
+    "file": "assets/set-DtTOySoq.js",
+    "name": "set"
+  },
+  "_settingsUi-CcnNFSQq.js": {
+    "file": "assets/settingsUi-CcnNFSQq.js",
+    "name": "settingsUi"
+>>>>>>> Stashed changes
   },
   "_sweetalert2.esm.all-DzlfzZPw.js": {
     "file": "assets/sweetalert2.esm.all-DzlfzZPw.js",
@@ -817,7 +1369,11 @@
     ]
   },
   "resources/css/app.css": {
+<<<<<<< Updated upstream
     "file": "assets/app-DB7TiiEP.css",
+=======
+    "file": "assets/app-BVVUd4OJ.css",
+>>>>>>> Stashed changes
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -825,12 +1381,17 @@
     ]
   },
   "resources/js/Pages/Appointments/Completed.tsx": {
+<<<<<<< Updated upstream
     "file": "assets/Completed-Bpowhe4r.js",
+=======
+    "file": "assets/Completed-B_xMUDBV.js",
+>>>>>>> Stashed changes
     "name": "Completed",
     "src": "resources/js/Pages/Appointments/Completed.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MyVisitFilters-DdywXI61.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Table-DwOExBn1.js",
@@ -849,11 +1410,35 @@
   },
   "resources/js/Pages/Appointments/Department.tsx": {
     "file": "assets/Department-5vZ2_FUz.js",
+=======
+      "_AppointmentTableActions-rTQT0b4x.js",
+      "_MyVisitFilters-BNWP0HeP.js",
+      "_AppointmentPagination-D-mVLKbn.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_SettingsPagination-b9AhCiF1.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Appointments/Department.tsx": {
+    "file": "assets/Department-DY5AnA1G.js",
+>>>>>>> Stashed changes
     "name": "Department",
     "src": "resources/js/Pages/Appointments/Department.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MyVisitFilters-DdywXI61.js",
       "_SearchableSelect-Bknypv8r.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -875,11 +1460,38 @@
   },
   "resources/js/Pages/Appointments/Doctor.tsx": {
     "file": "assets/Doctor-B5WdKG8W.js",
+=======
+      "_AppointmentTableActions-rTQT0b4x.js",
+      "_MyVisitFilters-BNWP0HeP.js",
+      "_AppointmentPagination-D-mVLKbn.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_ModalHeader-CtOFeG1E.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_Table-B5MLvM6m.js",
+      "_Card-DoCa12LE.js",
+      "_Badge-iS7ME2Ow.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_SettingsPagination-b9AhCiF1.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Appointments/Doctor.tsx": {
+    "file": "assets/Doctor-BXJRisJs.js",
+>>>>>>> Stashed changes
     "name": "Doctor",
     "src": "resources/js/Pages/Appointments/Doctor.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MyVisitFilters-DdywXI61.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Table-DwOExBn1.js",
@@ -899,11 +1511,36 @@
   },
   "resources/js/Pages/Appointments/Edit.tsx": {
     "file": "assets/Edit-BB9JpUeu.js",
+=======
+      "_AppointmentTableActions-rTQT0b4x.js",
+      "_MyVisitFilters-BNWP0HeP.js",
+      "_AppointmentPagination-D-mVLKbn.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_Card-DoCa12LE.js",
+      "_Badge-iS7ME2Ow.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_SettingsPagination-b9AhCiF1.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Appointments/Edit.tsx": {
+    "file": "assets/Edit-DFG7Fgan.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Appointments/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_FormField-C01MrCeF.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Alert-Cx2gwwib.js",
@@ -924,11 +1561,35 @@
   },
   "resources/js/Pages/Appointments/Index.tsx": {
     "file": "assets/Index-LW3OlViK.js",
+=======
+      "_FormField-C1WiMGha.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Alert-CIq-quGH.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Appointments/Index.tsx": {
+    "file": "assets/Index-CH6Q6lX5.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Appointments/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DashboardLayout-CvOh0uy6.js",
       "_SearchableSelect-Bknypv8r.js",
       "_Table-DwOExBn1.js",
@@ -938,20 +1599,42 @@
       "_TextInput-BYNAk0Q6.js",
       "_Spinner-DbmRZcs2.js",
       "_Badge-Cprziz8i.js",
+=======
+      "_AppointmentTableActions-rTQT0b4x.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_Badge-iS7ME2Ow.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Appointments/Show.tsx": {
     "file": "assets/Show-D9RdhKME.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Appointments/Show.tsx": {
+    "file": "assets/Show-D8MEJSo1.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/Appointments/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_Table-DwOExBn1.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Badge-Cprziz8i.js",
@@ -965,20 +1648,45 @@
       "_SearchableMultiSelect-O8RodokL.js",
       "_BackArrowIcon-BPOLEMNA.js",
       "_Card-8kicsux2.js",
+=======
+      "_Table-B5MLvM6m.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Badge-iS7ME2Ow.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_Button-K6MWj98e.js",
+      "_ModalHeader-CtOFeG1E.js",
+      "_Label-BD_PFblc.js",
+      "_Textarea-C3ik-bUL.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_SearchableMultiSelect-B0B-7lvc.js",
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_Card-DoCa12LE.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Appointments/Trashed.tsx": {
     "file": "assets/Trashed-DDq-qtFJ.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Appointments/Trashed.tsx": {
+    "file": "assets/Trashed-DKJPmyv5.js",
+>>>>>>> Stashed changes
     "name": "Trashed",
     "src": "resources/js/Pages/Appointments/Trashed.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DashboardLayout-CvOh0uy6.js",
       "_BackArrowIcon-BPOLEMNA.js",
       "_Table-DwOExBn1.js",
@@ -987,20 +1695,41 @@
       "_Label-2KTYyJBU.js",
       "_TextInput-BYNAk0Q6.js",
       "_Spinner-DbmRZcs2.js",
+=======
+      "_AppointmentTableActions-rTQT0b4x.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_Table-B5MLvM6m.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Beds/Create.tsx": {
     "file": "assets/Create-C_hZKvUc.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Beds/Create.tsx": {
+    "file": "assets/Create-3NSaFwfv.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Beds/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_BedForm-Ctq8sJsm.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1020,11 +1749,35 @@
   },
   "resources/js/Pages/Beds/Edit.tsx": {
     "file": "assets/Edit-DHXagHKM.js",
+=======
+      "_BedForm-CRCmg3_0.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Checkbox-FULboo5W.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Beds/Edit.tsx": {
+    "file": "assets/Edit-2b3jFzla.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Beds/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_BedForm-Ctq8sJsm.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1044,11 +1797,35 @@
   },
   "resources/js/Pages/Beds/Index.tsx": {
     "file": "assets/Index-BGMhHvhr.js",
+=======
+      "_BedForm-CRCmg3_0.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Checkbox-FULboo5W.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Beds/Index.tsx": {
+    "file": "assets/Index-dZJ4kupZ.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Beds/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1070,11 +1847,37 @@
   },
   "resources/js/Pages/Branches/Create.tsx": {
     "file": "assets/Create-DABqCYe0.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Badge-iS7ME2Ow.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Branches/Create.tsx": {
+    "file": "assets/Create-DECApABF.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Branches/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_BranchForm-BmazOSWM.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1093,11 +1896,34 @@
   },
   "resources/js/Pages/Branches/Edit.tsx": {
     "file": "assets/Edit-s4s_TEUa.js",
+=======
+      "_BranchForm-BEC3CBpf.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Branches/Edit.tsx": {
+    "file": "assets/Edit-CgXzqVpC.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Branches/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_BranchForm-BmazOSWM.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1116,11 +1942,34 @@
   },
   "resources/js/Pages/Branches/Index.tsx": {
     "file": "assets/Index-DbXsbHUw.js",
+=======
+      "_BranchForm-BEC3CBpf.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Branches/Index.tsx": {
+    "file": "assets/Index-CfHzlXqM.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Branches/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1140,11 +1989,35 @@
   },
   "resources/js/Pages/Dashboard.tsx": {
     "file": "assets/Dashboard-_EW6CIx6.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Dashboard.tsx": {
+    "file": "assets/Dashboard-DaenhorM.js",
+>>>>>>> Stashed changes
     "name": "Dashboard",
     "src": "resources/js/Pages/Dashboard.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DashboardLayout-CvOh0uy6.js",
       "_Card-8kicsux2.js",
       "_SearchableSelect-Bknypv8r.js",
@@ -1162,11 +2035,32 @@
   },
   "resources/js/Pages/Departments/Create.tsx": {
     "file": "assets/Create-CJTOTSPv.js",
+=======
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_StatCard-DaeaB0rU.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_Alert-CIq-quGH.js",
+      "_Label-BD_PFblc.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Button-K6MWj98e.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Departments/Create.tsx": {
+    "file": "assets/Create-D__b6DF-.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Departments/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DepartmentForm-CiwHgdl3.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1185,11 +2079,34 @@
   },
   "resources/js/Pages/Departments/Edit.tsx": {
     "file": "assets/Edit-ZGfD-TfY.js",
+=======
+      "_DepartmentForm-uMCyFJer.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Departments/Edit.tsx": {
+    "file": "assets/Edit-B3wGfKoA.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Departments/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DepartmentForm-CiwHgdl3.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1208,11 +2125,34 @@
   },
   "resources/js/Pages/Departments/Index.tsx": {
     "file": "assets/Index-DpNYGcfq.js",
+=======
+      "_DepartmentForm-uMCyFJer.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Departments/Index.tsx": {
+    "file": "assets/Index-Bmz2Oabs.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Departments/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1233,29 +2173,71 @@
   },
   "resources/js/Pages/Departments/Show.tsx": {
     "file": "assets/Show-BTMGS1U2.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Departments/Show.tsx": {
+    "file": "assets/Show-ii6RYbid.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/Departments/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Card-8kicsux2.js",
       "_Button-CJw-BINd.js",
+=======
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Diseases/Create.tsx": {
     "file": "assets/Create-DsYlPtwo.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Diseases/Create.tsx": {
+    "file": "assets/Create-DldRV6Uz.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Diseases/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DiseaseForm-Cy4weWQQ.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1275,11 +2257,35 @@
   },
   "resources/js/Pages/Diseases/Edit.tsx": {
     "file": "assets/Edit-C7xEmySu.js",
+=======
+      "_DiseaseForm-BRdFHYvr.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Diseases/Edit.tsx": {
+    "file": "assets/Edit-DUcKsk42.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Diseases/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DiseaseForm-Cy4weWQQ.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1299,11 +2305,35 @@
   },
   "resources/js/Pages/Diseases/Index.tsx": {
     "file": "assets/Index-Ckl09H9T.js",
+=======
+      "_DiseaseForm-BRdFHYvr.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Diseases/Index.tsx": {
+    "file": "assets/Index-BbrTewJL.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Diseases/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1316,20 +2346,45 @@
       "_Label-2KTYyJBU.js",
       "_TextInput-BYNAk0Q6.js",
       "_Spinner-DbmRZcs2.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Tabs-BjgwCgiH.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Doctors/Create.tsx": {
     "file": "assets/Create-DKSLojT8.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Doctors/Create.tsx": {
+    "file": "assets/Create-DmPCl16m.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Doctors/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DoctorForm-T904kVz-.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_BackArrowIcon-BPOLEMNA.js",
@@ -1350,11 +2405,35 @@
   },
   "resources/js/Pages/Doctors/Edit.tsx": {
     "file": "assets/Edit-BEBgb6f4.js",
+=======
+      "_DoctorForm-zhdSYoW6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Checkbox-FULboo5W.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Doctors/Edit.tsx": {
+    "file": "assets/Edit-nyohQIMA.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Doctors/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DoctorForm-T904kVz-.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_BackArrowIcon-BPOLEMNA.js",
@@ -1375,11 +2454,35 @@
   },
   "resources/js/Pages/Doctors/Index.tsx": {
     "file": "assets/Index-BoyyCR75.js",
+=======
+      "_DoctorForm-zhdSYoW6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Checkbox-FULboo5W.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Doctors/Index.tsx": {
+    "file": "assets/Index-DvI9iXD4.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Doctors/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DashboardLayout-CvOh0uy6.js",
       "_SearchableSelect-Bknypv8r.js",
       "_Table-DwOExBn1.js",
@@ -1390,56 +2493,110 @@
       "_Spinner-DbmRZcs2.js",
       "_ToggleSwitch-CRpHPPvT.js",
       "_Badge-Cprziz8i.js",
+=======
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_ToggleSwitch-KFRiUDXu.js",
+      "_Badge-iS7ME2Ow.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Doctors/Show.tsx": {
     "file": "assets/Show-ClfZL15e.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Doctors/Show.tsx": {
+    "file": "assets/Show-CMgsG8sQ.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/Doctors/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DashboardLayout-CvOh0uy6.js",
       "_BackArrowIcon-BPOLEMNA.js",
       "_Card-8kicsux2.js",
       "_Badge-Cprziz8i.js",
       "_Button-CJw-BINd.js",
+=======
+      "_DashboardLayout-B8QEOknI.js",
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_Card-DoCa12LE.js",
+      "_Badge-iS7ME2Ow.js",
+      "_Button-K6MWj98e.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Example.tsx": {
     "file": "assets/Example-DHnkIs1D.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Example.tsx": {
+    "file": "assets/Example-Q3ozsx8m.js",
+>>>>>>> Stashed changes
     "name": "Example",
     "src": "resources/js/Pages/Example.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_Card-8kicsux2.js",
       "_Button-CJw-BINd.js",
       "_Alert-Cx2gwwib.js",
+=======
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Alert-CIq-quGH.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Floors/Create.tsx": {
     "file": "assets/Create-BxrKJguR.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Floors/Create.tsx": {
+    "file": "assets/Create-DHXNjdgR.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Floors/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_FloorForm-DuPZiFpS.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1458,11 +2615,34 @@
   },
   "resources/js/Pages/Floors/Edit.tsx": {
     "file": "assets/Edit-CxlfjQd-.js",
+=======
+      "_FloorForm-Cacp_yvp.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Floors/Edit.tsx": {
+    "file": "assets/Edit-47oLwsJm.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Floors/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_FloorForm-DuPZiFpS.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1481,11 +2661,34 @@
   },
   "resources/js/Pages/Floors/Index.tsx": {
     "file": "assets/Index-RZgUGFis.js",
+=======
+      "_FloorForm-Cacp_yvp.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Floors/Index.tsx": {
+    "file": "assets/Index-DS9TQ7Wy.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Floors/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1506,11 +2709,36 @@
   },
   "resources/js/Pages/FoodTypes/Create.tsx": {
     "file": "assets/Create-DmCp3Bf_.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/FoodTypes/Create.tsx": {
+    "file": "assets/Create-R_JgqDZc.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/FoodTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_FoodTypeForm-DWHegFUB.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1528,11 +2756,33 @@
   },
   "resources/js/Pages/FoodTypes/Edit.tsx": {
     "file": "assets/Edit-COaIlYCT.js",
+=======
+      "_FoodTypeForm-k1IWFTMJ.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/FoodTypes/Edit.tsx": {
+    "file": "assets/Edit-D8Q_Guv6.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/FoodTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_FoodTypeForm-DWHegFUB.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1550,11 +2800,33 @@
   },
   "resources/js/Pages/FoodTypes/Index.tsx": {
     "file": "assets/Index-JxkbZ4CU.js",
+=======
+      "_FoodTypeForm-k1IWFTMJ.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/FoodTypes/Index.tsx": {
+    "file": "assets/Index-DGEpniHx.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/FoodTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1574,11 +2846,35 @@
   },
   "resources/js/Pages/Incomes/Create.tsx": {
     "file": "assets/Create-IYRPbIbr.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Incomes/Create.tsx": {
+    "file": "assets/Create-CVXFWB7a.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Incomes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SearchableSelect-Bknypv8r.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Label-2KTYyJBU.js",
@@ -1588,20 +2884,42 @@
       "_Spinner-DbmRZcs2.js",
       "_settingsUi-B7h6jwNx.js",
       "_Card-8kicsux2.js",
+=======
+      "_SearchableSelect-D6H-_SxL.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Incomes/Index.tsx": {
     "file": "assets/Index-Cbdi50YE.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Incomes/Index.tsx": {
+    "file": "assets/Index-BNdHAgZv.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Incomes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1623,25 +2941,217 @@
   },
   "resources/js/Pages/Layout.tsx": {
     "file": "assets/Layout-BPjdWz8P.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Badge-iS7ME2Ow.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Laboratory/Registrations/Report.tsx": {
+    "file": "assets/Report-DD2hCxWz.js",
+    "name": "Report",
+    "src": "resources/js/Pages/Laboratory/Registrations/Report.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_AppointmentPagination-D-mVLKbn.js",
+      "_LaboratoryPageHeader-BW82Reyg.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_Card-DoCa12LE.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Select-CT8H11Ro.js",
+      "_Button-K6MWj98e.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SettingsPagination-b9AhCiF1.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Laboratory/Registrations/ReportDetailed.tsx": {
+    "file": "assets/ReportDetailed-CTip9Kme.js",
+    "name": "ReportDetailed",
+    "src": "resources/js/Pages/Laboratory/Registrations/ReportDetailed.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_AppointmentPagination-D-mVLKbn.js",
+      "_LaboratoryPageHeader-BW82Reyg.js",
+      "_LaboratoryStatusBadge-CcH02AVD.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_Card-DoCa12LE.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Select-CT8H11Ro.js",
+      "_Button-K6MWj98e.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_Badge-iS7ME2Ow.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Laboratory/Results/Grouped.tsx": {
+    "file": "assets/Grouped-Dbu6hCkz.js",
+    "name": "Grouped",
+    "src": "resources/js/Pages/Laboratory/Results/Grouped.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_AppointmentPagination-D-mVLKbn.js",
+      "_LaboratoryPageHeader-BW82Reyg.js",
+      "_LaboratoryStatusBadge-CcH02AVD.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Select-CT8H11Ro.js",
+      "_Button-K6MWj98e.js",
+      "_Badge-iS7ME2Ow.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SettingsPagination-b9AhCiF1.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Laboratory/Results/Index.tsx": {
+    "file": "assets/Index-Bjaibm2c.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Laboratory/Results/Index.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_AppointmentPagination-D-mVLKbn.js",
+      "_LaboratoryPageHeader-BW82Reyg.js",
+      "_Table-B5MLvM6m.js",
+      "_LaboratoryStatusBadge-CcH02AVD.js",
+      "_AppointmentTableActions-rTQT0b4x.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "_Badge-iS7ME2Ow.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Select-CT8H11Ro.js",
+      "_Button-K6MWj98e.js",
+      "_Alert-CIq-quGH.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SettingsPagination-b9AhCiF1.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Laboratory/Results/Show.tsx": {
+    "file": "assets/Show-rgGNHp04.js",
+    "name": "Show",
+    "src": "resources/js/Pages/Laboratory/Results/Show.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_LaboratoryPageHeader-BW82Reyg.js",
+      "_LaboratoryStatusBadge-CcH02AVD.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_ckeditor5-CmugbGP-.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_Alert-CIq-quGH.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Badge-iS7ME2Ow.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Label-BD_PFblc.js",
+      "_Textarea-C3ik-bUL.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Laboratory/Scan.tsx": {
+    "file": "assets/Scan-e6Ptnb78.js",
+    "name": "Scan",
+    "src": "resources/js/Pages/Laboratory/Scan.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_LaboratoryPageHeader-BW82Reyg.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Alert-CIq-quGH.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Layout.tsx": {
+    "file": "assets/Layout-BQR53LJK.js",
+>>>>>>> Stashed changes
     "name": "Layout",
     "src": "resources/js/Pages/Layout.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/MedicineTypes/Create.tsx": {
     "file": "assets/Create-CD1DfKK1.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/MedicineTypes/Create.tsx": {
+    "file": "assets/Create-BRvGlaoj.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/MedicineTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MedicineTypeForm-D0K1-MCe.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1659,11 +3169,33 @@
   },
   "resources/js/Pages/MedicineTypes/Edit.tsx": {
     "file": "assets/Edit-D75r08np.js",
+=======
+      "_MedicineTypeForm-BNMD0sbh.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/MedicineTypes/Edit.tsx": {
+    "file": "assets/Edit-BppB_R5W.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/MedicineTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MedicineTypeForm-D0K1-MCe.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1681,11 +3213,33 @@
   },
   "resources/js/Pages/MedicineTypes/Index.tsx": {
     "file": "assets/Index-BRYKyHxB.js",
+=======
+      "_MedicineTypeForm-BNMD0sbh.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/MedicineTypes/Index.tsx": {
+    "file": "assets/Index-DaYjDIxr.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/MedicineTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1705,11 +3259,35 @@
   },
   "resources/js/Pages/MedicineUsageTypes/Create.tsx": {
     "file": "assets/Create-BymQx4ea.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/MedicineUsageTypes/Create.tsx": {
+    "file": "assets/Create-hy5RJHIN.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/MedicineUsageTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MedicineUsageTypeForm-ImBE4wZA.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1728,11 +3306,34 @@
   },
   "resources/js/Pages/MedicineUsageTypes/Edit.tsx": {
     "file": "assets/Edit-uWUhQcpl.js",
+=======
+      "_MedicineUsageTypeForm-B010Kw-8.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/MedicineUsageTypes/Edit.tsx": {
+    "file": "assets/Edit-ESLjQIXQ.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/MedicineUsageTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MedicineUsageTypeForm-ImBE4wZA.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1751,11 +3352,34 @@
   },
   "resources/js/Pages/MedicineUsageTypes/Index.tsx": {
     "file": "assets/Index-x-PqQa4a.js",
+=======
+      "_MedicineUsageTypeForm-B010Kw-8.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/MedicineUsageTypes/Index.tsx": {
+    "file": "assets/Index-DLrVAm2H.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/MedicineUsageTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1775,11 +3399,35 @@
   },
   "resources/js/Pages/Medicines/Create.tsx": {
     "file": "assets/Create-TCAGLXzk.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Medicines/Create.tsx": {
+    "file": "assets/Create-xG5KsxDp.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Medicines/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MedicineForm-BTJ05-gP.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1797,11 +3445,33 @@
   },
   "resources/js/Pages/Medicines/Edit.tsx": {
     "file": "assets/Edit-CwqqAM9J.js",
+=======
+      "_MedicineForm-CzL4RQPq.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Medicines/Edit.tsx": {
+    "file": "assets/Edit-DDZatUTz.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Medicines/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MedicineForm-BTJ05-gP.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1819,11 +3489,33 @@
   },
   "resources/js/Pages/Medicines/Index.tsx": {
     "file": "assets/Index-BvFAPp--.js",
+=======
+      "_MedicineForm-CzL4RQPq.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Medicines/Index.tsx": {
+    "file": "assets/Index-BMMOwl8u.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Medicines/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1844,11 +3536,36 @@
   },
   "resources/js/Pages/MiliteryTypes/Create.tsx": {
     "file": "assets/Create-CzXS7Y1F.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/MiliteryTypes/Create.tsx": {
+    "file": "assets/Create-ByF7IZSd.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/MiliteryTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MiliteryTypeForm-eudh7uaN.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1866,11 +3583,33 @@
   },
   "resources/js/Pages/MiliteryTypes/Edit.tsx": {
     "file": "assets/Edit-BIGgoOWw.js",
+=======
+      "_MiliteryTypeForm-DTp22NDr.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/MiliteryTypes/Edit.tsx": {
+    "file": "assets/Edit-CVdbvsIP.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/MiliteryTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_MiliteryTypeForm-eudh7uaN.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1888,11 +3627,33 @@
   },
   "resources/js/Pages/MiliteryTypes/Index.tsx": {
     "file": "assets/Index-DMIkzaqN.js",
+=======
+      "_MiliteryTypeForm-DTp22NDr.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/MiliteryTypes/Index.tsx": {
+    "file": "assets/Index-BkCgcR-u.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/MiliteryTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1912,11 +3673,35 @@
   },
   "resources/js/Pages/Nurses/Create.tsx": {
     "file": "assets/Create-C5EEPdBX.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Nurses/Create.tsx": {
+    "file": "assets/Create-CBXDIYMo.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Nurses/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_NurseForm-CAuLPADT.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1936,11 +3721,35 @@
   },
   "resources/js/Pages/Nurses/Edit.tsx": {
     "file": "assets/Edit-Bapx0Pw-.js",
+=======
+      "_NurseForm-Bn7o585k.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Nurses/Edit.tsx": {
+    "file": "assets/Edit-DQ_xaREe.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Nurses/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_NurseForm-CAuLPADT.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -1960,11 +3769,35 @@
   },
   "resources/js/Pages/Nurses/Index.tsx": {
     "file": "assets/Index-BmOtQvLr.js",
+=======
+      "_NurseForm-Bn7o585k.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Nurses/Index.tsx": {
+    "file": "assets/Index-Cgg7KaHh.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Nurses/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -1986,30 +3819,74 @@
   },
   "resources/js/Pages/Nurses/Show.tsx": {
     "file": "assets/Show-BieryCoi.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Badge-iS7ME2Ow.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Nurses/Show.tsx": {
+    "file": "assets/Show-CbLs69CS.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/Nurses/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Card-8kicsux2.js",
       "_Button-CJw-BINd.js",
       "_Badge-Cprziz8i.js",
+=======
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Badge-iS7ME2Ow.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/OperationTypes/Create.tsx": {
     "file": "assets/Create-29PhgoGS.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/OperationTypes/Create.tsx": {
+    "file": "assets/Create-CWKlevPw.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/OperationTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_OperationTypeForm-x8JzO3Rv.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2028,11 +3905,34 @@
   },
   "resources/js/Pages/OperationTypes/Edit.tsx": {
     "file": "assets/Edit-CiNxXHEJ.js",
+=======
+      "_OperationTypeForm-ikDbteGe.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/OperationTypes/Edit.tsx": {
+    "file": "assets/Edit-BaXBaxoh.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/OperationTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_OperationTypeForm-x8JzO3Rv.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2051,11 +3951,34 @@
   },
   "resources/js/Pages/OperationTypes/Index.tsx": {
     "file": "assets/Index-CR_jVqXB.js",
+=======
+      "_OperationTypeForm-ikDbteGe.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/OperationTypes/Index.tsx": {
+    "file": "assets/Index-n-1cLc__.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/OperationTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2076,11 +3999,36 @@
   },
   "resources/js/Pages/Outcomes/Index.tsx": {
     "file": "assets/Index-B_wKAzn9.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Outcomes/Index.tsx": {
+    "file": "assets/Index-BaxNyYLk.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Outcomes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2101,11 +4049,36 @@
   },
   "resources/js/Pages/Outcomes/Report.tsx": {
     "file": "assets/Report-Ks1PnLbe.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Outcomes/Report.tsx": {
+    "file": "assets/Report-DEAnyqRK.js",
+>>>>>>> Stashed changes
     "name": "Report",
     "src": "resources/js/Pages/Outcomes/Report.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2126,11 +4099,36 @@
   },
   "resources/js/Pages/Patients/Create.tsx": {
     "file": "assets/Create-DzI9FnGE.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Patients/Create.tsx": {
+    "file": "assets/Create-RWM2yg-Z.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Patients/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_BackArrowIcon-BPOLEMNA.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_FormField-C01MrCeF.js",
@@ -2151,6 +4149,29 @@
   },
   "resources/js/Pages/Patients/Edit.tsx": {
     "file": "assets/Edit-DQfaL3Ql.js",
+=======
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_FormField-C1WiMGha.js",
+      "_TokenModal-CUF-Ukk6.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Alert-CIq-quGH.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_ModalHeader-CtOFeG1E.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Patients/Edit.tsx": {
+    "file": "assets/Edit-Buhtk337.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Patients/Edit.tsx",
     "isDynamicEntry": true,
@@ -2159,6 +4180,7 @@
       "resources/js/Pages/Patients/Create.tsx",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
+<<<<<<< Updated upstream
       "_BackArrowIcon-BPOLEMNA.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Button-CJw-BINd.js",
@@ -2177,11 +4199,33 @@
   },
   "resources/js/Pages/Patients/Index.tsx": {
     "file": "assets/Index-DXR18yXm.js",
+=======
+      "_set-DtTOySoq.js",
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Button-K6MWj98e.js",
+      "_FormField-C1WiMGha.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_TokenModal-CUF-Ukk6.js",
+      "_ModalHeader-CtOFeG1E.js",
+      "_Alert-CIq-quGH.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Patients/Index.tsx": {
+    "file": "assets/Index-Bwyp7stV.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Patients/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DashboardLayout-CvOh0uy6.js",
       "_Table-DwOExBn1.js",
       "_SearchableSelect-Bknypv8r.js",
@@ -2190,20 +4234,40 @@
       "_Label-2KTYyJBU.js",
       "_TextInput-BYNAk0Q6.js",
       "_Spinner-DbmRZcs2.js",
+=======
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Patients/Show.tsx": {
     "file": "assets/Show-CBGyRwxc.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Patients/Show.tsx": {
+    "file": "assets/Show-CicEHNCC.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/Patients/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DashboardLayout-CvOh0uy6.js",
       "_TokenModal-B4xEZGrx.js",
       "_FormField-C01MrCeF.js",
@@ -2227,11 +4291,38 @@
   },
   "resources/js/Pages/Pharmacies/Create.tsx": {
     "file": "assets/Create-BnweJKIr.js",
+=======
+      "_DashboardLayout-B8QEOknI.js",
+      "_TokenModal-CUF-Ukk6.js",
+      "_FormField-C1WiMGha.js",
+      "_ModalHeader-CtOFeG1E.js",
+      "_Alert-CIq-quGH.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_browser-CXdaRMTm.js",
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_Table-B5MLvM6m.js",
+      "_Badge-iS7ME2Ow.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Pharmacies/Create.tsx": {
+    "file": "assets/Create-D2CTbXwg.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Pharmacies/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_PharmacyForm-C1smXxlS.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2251,11 +4342,35 @@
   },
   "resources/js/Pages/Pharmacies/Edit.tsx": {
     "file": "assets/Edit-CU58bmpH.js",
+=======
+      "_PharmacyForm-yLy45__s.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Pharmacies/Edit.tsx": {
+    "file": "assets/Edit-lruPE8Ac.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Pharmacies/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_PharmacyForm-C1smXxlS.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2275,11 +4390,35 @@
   },
   "resources/js/Pages/Pharmacies/Index.tsx": {
     "file": "assets/Index-AiexJAWv.js",
+=======
+      "_PharmacyForm-yLy45__s.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Pharmacies/Index.tsx": {
+    "file": "assets/Index-DsP-D4SC.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Pharmacies/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2300,11 +4439,36 @@
   },
   "resources/js/Pages/Pharmacies/ManageUsers.tsx": {
     "file": "assets/ManageUsers-WuWFQK79.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Badge-iS7ME2Ow.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Pharmacies/ManageUsers.tsx": {
+    "file": "assets/ManageUsers-D4y9r-iR.js",
+>>>>>>> Stashed changes
     "name": "ManageUsers",
     "src": "resources/js/Pages/Pharmacies/ManageUsers.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_SearchableSelect-Bknypv8r.js",
@@ -2313,39 +4477,78 @@
       "_Button-CJw-BINd.js",
       "_Spinner-DbmRZcs2.js",
       "_Label-2KTYyJBU.js",
+=======
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Badge-iS7ME2Ow.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_Label-BD_PFblc.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Pharmacies/Show.tsx": {
     "file": "assets/Show-pfwiSXAp.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Pharmacies/Show.tsx": {
+    "file": "assets/Show-BK0sIjh5.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/Pharmacies/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Card-8kicsux2.js",
       "_Button-CJw-BINd.js",
       "_Badge-Cprziz8i.js",
+=======
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Badge-iS7ME2Ow.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/PharmacyFulfillments/Create.tsx": {
     "file": "assets/Create-D-ZDRFs1.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/PharmacyFulfillments/Create.tsx": {
+    "file": "assets/Create-CoX6h-ql.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/PharmacyFulfillments/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_PharmacyFulfillmentForm-C58wUvLe.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2364,11 +4567,35 @@
   },
   "resources/js/Pages/PharmacyFulfillments/Edit.tsx": {
     "file": "assets/Edit-srkhEG0N.js",
+=======
+      "_PharmacyFulfillmentForm-CFJZKJA-.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_inertiaSubmit-BS7Rs7yT.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/PharmacyFulfillments/Edit.tsx": {
+    "file": "assets/Edit-CS9I0uh4.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/PharmacyFulfillments/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_PharmacyFulfillmentForm-C58wUvLe.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2387,11 +4614,35 @@
   },
   "resources/js/Pages/PharmacyFulfillments/Index.tsx": {
     "file": "assets/Index-6Mn3vSz2.js",
+=======
+      "_PharmacyFulfillmentForm-CFJZKJA-.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_inertiaSubmit-BS7Rs7yT.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/PharmacyFulfillments/Index.tsx": {
+    "file": "assets/Index-CpyxP6_L.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/PharmacyFulfillments/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2412,29 +4663,71 @@
   },
   "resources/js/Pages/PharmacyFulfillments/Show.tsx": {
     "file": "assets/Show-CvAZ6PDs.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/PharmacyFulfillments/Show.tsx": {
+    "file": "assets/Show-SNbPVEo3.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/PharmacyFulfillments/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Card-8kicsux2.js",
       "_Button-CJw-BINd.js",
+=======
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/PharmacyFulfillments/Stock.tsx": {
     "file": "assets/Stock-CSlA7Sq_.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/PharmacyFulfillments/Stock.tsx": {
+    "file": "assets/Stock-D_kBq1UU.js",
+>>>>>>> Stashed changes
     "name": "Stock",
     "src": "resources/js/Pages/PharmacyFulfillments/Stock.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2456,11 +4749,37 @@
   },
   "resources/js/Pages/Placeholder.tsx": {
     "file": "assets/Placeholder-_kq5n0TX.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_StatCard-DaeaB0rU.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Placeholder.tsx": {
+    "file": "assets/Placeholder-CO-qkgwF.js",
+>>>>>>> Stashed changes
     "name": "Placeholder",
     "src": "resources/js/Pages/Placeholder.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DashboardLayout-CvOh0uy6.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
@@ -2472,11 +4791,26 @@
   },
   "resources/js/Pages/PrescriptionStocks/Index.tsx": {
     "file": "assets/Index-CK13pnRa.js",
+=======
+      "_DashboardLayout-B8QEOknI.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Button-K6MWj98e.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/PrescriptionStocks/Index.tsx": {
+    "file": "assets/Index-JrdlrNSb.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/PrescriptionStocks/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2498,11 +4832,37 @@
   },
   "resources/js/Pages/Prescriptions/Index.tsx": {
     "file": "assets/Index-M25sT-we.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Badge-iS7ME2Ow.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Prescriptions/Index.tsx": {
+    "file": "assets/Index-CAqRIFcP.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Prescriptions/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2516,38 +4876,81 @@
       "_Spinner-DbmRZcs2.js",
       "_Checkbox-D2dXuW7F.js",
       "_Badge-Cprziz8i.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_Checkbox-FULboo5W.js",
+      "_Badge-iS7ME2Ow.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Prescriptions/Report.tsx": {
     "file": "assets/Report-D55GBrtP.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Prescriptions/Report.tsx": {
+    "file": "assets/Report-BdNLnLV0.js",
+>>>>>>> Stashed changes
     "name": "Report",
     "src": "resources/js/Pages/Prescriptions/Report.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Card-8kicsux2.js",
       "_Button-CJw-BINd.js",
+=======
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Prescriptions/ScanCode.tsx": {
     "file": "assets/ScanCode-ByFfg5hR.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Prescriptions/ScanCode.tsx": {
+    "file": "assets/ScanCode-D4kh5etA.js",
+>>>>>>> Stashed changes
     "name": "ScanCode",
     "src": "resources/js/Pages/Prescriptions/ScanCode.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Card-8kicsux2.js",
@@ -2555,20 +4958,40 @@
       "_Label-2KTYyJBU.js",
       "_TextInput-BYNAk0Q6.js",
       "_Button-CJw-BINd.js",
+=======
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Alert-CIq-quGH.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Button-K6MWj98e.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Prescriptions/Show.tsx": {
     "file": "assets/Show-Be9aESwo.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Prescriptions/Show.tsx": {
+    "file": "assets/Show-DE8RVbBR.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/Prescriptions/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SearchableSelect-Bknypv8r.js",
       "_Table-DwOExBn1.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2583,20 +5006,47 @@
       "_Badge-Cprziz8i.js",
       "_Card-8kicsux2.js",
       "_Alert-Cx2gwwib.js",
+=======
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_ModalHeader-CtOFeG1E.js",
+      "_Tabs-BjgwCgiH.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_Badge-iS7ME2Ow.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_Card-DoCa12LE.js",
+      "_Alert-CIq-quGH.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/ProcedureTypes/Create.tsx": {
     "file": "assets/Create-DEFFc2eF.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/ProcedureTypes/Create.tsx": {
+    "file": "assets/Create-DNL5MhII.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/ProcedureTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_ProcedureTypeForm-BBp7aY4_.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2614,11 +5064,33 @@
   },
   "resources/js/Pages/ProcedureTypes/Edit.tsx": {
     "file": "assets/Edit-BtNSSZlT.js",
+=======
+      "_ProcedureTypeForm-BjhaakmP.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/ProcedureTypes/Edit.tsx": {
+    "file": "assets/Edit-CAGNyS8Z.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/ProcedureTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_ProcedureTypeForm-BBp7aY4_.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2636,11 +5108,33 @@
   },
   "resources/js/Pages/ProcedureTypes/Index.tsx": {
     "file": "assets/Index-vYvFqf9W.js",
+=======
+      "_ProcedureTypeForm-BjhaakmP.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/ProcedureTypes/Index.tsx": {
+    "file": "assets/Index-DeCprUGm.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/ProcedureTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2660,11 +5154,35 @@
   },
   "resources/js/Pages/Recipients/Create.tsx": {
     "file": "assets/Create-D-IhjwND.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Recipients/Create.tsx": {
+    "file": "assets/Create-7zU2FmTQ.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Recipients/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_RecipientForm-DI8nqXsh.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2683,11 +5201,34 @@
   },
   "resources/js/Pages/Recipients/Edit.tsx": {
     "file": "assets/Edit-BKFIrjxc.js",
+=======
+      "_RecipientForm-DrYYc4H-.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Recipients/Edit.tsx": {
+    "file": "assets/Edit-7QrOvAic.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Recipients/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_RecipientForm-DI8nqXsh.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2706,11 +5247,34 @@
   },
   "resources/js/Pages/Recipients/Index.tsx": {
     "file": "assets/Index-CTJ_vo18.js",
+=======
+      "_RecipientForm-DrYYc4H-.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Textarea-C3ik-bUL.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Recipients/Index.tsx": {
+    "file": "assets/Index-ViyfZu_X.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Recipients/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2730,11 +5294,35 @@
   },
   "resources/js/Pages/Relations/Create.tsx": {
     "file": "assets/Create-CHekYczP.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Relations/Create.tsx": {
+    "file": "assets/Create-CGrzNxf5.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Relations/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_RelationForm-CQJCHVOO.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2752,11 +5340,33 @@
   },
   "resources/js/Pages/Relations/Edit.tsx": {
     "file": "assets/Edit-ZrNniDWF.js",
+=======
+      "_RelationForm-CrKhBbqj.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Relations/Edit.tsx": {
+    "file": "assets/Edit-3FrLXH4t.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Relations/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_RelationForm-CQJCHVOO.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2774,11 +5384,33 @@
   },
   "resources/js/Pages/Relations/Index.tsx": {
     "file": "assets/Index-DrhvEZO_.js",
+=======
+      "_RelationForm-CrKhBbqj.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Relations/Index.tsx": {
+    "file": "assets/Index-6ewXYAVY.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Relations/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2798,11 +5430,35 @@
   },
   "resources/js/Pages/Rooms/Create.tsx": {
     "file": "assets/Create-BHIf2yrS.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Rooms/Create.tsx": {
+    "file": "assets/Create-kMj6XIjy.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Rooms/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_RoomForm-DYwXfRLE.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2821,11 +5477,34 @@
   },
   "resources/js/Pages/Rooms/Edit.tsx": {
     "file": "assets/Edit-DAsaYgwj.js",
+=======
+      "_RoomForm-IkpySLcP.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Rooms/Edit.tsx": {
+    "file": "assets/Edit-Ho9eaSOU.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Rooms/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_RoomForm-DYwXfRLE.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2844,11 +5523,34 @@
   },
   "resources/js/Pages/Rooms/Index.tsx": {
     "file": "assets/Index-BuC8eA3r.js",
+=======
+      "_RoomForm-IkpySLcP.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Rooms/Index.tsx": {
+    "file": "assets/Index-DHxs2gpg.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Rooms/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2869,30 +5571,73 @@
   },
   "resources/js/Pages/Rooms/Show.tsx": {
     "file": "assets/Show-Cr9GzSGW.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Rooms/Show.tsx": {
+    "file": "assets/Show-C-5usUdh.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/Rooms/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Card-8kicsux2.js",
       "_Button-CJw-BINd.js",
       "_Badge-Cprziz8i.js",
+=======
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Badge-iS7ME2Ow.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Sections/Create.tsx": {
     "file": "assets/Create-CvbaOX6a.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Sections/Create.tsx": {
+    "file": "assets/Create-BSl71wg5.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Sections/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SectionForm-D0rukzP4.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2911,11 +5656,34 @@
   },
   "resources/js/Pages/Sections/Edit.tsx": {
     "file": "assets/Edit-COlDXSEV.js",
+=======
+      "_SectionForm-BNbmjXWQ.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Sections/Edit.tsx": {
+    "file": "assets/Edit-BMF4Bhdx.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Sections/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SectionForm-D0rukzP4.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -2934,11 +5702,34 @@
   },
   "resources/js/Pages/Sections/Index.tsx": {
     "file": "assets/Index-XDB53yJ4.js",
+=======
+      "_SectionForm-BNbmjXWQ.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Sections/Index.tsx": {
+    "file": "assets/Index-_8V1ZEbf.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Sections/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -2959,11 +5750,36 @@
   },
   "resources/js/Pages/Users/Create.tsx": {
     "file": "assets/Create-DJMJuS0E.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Users/Create.tsx": {
+    "file": "assets/Create-Cuft22kG.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/Users/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_UserForm-RzpVZGmI.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_BackArrowIcon-BPOLEMNA.js",
@@ -2984,11 +5800,36 @@
   },
   "resources/js/Pages/Users/Edit.tsx": {
     "file": "assets/Edit-CRRflQLf.js",
+=======
+      "_UserForm-BkKnndPM.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableMultiSelect-B0B-7lvc.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_inertiaSubmit-BS7Rs7yT.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Checkbox-FULboo5W.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Users/Edit.tsx": {
+    "file": "assets/Edit-CbJ4ME3r.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/Users/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_UserForm-RzpVZGmI.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_BackArrowIcon-BPOLEMNA.js",
@@ -3009,11 +5850,36 @@
   },
   "resources/js/Pages/Users/Index.tsx": {
     "file": "assets/Index-BU_mRXQx.js",
+=======
+      "_UserForm-BkKnndPM.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_BackArrowIcon-BkUe1T0d.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_SearchableMultiSelect-B0B-7lvc.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_inertiaSubmit-BS7Rs7yT.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Checkbox-FULboo5W.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Users/Index.tsx": {
+    "file": "assets/Index-DFATa-Fi.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/Users/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_DashboardLayout-CvOh0uy6.js",
       "_SearchableSelect-Bknypv8r.js",
       "_Table-DwOExBn1.js",
@@ -3024,20 +5890,42 @@
       "_Spinner-DbmRZcs2.js",
       "_Badge-Cprziz8i.js",
       "_ToggleSwitch-CRpHPPvT.js",
+=======
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js",
+      "_Badge-iS7ME2Ow.js",
+      "_ToggleSwitch-KFRiUDXu.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/VitalSignTypes/Create.tsx": {
     "file": "assets/Create-DMMOBezd.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/VitalSignTypes/Create.tsx": {
+    "file": "assets/Create-B7-9vylf.js",
+>>>>>>> Stashed changes
     "name": "Create",
     "src": "resources/js/Pages/VitalSignTypes/Create.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_VitalSignTypeForm-Bo79m5GL.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -3055,11 +5943,33 @@
   },
   "resources/js/Pages/VitalSignTypes/Edit.tsx": {
     "file": "assets/Edit-BdAqxwCk.js",
+=======
+      "_VitalSignTypeForm-D-A286_e.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/VitalSignTypes/Edit.tsx": {
+    "file": "assets/Edit-BggDIc6C.js",
+>>>>>>> Stashed changes
     "name": "Edit",
     "src": "resources/js/Pages/VitalSignTypes/Edit.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_VitalSignTypeForm-Bo79m5GL.js",
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
@@ -3077,11 +5987,33 @@
   },
   "resources/js/Pages/VitalSignTypes/Index.tsx": {
     "file": "assets/Index-xg9g_FqA.js",
+=======
+      "_VitalSignTypeForm-D-A286_e.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Card-DoCa12LE.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Label-BD_PFblc.js",
+      "_Button-K6MWj98e.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/VitalSignTypes/Index.tsx": {
+    "file": "assets/Index-OYlbPf-K.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/VitalSignTypes/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -3101,30 +6033,72 @@
   },
   "resources/js/Pages/VitalSignTypes/Show.tsx": {
     "file": "assets/Show-CT2C_8Mq.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/VitalSignTypes/Show.tsx": {
+    "file": "assets/Show-BluVXauT.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/VitalSignTypes/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Table-DwOExBn1.js",
       "_Card-8kicsux2.js",
       "_Button-CJw-BINd.js",
+=======
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Button-K6MWj98e.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/VitalSigns/Index.tsx": {
     "file": "assets/Index-D35WE-Pr.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/VitalSigns/Index.tsx": {
+    "file": "assets/Index-irvwwnfc.js",
+>>>>>>> Stashed changes
     "name": "Index",
     "src": "resources/js/Pages/VitalSigns/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_SettingsFilterActions-m_kWkHLL.js",
       "_settingsUi-B7h6jwNx.js",
       "_SettingsPagination-BeLFYQ6b.js",
@@ -3146,35 +6120,83 @@
   },
   "resources/js/Pages/VitalSigns/Show.tsx": {
     "file": "assets/Show-bfCkQJxj.js",
+=======
+      "_SettingsFilterActions-81zUXfYd.js",
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_SettingsPagination-b9AhCiF1.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_SearchableSelect-D6H-_SxL.js",
+      "_Table-B5MLvM6m.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Label-BD_PFblc.js",
+      "_TextInput-D7t4OsfQ.js",
+      "_Badge-iS7ME2Ow.js",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js",
+      "_Button-K6MWj98e.js",
+      "_Spinner-Dw_QhPYn.js"
+    ],
+    "css": [
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/VitalSigns/Show.tsx": {
+    "file": "assets/Show-Ct4BtgpH.js",
+>>>>>>> Stashed changes
     "name": "Show",
     "src": "resources/js/Pages/VitalSigns/Show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
+<<<<<<< Updated upstream
       "_settingsUi-B7h6jwNx.js",
       "_DashboardLayout-CvOh0uy6.js",
       "_Card-8kicsux2.js",
       "_Badge-Cprziz8i.js",
       "_Button-CJw-BINd.js",
+=======
+      "_SettingsPageHeader-bxmvMPs6.js",
+      "_DashboardLayout-B8QEOknI.js",
+      "_settingsUi-CcnNFSQq.js",
+      "_Card-DoCa12LE.js",
+      "_Badge-iS7ME2Ow.js",
+      "_Button-K6MWj98e.js",
+>>>>>>> Stashed changes
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
     ]
   },
   "resources/js/Pages/Welcome.tsx": {
     "file": "assets/Welcome-B756aVtn.js",
+=======
+      "assets/app-BVVUd4OJ.css"
+    ]
+  },
+  "resources/js/Pages/Welcome.tsx": {
+    "file": "assets/Welcome-C5l2lR4r.js",
+>>>>>>> Stashed changes
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
+=======
+      "assets/app-BVVUd4OJ.css"
+>>>>>>> Stashed changes
     ]
   },
   "resources/js/app.js": {
@@ -3187,13 +6209,18 @@
     ]
   },
   "resources/js/app.tsx": {
+<<<<<<< Updated upstream
     "file": "assets/app-BRiMmzYb.js",
+=======
+    "file": "assets/app-BQ1CsJIN.js",
+>>>>>>> Stashed changes
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
     "imports": [
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js"
+      "_index-BetwS6Uc.js",
+      "_set-DtTOySoq.js"
     ],
     "dynamicImports": [
       "resources/js/Pages/Appointments/Completed.tsx",
@@ -3230,6 +6257,12 @@
       "resources/js/Pages/FoodTypes/Index.tsx",
       "resources/js/Pages/Incomes/Create.tsx",
       "resources/js/Pages/Incomes/Index.tsx",
+      "resources/js/Pages/Laboratory/Registrations/Report.tsx",
+      "resources/js/Pages/Laboratory/Registrations/ReportDetailed.tsx",
+      "resources/js/Pages/Laboratory/Results/Grouped.tsx",
+      "resources/js/Pages/Laboratory/Results/Index.tsx",
+      "resources/js/Pages/Laboratory/Results/Show.tsx",
+      "resources/js/Pages/Laboratory/Scan.tsx",
       "resources/js/Pages/Layout.tsx",
       "resources/js/Pages/MedicineTypes/Create.tsx",
       "resources/js/Pages/MedicineTypes/Edit.tsx",
@@ -3300,15 +6333,21 @@
       "resources/js/Pages/Welcome.tsx"
     ],
     "css": [
+<<<<<<< Updated upstream
       "assets/app-DB7TiiEP.css"
+=======
+      "assets/app-BVVUd4OJ.css"
+>>>>>>> Stashed changes
     ]
   },
   "resources/js/ckeditor.js": {
-    "file": "assets/ckeditor-Df4Ezdzb.js",
+    "file": "assets/ckeditor-DVeVShYC.js",
     "name": "ckeditor",
     "src": "resources/js/ckeditor.js",
     "isEntry": true,
     "imports": [
+      "_ckeditor5-CmugbGP-.js",
+      "_set-DtTOySoq.js",
       "__commonjsHelpers-DsqdWQfm.js"
     ]
   }

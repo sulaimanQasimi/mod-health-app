@@ -261,16 +261,9 @@ export default function ShowDentistRegistration({
                     subtitle={`#${registration.ref_no ?? registration.id}`}
                     icon="bx-plus-medical"
                     accent="from-blue-500 to-indigo-600"
-                    backHref={urls.index ?? undefined}
                     backLabel={t('global.back')}
                     action={
                         <div className="flex flex-wrap gap-2">
-                            {urls.appointment && (
-                                <Button as={Link} href={urls.appointment} color="light" size="sm">
-                                    <i className="bx bx-arrow-back me-2" />
-                                    {t('global.back_to_appointment')}
-                                </Button>
-                            )}
                             {permissions.edit && (
                                 <Button color="warning" size="sm" onClick={() => setEditOpen(true)}>
                                     <i className="bx bx-edit me-2" />

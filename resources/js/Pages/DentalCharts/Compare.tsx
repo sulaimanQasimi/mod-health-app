@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
 import { useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
@@ -127,11 +127,6 @@ export default function CompareDentalCharts({
                         <p className="py-8 text-center text-sm text-gray-500">{t('global.no_charts_found')}</p>
                     )}
 
-                    <div className="mt-4">
-                        <Button as={Link} href={urls.registrationShow} color="light" size="sm">
-                            {t('global.back_to_appointment')}
-                        </Button>
-                    </div>
                 </Card>
             </div>
         </DashboardLayout>

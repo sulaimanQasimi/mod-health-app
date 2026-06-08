@@ -1,6 +1,12 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Card } from 'flowbite-react';
+import { Head, router } from '@inertiajs/react';
+import { Badge, Card } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import {
+    AppointmentActionGroup,
+    AppointmentIconLink,
+    AppointmentInfoTip,
+    AppointmentPillButton,
+} from '../../Components/Appointments/AppointmentTableActions';
 import AppointmentPageHeader from '../../Components/Appointments/AppointmentPageHeader';
 import AppointmentPagination from '../../Components/Appointments/AppointmentPagination';
 import ChangeDepartmentModal from '../../Components/Appointments/ChangeDepartmentModal';
@@ -175,59 +181,51 @@ export default function Department({
                                             </Badge>
                                         </TableCell>
                                         <TableCell align="center">
-                                            <div className="flex flex-wrap items-center justify-center gap-1">
+                                            <AppointmentActionGroup>
+                                                {appointment.permissions.accept && (
+                                                    <AppointmentPillButton
+                                                        icon="bx-check"
+                                                        label={t('global.accept')}
+                                                        variant="accept"
+                                                        onClick={() => handleAccept(appointment.id)}
+                                                    />
+                                                )}
                                                 {appointment.permissions.changeDepartment && (
-                                                    <Button
-                                                        size="xs"
-                                                        color="warning"
+                                                    <AppointmentPillButton
+                                                        icon="bx-transfer"
+                                                        label={t('global.change_department')}
+                                                        variant="changeDepartment"
                                                         onClick={() =>
                                                             setChangeDepartmentTarget({
                                                                 id: appointment.id,
                                                                 departmentId: appointment.department_id,
                                                             })
                                                         }
-                                                        title={t('global.change_department')}
-                                                    >
-                                                        <i className="bx bx-transfer me-1" />
-                                                        {t('global.change_department')}
-                                                    </Button>
-                                                )}
-                                                {appointment.permissions.accept && (
-                                                    <Button
-                                                        size="xs"
-                                                        color="success"
-                                                        onClick={() => handleAccept(appointment.id)}
-                                                    >
-                                                        <i className="bx bx-check me-1" />
-                                                        {t('global.accept')}
-                                                    </Button>
-                                                )}
-                                                {appointment.refferal_remarks && (
-                                                    <span
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-cyan-600"
-                                                        title={appointment.refferal_remarks}
-                                                    >
-                                                        <i className="bx bx-info-circle text-lg" />
-                                                    </span>
-                                                )}
-                                                {appointment.referring_doctor_name && (
-                                                    <span
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600"
-                                                        title={`${t('global.introduced_by')}: ${appointment.referring_doctor_name}`}
-                                                    >
-                                                        <i className="bx bx-user text-lg" />
-                                                    </span>
+                                                    />
                                                 )}
                                                 {appointment.permissions.view && (
-                                                    <Link
+                                                    <AppointmentIconLink
                                                         href={`${urls.show}/${appointment.id}`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                                                        icon="bx-expand"
                                                         title={t('global.view')}
-                                                    >
-                                                        <i className="bx bx-expand text-lg" />
-                                                    </Link>
+                                                        variant="view"
+                                                    />
                                                 )}
-                                            </div>
+                                                {appointment.refferal_remarks && (
+                                                    <AppointmentInfoTip
+                                                        icon="bx-info-circle"
+                                                        title={appointment.refferal_remarks}
+                                                        variant="info"
+                                                    />
+                                                )}
+                                                {appointment.referring_doctor_name && (
+                                                    <AppointmentInfoTip
+                                                        icon="bx-user"
+                                                        title={`${t('global.introduced_by')}: ${appointment.referring_doctor_name}`}
+                                                        variant="user"
+                                                    />
+                                                )}
+                                            </AppointmentActionGroup>
                                         </TableCell>
                                     </TableRow>
                                 ))

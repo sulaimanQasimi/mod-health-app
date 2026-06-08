@@ -82,6 +82,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             subtitle: t('global.all_registered_patients'),
             iconClass: 'bx bx-user',
             iconBgClass: 'bg-blue-600',
+            borderClass: 'border-blue-500',
+            valueClass: 'text-blue-600',
         },
         {
             title: t('global.all_appointments'),
@@ -89,6 +91,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             subtitle: t('global.all_registered_appointments'),
             iconClass: 'bx bx-history',
             iconBgClass: 'bg-green-600',
+            borderClass: 'border-green-500',
+            valueClass: 'text-green-600',
         },
         {
             title: t('global.consultations'),
@@ -96,6 +100,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             subtitle: t('global.all_registered_consultations'),
             iconClass: 'bx bx-chat',
             iconBgClass: 'bg-cyan-600',
+            borderClass: 'border-cyan-500',
+            valueClass: 'text-cyan-600',
         },
         {
             title: t('global.all_hospitalized_patients'),
@@ -103,6 +109,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             subtitle: t('global.all_registered_hospitalizations'),
             iconClass: 'bx bx-bed',
             iconBgClass: 'bg-yellow-500',
+            borderClass: 'border-yellow-500',
+            valueClass: 'text-yellow-600',
         },
         {
             title: t('global.checkups'),
@@ -110,6 +118,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             subtitle: t('global.all_registered_checkups'),
             iconClass: 'bx bx-hard-hat',
             iconBgClass: 'bg-red-600',
+            borderClass: 'border-red-500',
+            valueClass: 'text-red-600',
         },
         {
             title: t('global.all_icu_patients'),
@@ -117,6 +127,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             subtitle: t('global.all_registered_icu'),
             iconClass: 'bx bx-tv',
             iconBgClass: 'bg-gray-800',
+            borderClass: 'border-gray-700',
+            valueClass: 'text-gray-800 dark:text-gray-200',
         },
         {
             title: t('global.all_ccu_patients'),
@@ -133,6 +145,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             subtitle: t('global.all_registered_prescriptions'),
             iconClass: 'bx bx-receipt',
             iconBgClass: 'bg-purple-600',
+            borderClass: 'border-purple-500',
+            valueClass: 'text-purple-600',
         },
         {
             title: t('global.all_operations'),
@@ -140,6 +154,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             subtitle: t('global.all_registered_operations'),
             iconClass: 'bx bx-cut',
             iconBgClass: 'bg-pink-600',
+            borderClass: 'border-pink-500',
+            valueClass: 'text-pink-600',
         },
         {
             title: t('global.all_physiotherapy_procedures'),
@@ -147,6 +163,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             subtitle: t('global.all_registered_physiotherapy_procedures'),
             iconClass: 'bx bx-spa',
             iconBgClass: 'bg-teal-500',
+            borderClass: 'border-teal-500',
+            valueClass: 'text-teal-600',
         },
     ];
 
@@ -154,20 +172,26 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
         {
             title: t('global.occupied_beds'),
             value: formatValue(dashboard.occupied_beds),
-            className: 'border-yellow-300 bg-yellow-50 dark:border-yellow-700 dark:bg-yellow-900/20',
-            badgeClass: 'bg-yellow-500',
+            iconClass: 'bx bx-bed',
+            iconBgClass: 'bg-yellow-500',
+            borderClass: 'border-yellow-500',
+            valueClass: 'text-yellow-600',
         },
         {
             title: t('global.all_beds'),
             value: formatValue(dashboard.all_beds),
-            className: 'border-blue-300 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20',
-            badgeClass: 'bg-blue-600',
+            iconClass: 'bx bx-bed',
+            iconBgClass: 'bg-blue-600',
+            borderClass: 'border-blue-500',
+            valueClass: 'text-blue-600',
         },
         {
             title: t('global.free_beds'),
             value: formatValue(dashboard.free_beds),
-            className: 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-900/20',
-            badgeClass: 'bg-green-600',
+            iconClass: 'bx bx-bed',
+            iconBgClass: 'bg-green-600',
+            borderClass: 'border-green-500',
+            valueClass: 'text-green-600',
         },
     ];
 
@@ -205,7 +229,7 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
                 <Card>
                     <div className="mb-3 flex items-center gap-2">
                         <i className="bx bx-line-chart text-blue-600" />
-                        <h5 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h5 className="text-lg text-gray-900 dark:text-white">
                             {t('global.patients_comparison_graph')}
                         </h5>
                     </div>
@@ -215,7 +239,7 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
                 <Card>
                     <div className="mb-3 flex items-center gap-2">
                         <i className="bx bx-line-chart text-blue-600" />
-                        <h5 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h5 className="text-lg text-gray-900 dark:text-white">
                             {t('global.appointments_comparison_graph')}
                         </h5>
                     </div>
@@ -225,7 +249,7 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
 
             <Card className="mt-4">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                    <h5 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+                    <h5 className="flex items-center gap-2 text-lg text-gray-900 dark:text-white">
                         <i className="bx bx-user-check text-blue-600" />
                         {t('global.appointments_processed_by_user')}
                     </h5>
@@ -259,7 +283,7 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             <Card className="mt-4">
                 <div className="mb-3 flex items-center gap-2">
                     <i className="bx bx-line-chart text-blue-600" />
-                    <h5 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h5 className="text-lg text-gray-900 dark:text-white">
                         {t('global.doctors_activity_graph')}
                     </h5>
                 </div>
@@ -269,7 +293,7 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             <Card className="mt-4">
                 <div className="mb-3 flex items-center gap-2">
                     <i className="bx bx-line-chart text-blue-600" />
-                    <h5 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h5 className="text-lg text-gray-900 dark:text-white">
                         {t('global.nurses_activity_graph')}
                     </h5>
                 </div>

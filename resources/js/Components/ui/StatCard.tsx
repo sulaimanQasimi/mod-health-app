@@ -42,13 +42,19 @@ export default function StatCard({
     );
 
     return (
-        <Card className={mergeClasses(borderClass, className)}>
+        <Card
+            className={mergeClasses(
+                'border !shadow-sm',
+                borderClass ?? 'border-gray-200 dark:border-gray-700',
+                className,
+            )}
+        >
             <div className="flex items-start justify-between gap-3">
                 <div>
-                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{title}</h4>
+                    <h4 className="text-sm text-gray-700 dark:text-gray-300">{title}</h4>
                     <p
                         className={mergeClasses(
-                            'mt-2 text-3xl font-bold',
+                            'mt-2 text-3xl',
                             valueClass ?? 'text-gray-900 dark:text-white',
                         )}
                     >

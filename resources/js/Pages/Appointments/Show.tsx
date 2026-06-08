@@ -78,10 +78,10 @@ export default function ShowAppointment({
             <Head title={t('global.appointment_details')} />
 
             <div className="mx-auto max-w-6xl space-y-6">
-                <Card className="shadow-sm">
+                <Card className="border !shadow-sm">
                     <div className="flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-700 lg:flex-row lg:items-center lg:justify-between">
                         <div>
-                            <h1 className="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">
+                            <h1 className="flex items-center gap-2 text-xl text-gray-900 dark:text-white">
                                 <i className="bx bx-calendar-check text-cyan-500" />
                                 {t('global.appointment_details')}
                             </h1>
@@ -122,10 +122,10 @@ export default function ShowAppointment({
                                 key={field.label}
                                 className="rounded-xl border border-gray-100 bg-gray-50/80 p-4 text-center dark:border-gray-700/60 dark:bg-gray-800/40"
                             >
-                                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
                                     {field.label}
                                 </p>
-                                <p className="mt-2 flex items-center justify-center gap-1 text-sm font-semibold text-gray-900 dark:text-white">
+                                <p className="mt-2 flex items-center justify-center gap-1 text-sm text-gray-900 dark:text-white">
                                     <i className={`bx ${field.icon} text-cyan-500`} />
                                     {field.value ?? '—'}
                                 </p>
@@ -134,14 +134,14 @@ export default function ShowAppointment({
                     </div>
                 </Card>
 
-                <Card className="shadow-sm">
-                    <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                <Card className="border !shadow-sm">
+                    <h2 className="mb-4 flex items-center gap-2 text-sm text-gray-900 dark:text-white">
                         <i className="bx bx-history text-violet-500" />
                         {t('global.patient_history')}
                     </h2>
                     <div className="grid gap-4 lg:grid-cols-2">
                         <div>
-                            <h3 className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-center text-sm font-semibold text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                            <h3 className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-center text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
                                 {t('global.primary_diagnoses')}
                             </h3>
                             <ul className="space-y-2">
@@ -154,7 +154,7 @@ export default function ShowAppointment({
                             </ul>
                         </div>
                         <div>
-                            <h3 className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-center text-sm font-semibold text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
+                            <h3 className="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
                                 {t('global.final_diagnoses')}
                             </h3>
                             <ul className="space-y-2">

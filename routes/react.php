@@ -220,9 +220,19 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('pharmacy-fulfillments')->name('pharmacy-fulfillments.')->group(function () {
         Route::get('/', [PharmacyFulfillmentController::class, 'index'])->name('index');
         Route::get('/stock', [PharmacyFulfillmentController::class, 'stock'])->name('stock');
+        Route::get('/create', [PharmacyFulfillmentController::class, 'create'])->name('create');
+        Route::post('/', [PharmacyFulfillmentController::class, 'store'])->name('store');
+        Route::get('/{pharmacyFulfillment}', [PharmacyFulfillmentController::class, 'show'])->name('show');
+        Route::get('/{pharmacyFulfillment}/edit', [PharmacyFulfillmentController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{pharmacyFulfillment}', [PharmacyFulfillmentController::class, 'update'])->name('update');
+        Route::delete('/{pharmacyFulfillment}', [PharmacyFulfillmentController::class, 'destroy'])->name('destroy');
     });
 
-    Route::get('/incomes', [IncomeController::class, 'index'])->name('incomes.index');
+    Route::prefix('incomes')->name('incomes.')->group(function () {
+        Route::get('/', [IncomeController::class, 'index'])->name('index');
+        Route::get('/create', [IncomeController::class, 'create'])->name('create');
+        Route::post('/', [IncomeController::class, 'store'])->name('store');
+    });
 
     Route::prefix('outcomes')->name('outcomes.')->group(function () {
         Route::get('/', [OutcomeController::class, 'index'])->name('index');

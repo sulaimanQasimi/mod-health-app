@@ -308,15 +308,19 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
         Route::get('/scan', [LaboratoryController::class, 'scan'])->name('scan');
+        Route::post('/scan', [LaboratoryController::class, 'scanSubmit'])->name('scan.submit');
         Route::prefix('results')->name('results.')->group(function () {
             Route::get('/pending', [LaboratoryController::class, 'pending'])->name('pending');
             Route::get('/in-progress', [LaboratoryController::class, 'inProgress'])->name('in-progress');
             Route::get('/completed', [LaboratoryController::class, 'completed'])->name('completed');
             Route::get('/grouped', [LaboratoryController::class, 'grouped'])->name('grouped');
+            Route::post('/{registration}/accept', [LaboratoryController::class, 'accept'])->name('accept');
         });
         Route::prefix('registrations')->name('registrations.')->group(function () {
             Route::get('/report', [LaboratoryController::class, 'registrationReport'])->name('report');
             Route::get('/report-detailed', [LaboratoryController::class, 'registrationReportDetailed'])->name('report-detailed');
+            Route::post('/{registration}/mark-completed', [LaboratoryController::class, 'markCompleted'])->name('mark-completed');
+            Route::post('/{registration}/cancel', [LaboratoryController::class, 'cancel'])->name('cancel');
         });
     });
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Concerns;
 use App\Models\DentalChart;
 use App\Models\DentistRegistration;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -175,7 +176,7 @@ trait ManagesDentalCharts
         ];
     }
 
-    protected function applyChartIndexFilters(Builder $query, array $filters): Builder
+    protected function applyChartIndexFilters(Builder|Relation $query, array $filters): Builder|Relation
     {
         if (! empty($filters['tooth_number'])) {
             $query->where('tooth_number', $filters['tooth_number']);

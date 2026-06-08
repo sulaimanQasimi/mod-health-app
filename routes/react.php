@@ -241,15 +241,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/report', [OutcomeController::class, 'report'])->name('report');
     });
 
-    Route::prefix('medicine-types')->name('medicine-types.')->group(function () {
-        Route::get('/', [MedicineTypeController::class, 'index'])->name('index');
-        Route::get('/create', [MedicineTypeController::class, 'create'])->name('create');
-        Route::post('/', [MedicineTypeController::class, 'store'])->name('store');
-        Route::get('/{medicineType}/edit', [MedicineTypeController::class, 'edit'])->name('edit');
-        Route::match(['put', 'post'], '/{medicineType}', [MedicineTypeController::class, 'update'])->name('update');
-        Route::delete('/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('destroy');
-    });
-
     Route::prefix('depots')->name('depots.')->group(function () {
         Route::get('/', [DepotController::class, 'index'])->name('index');
         Route::get('/transactions', [DepotTransactionController::class, 'index'])->name('transactions.index');
@@ -468,6 +459,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{operationType}/edit', [OperationTypeController::class, 'edit'])->name('edit');
         Route::match(['put', 'post'], '/{operationType}', [OperationTypeController::class, 'update'])->name('update');
         Route::delete('/{operationType}', [OperationTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('medicine-types')->name('medicine-types.')->group(function () {
+        Route::get('/', [MedicineTypeController::class, 'index'])->name('index');
+        Route::get('/create', [MedicineTypeController::class, 'create'])->name('create');
+        Route::post('/', [MedicineTypeController::class, 'store'])->name('store');
+        Route::get('/{medicineType}/edit', [MedicineTypeController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{medicineType}', [MedicineTypeController::class, 'update'])->name('update');
+        Route::delete('/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('medicines')->name('medicines.')->group(function () {

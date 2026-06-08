@@ -125,7 +125,6 @@ class SidebarMenuService
                 $children[] = $this->item('incomes', 'global.stock_income', null, 'react.incomes.index');
                 $children[] = $this->item('outcomes', 'global.stock_outcome', null, 'react.outcomes.index');
                 $children[] = $this->item('outcomes-report', 'global.outcome_reports', null, 'react.outcomes.report');
-                $children[] = $this->item('medicine-types-stock', 'global.medicine_types', null, 'react.medicine-types.index');
             }
             if ($children) {
                 $items[] = $this->group('pharmacy-stock', 'global.prescription_stocks', 'bx-package', [
@@ -134,7 +133,6 @@ class SidebarMenuService
                     'react.pharmacies.*',
                     'react.incomes.*',
                     'react.outcomes.*',
-                    'react.medicine-types.*',
                 ], $children);
             }
         }

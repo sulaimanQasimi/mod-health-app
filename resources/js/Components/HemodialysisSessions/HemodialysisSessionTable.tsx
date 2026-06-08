@@ -1,5 +1,5 @@
 import { Badge } from 'flowbite-react';
-import { Link, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
     Table,
@@ -9,13 +9,14 @@ import {
     TableHeader,
     TableRow,
 } from '../ui/Table';
+import TableActionButton from '../ui/TableActionButton';
+import { TableActionsCell } from '../ui/TableActions';
 import SettingsEmptyState from '../Settings/SettingsEmptyState';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
     HemodialysisSessionListItem,
     HemodialysisSessionListPermissions,
 } from '../../types/hemodialysisSession';
-import { settingsActionClasses } from '../../utils/settingsUi';
 import HemodialysisSessionStatusBadge from './HemodialysisSessionStatusBadge';
 
 interface HemodialysisSessionTableProps {
@@ -37,17 +38,6 @@ export default function HemodialysisSessionTable({
     if (items.length === 0) {
         return <SettingsEmptyState message={t('global.no_hemodialysis_sessions_found')} />;
     }
-
-    const handleDelete = (id: number) => {
-        if (!window.confirm(t('global.confirm_delete'))) {
-            return;
-        }
-        setDeletingId(id);
-        router.delete(`${showUrlBase}/${id}`, {
-            preserveScroll: true,
-            onFinish: () => setDeletingId(null),
-        });
-    };
 
     return (
         <Table>
@@ -85,37 +75,27 @@ export default function HemodialysisSessionTable({
                         <TableCell>
                             <HemodialysisSessionStatusBadge status={item.status} />
                         </TableCell>
-                        <TableCell align="center">
-                            <div className="flex justify-center gap-1">
-                                <Link
-                                    href={`${showUrlBase}/${item.id}`}
-                                    className={settingsActionClasses.view}
-                                    title={t('global.show')}
-                                >
-                                    <i className="bx bx-show text-lg" />
-                                </Link>
-                                {permissions.edit && (
-                                    <Link
-                                        href={`${editUrlBase}/${item.id}/edit`}
-                                        className={settingsActionClasses.edit}
-                                        title={t('global.edit')}
-                                    >
-                                        <i className="bx bx-edit text-lg" />
-                                    </Link>
-                                )}
-                                {permissions.delete && (
-                                    <button
-                                        type="button"
-                                        disabled={deletingId === item.id}
-                                        onClick={() => handleDelete(item.id)}
-                                        className={settingsActionClasses.delete}
-                                        title={t('global.delete')}
-                                    >
-                                        <i className="bx bx-trash text-lg" />
-                                    </button>
-                                )}
-                            </div>
-                        </TableCell>
+                        <TableActionsCell>
+                            <TableActionButton kind="view" href={`${showUrlBase}/${item.id}`} />
+                            <TableActionButton
+                                kind="edit"
+                                href={`${editUrlBase}/${item.id}/edit`}
+                                permission={permissions.edit}
+                            />
+                            <TableActionButton
+                                kind="delete"
+                                permission={permissions.delete}
+                                disabled={deletingId === item.id}
+                                confirm={t('global.confirm_delete')}
+                                onClick={() => {
+                                    setDeletingId(item.id);
+                                    router.delete(`${showUrlBase}/${item.id}`, {
+                                        preserveScroll: true,
+                                        onFinish: () => setDeletingId(null),
+                                    });
+                                }}
+                            />
+                        </TableActionsCell>
                     </TableRow>
                 ))}
             </TableBody>

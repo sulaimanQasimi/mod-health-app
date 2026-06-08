@@ -10,7 +10,8 @@ import {
     PrescriptionShowItem,
     PrescriptionShowUrls,
 } from '../../types/prescription';
-import { settingsActionClasses } from '../../utils/settingsUi';
+import TableActionButton from '../ui/TableActionButton';
+import { TableActionsCell } from '../ui/TableActions';
 
 interface AlternativesModalProps {
     open: boolean;
@@ -230,36 +231,27 @@ export default function AlternativesModal({
                                                     {alternative.is_delivered ? t('global.delivered') : t('global.not_delivered')}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell align="center">
-                                                <div className="flex justify-center gap-1">
-                                                    {!readonly && (
-                                                        <>
-                                                            <button
-                                                                type="button"
-                                                                className={settingsActionClasses.edit}
-                                                                onClick={() => handleSelect(alternative)}
-                                                                title={t('global.select_alternative')}
-                                                            >
-                                                                <i className="bx bx-check text-lg" />
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                className={settingsActionClasses.view}
-                                                                onClick={() => handleToggleStatus(alternative)}
-                                                            >
-                                                                <i className={`bx ${alternative.is_delivered ? 'bx-x' : 'bx-check'} text-lg`} />
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                className={settingsActionClasses.delete}
-                                                                onClick={() => handleDelete(alternative)}
-                                                            >
-                                                                <i className="bx bx-trash text-lg" />
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </TableCell>
+                                            {!readonly ? (
+                                                <TableActionsCell>
+                                                    <TableActionButton
+                                                        kind="accept"
+                                                        variant="icon"
+                                                        title={t('global.select_alternative')}
+                                                        onClick={() => handleSelect(alternative)}
+                                                    />
+                                                    <TableActionButton
+                                                        kind="custom"
+                                                        icon={alternative.is_delivered ? 'bx-x' : 'bx-check'}
+                                                        onClick={() => handleToggleStatus(alternative)}
+                                                    />
+                                                    <TableActionButton
+                                                        kind="delete"
+                                                        onClick={() => handleDelete(alternative)}
+                                                    />
+                                                </TableActionsCell>
+                                            ) : (
+                                                <TableCell align="center" />
+                                            )}
                                         </TableRow>
                                     ))}
                                 </TableBody>

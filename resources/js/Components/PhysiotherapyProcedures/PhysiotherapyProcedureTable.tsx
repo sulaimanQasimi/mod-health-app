@@ -1,5 +1,4 @@
-import { Badge, Button } from 'flowbite-react';
-import { Link } from '@inertiajs/react';
+import { Badge } from 'flowbite-react';
 import {
     Table,
     TableBody,
@@ -8,6 +7,8 @@ import {
     TableHeader,
     TableRow,
 } from '../ui/Table';
+import TableActionButton from '../ui/TableActionButton';
+import { TableActionsCell } from '../ui/TableActions';
 import SettingsEmptyState from '../Settings/SettingsEmptyState';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
@@ -103,29 +104,17 @@ export default function PhysiotherapyProcedureTable({
                         <TableCell>
                             <Badge color={item.reviews_count > 0 ? 'info' : 'gray'}>{item.reviews_count}</Badge>
                         </TableCell>
-                        <TableCell align="center">
-                            <div className="flex justify-center gap-1">
-                                <Button
-                                    as={Link}
-                                    href={`${showUrlBase}/${item.id}`}
-                                    size="xs"
-                                    color="light"
-                                    title={t('global.view')}
-                                >
-                                    <i className="bx bx-show" />
-                                </Button>
-                                {canUpdateProgress(item) && onUpdateProgress && (
-                                    <Button
-                                        size="xs"
-                                        color="warning"
-                                        title={t('global.update_progress')}
-                                        onClick={() => onUpdateProgress(item)}
-                                    >
-                                        <i className="bx bx-edit" />
-                                    </Button>
-                                )}
-                            </div>
-                        </TableCell>
+                        <TableActionsCell>
+                            <TableActionButton kind="view" href={`${showUrlBase}/${item.id}`} />
+                            {canUpdateProgress(item) && onUpdateProgress && (
+                                <TableActionButton
+                                    kind="custom"
+                                    icon="bx-edit"
+                                    title={t('global.update_progress')}
+                                    onClick={() => onUpdateProgress(item)}
+                                />
+                            )}
+                        </TableActionsCell>
                     </TableRow>
                 ))}
             </TableBody>

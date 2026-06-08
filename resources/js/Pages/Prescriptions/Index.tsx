@@ -17,7 +17,9 @@ import {
     PrescriptionIndexUrls,
 } from '../../types/prescription';
 import { buildPaginationSummary } from '../../utils/pagination';
-import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import TableActionButton from '../../Components/ui/TableActionButton';
+import { TableActionsCell } from '../../Components/ui/TableActions';
+import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 import { OptionItem } from '../../types/settings';
 
 interface IndexPrescriptionsProps {
@@ -405,25 +407,20 @@ export default function IndexPrescriptions({
                                                 {item.is_completed ? t('global.delivered') : t('global.not_delivered')}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell align="center">
-                                            <div className="flex justify-center gap-1">
-                                                <Link
-                                                    href={`${urls.show}/${item.id}`}
-                                                    className={settingsActionClasses.view}
-                                                >
-                                                    <i className="bx bx-show-alt text-lg" />
-                                                </Link>
-                                                <a
-                                                    href={`${urls.thermalReceipt}/${item.id}`}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className={settingsActionClasses.edit}
-                                                    title={t('global.thermal_print')}
-                                                >
-                                                    <i className="bx bx-printer text-lg" />
-                                                </a>
-                                            </div>
-                                        </TableCell>
+                                        <TableActionsCell>
+                                            <TableActionButton
+                                                kind="view"
+                                                href={`${urls.show}/${item.id}`}
+                                                icon="bx-show-alt"
+                                            />
+                                            <TableActionButton
+                                                kind="custom"
+                                                href={`${urls.thermalReceipt}/${item.id}`}
+                                                external
+                                                icon="bx-printer"
+                                                title={t('global.thermal_print')}
+                                            />
+                                        </TableActionsCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

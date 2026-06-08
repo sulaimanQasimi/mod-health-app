@@ -11,7 +11,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem, PaginatedResult } from '../../types/settings';
 import { buildPaginationSummary } from '../../utils/pagination';
-import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import TableActionButton from '../../Components/ui/TableActionButton';
+import { TableActionsCell } from '../../Components/ui/TableActions';
+import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface FulfillmentListItem {
     id: number;
@@ -238,44 +240,31 @@ export default function IndexPharmacyFulfillments({
                                         <TableCell muted>{item.form_no ?? '—'}</TableCell>
                                         <TableCell muted>{item.date ?? '—'}</TableCell>
                                         <TableCell muted>{item.created_at ?? '—'}</TableCell>
-                                        <TableCell align="center">
-                                            <div className="flex justify-center gap-1">
-                                                {permissions.view && (
-                                                    <Link
-                                                        href={`${urls.show}/${item.id}`}
-                                                        className={settingsActionClasses.view}
-                                                    >
-                                                        <i className="bx bx-show text-lg" />
-                                                    </Link>
-                                                )}
-                                                {permissions.edit && (
-                                                    <Link
-                                                        href={`${urls.edit}/${item.id}/edit`}
-                                                        className={settingsActionClasses.edit}
-                                                    >
-                                                        <i className="bx bx-edit text-lg" />
-                                                    </Link>
-                                                )}
-                                                {permissions.delete && (
-                                                    <button
-                                                        type="button"
-                                                        disabled={deletingId === item.id}
-                                                        onClick={() => {
-                                                            if (window.confirm(t('global.are_you_sure'))) {
-                                                                setDeletingId(item.id);
-                                                                router.delete(`${urls.destroy}/${item.id}`, {
-                                                                    preserveScroll: true,
-                                                                    onFinish: () => setDeletingId(null),
-                                                                });
-                                                            }
-                                                        }}
-                                                        className={settingsActionClasses.delete}
-                                                    >
-                                                        <i className="bx bx-trash text-lg" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </TableCell>
+                                        <TableActionsCell>
+                                            <TableActionButton
+                                                kind="view"
+                                                href={`${urls.show}/${item.id}`}
+                                                permission={permissions.view}
+                                            />
+                                            <TableActionButton
+                                                kind="edit"
+                                                href={`${urls.edit}/${item.id}/edit`}
+                                                permission={permissions.edit}
+                                            />
+                                            <TableActionButton
+                                                kind="delete"
+                                                permission={permissions.delete}
+                                                disabled={deletingId === item.id}
+                                                confirm={t('global.are_you_sure')}
+                                                onClick={() => {
+                                                    setDeletingId(item.id);
+                                                    router.delete(`${urls.destroy}/${item.id}`, {
+                                                        preserveScroll: true,
+                                                        onFinish: () => setDeletingId(null),
+                                                    });
+                                                }}
+                                            />
+                                        </TableActionsCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

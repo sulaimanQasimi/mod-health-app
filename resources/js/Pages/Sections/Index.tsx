@@ -11,7 +11,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem, PaginatedResult, SettingsPermissions } from '../../types/settings';
 import { buildPaginationSummary } from '../../utils/pagination';
-import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import TableActionButton from '../../Components/ui/TableActionButton';
+import { TableActionsCell } from '../../Components/ui/TableActions';
+import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface SectionItem {
     id: number;
@@ -127,32 +129,23 @@ export default function IndexSections({
                                         <TableCell>{(sections.meta.from ?? 1) + i}</TableCell>
                                         <TableCell>{item.name}</TableCell>
                                         <TableCell muted>{item.department_name ?? '—'}</TableCell>
-                                        <TableCell align="center">
-                                            <div className="flex justify-center gap-1">
-                                                {permissions.edit && (
-                                                    <Link
-                                                        href={`${urls.edit}/${item.id}/edit`}
-                                                        className={settingsActionClasses.edit}
-                                                    >
-                                                        <i className="bx bx-edit text-lg" />
-                                                    </Link>
-                                                )}
-                                                {permissions.delete && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            window.confirm(t('global.are_you_sure')) &&
-                                                            router.delete(`${urls.destroy}/${item.id}`, {
-                                                                preserveScroll: true,
-                                                            })
-                                                        }
-                                                        className={settingsActionClasses.delete}
-                                                    >
-                                                        <i className="bx bx-trash text-lg" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </TableCell>
+                                        <TableActionsCell>
+                                            <TableActionButton
+                                                kind="edit"
+                                                href={`${urls.edit}/${item.id}/edit`}
+                                                permission={permissions.edit}
+                                            />
+                                            <TableActionButton
+                                                kind="delete"
+                                                permission={permissions.delete}
+                                                confirm={t('global.are_you_sure')}
+                                                onClick={() =>
+                                                    router.delete(`${urls.destroy}/${item.id}`, {
+                                                        preserveScroll: true,
+                                                    })
+                                                }
+                                            />
+                                        </TableActionsCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

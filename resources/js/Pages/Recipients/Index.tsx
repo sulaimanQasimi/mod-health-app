@@ -10,7 +10,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { useTranslation } from '../../hooks/useTranslation';
 import { PaginatedResult, SettingsPermissions } from '../../types/settings';
 import { buildPaginationSummary } from '../../utils/pagination';
-import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import TableActionButton from '../../Components/ui/TableActionButton';
+import { TableActionsCell } from '../../Components/ui/TableActions';
+import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface RecipientItem {
     id: number;
@@ -104,36 +106,26 @@ export default function IndexRecipients({
                                         <TableCell>{(recipients.meta.from ?? 1) + i}</TableCell>
                                         <TableCell>{item.name}</TableCell>
                                         <TableCell muted>{item.description ?? '—'}</TableCell>
-                                        <TableCell align="center">
-                                            <div className="flex justify-center gap-1">
-                                                {permissions.edit && (
-                                                    <Link
-                                                        href={`${urls.edit}/${item.id}/edit`}
-                                                        className={settingsActionClasses.edit}
-                                                    >
-                                                        <i className="bx bx-edit text-lg" />
-                                                    </Link>
-                                                )}
-                                                {permissions.delete && (
-                                                    <button
-                                                        type="button"
-                                                        disabled={deletingId === item.id}
-                                                        onClick={() => {
-                                                            if (window.confirm(t('global.are_you_sure'))) {
-                                                                setDeletingId(item.id);
-                                                                router.delete(`${urls.destroy}/${item.id}`, {
-                                                                    preserveScroll: true,
-                                                                    onFinish: () => setDeletingId(null),
-                                                                });
-                                                            }
-                                                        }}
-                                                        className={settingsActionClasses.delete}
-                                                    >
-                                                        <i className="bx bx-trash text-lg" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </TableCell>
+                                        <TableActionsCell>
+                                            <TableActionButton
+                                                kind="edit"
+                                                href={`${urls.edit}/${item.id}/edit`}
+                                                permission={permissions.edit}
+                                            />
+                                            <TableActionButton
+                                                kind="delete"
+                                                permission={permissions.delete}
+                                                disabled={deletingId === item.id}
+                                                confirm={t('global.are_you_sure')}
+                                                onClick={() => {
+                                                    setDeletingId(item.id);
+                                                    router.delete(`${urls.destroy}/${item.id}`, {
+                                                        preserveScroll: true,
+                                                        onFinish: () => setDeletingId(null),
+                                                    });
+                                                }}
+                                            />
+                                        </TableActionsCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

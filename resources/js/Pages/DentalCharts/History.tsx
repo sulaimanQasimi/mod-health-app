@@ -10,6 +10,8 @@ import {
     TableHeader,
     TableRow,
 } from '../../Components/ui/Table';
+import TableActionButton from '../../Components/ui/TableActionButton';
+import { TableActionsCell } from '../../Components/ui/TableActions';
 import { selectClassName } from '../../lib/dentalChartOptions';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
@@ -118,16 +120,12 @@ export default function HistoryDentalCharts({
                                         </TableCell>
                                         <TableCell muted>{chart.gum_health ?? '—'}</TableCell>
                                         <TableCell muted>{chart.pocket_depth ?? '—'}</TableCell>
-                                        <TableCell align="center">
-                                            <Button
-                                                as={Link}
+                                        <TableActionsCell>
+                                            <TableActionButton
+                                                kind="edit"
                                                 href={`/react/dental-charts/entry/${chart.id}/edit`}
-                                                size="xs"
-                                                color="warning"
-                                            >
-                                                <i className="bx bx-edit" />
-                                            </Button>
-                                        </TableCell>
+                                            />
+                                        </TableActionsCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

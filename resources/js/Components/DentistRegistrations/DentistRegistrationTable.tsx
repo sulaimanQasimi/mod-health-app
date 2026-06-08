@@ -1,5 +1,4 @@
-import { Badge, Button } from 'flowbite-react';
-import { Link } from '@inertiajs/react';
+import { Badge } from 'flowbite-react';
 import {
     Table,
     TableBody,
@@ -8,6 +7,8 @@ import {
     TableHeader,
     TableRow,
 } from '../ui/Table';
+import TableActionButton from '../ui/TableActionButton';
+import { TableActionsCell } from '../ui/TableActions';
 import SettingsEmptyState from '../Settings/SettingsEmptyState';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
@@ -63,23 +64,14 @@ export default function DentistRegistrationTable({
                         <TableCell>
                             <DentistRegistrationStatusBadge status={item.status} />
                         </TableCell>
-                        <TableCell align="center">
-                            <div className="flex justify-center gap-1">
-                                <Button as={Link} href={`${showUrlBase}/${item.id}`} size="xs" color="blue">
-                                    <i className="bx bx-show" />
-                                </Button>
-                                {permissions.edit && (
-                                    <Button
-                                        as={Link}
-                                        href={`${showUrlBase}/${item.id}?edit=1`}
-                                        size="xs"
-                                        color="warning"
-                                    >
-                                        <i className="bx bx-edit" />
-                                    </Button>
-                                )}
-                            </div>
-                        </TableCell>
+                        <TableActionsCell>
+                            <TableActionButton kind="view" href={`${showUrlBase}/${item.id}`} />
+                            <TableActionButton
+                                kind="edit"
+                                href={`${showUrlBase}/${item.id}?edit=1`}
+                                permission={permissions.edit}
+                            />
+                        </TableActionsCell>
                     </TableRow>
                 ))}
             </TableBody>

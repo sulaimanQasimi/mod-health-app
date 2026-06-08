@@ -3,7 +3,7 @@ import { Fragment } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { PrescriptionShowItem } from '../../types/prescription';
-import { settingsActionClasses } from '../../utils/settingsUi';
+import TableActionButton from '../ui/TableActionButton';
 
 interface PrescriptionItemsTableProps {
     items: PrescriptionShowItem[];
@@ -119,14 +119,12 @@ export default function PrescriptionItemsTable({
                                         {item.amount}
                                     </span>
                                     {!readonly && (
-                                        <button
-                                            type="button"
-                                            className={settingsActionClasses.edit}
-                                            onClick={() => onEditAmount(item)}
+                                        <TableActionButton
+                                            kind="custom"
+                                            icon="bx-edit"
                                             title={t('global.edit_amount')}
-                                        >
-                                            <i className="bx bx-edit text-lg" />
-                                        </button>
+                                            onClick={() => onEditAmount(item)}
+                                        />
                                     )}
                                 </div>
                             </TableCell>

@@ -6,7 +6,9 @@ import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SettingsPermissions } from '../../types/settings';
-import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import TableActionButton from '../../Components/ui/TableActionButton';
+import { TableActionsCell } from '../../Components/ui/TableActions';
+import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface VitalSignSummary {
     id: number;
@@ -121,16 +123,13 @@ export default function ShowVitalSignType({
                                         <TableCell>{item.id}</TableCell>
                                         <TableCell muted>{item.morphable_label}</TableCell>
                                         <TableCell muted>{item.created_at ?? '—'}</TableCell>
-                                        <TableCell align="center">
-                                            {item.show_url && (
-                                                <Link
-                                                    href={item.show_url}
-                                                    className={settingsActionClasses.view}
-                                                >
-                                                    <i className="bx bx-show text-lg" />
-                                                </Link>
-                                            )}
-                                        </TableCell>
+                                        {item.show_url ? (
+                                            <TableActionsCell>
+                                                <TableActionButton kind="view" href={item.show_url} />
+                                            </TableActionsCell>
+                                        ) : (
+                                            <TableCell align="center" />
+                                        )}
                                     </TableRow>
                                 ))}
                             </TableBody>

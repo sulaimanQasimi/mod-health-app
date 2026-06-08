@@ -24,7 +24,9 @@ import {
     NephrologyRegistrationFormOptions,
     NephrologyRegistrationShowPermissions,
 } from '../../types/nephrologyRegistration';
-import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import TableActionButton from '../../Components/ui/TableActionButton';
+import { TableActions } from '../../Components/ui/TableActions';
+import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 import HemodialysisSessionStatusBadge from '../../Components/HemodialysisSessions/HemodialysisSessionStatusBadge';
 
 interface ShowNephrologyRegistrationProps {
@@ -332,13 +334,9 @@ export default function ShowNephrologyRegistration({
                                                         <HemodialysisSessionStatusBadge status={session.status} />
                                                     </TableCell>
                                                     <TableCell align="center">
-                                                        <Link
-                                                            href={session.show_url}
-                                                            className={settingsActionClasses.view}
-                                                            title={t('global.show')}
-                                                        >
-                                                            <i className="bx bx-show text-lg" />
-                                                        </Link>
+                                                        <TableActions>
+                                                            <TableActionButton kind="view" href={session.show_url} />
+                                                        </TableActions>
                                                     </TableCell>
                                                 </TableRow>
                                             ))}

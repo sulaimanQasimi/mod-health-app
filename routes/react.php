@@ -157,7 +157,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('icu', [AppointmentIcuController::class, 'index'])->name('icu.index');
             Route::delete('icu/{icu}', [AppointmentIcuController::class, 'destroy'])->name('icu.destroy');
             Route::get('icu-visits', [IcuVisitsController::class, 'index'])->name('icu-visits.index');
+            Route::get('physiotherapy/meta', [AppointmentPhysiotherapyController::class, 'meta'])->name('physiotherapy.meta');
             Route::get('physiotherapy', [AppointmentPhysiotherapyController::class, 'index'])->name('physiotherapy.index');
+            Route::post('physiotherapy', [AppointmentPhysiotherapyController::class, 'store'])->name('physiotherapy.store');
+            Route::get('physiotherapy/{physiotherapyProcedure}', [AppointmentPhysiotherapyController::class, 'show'])->name('physiotherapy.show');
             Route::get('dentist', [AppointmentDentistController::class, 'index'])->name('dentist.index');
             Route::get('nephrology', [AppointmentNephrologyController::class, 'index'])->name('nephrology.index');
         });

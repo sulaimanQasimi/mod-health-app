@@ -2,6 +2,7 @@ export { default as AdviceSection } from './AdviceSection';
 export { default as BloodBankSection } from './BloodBankSection';
 export { default as DiagnosisSection } from './DiagnosisSection';
 export { default as LabTestSection } from './LabTestSection';
+export { default as PhysiotherapySection } from './PhysiotherapySection';
 export { default as PrescriptionSection } from './PrescriptionSection';
 export {
     AnesthesiaSection,
@@ -14,7 +15,6 @@ export {
     IcuVisitsSection,
     NephrologySection,
     OperationSection,
-    PhysiotherapySection,
     ReferDepartmentSection,
     RelatedVisitsSection,
     UnderReviewSection,

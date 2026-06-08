@@ -89,11 +89,11 @@ export default function EditHemodialysisSession({ session, formOptions, urls }: 
                     />
 
                     <div className="mt-6 flex justify-end gap-2 border-t border-gray-100 pt-4 dark:border-gray-700">
-                        <Button as={Link} href={urls.show} color="gray" outline disabled={processing}>
+                        <Button as={Link} href={urls.show} color="gray" outline size="sm" disabled={processing}>
                             {t('global.cancel')}
                         </Button>
-                        <Button type="submit" form="hemodialysis-edit-form" color="blue" disabled={processing}>
-                            <i className="bx bx-save me-1" />
+                        <Button type="submit" form="hemodialysis-edit-form" color="blue" size="sm" disabled={processing}>
+                            <i className="bx bx-save me-2" />
                             {t('global.save')}
                         </Button>
                     </div>

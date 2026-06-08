@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import DiagnosisSection from '../../Components/Appointments/Sections/DiagnosisSection';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
@@ -24,7 +24,8 @@ import {
     NephrologyRegistrationFormOptions,
     NephrologyRegistrationShowPermissions,
 } from '../../types/nephrologyRegistration';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import HemodialysisSessionStatusBadge from '../../Components/HemodialysisSessions/HemodialysisSessionStatusBadge';
 
 interface ShowNephrologyRegistrationProps {
     registration: NephrologyRegistrationDetail;
@@ -85,10 +86,13 @@ export default function ShowNephrologyRegistration({
 
     const finishAction = () => setProcessing(false);
 
+    const postStatus = (url: string | null | undefined) => {
+        if (!url) return;
+        runAction(() => router.post(url, {}, { preserveScroll: true, onFinish: finishAction }));
+    };
+
     const handleUpdate = (data: NephrologyClinicalFormData) => {
-        if (!urls.update) {
-            return;
-        }
+        if (!urls.update) return;
 
         runAction(() =>
             router.put(
@@ -106,40 +110,19 @@ export default function ShowNephrologyRegistration({
                     notes: data.notes || null,
                     follow_up_plan: data.follow_up_plan || null,
                 },
-                {
-                    preserveScroll: true,
-                    onFinish: finishAction,
-                },
+                { preserveScroll: true, onFinish: finishAction },
             ),
         );
     };
 
-    const handleMarkCompleted = () => {
-        if (!urls.markCompleted) {
-            return;
-        }
-        runAction(() => router.post(urls.markCompleted!, {}, { preserveScroll: true, onFinish: finishAction }));
-    };
-
-    const handleMarkInProgress = () => {
-        if (!urls.markInProgress) {
-            return;
-        }
-        runAction(() => router.post(urls.markInProgress!, {}, { preserveScroll: true, onFinish: finishAction }));
+    const handleDelete = () => {
+        if (!urls.destroy || !window.confirm(t('global.confirm_delete'))) return;
+        runAction(() => router.delete(urls.destroy!, { onFinish: finishAction }));
     };
 
     const handleCancel = () => {
-        if (!urls.cancel || !window.confirm(t('global.confirm_cancel_registration'))) {
-            return;
-        }
-        runAction(() => router.post(urls.cancel!, {}, { preserveScroll: true, onFinish: finishAction }));
-    };
-
-    const handleDelete = () => {
-        if (!urls.destroy || !window.confirm(t('global.confirm_delete'))) {
-            return;
-        }
-        runAction(() => router.delete(urls.destroy!, { onFinish: finishAction }));
+        if (!urls.cancel || !window.confirm(t('global.confirm_cancel_registration'))) return;
+        postStatus(urls.cancel);
     };
 
     const diseaseLabel = registration.disease_name
@@ -147,6 +130,14 @@ export default function ShowNephrologyRegistration({
             ? `${registration.disease_category_name} — ${registration.disease_name}`
             : registration.disease_name
         : '—';
+
+    const infoCards: Array<[string, ReactNode]> = [
+        [t('global.patient_name'), registration.patient_name ?? '—'],
+        [t('global.doctor'), registration.doctor_name ?? t('global.not_available')],
+        [t('global.visit_date'), <span dir="ltr">{registration.visit_date ?? '—'}</span>],
+        [t('global.diseases'), diseaseLabel],
+        [t('global.status'), <NephrologyRegistrationStatusBadge status={registration.status} />],
+    ];
 
     return (
         <DashboardLayout>
@@ -158,201 +149,206 @@ export default function ShowNephrologyRegistration({
                     subtitle={`${t('global.ref_no')}: ${registration.ref_no ?? '—'}`}
                     icon="bx-droplet"
                     accent="from-cyan-500 to-blue-600"
+                    backHref={urls.index ?? undefined}
+                    backLabel={t('global.back')}
+                    action={
+                        permissions.delete ? (
+                            <Button color="failure" size="sm" onClick={handleDelete} disabled={processing}>
+                                <i className="bx bx-trash me-2" />
+                                {t('global.delete')}
+                            </Button>
+                        ) : undefined
+                    }
                 />
 
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                    {[
-                        { label: t('global.patient_name'), value: registration.patient_name ?? '—' },
-                        { label: t('global.doctor'), value: registration.doctor_name ?? t('global.not_available') },
-                        { label: t('global.visit_date'), value: registration.visit_date ?? '—', dir: 'ltr' as const },
-                        { label: t('global.diseases'), value: diseaseLabel },
-                        {
-                            label: t('global.status'),
-                            value: <NephrologyRegistrationStatusBadge status={registration.status} />,
-                        },
-                    ].map((item) => (
-                        <Card key={item.label} className="shadow-sm">
-                            <div className="text-center">
-                                <p className="mb-1 text-xs text-gray-500">{item.label}</p>
-                                <div
-                                    className="truncate font-semibold text-gray-900 dark:text-white"
-                                    dir={'dir' in item ? item.dir : undefined}
-                                >
-                                    {item.value}
-                                </div>
-                            </div>
-                        </Card>
-                    ))}
-                </div>
-
-                <div className="flex flex-nowrap gap-2 overflow-x-auto">
-                    {tabs
-                        .filter((tab) => !tab.hidden)
-                        .map((tab) => (
-                            <button
-                                key={tab.key}
-                                type="button"
-                                onClick={() => setActiveTab(tab.key)}
-                                className={`inline-flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
-                                    activeTab === tab.key
-                                        ? 'bg-blue-600 text-white shadow'
-                                        : 'border border-gray-200 bg-white text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200'
-                                }`}
+                <Card className="shadow-sm">
+                    <h2 className="mb-4 text-center text-sm font-semibold text-gray-900 dark:text-white">
+                        {t('global.registration_information')}
+                    </h2>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                        {infoCards.map(([label, value]) => (
+                            <div
+                                key={String(label)}
+                                className="rounded-xl border border-gray-100 bg-gray-50 p-4 text-center dark:border-gray-700 dark:bg-gray-800/40"
                             >
-                                <i className={`bx ${tab.icon}`} />
-                                {tab.label}
-                                {tab.count !== undefined && tab.count > 0 && (
-                                    <Badge color="info" className="ms-1">
-                                        {tab.count}
-                                    </Badge>
-                                )}
-                            </button>
+                                <p className="text-xs text-gray-500">{label}</p>
+                                <div className="mt-2 font-semibold text-gray-900 dark:text-white">{value}</div>
+                            </div>
                         ))}
-                </div>
+                    </div>
 
-                {activeTab === 'clinical' && (
-                    <Card className="shadow-sm">
-                        <div className="mb-4 flex items-center gap-2 border-b border-gray-100 pb-3 dark:border-gray-700">
-                            <i className="bx bx-edit-alt text-blue-500" />
-                            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                {t('global.nephrology_clinical_record')}
-                            </h2>
+                    {permissions.markStatus && (
+                        <div className="mt-4 flex flex-wrap justify-center gap-2">
+                            {registration.status !== 'completed' && (
+                                <Button
+                                    size="sm"
+                                    color="success"
+                                    disabled={processing}
+                                    onClick={() => postStatus(urls.markCompleted)}
+                                >
+                                    {t('global.mark_completed')}
+                                </Button>
+                            )}
+                            {registration.status !== 'in_progress' && registration.status !== 'completed' && (
+                                <Button
+                                    size="sm"
+                                    color="info"
+                                    disabled={processing}
+                                    onClick={() => postStatus(urls.markInProgress)}
+                                >
+                                    {t('global.mark_in_progress')}
+                                </Button>
+                            )}
+                            {registration.status !== 'cancelled' && registration.status !== 'completed' && (
+                                <Button size="sm" color="failure" disabled={processing} onClick={handleCancel}>
+                                    {t('global.cancel')}
+                                </Button>
+                            )}
                         </div>
+                    )}
+                </Card>
 
-                        {formOptions ? (
-                            <>
-                                <NephrologyClinicalForm
-                                    registration={registration}
-                                    formOptions={formOptions}
-                                    disabled={!permissions.edit || processing}
-                                    onSubmit={handleUpdate}
-                                />
+                <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <div className="flex min-w-max gap-1 border-b border-gray-200 p-2 dark:border-gray-700">
+                        {tabs
+                            .filter((tab) => !tab.hidden)
+                            .map((tab) => (
+                                <button
+                                    key={tab.key}
+                                    type="button"
+                                    onClick={() => setActiveTab(tab.key)}
+                                    className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
+                                        activeTab === tab.key
+                                            ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                            : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50'
+                                    }`}
+                                >
+                                    <i className={`bx ${tab.icon}`} />
+                                    {tab.label}
+                                    {tab.count != null && tab.count > 0 && (
+                                        <Badge color="info" size="xs">
+                                            {tab.count}
+                                        </Badge>
+                                    )}
+                                </button>
+                            ))}
+                    </div>
 
-                                {permissions.edit && (
-                                    <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-gray-100 pt-4 dark:border-gray-700">
-                                        {registration.status !== 'completed' && (
-                                            <Button color="success" disabled={processing} onClick={handleMarkCompleted}>
-                                                <i className="bx bx-check me-1" />
-                                                {t('global.mark_completed')}
-                                            </Button>
-                                        )}
-                                        {registration.status !== 'in_progress' && (
-                                            <Button color="info" disabled={processing} onClick={handleMarkInProgress}>
-                                                <i className="bx bx-play me-1" />
-                                                {t('global.mark_in_progress')}
-                                            </Button>
-                                        )}
-                                        {registration.status !== 'cancelled' && (
-                                            <Button color="failure" outline disabled={processing} onClick={handleCancel}>
-                                                <i className="bx bx-x me-1" />
-                                                {t('global.cancel')}
-                                            </Button>
-                                        )}
-                                        {permissions.delete && (
-                                            <Button color="gray" outline disabled={processing} onClick={handleDelete}>
-                                                <i className="bx bx-trash me-1" />
-                                                {t('global.delete')}
-                                            </Button>
-                                        )}
-                                        <Button
-                                            type="submit"
-                                            form="nephrology-clinical-form"
-                                            color="blue"
-                                            disabled={processing}
-                                        >
-                                            <i className="bx bx-save me-1" />
-                                            {t('global.save')}
-                                        </Button>
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <p className="text-sm text-gray-500">{t('global.not_available')}</p>
-                        )}
-                    </Card>
-                )}
-
-                {activeTab === 'diagnose' && registration.appointment_id && (
-                    <Card className="shadow-sm">
-                        <DiagnosisSection appointmentId={registration.appointment_id} />
-                    </Card>
-                )}
-
-                {activeTab === 'lab' && registration.appointment_id && (
-                    <LabTestSection appointmentId={registration.appointment_id} embedded />
-                )}
-
-                {activeTab === 'prescription' && registration.appointment_id && (
-                    <PrescriptionSection appointmentId={registration.appointment_id} embedded />
-                )}
-
-                {activeTab === 'hemodialysis' && (
-                    <Card className="shadow-sm">
-                        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-3 dark:border-gray-700">
-                            <div className="flex items-center gap-2">
-                                <i className="bx bx-water text-blue-500" />
-                                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                    {t('global.hemodialysis_sessions')}
-                                </h2>
-                            </div>
-                            <div className="flex gap-2">
-                                {urls.hemodialysisCreate && (
-                                    <Button as={Link} href={urls.hemodialysisCreate} size="sm" color="blue">
-                                        <i className="bx bx-plus me-1" />
-                                        {t('global.add_hemodialysis_session')}
-                                    </Button>
-                                )}
-                                {urls.hemodialysisIndex && (
-                                    <Button as={Link} href={urls.hemodialysisIndex} size="sm" color="gray" outline>
-                                        {t('global.view_all_hemodialysis_sessions')}
-                                    </Button>
-                                )}
-                            </div>
-                        </div>
-
-                        {registration.hemodialysis_sessions.length === 0 ? (
-                            <div className="py-10 text-center text-gray-500">
-                                <i className="bx bx-water mb-2 block text-4xl opacity-50" />
-                                {t('global.no_hemodialysis_sessions_found')}
-                            </div>
-                        ) : (
-                            <Table>
-                                <TableHead>
-                                    <TableRow variant="header">
-                                        <TableHeader>{t('global.ref_no')}</TableHeader>
-                                        <TableHeader>{t('global.session_date')}</TableHeader>
-                                        <TableHeader>{t('global.duration_minutes')}</TableHeader>
-                                        <TableHeader>{t('global.attending_nephrologist')}</TableHeader>
-                                        <TableHeader>{t('global.status')}</TableHeader>
-                                        <TableHeader align="center">{t('global.actions')}</TableHeader>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {registration.hemodialysis_sessions.map((session) => (
-                                        <TableRow key={session.id}>
-                                            <TableCell>
-                                                <Badge color="info">{session.ref_no ?? '—'}</Badge>
-                                            </TableCell>
-                                            <TableCell muted dir="ltr">
-                                                {session.session_date ?? '—'}
-                                            </TableCell>
-                                            <TableCell muted>{session.duration_minutes ?? '—'}</TableCell>
-                                            <TableCell muted>{session.doctor_name ?? '—'}</TableCell>
-                                            <TableCell>
-                                                <Badge color="info">{t(`global.${session.status}`)}</Badge>
-                                            </TableCell>
-                                            <TableCell align="center">
-                                                <Button as="a" href={session.show_url} size="xs" color="blue" outline>
-                                                    <i className="bx bx-show" />
+                    <div className="p-4">
+                        {activeTab === 'clinical' && (
+                            <div>
+                                {formOptions ? (
+                                    <>
+                                        <NephrologyClinicalForm
+                                            registration={registration}
+                                            formOptions={formOptions}
+                                            disabled={!permissions.edit || processing}
+                                            onSubmit={handleUpdate}
+                                        />
+                                        {permissions.edit && (
+                                            <div className="mt-6 flex justify-end border-t border-gray-100 pt-4 dark:border-gray-700">
+                                                <Button
+                                                    type="submit"
+                                                    form="nephrology-clinical-form"
+                                                    color="blue"
+                                                    size="sm"
+                                                    disabled={processing}
+                                                >
+                                                    <i className="bx bx-save me-2" />
+                                                    {t('global.save')}
                                                 </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <p className="text-sm text-gray-500">{t('global.not_available')}</p>
+                                )}
+                            </div>
                         )}
-                    </Card>
-                )}
+
+                        {activeTab === 'diagnose' && registration.appointment_id && (
+                            <DiagnosisSection appointmentId={registration.appointment_id} />
+                        )}
+
+                        {activeTab === 'lab' && registration.appointment_id && (
+                            <LabTestSection appointmentId={registration.appointment_id} embedded />
+                        )}
+
+                        {activeTab === 'prescription' && registration.appointment_id && (
+                            <PrescriptionSection appointmentId={registration.appointment_id} embedded />
+                        )}
+
+                        {activeTab === 'hemodialysis' && (
+                            <div className="space-y-4">
+                                <div className="flex flex-wrap items-center justify-between gap-3">
+                                    <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                                        <i className="bx bx-water text-blue-500" />
+                                        {t('global.hemodialysis_sessions')}
+                                    </h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {urls.hemodialysisCreate && (
+                                            <Button as={Link} href={urls.hemodialysisCreate} size="sm" color="blue">
+                                                <i className="bx bx-plus me-2" />
+                                                {t('global.add_hemodialysis_session')}
+                                            </Button>
+                                        )}
+                                        {urls.hemodialysisIndex && (
+                                            <Button as={Link} href={urls.hemodialysisIndex} size="sm" color="gray" outline>
+                                                {t('global.view_all_hemodialysis_sessions')}
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {registration.hemodialysis_sessions.length === 0 ? (
+                                    <div className="py-10 text-center text-gray-500">
+                                        <i className="bx bx-water mb-2 block text-4xl opacity-50" />
+                                        {t('global.no_hemodialysis_sessions_found')}
+                                    </div>
+                                ) : (
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow variant="header">
+                                                <TableHeader>{t('global.ref_no')}</TableHeader>
+                                                <TableHeader>{t('global.session_date')}</TableHeader>
+                                                <TableHeader>{t('global.duration_minutes')}</TableHeader>
+                                                <TableHeader>{t('global.attending_nephrologist')}</TableHeader>
+                                                <TableHeader>{t('global.status')}</TableHeader>
+                                                <TableHeader align="center">{t('global.actions')}</TableHeader>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {registration.hemodialysis_sessions.map((session) => (
+                                                <TableRow key={session.id}>
+                                                    <TableCell>
+                                                        <Badge color="info">{session.ref_no ?? '—'}</Badge>
+                                                    </TableCell>
+                                                    <TableCell muted dir="ltr">
+                                                        {session.session_date ?? '—'}
+                                                    </TableCell>
+                                                    <TableCell muted>{session.duration_minutes ?? '—'}</TableCell>
+                                                    <TableCell muted>{session.doctor_name ?? '—'}</TableCell>
+                                                    <TableCell>
+                                                        <HemodialysisSessionStatusBadge status={session.status} />
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        <Link
+                                                            href={session.show_url}
+                                                            className={settingsActionClasses.view}
+                                                            title={t('global.show')}
+                                                        >
+                                                            <i className="bx bx-show text-lg" />
+                                                        </Link>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </DashboardLayout>
     );

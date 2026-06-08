@@ -3,6 +3,7 @@ import { Button, Card } from 'flowbite-react';
 import { ReactNode, useState } from 'react';
 import HemodialysisSessionStatusBadge from '../../Components/HemodialysisSessions/HemodialysisSessionStatusBadge';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import SettingsDetailPairsTable from '../../Components/Settings/SettingsDetailPairsTable';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
@@ -17,19 +18,17 @@ interface ShowHemodialysisSessionProps {
     urls: Record<string, string | null>;
 }
 
-function DetailTable({ rows }: { rows: Array<{ label: string; value: ReactNode; colSpan?: boolean }> }) {
+function VitalsTable({ rows }: { rows: Array<{ label: string; value: ReactNode }> }) {
     return (
-        <div className="overflow-x-auto">
-            <table className="w-full border border-gray-200 text-sm dark:border-gray-700">
+        <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <table className="w-full text-sm">
                 <tbody>
                     {rows.map((row) => (
-                        <tr key={row.label} className="border-b border-gray-200 dark:border-gray-700">
-                            <th className="w-1/4 bg-gray-50 px-4 py-3 text-start font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                        <tr key={row.label} className="border-b border-gray-200 last:border-b-0 dark:border-gray-700">
+                            <th className="w-1/2 bg-gray-50 px-4 py-3 text-start font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
                                 {row.label}
                             </th>
-                            <td className={`px-4 py-3 text-gray-900 dark:text-white ${row.colSpan ? '' : ''}`} colSpan={row.colSpan ? 3 : 1}>
-                                {row.value}
-                            </td>
+                            <td className="px-4 py-3 text-gray-900 dark:text-white">{row.value}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -38,31 +37,12 @@ function DetailTable({ rows }: { rows: Array<{ label: string; value: ReactNode; 
     );
 }
 
-function VitalsTable({ rows }: { rows: Array<{ label: string; value: ReactNode }> }) {
-    return (
-        <table className="w-full border border-gray-200 text-sm dark:border-gray-700">
-            <tbody>
-                {rows.map((row) => (
-                    <tr key={row.label} className="border-b border-gray-200 dark:border-gray-700">
-                        <th className="w-1/2 bg-gray-50 px-4 py-3 text-start font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-                            {row.label}
-                        </th>
-                        <td className="px-4 py-3 text-gray-900 dark:text-white">{row.value}</td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
-    );
-}
-
 export default function ShowHemodialysisSession({ session, permissions, urls }: ShowHemodialysisSessionProps) {
     const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
 
     const accessLabel = (value: string | null) => {
-        if (!value) {
-            return '—';
-        }
+        if (!value) return '—';
         const key = `global.${value}`;
         const translated = t(key);
         return translated === key ? value : translated;
@@ -72,9 +52,7 @@ export default function ShowHemodialysisSession({ session, permissions, urls }: 
         value === null || value === undefined || value === '' ? '—' : value;
 
     const handleDelete = () => {
-        if (!urls.destroy || !window.confirm(t('global.confirm_delete'))) {
-            return;
-        }
+        if (!urls.destroy || !window.confirm(t('global.confirm_delete'))) return;
         setProcessing(true);
         router.delete(urls.destroy, { onFinish: () => setProcessing(false) });
     };
@@ -92,16 +70,16 @@ export default function ShowHemodialysisSession({ session, permissions, urls }: 
                     backHref={urls.index ?? undefined}
                     backLabel={t('global.back')}
                     action={
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                             {permissions.edit && urls.edit && (
-                                <Button as={Link} href={urls.edit} color="warning" disabled={processing}>
-                                    <i className="bx bx-edit me-1" />
+                                <Button as={Link} href={urls.edit} color="warning" size="sm" disabled={processing}>
+                                    <i className="bx bx-edit me-2" />
                                     {t('global.edit')}
                                 </Button>
                             )}
                             {permissions.delete && urls.destroy && (
-                                <Button color="failure" onClick={handleDelete} disabled={processing}>
-                                    <i className="bx bx-trash me-1" />
+                                <Button color="failure" size="sm" onClick={handleDelete} disabled={processing}>
+                                    <i className="bx bx-trash me-2" />
                                     {t('global.delete')}
                                 </Button>
                             )}
@@ -113,45 +91,51 @@ export default function ShowHemodialysisSession({ session, permissions, urls }: 
                     <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                         {t('global.patient_information')}
                     </h2>
-                    <DetailTable
+                    <SettingsDetailPairsTable
                         rows={[
                             {
-                                label: t('global.ref_no'),
-                                value: display(session.ref_no),
+                                cells: [
+                                    { label: t('global.ref_no'), value: display(session.ref_no) },
+                                    {
+                                        label: t('global.status'),
+                                        value: <HemodialysisSessionStatusBadge status={session.status} />,
+                                    },
+                                ],
                             },
                             {
-                                label: t('global.status'),
-                                value: <HemodialysisSessionStatusBadge status={session.status} />,
-                            },
-                            {
-                                label: t('global.patient_name'),
-                                value: urls.patient ? (
-                                    <Link href={urls.patient} className="text-blue-600 hover:underline">
-                                        {session.patient_name ?? '—'}
-                                    </Link>
-                                ) : (
-                                    display(session.patient_name)
-                                ),
-                            },
-                            {
-                                label: t('global.patient_id'),
-                                value: display(session.patient_identifier),
+                                cells: [
+                                    {
+                                        label: t('global.patient_name'),
+                                        value: urls.patient ? (
+                                            <Link href={urls.patient} className="text-blue-600 hover:underline">
+                                                {session.patient_name ?? '—'}
+                                            </Link>
+                                        ) : (
+                                            display(session.patient_name)
+                                        ),
+                                    },
+                                    { label: t('global.patient_id'), value: display(session.patient_identifier) },
+                                ],
                             },
                             ...(session.nephrology_registration_ref_no
                                 ? [
                                       {
-                                          label: t('global.nephrology_registration'),
-                                          value: urls.nephrologyRegistration ? (
-                                              <Link
-                                                  href={urls.nephrologyRegistration}
-                                                  className="text-blue-600 hover:underline"
-                                              >
-                                                  {t('global.ref_no')} {session.nephrology_registration_ref_no}
-                                              </Link>
-                                          ) : (
-                                              `${t('global.ref_no')} ${session.nephrology_registration_ref_no}`
-                                          ),
-                                          colSpan: true,
+                                          fullWidth: true,
+                                          cells: [
+                                              {
+                                                  label: t('global.nephrology_registration'),
+                                                  value: urls.nephrologyRegistration ? (
+                                                      <Link
+                                                          href={urls.nephrologyRegistration}
+                                                          className="text-blue-600 hover:underline"
+                                                      >
+                                                          {t('global.ref_no')} {session.nephrology_registration_ref_no}
+                                                      </Link>
+                                                  ) : (
+                                                      `${t('global.ref_no')} ${session.nephrology_registration_ref_no}`
+                                                  ),
+                                              },
+                                          ],
                                       },
                                   ]
                                 : []),
@@ -163,21 +147,51 @@ export default function ShowHemodialysisSession({ session, permissions, urls }: 
                     <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                         {t('global.session_details')}
                     </h2>
-                    <DetailTable
+                    <SettingsDetailPairsTable
                         rows={[
-                            { label: t('global.diagnosis'), value: display(session.diagnosis), colSpan: true },
-                            { label: t('global.dialysis_schedule'), value: display(session.dialysis_schedule) },
-                            { label: t('global.attending_nephrologist'), value: display(session.doctor_name) },
-                            { label: t('global.session_date'), value: <span dir="ltr">{display(session.session_date)}</span> },
-                            { label: t('global.session_time'), value: <span dir="ltr">{display(session.session_time)}</span> },
-                            { label: t('global.duration_minutes'), value: display(session.duration_minutes) },
                             {
-                                label: t('global.vascular_access_type'),
-                                value: accessLabel(session.vascular_access_type),
+                                fullWidth: true,
+                                cells: [{ label: t('global.diagnosis'), value: display(session.diagnosis) }],
                             },
-                            { label: t('global.dialyzer_type'), value: display(session.dialyzer_type) },
-                            { label: t('global.blood_type'), value: display(session.blood_type) },
-                            { label: t('global.fluid_removed_ml'), value: display(session.fluid_removed_ml), colSpan: true },
+                            {
+                                cells: [
+                                    { label: t('global.dialysis_schedule'), value: display(session.dialysis_schedule) },
+                                    { label: t('global.attending_nephrologist'), value: display(session.doctor_name) },
+                                ],
+                            },
+                            {
+                                cells: [
+                                    {
+                                        label: t('global.session_date'),
+                                        value: <span dir="ltr">{display(session.session_date)}</span>,
+                                    },
+                                    {
+                                        label: t('global.session_time'),
+                                        value: <span dir="ltr">{display(session.session_time)}</span>,
+                                    },
+                                ],
+                            },
+                            {
+                                cells: [
+                                    { label: t('global.duration_minutes'), value: display(session.duration_minutes) },
+                                    {
+                                        label: t('global.vascular_access_type'),
+                                        value: accessLabel(session.vascular_access_type),
+                                    },
+                                ],
+                            },
+                            {
+                                cells: [
+                                    { label: t('global.dialyzer_type'), value: display(session.dialyzer_type) },
+                                    { label: t('global.blood_type'), value: display(session.blood_type) },
+                                ],
+                            },
+                            {
+                                fullWidth: true,
+                                cells: [
+                                    { label: t('global.fluid_removed_ml'), value: display(session.fluid_removed_ml) },
+                                ],
+                            },
                         ]}
                     />
                 </Card>

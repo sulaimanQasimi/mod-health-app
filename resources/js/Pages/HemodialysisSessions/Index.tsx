@@ -92,8 +92,8 @@ export default function IndexHemodialysisSessions({
                     accent="from-sky-500 to-blue-600"
                     backLabel={t('global.back')}
                     action={
-                        <Button as={Link} href={urls.create} color="blue">
-                            <i className="bx bx-plus me-1" />
+                        <Button as={Link} href={urls.create} color="blue" size="sm">
+                            <i className="bx bx-plus me-2" />
                             {t('global.add_hemodialysis_session')}
                         </Button>
                     }
@@ -111,6 +111,13 @@ export default function IndexHemodialysisSessions({
                 />
 
                 <Card className="shadow-sm">
+                    <div className="mb-4">
+                        <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+                            <i className="bx bx-list-ul text-sky-500" />
+                            {t('global.hemodialysis_sessions')}
+                        </h2>
+                    </div>
+
                     <HemodialysisSessionTable
                         items={sessions.data}
                         permissions={permissions}

@@ -1,5 +1,6 @@
 import { Badge, Button } from 'flowbite-react';
 import { Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 import {
     Table,
     TableBody,
@@ -14,6 +15,7 @@ import {
     NephrologyRegistrationListItem,
     NephrologyRegistrationListPermissions,
 } from '../../types/nephrologyRegistration';
+import { settingsActionClasses } from '../../utils/settingsUi';
 import NephrologyRegistrationStatusBadge from './NephrologyRegistrationStatusBadge';
 
 interface NephrologyRegistrationTableProps {
@@ -43,13 +45,18 @@ export default function NephrologyRegistrationTable({
     acceptUrlBase,
 }: NephrologyRegistrationTableProps) {
     const { t } = useTranslation();
+    const [acceptingId, setAcceptingId] = useState<number | null>(null);
 
     if (items.length === 0) {
         return <SettingsEmptyState message={t('global.no_registrations_found')} />;
     }
 
     const handleAccept = (id: number) => {
-        router.post(`${acceptUrlBase}/${id}/accept`, {}, { preserveScroll: true });
+        setAcceptingId(id);
+        router.post(`${acceptUrlBase}/${id}/accept`, {}, {
+            preserveScroll: true,
+            onFinish: () => setAcceptingId(null),
+        });
     };
 
     return (
@@ -93,14 +100,23 @@ export default function NephrologyRegistrationTable({
                         <TableCell align="center">
                             <div className="flex justify-center gap-1">
                                 {item.needs_acceptance && permissions.accept ? (
-                                    <Button size="xs" color="success" onClick={() => handleAccept(item.id)}>
+                                    <Button
+                                        size="sm"
+                                        color="success"
+                                        disabled={acceptingId === item.id}
+                                        onClick={() => handleAccept(item.id)}
+                                    >
                                         <i className="bx bx-check me-1" />
                                         {t('global.accept')}
                                     </Button>
                                 ) : (
-                                    <Button as={Link} href={`${showUrlBase}/${item.id}`} size="xs" color="blue">
-                                        <i className="bx bx-show" />
-                                    </Button>
+                                    <Link
+                                        href={`${showUrlBase}/${item.id}`}
+                                        className={settingsActionClasses.view}
+                                        title={t('global.show')}
+                                    >
+                                        <i className="bx bx-show text-lg" />
+                                    </Link>
                                 )}
                             </div>
                         </TableCell>

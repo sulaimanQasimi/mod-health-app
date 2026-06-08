@@ -1,5 +1,6 @@
-import { Badge, Button } from 'flowbite-react';
+import { Badge } from 'flowbite-react';
 import { Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 import {
     Table,
     TableBody,
@@ -14,6 +15,7 @@ import {
     HemodialysisSessionListItem,
     HemodialysisSessionListPermissions,
 } from '../../types/hemodialysisSession';
+import { settingsActionClasses } from '../../utils/settingsUi';
 import HemodialysisSessionStatusBadge from './HemodialysisSessionStatusBadge';
 
 interface HemodialysisSessionTableProps {
@@ -30,6 +32,7 @@ export default function HemodialysisSessionTable({
     editUrlBase,
 }: HemodialysisSessionTableProps) {
     const { t } = useTranslation();
+    const [deletingId, setDeletingId] = useState<number | null>(null);
 
     if (items.length === 0) {
         return <SettingsEmptyState message={t('global.no_hemodialysis_sessions_found')} />;
@@ -39,7 +42,11 @@ export default function HemodialysisSessionTable({
         if (!window.confirm(t('global.confirm_delete'))) {
             return;
         }
-        router.delete(`${showUrlBase}/${id}`, { preserveScroll: true });
+        setDeletingId(id);
+        router.delete(`${showUrlBase}/${id}`, {
+            preserveScroll: true,
+            onFinish: () => setDeletingId(null),
+        });
     };
 
     return (
@@ -80,18 +87,32 @@ export default function HemodialysisSessionTable({
                         </TableCell>
                         <TableCell align="center">
                             <div className="flex justify-center gap-1">
-                                <Button as={Link} href={`${showUrlBase}/${item.id}`} size="xs" color="blue">
-                                    <i className="bx bx-show" />
-                                </Button>
+                                <Link
+                                    href={`${showUrlBase}/${item.id}`}
+                                    className={settingsActionClasses.view}
+                                    title={t('global.show')}
+                                >
+                                    <i className="bx bx-show text-lg" />
+                                </Link>
                                 {permissions.edit && (
-                                    <Button as={Link} href={`${editUrlBase}/${item.id}/edit`} size="xs" color="warning">
-                                        <i className="bx bx-edit" />
-                                    </Button>
+                                    <Link
+                                        href={`${editUrlBase}/${item.id}/edit`}
+                                        className={settingsActionClasses.edit}
+                                        title={t('global.edit')}
+                                    >
+                                        <i className="bx bx-edit text-lg" />
+                                    </Link>
                                 )}
                                 {permissions.delete && (
-                                    <Button size="xs" color="failure" onClick={() => handleDelete(item.id)}>
-                                        <i className="bx bx-trash" />
-                                    </Button>
+                                    <button
+                                        type="button"
+                                        disabled={deletingId === item.id}
+                                        onClick={() => handleDelete(item.id)}
+                                        className={settingsActionClasses.delete}
+                                        title={t('global.delete')}
+                                    >
+                                        <i className="bx bx-trash text-lg" />
+                                    </button>
                                 )}
                             </div>
                         </TableCell>

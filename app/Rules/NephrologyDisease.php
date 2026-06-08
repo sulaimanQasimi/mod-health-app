@@ -14,7 +14,7 @@ class NephrologyDisease implements ValidationRule
             return;
         }
 
-        if (! Disease::forNephrology()->where('id', $value)->exists()) {
+        if (! Disease::query()->where('id', $value)->exists()) {
             $fail(localize('global.invalid_nephrology_disease'));
         }
     }

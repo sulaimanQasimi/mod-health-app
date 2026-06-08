@@ -97,7 +97,7 @@ class NephrologyAjaxController extends Controller
     public function getDiseases(Request $request)
     {
         try {
-            $query = Disease::forNephrology();
+            $query = Disease::query();
 
             if ($request->filled('disease_category_id')) {
                 if ($request->disease_category_id === 'none') {

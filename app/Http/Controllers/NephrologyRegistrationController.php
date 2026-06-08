@@ -349,14 +349,11 @@ class NephrologyRegistrationController extends Controller
      */
     private function nephrologyDiseaseFormData(): array
     {
-        $nephrologyDiseases = Disease::forNephrology()
+        $nephrologyDiseases = Disease::query()
             ->orderBy('name')
             ->get(['id', 'name', 'disease_category_id']);
 
-        $categoryIds = $nephrologyDiseases->pluck('disease_category_id')->filter()->unique();
-
         $diseaseCategories = DiseaseCategory::query()
-            ->whereIn('id', $categoryIds)
             ->orderBy('name')
             ->get();
 

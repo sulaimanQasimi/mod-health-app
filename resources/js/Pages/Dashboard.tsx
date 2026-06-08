@@ -172,20 +172,26 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
         {
             title: t('global.occupied_beds'),
             value: formatValue(dashboard.occupied_beds),
-            className: 'border-yellow-300 bg-yellow-50 dark:border-yellow-700 dark:bg-yellow-900/20',
-            badgeClass: 'bg-yellow-500',
+            iconClass: 'bx bx-bed',
+            iconBgClass: 'bg-yellow-500',
+            borderClass: 'border-yellow-500',
+            valueClass: 'text-yellow-600',
         },
         {
             title: t('global.all_beds'),
             value: formatValue(dashboard.all_beds),
-            className: 'border-blue-300 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20',
-            badgeClass: 'bg-blue-600',
+            iconClass: 'bx bx-bed',
+            iconBgClass: 'bg-blue-600',
+            borderClass: 'border-blue-500',
+            valueClass: 'text-blue-600',
         },
         {
             title: t('global.free_beds'),
             value: formatValue(dashboard.free_beds),
-            className: 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-900/20',
-            badgeClass: 'bg-green-600',
+            iconClass: 'bx bx-bed',
+            iconBgClass: 'bg-green-600',
+            borderClass: 'border-green-500',
+            valueClass: 'text-green-600',
         },
     ];
 

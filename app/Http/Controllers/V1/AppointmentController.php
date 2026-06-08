@@ -438,57 +438,14 @@ class AppointmentController extends Controller
         $this->authorize('viewMyVisits', Appointment::class);
 
         $user = $request->user();
-        $appointmentId = $this->parseNumericFilter($request->input('token_id'));
-        $filterPatientId = $this->parseNumericFilter($request->input('patient_id'));
-        $userClinicType = $user->clinic_type;
-        $filterByClinicType = $userClinicType && $userClinicType !== 'both';
-
-        if ($appointmentId !== null) {
-            $query = Appointment::query()->where('id', $appointmentId);
-            if ($filterByClinicType) {
-                $query->where('clinic_type', $userClinicType);
-            }
-        } else {
-            $query = Appointment::query()
-                ->whereNull('doctor_id')
-                ->whereNull('processed_by');
-            if ($filterByClinicType) {
-                $query->where('clinic_type', $userClinicType);
-            }
-            $query->when($user->doctor, function ($departmentQuery) use ($user) {
-                $departmentQuery->where('department_id', $user->doctor->department_id);
-            });
-        }
-
-        $query->with([
-            'patient:id,name,last_name,father_name,id_card',
-            'department:id,name',
-            'referringDoctor:id,name',
-            'processedBy:id,name,last_name',
-        ]);
-
-        if ($filterPatientId !== null) {
-            $query->where('patient_id', $filterPatientId);
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->whereHas('patient', function ($patientQuery) use ($search) {
-                $patientQuery->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('last_name', 'like', '%'.$search.'%')
-                    ->orWhere('id_card', 'like', '%'.$search.'%')
-                    ->orWhere('phone', 'like', '%'.$search.'%')
-                    ->orWhere('father_name', 'like', '%'.$search.'%')
-                    ->orWhere('nid', 'like', '%'.$search.'%');
-            });
-        }
+        $query = $this->buildDepartmentAppointmentsQuery($request, $user);
 
         $paginator = $query->latest()->paginate(25)->withQueryString();
 
         return Inertia::render('Appointments/Department', [
             'appointments' => $this->paginatedResponse(
                 $paginator,
-                fn (Appointment $appointment) => $this->transformDepartmentAppointment($appointment, $user),
+                fn (Appointment $appointment) => $this->transformDepartmentAppointment($appointment, $user)
             ),
             'filters' => [
                 'search' => (string) $request->input('search', ''),
@@ -606,6 +563,64 @@ class AppointmentController extends Controller
     public function report()
     {
         return $this->renderPage('global.reports');
+    }
+
+    /**
+     * Mirrors legacy AppointmentController::departmentAppointments() query logic.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<Appointment>
+     */
+    private function buildDepartmentAppointmentsQuery(Request $request, $user)
+    {
+        $appointmentId = $this->parseNumericFilter($request->input('token_id'));
+        $filterPatientId = $this->parseNumericFilter($request->input('patient_id'));
+        $userClinicType = $user->clinic_type;
+        $filterByClinicType = $userClinicType && $userClinicType !== 'both';
+
+        if ($appointmentId !== null) {
+            $query = Appointment::query()->where('id', $appointmentId);
+
+            if ($filterByClinicType) {
+                $query->where('clinic_type', $userClinicType);
+            }
+        } else {
+            $query = Appointment::query()
+                ->whereNull('doctor_id')
+                ->whereNull('processed_by');
+
+            if ($filterByClinicType) {
+                $query->where('clinic_type', $userClinicType);
+            }
+
+            $query->when($user->doctor, function ($departmentQuery) use ($user) {
+                $departmentQuery->where('department_id', $user->doctor->department_id);
+            });
+        }
+
+        $query->with([
+            'patient:id,name,last_name,father_name,id_card',
+            'department:id,name',
+            'referringDoctor:id,name',
+            'processedBy:id,name,last_name',
+        ]);
+
+        if ($filterPatientId !== null) {
+            $query->where('patient_id', $filterPatientId);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('patient', function ($patientQuery) use ($search) {
+                $patientQuery->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('last_name', 'like', '%'.$search.'%')
+                    ->orWhere('id_card', 'like', '%'.$search.'%')
+                    ->orWhere('phone', 'like', '%'.$search.'%')
+                    ->orWhere('father_name', 'like', '%'.$search.'%')
+                    ->orWhere('nid', 'like', '%'.$search.'%');
+            });
+        }
+
+        return $query;
     }
 
     /**

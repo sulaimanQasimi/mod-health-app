@@ -19,8 +19,6 @@
         "vite": "^7.1.2"
     },
     "dependencies": {
-        "@ckeditor/ckeditor5-react": "^9.5.0",
-        "ckeditor5": "^43.3.1",
         "@ckeditor/ckeditor5-react": "^6.3.0",
         "@inertiajs/react": "^2.3.4",
         "@types/react": "^19.2.7",
@@ -28,10 +26,12 @@
         "@vitejs/plugin-react": "^5.1.2",
         "@vitejs/plugin-vue": "^6.0.1",
         "@vue/compiler-sfc": "^3.5.22",
+        "ckeditor5": "^43.3.1",
         "echarts": "^5.5.0",
         "echarts-wordcloud": "^2.1.0",
         "jquery": "^3.7.1",
         "moment-jalaali": "^0.10.4",
+        "persian-date": "^1.1.0",
         "persian-datepicker": "^1.2.0",
         "qrcode": "^1.5.4",
         "react": "^19.2.3",

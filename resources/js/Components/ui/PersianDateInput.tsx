@@ -1,5 +1,6 @@
 import { InputHTMLAttributes, useEffect, useRef } from 'react';
-import { $ } from '../../lib/persianDatepickerSetup';
+import { $, ensurePersianDatepickerLoaded } from '../../lib/persianDatepickerSetup';
+import type { PersianDatepickerInstance } from '../../types/jquery-persian-datepicker';
 
 interface PersianDateInputProps
     extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> {
@@ -30,52 +31,75 @@ export default function PersianDateInput({
             return;
         }
 
-        const $input = $(input);
+        let picker: PersianDatepickerInstance | null = null;
+        let notifyChange: (() => void) | null = null;
+        let cancelled = false;
 
-        const notifyChange = () => {
-            onChangeRef.current(String($input.val() ?? ''));
+        const init = async () => {
+            await ensurePersianDatepickerLoaded();
+
+            if (cancelled || !inputRef.current) {
+                return;
+            }
+
+            const $input = $(inputRef.current);
+
+            notifyChange = () => {
+                onChangeRef.current(String($input.val() ?? ''));
+            };
+
+            picker = $input.persianDatepicker({
+                format: 'YYYY/MM/DD',
+                autoClose: true,
+                initialValue: false,
+                observer: true,
+                calendar: {
+                    persian: {
+                        locale: 'fa',
+                        showHint: true,
+                        leapYearMode: 'algorithmic',
+                    },
+                    gregorian: {
+                        enabled: false,
+                    },
+                },
+                dayPicker: {
+                    onSelect: () => notifyChange?.(),
+                },
+                toolbox: {
+                    todayButton: {
+                        onToday: () => notifyChange?.(),
+                    },
+                },
+            });
+
+            $input.on('change', notifyChange);
+
+            if (value) {
+                $input.val(value);
+            }
         };
 
-        const picker = $input.persianDatepicker({
-            format: 'YYYY/MM/DD',
-            autoClose: true,
-            initialValue: false,
-            observer: true,
-            calendar: {
-                persian: {
-                    locale: 'fa',
-                    showHint: true,
-                    leapYearMode: 'algorithmic',
-                },
-                gregorian: {
-                    enabled: false,
-                },
-            },
-            dayPicker: {
-                onSelect: notifyChange,
-            },
-            toolbox: {
-                todayButton: {
-                    onToday: notifyChange,
-                },
-            },
-        });
-
-        $input.on('change', notifyChange);
-
-        if (value) {
-            $input.val(value);
-        }
+        init().catch(() => undefined);
 
         return () => {
-            $input.off('change', notifyChange);
-            picker.destroy();
+            cancelled = true;
+
+            if (!inputRef.current) {
+                return;
+            }
+
+            const $input = $(inputRef.current);
+            if (notifyChange) {
+                $input.off('change', notifyChange);
+            }
+            picker?.destroy();
         };
     }, []);
 
     useEffect(() => {
         const input = inputRef.current;
-        if (!input) {
+        if (!input || typeof $.fn.persianDatepicker !== 'function') {
             return;
         }
 

@@ -23,13 +23,16 @@ declare module 'jquery' {
     interface JQuery {
         val(): string | number | string[] | undefined;
         val(value: string): JQuery;
-        on(events: string, handler: () => void): JQuery;
-        off(events: string, handler: () => void): JQuery;
+        on(events: string, handler?: () => void): JQuery;
+        off(events?: string, handler?: () => void): JQuery;
         persianDatepicker(options?: PersianDatepickerOptions): PersianDatepickerInstance;
     }
 
     interface JQueryStatic {
         (element: Element): JQuery;
+        fn: {
+            persianDatepicker?: (options?: PersianDatepickerOptions) => PersianDatepickerInstance;
+        };
     }
 
     const jQuery: JQueryStatic;

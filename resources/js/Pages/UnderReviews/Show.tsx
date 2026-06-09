@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
+import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import PhysiotherapySection from '../../Components/Appointments/Sections/PhysiotherapySection';
 import { SectionShell } from '../../Components/Appointments/Sections/AppointmentSectionAccordion';
@@ -157,6 +158,17 @@ export default function UnderReviewsShow({ underReview, permissions, urls }: Sho
 
                 <UnderReviewSummary underReview={underReview} />
 
+                {underReview.appointment_id && (
+                    <>
+                        <PrescriptionSection
+                            appointmentId={underReview.appointment_id}
+                            underReviewId={underReview.id}
+                            embedded
+                        />
+                        <LabTestSection appointmentId={underReview.appointment_id} embedded />
+                    </>
+                )}
+
                 {underReview.is_discharged && underReview.discharge_remark && (
                     <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-100">
                         <p className="font-medium">{t('global.discharge_remark')}</p>
@@ -272,10 +284,7 @@ export default function UnderReviewsShow({ underReview, permissions, urls }: Sho
                     </SectionShell>
 
                     {underReview.appointment_id && (
-                        <>
-                            <PrescriptionSection appointmentId={underReview.appointment_id} embedded />
-                            <PhysiotherapySection appointmentId={underReview.appointment_id} />
-                        </>
+                        <PhysiotherapySection appointmentId={underReview.appointment_id} />
                     )}
 
                     <SectionShell

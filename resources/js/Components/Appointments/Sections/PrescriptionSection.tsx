@@ -31,6 +31,7 @@ import { SectionActionButton } from './SimpleTableSection';
 
 interface PrescriptionSectionProps {
     appointmentId: number;
+    underReviewId?: number;
     embedded?: boolean;
 }
 
@@ -104,7 +105,11 @@ const EMPTY_ITEM: PrescriptionFormItem = {
     amount: '',
 };
 
-export default function PrescriptionSection({ appointmentId, embedded = false }: PrescriptionSectionProps) {
+export default function PrescriptionSection({
+    appointmentId,
+    underReviewId,
+    embedded = false,
+}: PrescriptionSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
     const baseUrl = `/react/appointments/${appointmentId}/prescription`;
@@ -239,6 +244,7 @@ export default function PrescriptionSection({ appointmentId, embedded = false }:
                 },
                 body: JSON.stringify({
                     target_appointment_id: targetAppointmentId ? Number(targetAppointmentId) : null,
+                    under_review_id: underReviewId ?? null,
                     prescription_items: formItems,
                 }),
             });

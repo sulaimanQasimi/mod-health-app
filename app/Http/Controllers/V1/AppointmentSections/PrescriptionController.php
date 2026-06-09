@@ -120,6 +120,7 @@ class PrescriptionController extends Controller
 
         $validated = $request->validate([
             'target_appointment_id' => 'nullable|exists:appointments,id',
+            'under_review_id' => 'nullable|exists:under_reviews,id',
             'prescription_items' => 'required|array|min:1',
             'prescription_items.*.medicine_id' => 'required|exists:medicines,id',
             'prescription_items.*.usage_type_id' => 'required|exists:medicine_usage_types,id',
@@ -142,7 +143,7 @@ class PrescriptionController extends Controller
                 'appointment_id' => $targetAppointment->id,
                 'patient_id' => $targetAppointment->patient_id,
                 'doctor_id' => $targetAppointment->doctor_id,
-                'under_review_id' => $targetAppointment->under_review_id,
+                'under_review_id' => $validated['under_review_id'] ?? null,
                 'is_completed' => false,
                 'created_by' => $request->user()->id,
             ]);

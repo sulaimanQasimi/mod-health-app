@@ -117,6 +117,9 @@ export function UnderReviewSection({ appointmentId }: SectionProps) {
             ]}
             rowActions={(item, ctx) => (
                 <>
+                    {item.urls?.show && (
+                        <SectionActionButton icon="bx-show" title={t('global.show')} href={item.urls.show as string} colorClass="text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900/30" />
+                    )}
                     {item.urls?.edit && (
                         <SectionActionButton icon="bx-edit" title={t('global.edit')} href={item.urls.edit as string} colorClass="text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30" />
                     )}

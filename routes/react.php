@@ -376,7 +376,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports', [ProstheticsReportController::class, 'index'])->name('reports.index');
     });
 
-    Route::get('/under-reviews', [UnderReviewController::class, 'index'])->name('under-reviews.index');
+    Route::prefix('under-reviews')->name('under-reviews.')->middleware('permission:show-under-review-menu')->group(function () {
+        Route::get('/', [UnderReviewController::class, 'index'])->name('index');
+        Route::get('/{underReview}/edit', [UnderReviewController::class, 'edit'])->name('edit');
+        Route::get('/{underReview}', [UnderReviewController::class, 'show'])->name('show');
+        Route::match(['put', 'post'], '/{underReview}', [UnderReviewController::class, 'update'])->name('update');
+        Route::post('/{underReview}/discharge', [UnderReviewController::class, 'discharge'])->name('discharge');
+        Route::post('/{underReview}/visits', [UnderReviewController::class, 'storeVisit'])->name('visits.store');
+        Route::match(['put', 'post'], '/{underReview}/visits/{visit}', [UnderReviewController::class, 'updateVisit'])->name('visits.update');
+        Route::delete('/{underReview}/visits/{visit}', [UnderReviewController::class, 'destroyVisit'])->name('visits.destroy');
+    });
 
     Route::prefix('hospitalizations')->name('hospitalizations.')->group(function () {
         Route::get('/', [HospitalizationController::class, 'index'])->name('index');

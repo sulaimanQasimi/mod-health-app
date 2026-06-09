@@ -143,13 +143,16 @@ class UnderReviewController extends Controller
                 'edit_visit' => $user->can('edit-under-review-visit'),
                 'delete_visit' => $user->can('delete-under-review-visit'),
             ],
+            'sectionPermissions' => [
+                'prescription' => $user->can('show-prescriptions-menu'),
+                'lab' => $user->can('show-labs-menu'),
+            ],
             'urls' => [
                 'index' => route('react.under-reviews.index'),
                 'edit' => route('react.under-reviews.edit', $underReview),
                 'discharge' => route('react.under-reviews.discharge', $underReview),
                 'visit_store' => route('react.under-reviews.visits.store', $underReview),
                 'visit_update' => url('/react/under-reviews/'.$underReview->id.'/visits'),
-                'legacy_show' => route('under_reviews.show', $underReview),
                 'appointment' => $underReview->appointment_id
                     ? route('react.appointments.show', $underReview->appointment_id)
                     : null,

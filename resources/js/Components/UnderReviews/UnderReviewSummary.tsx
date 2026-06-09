@@ -1,3 +1,4 @@
+import { Badge } from 'flowbite-react';
 import { UnderReviewDetail } from '../../types/underReview';
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -20,12 +21,29 @@ function SummaryField({ label, value, icon }: { label: string; value: string; ic
 export default function UnderReviewSummary({ underReview }: UnderReviewSummaryProps) {
     const { t } = useTranslation();
 
+    const patientName = [underReview.patient?.name, underReview.patient?.father_name]
+        .filter(Boolean)
+        .join(' / ');
+
     return (
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    {patientName || '—'}
+                </p>
+                <Badge color={underReview.is_discharged ? 'gray' : 'success'}>
+                    {underReview.is_discharged ? t('global.discharged') : t('global.active')}
+                </Badge>
+            </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <SummaryField
                     label={t('global.patient_name')}
                     value={underReview.patient?.name ?? ''}
+                    icon="bx-user"
+                />
+                <SummaryField
+                    label={t('global.father_name')}
+                    value={underReview.patient?.father_name ?? ''}
                     icon="bx-user"
                 />
                 <SummaryField
@@ -48,10 +66,14 @@ export default function UnderReviewSummary({ underReview }: UnderReviewSummaryPr
                 <SummaryField label={t('global.reason')} value={underReview.reason} icon="bx-info-circle" />
                 <SummaryField label={t('global.remarks')} value={underReview.remarks} icon="bx-note" />
             </div>
-            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <SummaryField
                     label={t('global.card_number')}
                     value={underReview.patient?.id_card ?? ''}
+                />
+                <SummaryField
+                    label={t('global.phone')}
+                    value={underReview.patient?.phone ?? ''}
                 />
                 <SummaryField label={t('global.room')} value={underReview.room_name ?? ''} />
                 <SummaryField label={t('global.bed')} value={String(underReview.bed_number ?? '')} />

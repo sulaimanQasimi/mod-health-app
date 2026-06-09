@@ -7,12 +7,6 @@ export const HOSPITALIZATION_DISCHARGED_PANEL_CLASS =
 export const HOSPITALIZATION_CARD_CLASS =
     'overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900';
 
-export const HOSPITALIZATION_FILTER_PANEL_CLASS =
-    'rounded-xl border border-gray-200 bg-gradient-to-b from-white to-gray-50/80 p-5 shadow-sm dark:border-gray-700 dark:from-gray-900 dark:to-gray-900/60';
-
-export const HOSPITALIZATION_TABLE_PANEL_CLASS =
-    'overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900';
-
 export const HOSPITALIZATION_FORM_SECTION_CLASS =
     'rounded-xl border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-800 dark:bg-gray-800/30';
 

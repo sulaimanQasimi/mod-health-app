@@ -16,15 +16,20 @@ import { dischargeStatusBadgeColor } from './hospitalizationUi';
 interface HospitalizationTableProps {
     items: HospitalizationListItem[];
     variant?: 'active' | 'discharged';
+    embedded?: boolean;
 }
 
-export default function HospitalizationTable({ items, variant = 'active' }: HospitalizationTableProps) {
+export default function HospitalizationTable({
+    items,
+    variant = 'active',
+    embedded = true,
+}: HospitalizationTableProps) {
     const { t } = useTranslation();
     const isDischarged = variant === 'discharged';
     const columnCount = isDischarged ? 11 : 10;
 
     return (
-        <Table>
+        <Table embedded={embedded}>
             <TableHead>
                 <TableRow variant="header">
                     <TableHeader className="w-16">{t('global.id')}</TableHeader>

@@ -1,8 +1,5 @@
 import { ReactNode } from 'react';
-import {
-    HOSPITALIZATION_FILTER_PANEL_CLASS,
-    HOSPITALIZATION_TABLE_PANEL_CLASS,
-} from './hospitalizationUi';
+import { HOSPITALIZATION_CARD_CLASS } from './hospitalizationUi';
 
 interface HospitalizationPanelProps {
     title: string;
@@ -11,6 +8,7 @@ interface HospitalizationPanelProps {
     description?: string;
     action?: ReactNode;
     variant?: 'filter' | 'table';
+    footer?: ReactNode;
     children: ReactNode;
 }
 
@@ -21,16 +19,22 @@ export default function HospitalizationPanel({
     description,
     action,
     variant = 'table',
+    footer,
     children,
 }: HospitalizationPanelProps) {
-    const panelClass =
-        variant === 'filter' ? HOSPITALIZATION_FILTER_PANEL_CLASS : HOSPITALIZATION_TABLE_PANEL_CLASS;
+    const isTable = variant === 'table';
 
     return (
-        <section className={panelClass}>
-            <div className="mb-4 flex flex-wrap items-start justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-800">
+        <section className={`${HOSPITALIZATION_CARD_CLASS} ${isTable ? '' : 'p-5'}`}>
+            <div
+                className={`flex flex-wrap items-start justify-between gap-3 ${
+                    isTable
+                        ? 'border-b border-gray-100 px-5 py-4 dark:border-gray-800'
+                        : 'mb-4 border-b border-gray-100 pb-4 dark:border-gray-800'
+                }`}
+            >
                 <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/30">
                         <i className={`bx ${icon} text-lg ${iconClassName}`} />
                     </div>
                     <div>
@@ -42,7 +46,12 @@ export default function HospitalizationPanel({
                 </div>
                 {action}
             </div>
-            {children}
+
+            {isTable ? children : <div>{children}</div>}
+
+            {footer && (
+                <div className="border-t border-gray-100 px-5 py-4 dark:border-gray-800">{footer}</div>
+            )}
         </section>
     );
 }

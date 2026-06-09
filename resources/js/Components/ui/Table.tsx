@@ -25,17 +25,27 @@ const rowVariantClasses: Record<TableRowVariant, string> = {
     footer: 'border-t border-gray-200 bg-gray-50 font-medium dark:border-gray-700 dark:bg-gray-800/60',
 };
 
-export function Table({ className = '', children, ...props }: TableHTMLAttributes<HTMLTableElement>) {
+interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
+    embedded?: boolean;
+}
+
+export function Table({ className = '', embedded = false, children, ...props }: TableProps) {
+    const table = (
+        <table
+            className={mergeClasses('w-full min-w-[960px] border-collapse text-sm', className)}
+            {...props}
+        >
+            {children}
+        </table>
+    );
+
+    if (embedded) {
+        return <div className="min-w-0 w-full overflow-x-auto">{table}</div>;
+    }
+
     return (
         <div className="min-w-0 w-full overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-            <div className="overflow-x-auto">
-                <table
-                    className={mergeClasses('w-full min-w-[960px] border-collapse text-sm', className)}
-                    {...props}
-                >
-                    {children}
-                </table>
-            </div>
+            <div className="overflow-x-auto">{table}</div>
         </div>
     );
 }

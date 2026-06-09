@@ -98,6 +98,7 @@ export default function HospitalizationsDischarged({
                 </HospitalizationPanel>
 
                 <HospitalizationPanel
+                    variant="table"
                     title={t('global.discharged_hospitalizations')}
                     icon="bx-exit"
                     iconClassName="text-slate-600 dark:text-slate-400"
@@ -106,11 +107,9 @@ export default function HospitalizationsDischarged({
                             {buildPaginationSummary(hospitalizations.meta, t)}
                         </span>
                     }
+                    footer={<SettingsPagination links={hospitalizations.links} />}
                 >
-                    <HospitalizationTable items={hospitalizations.data} variant="discharged" />
-                    <div className="mt-4 border-t border-gray-100 pt-4 dark:border-gray-800">
-                        <SettingsPagination links={hospitalizations.links} />
-                    </div>
+                    <HospitalizationTable items={hospitalizations.data} variant="discharged" embedded />
                 </HospitalizationPanel>
             </div>
         </DashboardLayout>

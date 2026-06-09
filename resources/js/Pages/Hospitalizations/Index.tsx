@@ -113,6 +113,7 @@ export default function HospitalizationsIndex({
                 </HospitalizationPanel>
 
                 <HospitalizationPanel
+                    variant="table"
                     title={t('global.hospitalized_patients')}
                     icon="bx-list-ul"
                     action={
@@ -120,11 +121,9 @@ export default function HospitalizationsIndex({
                             {buildPaginationSummary(hospitalizations.meta, t)}
                         </span>
                     }
+                    footer={<SettingsPagination links={hospitalizations.links} />}
                 >
-                    <HospitalizationTable items={hospitalizations.data} />
-                    <div className="mt-4 border-t border-gray-100 pt-4 dark:border-gray-800">
-                        <SettingsPagination links={hospitalizations.links} />
-                    </div>
+                    <HospitalizationTable items={hospitalizations.data} embedded />
                 </HospitalizationPanel>
             </div>
         </DashboardLayout>

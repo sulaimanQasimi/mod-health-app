@@ -46,6 +46,7 @@ use App\Http\Controllers\V1\FoodTypeController;
 use App\Http\Controllers\V1\HemodialysisSessionController;
 use App\Http\Controllers\V1\HospitalizationController;
 use App\Http\Controllers\V1\HospitalizationSections\VitalSignController as HospitalizationVitalSignController;
+use App\Http\Controllers\V1\HospitalizationSections\VisitController as HospitalizationVisitController;
 use App\Http\Controllers\V1\ICUController;
 use App\Http\Controllers\V1\IncomeController;
 use App\Http\Controllers\V1\LabTypeController;
@@ -402,13 +403,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{hospitalization}/vital-signs/meta', [HospitalizationVitalSignController::class, 'meta'])->name('vital-signs.meta');
         Route::get('/{hospitalization}/vital-signs', [HospitalizationVitalSignController::class, 'index'])->name('vital-signs.index');
         Route::post('/{hospitalization}/vital-signs', [HospitalizationVitalSignController::class, 'store'])->name('vital-signs.store');
+        Route::get('/{hospitalization}/visits', [HospitalizationVisitController::class, 'index'])->name('visits.index');
+        Route::post('/{hospitalization}/visits', [HospitalizationVisitController::class, 'store'])->name('visits.store');
+        Route::match(['put', 'post'], '/{hospitalization}/visits/{visit}', [HospitalizationVisitController::class, 'update'])->name('visits.update');
+        Route::delete('/{hospitalization}/visits/{visit}', [HospitalizationVisitController::class, 'destroy'])->name('visits.destroy');
         Route::get('/{hospitalization}/edit', [HospitalizationController::class, 'edit'])->name('edit');
         Route::get('/{hospitalization}', [HospitalizationController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/{hospitalization}', [HospitalizationController::class, 'update'])->name('update');
         Route::post('/{hospitalization}/discharge', [HospitalizationController::class, 'discharge'])->name('discharge');
-        Route::post('/{hospitalization}/visits', [HospitalizationController::class, 'storeVisit'])->name('visits.store');
-        Route::match(['put', 'post'], '/{hospitalization}/visits/{visit}', [HospitalizationController::class, 'updateVisit'])->name('visits.update');
-        Route::delete('/{hospitalization}/visits/{visit}', [HospitalizationController::class, 'destroyVisit'])->name('visits.destroy');
     });
 
     Route::prefix('vital-sign-types')->name('vital-sign-types.')->group(function () {

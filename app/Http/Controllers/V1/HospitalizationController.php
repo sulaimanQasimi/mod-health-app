@@ -15,7 +15,6 @@ use App\Models\Relation;
 use App\Models\Room;
 use App\Models\User;
 use App\Models\VitalSign;
-use App\Models\Visit;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -171,7 +170,6 @@ class HospitalizationController extends Controller
             'bed:id,number',
             'appointment:id,patient_id,doctor_id,is_completed,department_id',
             'appointment.department:id,name',
-            'visits.doctor:id,name',
             'bloodBanks:id,hospitalization_id,group,created_at',
             'vitalSigns.vitalSignType:id,name',
             'vitalSigns.schedules.nurse:id,first_name,last_name',
@@ -219,22 +217,18 @@ class HospitalizationController extends Controller
                 'edit' => $user->can('edit-hospitalizations'),
                 'discharge' => ! (bool) $hospitalization->is_discharged && $user->can('edit-hospitalizations'),
                 'change_room_bed' => ! (bool) $hospitalization->is_discharged && $this->canEditRooms($user),
-                'store_visit' => ! (bool) $hospitalization->is_discharged,
-                'edit_visit' => $user->can('edit-hospitalizations'),
-                'delete_visit' => $user->can('delete-hospitalizations'),
             ],
             'sectionPermissions' => [
                 'prescription' => $user->can('show-prescriptions-menu'),
                 'lab' => $user->can('show-labs-menu'),
                 'physiotherapy' => $user->can('show-physiotherapy-procedures'),
                 'vital_signs' => $user->can('viewAny', VitalSign::class),
+                'visits' => $user->can('show-hospitalizations-menu'),
             ],
             'urls' => [
                 'index' => route('react.hospitalizations.index'),
                 'edit' => route('react.hospitalizations.edit', $hospitalization),
                 'discharge' => route('react.hospitalizations.discharge', $hospitalization),
-                'visit_store' => route('react.hospitalizations.visits.store', $hospitalization),
-                'visit_update' => url('/react/hospitalizations/'.$hospitalization->id.'/visits'),
                 'appointment' => $hospitalization->appointment_id
                     ? route('react.appointments.show', $hospitalization->appointment_id)
                     : null,
@@ -359,60 +353,6 @@ class HospitalizationController extends Controller
         return redirect()
             ->route('react.hospitalizations.show', $hospitalization)
             ->with('success', localize('global.hospitalization_updated_successfully.'));
-    }
-
-    public function storeVisit(Request $request, Hospitalization $hospitalization): RedirectResponse
-    {
-        $this->authorizeMenu();
-        $this->ensureAccessible($hospitalization);
-        abort_if((bool) $hospitalization->is_discharged, 403);
-
-        $validated = $request->validate([
-            'description' => 'required|string',
-        ]);
-
-        Visit::create([
-            'description' => $validated['description'],
-            'patient_id' => $hospitalization->patient_id,
-            'doctor_id' => $hospitalization->doctor_id,
-            'hospitalization_id' => $hospitalization->id,
-        ]);
-
-        return redirect()
-            ->route('react.hospitalizations.show', $hospitalization)
-            ->with('success', localize('global.visit_created_successfully.'));
-    }
-
-    public function updateVisit(Request $request, Hospitalization $hospitalization, Visit $visit): RedirectResponse
-    {
-        $this->authorizeMenu();
-        $this->ensureAccessible($hospitalization);
-        abort_unless($request->user()->can('edit-hospitalizations'), 403);
-        abort_unless((int) $visit->hospitalization_id === (int) $hospitalization->id, 404);
-
-        $validated = $request->validate([
-            'description' => 'required|string',
-        ]);
-
-        $visit->update($validated);
-
-        return redirect()
-            ->route('react.hospitalizations.show', $hospitalization)
-            ->with('success', localize('global.visit_updated_successfully.'));
-    }
-
-    public function destroyVisit(Hospitalization $hospitalization, Visit $visit): RedirectResponse
-    {
-        $this->authorizeMenu();
-        $this->ensureAccessible($hospitalization);
-        abort_unless(request()->user()->can('delete-hospitalizations'), 403);
-        abort_unless((int) $visit->hospitalization_id === (int) $hospitalization->id, 404);
-
-        $visit->delete();
-
-        return redirect()
-            ->route('react.hospitalizations.show', $hospitalization)
-            ->with('success', localize('global.visit_deleted_successfully.'));
     }
 
     public function report(Request $request): Response
@@ -856,11 +796,6 @@ class HospitalizationController extends Controller
                 ?? $hospitalization->appointment?->department?->name,
             'room_name' => $hospitalization->room?->name,
             'bed_number' => $hospitalization->bed?->number,
-            'visits' => $hospitalization->visits->map(fn (Visit $visit) => [
-                'id' => $visit->id,
-                'description' => $visit->description,
-                'doctor_name' => $visit->doctor?->name,
-            ])->values()->all(),
             'blood_banks' => $hospitalization->bloodBanks->map(fn ($item) => [
                 'id' => $item->id,
                 'group' => $item->group,

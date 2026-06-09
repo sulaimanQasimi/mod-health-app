@@ -52,12 +52,6 @@ export interface HospitalizationOption {
     name: string;
 }
 
-export interface HospitalizationVisit {
-    id: number;
-    description: string | null;
-    doctor_name: string | null;
-}
-
 export interface HospitalizationClinicalRow {
     id: number;
     date?: string | null;
@@ -103,7 +97,6 @@ export interface HospitalizationDetail {
     doctor_name: string | null;
     room_name: string | null;
     bed_number: string | number | null;
-    visits: HospitalizationVisit[];
     blood_banks: HospitalizationBloodBank[];
     diabetes_charts: HospitalizationClinicalRow[];
     nurse_notes: HospitalizationClinicalRow[];
@@ -121,9 +114,6 @@ export interface HospitalizationShowPermissions {
     edit: boolean;
     discharge: boolean;
     change_room_bed: boolean;
-    store_visit: boolean;
-    edit_visit: boolean;
-    delete_visit: boolean;
 }
 
 export interface HospitalizationEditForm {

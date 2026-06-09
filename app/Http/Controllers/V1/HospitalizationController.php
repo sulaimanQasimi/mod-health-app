@@ -91,7 +91,7 @@ class HospitalizationController extends Controller
             'stats' => $this->branchStats(),
             'filters' => $this->collectFilters($request, ['q', 'room_id', 'date_from', 'date_to']),
             'filterOptions' => [
-                'rooms' => $this->branchRooms(),
+                'rooms' => $this->branchRooms($this->scopedDepartmentId()),
             ],
             'urls' => $this->indexUrls($request),
         ]);
@@ -145,7 +145,7 @@ class HospitalizationController extends Controller
                 'discharge_date_to',
             ]),
             'filterOptions' => [
-                'rooms' => $this->branchRooms(),
+                'rooms' => $this->branchRooms($this->scopedDepartmentId()),
                 'doctors' => Doctor::query()
                     ->where('branch_id', $this->branchId())
                     ->orderBy('name')
@@ -267,11 +267,8 @@ class HospitalizationController extends Controller
                 'relation_to_patient' => $hospitalization->relation_to_patient,
                 'companion_card_type' => $hospitalization->companion_card_type,
             ],
-            'rooms' => $this->branchRooms(),
-            'beds' => Bed::query()
-                ->whereHas('room', fn ($q) => $q->where('branch_id', $this->branchId()))
-                ->orderBy('number')
-                ->get(['id', 'number', 'room_id', 'is_occupied']),
+            'rooms' => $this->branchRooms($this->scopedDepartmentId()),
+            'beds' => $this->branchBeds($this->scopedDepartmentId()),
             'foodTypes' => FoodType::query()->orderBy('name')->get(['id', 'name']),
             'relations' => Relation::query()->orderBy('name')->get(['id', 'name']),
             'urls' => [
@@ -308,12 +305,12 @@ class HospitalizationController extends Controller
             Bed::query()->whereKey($validated['bed_id'])->update(['is_occupied' => 1]);
         }
 
-        $departmentId = null;
-        if (! empty($validated['appointment_id'])) {
-            $departmentId = \App\Models\Appointment::query()
-                ->whereKey($validated['appointment_id'])
-                ->value('department_id');
-        }
+        $departmentId = $this->resolveDepartmentIdForSave(
+            $request,
+            $validated['appointment_id'] ?? null,
+            (int) $validated['room_id'],
+            $hospitalization->department_id
+        );
 
         $hospitalization->update([
             'reason' => $validated['reason'],
@@ -323,7 +320,7 @@ class HospitalizationController extends Controller
             'patient_id' => $validated['patient_id'],
             'appointment_id' => $validated['appointment_id'] ?? null,
             'branch_id' => $validated['branch_id'],
-            'department_id' => $departmentId ?? \App\Models\Room::query()->whereKey($validated['room_id'])->value('department_id'),
+            'department_id' => $departmentId,
             'food_type_id' => json_encode($validated['food_type_ids'] ?? []),
             'patinet_companion' => $validated['patinet_companion'] ?? null,
             'companion_father_name' => $validated['companion_father_name'] ?? null,
@@ -443,7 +440,7 @@ class HospitalizationController extends Controller
                     ->where('branch_id', $this->branchId())
                     ->orderBy('name')
                     ->get(['id', 'name']),
-                'rooms' => $this->branchRooms(),
+                'rooms' => $this->branchRooms($this->scopedDepartmentId()),
                 'foodTypes' => FoodType::query()->orderBy('name')->get(['id', 'name']),
             ],
             'urls' => [
@@ -575,15 +572,80 @@ class HospitalizationController extends Controller
     /**
      * @return list<array{id: int, name: string}>
      */
-    private function branchRooms(): array
+    private function scopedDepartmentId(): ?int
+    {
+        $user = request()->user();
+        if (Hospitalization::userBypassesDepartmentScope($user)) {
+            return null;
+        }
+
+        return $user?->department_id;
+    }
+
+    private function branchRooms(?int $departmentId = null): array
     {
         return Room::query()
             ->where('branch_id', $this->branchId())
+            ->when(
+                $departmentId,
+                fn ($query) => $query->where(function ($roomQuery) use ($departmentId) {
+                    $roomQuery->where('department_id', $departmentId)
+                        ->orWhereNull('department_id');
+                })
+            )
             ->orderBy('name')
             ->get(['id', 'name'])
             ->map(fn (Room $room) => ['id' => $room->id, 'name' => $room->name])
             ->values()
             ->all();
+    }
+
+    private function branchBeds(?int $departmentId = null): array
+    {
+        return Bed::query()
+            ->whereHas('room', function ($query) use ($departmentId) {
+                $query->where('branch_id', $this->branchId())
+                    ->when(
+                        $departmentId,
+                        fn ($roomQuery) => $roomQuery->where(function ($scopedRoomQuery) use ($departmentId) {
+                            $scopedRoomQuery->where('department_id', $departmentId)
+                                ->orWhereNull('department_id');
+                        })
+                    );
+            })
+            ->orderBy('number')
+            ->get(['id', 'number', 'room_id', 'is_occupied'])
+            ->all();
+    }
+
+    private function resolveDepartmentIdForSave(
+        Request $request,
+        ?int $appointmentId,
+        int $roomId,
+        ?int $currentDepartmentId
+    ): ?int {
+        if (! Hospitalization::userBypassesDepartmentScope($request->user())) {
+            abort_unless(
+                $request->user()->department_id !== null
+                    && (int) $currentDepartmentId === (int) $request->user()->department_id,
+                403
+            );
+
+            return (int) $request->user()->department_id;
+        }
+
+        if ($appointmentId) {
+            $appointmentDepartmentId = \App\Models\Appointment::query()
+                ->whereKey($appointmentId)
+                ->value('department_id');
+            if ($appointmentDepartmentId) {
+                return (int) $appointmentDepartmentId;
+            }
+        }
+
+        $roomDepartmentId = Room::query()->whereKey($roomId)->value('department_id');
+
+        return $roomDepartmentId ? (int) $roomDepartmentId : $currentDepartmentId;
     }
 
     /**

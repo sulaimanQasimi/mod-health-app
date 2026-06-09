@@ -17,9 +17,8 @@ class Hospitalization extends Model
     'patinet_companion','companion_father_name','relation_to_patient','companion_card_type','discharged_at','under_review_id','i_c_u_id'];
 
     /**
-     * Limit hospitalizations to the appointment linked to the authenticated user's department.
-     * When the user has a department_id, filtering always applies (including for admin roles).
-     * Admin/super_admin with no department_id on their profile still see all in-branch rows (legacy).
+     * Admin and super_admin bypass department filtering; other users only see rows
+     * where hospitalization.department_id matches their profile department.
      */
     public function scopeVisibleForAuthUserDepartment($query)
     {
@@ -27,24 +26,27 @@ class Hospitalization extends Model
         if (! $user) {
             return $query->whereRaw('0 = 1');
         }
-          if ($user->hasRole(['admin', 'super_admin'])) {
+
+        if (static::userBypassesDepartmentScope($user)) {
             return $query;
-        }else{
-        $departmentId = $user->department_id;
-        if ($departmentId !== null) {
-            return $query->where(function ($q) use ($departmentId) {
-                $q->where('department_id', $departmentId)
-                    ->orWhereHas('appointment', function ($appointmentQuery) use ($departmentId) {
-                        $appointmentQuery->where('department_id', $departmentId);
-                    });
-            });
         }
-          }
-        return $query->whereRaw('0 = 1');
+
+        if ($user->department_id === null) {
+            return $query->whereRaw('0 = 1');
+        }
+
+        return $query->where('department_id', $user->department_id);
+    }
+
+    public static function userBypassesDepartmentScope(?User $user = null): bool
+    {
+        $user = $user ?? Auth::user();
+
+        return $user?->hasRole(['admin', 'super_admin']) ?? false;
     }
 
     /**
-     * Whether the given user may view this hospitalization (same branch; super_admin/admin see all in branch; others match department when set).
+     * Whether the given user may view this hospitalization (same branch; admin roles see all in branch).
      */
     public function userCanView(?User $user = null): bool
     {
@@ -55,21 +57,14 @@ class Hospitalization extends Model
         if ((int) $this->branch_id !== (int) $user->branch_id) {
             return false;
         }
-        if ($user->hasRole(['super_admin', 'admin'])) {
+        if (static::userBypassesDepartmentScope($user)) {
             return true;
         }
-        if ($user->department_id !== null) {
-            $this->loadMissing(['appointment', 'department']);
-
-            if ($this->department_id !== null) {
-                return (int) $this->department_id === (int) $user->department_id;
-            }
-
-            return $this->appointment
-                && (int) $this->appointment->department_id === (int) $user->department_id;
+        if ($user->department_id === null || $this->department_id === null) {
+            return false;
         }
 
-        return false;
+        return (int) $this->department_id === (int) $user->department_id;
     }
 
     public static function boot()

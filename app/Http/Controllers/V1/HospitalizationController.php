@@ -455,8 +455,12 @@ class HospitalizationController extends Controller
     {
         $this->authorizeRoomManagement();
 
-        $rooms = $this->branchRoomsForManagement();
+        $rooms = $this->roomManagementSummaries();
         $selectedRoomId = (int) $request->input('room_id', 0);
+        if ($selectedRoomId === 0 && $rooms !== []) {
+            $selectedRoomId = (int) $rooms[0]['id'];
+        }
+
         $beds = [];
         $selectedRoom = null;
 
@@ -464,37 +468,50 @@ class HospitalizationController extends Controller
             $selectedRoom = $this->findRoomForManagement($selectedRoomId);
             abort_unless($selectedRoom !== null, 404);
             $this->authorize('manage', $selectedRoom);
+            $selectedRoom->loadMissing('department:id,name');
 
             $bedModels = $selectedRoom->allBeds()->orderBy('number')->get();
             $activeByBed = Hospitalization::query()
                 ->whereIn('bed_id', $bedModels->pluck('id'))
                 ->where('is_discharged', 0)
                 ->visibleForAuthUserDepartment()
-                ->with('patient:id,name')
+                ->with('patient:id,name,father_name')
                 ->get()
                 ->keyBy('bed_id');
 
-            $beds = $bedModels->map(fn (Bed $bed) => [
-                'id' => $bed->id,
-                'number' => $bed->number,
-                'is_occupied' => (bool) $bed->is_occupied,
-                'patient_name' => $activeByBed->get($bed->id)?->patient?->name,
-                'hospitalization_id' => $activeByBed->get($bed->id)?->id,
-                'hospitalization_url' => $activeByBed->get($bed->id)
-                    ? route('react.hospitalizations.show', $activeByBed->get($bed->id))
-                    : null,
-            ])->values()->all();
+            $beds = $bedModels->map(function (Bed $bed) use ($activeByBed) {
+                $hospitalization = $activeByBed->get($bed->id);
+
+                return [
+                    'id' => $bed->id,
+                    'number' => $bed->number,
+                    'is_occupied' => (bool) $bed->is_occupied,
+                    'patient_name' => $hospitalization?->patient?->name,
+                    'father_name' => $hospitalization?->patient?->father_name,
+                    'admission_date' => $hospitalization
+                        ? $this->formatDate($hospitalization->created_at)
+                        : null,
+                    'hospitalization_id' => $hospitalization?->id,
+                    'hospitalization_url' => $hospitalization
+                        ? route('react.hospitalizations.show', $hospitalization)
+                        : null,
+                ];
+            })->values()->all();
         }
 
         return Inertia::render('Hospitalizations/RoomManagement', [
             'rooms' => $rooms,
-            'selectedRoomId' => $selectedRoom?->id,
+            'overview' => $this->roomManagementOverview($rooms),
+            'selectedRoom' => $selectedRoom ? [
+                'id' => $selectedRoom->id,
+                'name' => $selectedRoom->name,
+                'department_name' => $selectedRoom->department?->name,
+            ] : null,
             'beds' => $beds,
-            'filters' => ['room_id' => (string) $request->input('room_id', '')],
+            'filters' => ['room_id' => (string) $selectedRoomId],
             'urls' => [
                 'current' => route('react.hospitalizations.room-management'),
                 'index' => route('react.hospitalizations.index'),
-                'legacy' => route('hospitalizations.roomManagement'),
             ],
         ]);
     }
@@ -591,16 +608,72 @@ class HospitalizationController extends Controller
     }
 
     /**
-     * @return list<array{id: int, name: string}>
+     * @return list<array{
+     *     id: int,
+     *     name: string,
+     *     department_name: string|null,
+     *     beds_count: int,
+     *     occupied_beds_count: int,
+     *     empty_beds_count: int,
+     *     occupancy_rate: int
+     * }>
      */
-    private function branchRoomsForManagement(): array
+    private function roomManagementSummaries(): array
     {
         return $this->branchRoomQuery()
+            ->with('department:id,name')
+            ->withCount([
+                'allBeds as beds_count',
+                'allBeds as occupied_beds_count' => fn ($query) => $query->where('is_occupied', true),
+            ])
             ->orderBy('name')
-            ->get(['id', 'name'])
-            ->map(fn (Room $room) => ['id' => $room->id, 'name' => $room->name])
+            ->get()
+            ->map(function (Room $room) {
+                $emptyBeds = max($room->beds_count - $room->occupied_beds_count, 0);
+
+                return [
+                    'id' => $room->id,
+                    'name' => $room->name,
+                    'department_name' => $room->department?->name,
+                    'beds_count' => (int) $room->beds_count,
+                    'occupied_beds_count' => (int) $room->occupied_beds_count,
+                    'empty_beds_count' => $emptyBeds,
+                    'occupancy_rate' => $room->beds_count > 0
+                        ? (int) round(($room->occupied_beds_count / $room->beds_count) * 100)
+                        : 0,
+                ];
+            })
             ->values()
             ->all();
+    }
+
+    /**
+     * @param  list<array{
+     *     beds_count: int,
+     *     occupied_beds_count: int,
+     *     empty_beds_count: int,
+     *     occupancy_rate: int
+     * }>  $rooms
+     * @return array{
+     *     rooms_count: int,
+     *     beds_count: int,
+     *     occupied_beds_count: int,
+     *     empty_beds_count: int,
+     *     occupancy_rate: int
+     * }
+     */
+    private function roomManagementOverview(array $rooms): array
+    {
+        $bedsCount = array_sum(array_column($rooms, 'beds_count'));
+        $occupiedCount = array_sum(array_column($rooms, 'occupied_beds_count'));
+
+        return [
+            'rooms_count' => count($rooms),
+            'beds_count' => $bedsCount,
+            'occupied_beds_count' => $occupiedCount,
+            'empty_beds_count' => max($bedsCount - $occupiedCount, 0),
+            'occupancy_rate' => $bedsCount > 0 ? (int) round(($occupiedCount / $bedsCount) * 100) : 0,
+        ];
     }
 
     private function findRoomForManagement(int $roomId): ?Room

@@ -172,11 +172,37 @@ export interface HospitalizationReportItem {
     urls: { show: string };
 }
 
+export interface HospitalizationRoomSummary {
+    id: number;
+    name: string;
+    department_name: string | null;
+    beds_count: number;
+    occupied_beds_count: number;
+    empty_beds_count: number;
+    occupancy_rate: number;
+}
+
+export interface HospitalizationRoomManagementOverview {
+    rooms_count: number;
+    beds_count: number;
+    occupied_beds_count: number;
+    empty_beds_count: number;
+    occupancy_rate: number;
+}
+
 export interface HospitalizationRoomBedRow {
     id: number;
     number: string | number;
     is_occupied: boolean;
     patient_name?: string | null;
+    father_name?: string | null;
+    admission_date?: string | null;
     hospitalization_id?: number | null;
     hospitalization_url?: string | null;
+}
+
+export interface HospitalizationRoomManagementSelected {
+    id: number;
+    name: string;
+    department_name: string | null;
 }

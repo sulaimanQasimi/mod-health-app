@@ -17,6 +17,7 @@ import {
     OperationSection,
     PhysiotherapySection,
     PrescriptionSection,
+    ProstheticsSection,
     ReferDepartmentSection,
     RelatedVisitsSection,
     UnderReviewSection,
@@ -178,6 +179,7 @@ export default function ShowAppointment({
                     <PhysiotherapySection appointmentId={id} />
                     <DentistSection appointmentId={id} />
                     <NephrologySection appointmentId={id} />
+                    <ProstheticsSection appointmentId={id} />
                     <HospitalizationCheckupSection appointmentId={id} />
                     <ConsultationSection appointmentId={id} />
                     <ReferDepartmentSection appointmentId={id} />

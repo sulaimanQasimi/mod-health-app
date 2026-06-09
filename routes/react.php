@@ -17,6 +17,7 @@ use App\Http\Controllers\V1\AppointmentSections\NephrologyController as Appointm
 use App\Http\Controllers\V1\AppointmentSections\OperationController as AppointmentOperationController;
 use App\Http\Controllers\V1\AppointmentSections\PhysiotherapyController as AppointmentPhysiotherapyController;
 use App\Http\Controllers\V1\AppointmentSections\PrescriptionController as AppointmentPrescriptionController;
+use App\Http\Controllers\V1\AppointmentSections\ProstheticsController as AppointmentProstheticsController;
 use App\Http\Controllers\V1\AppointmentSections\ReferDepartmentController;
 use App\Http\Controllers\V1\AppointmentSections\RelatedVisitsController;
 use App\Http\Controllers\V1\AppointmentSections\UnderReviewController as AppointmentUnderReviewController;
@@ -169,6 +170,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('nephrology', [AppointmentNephrologyController::class, 'index'])->name('nephrology.index');
             Route::post('nephrology', [AppointmentNephrologyController::class, 'store'])->name('nephrology.store');
             Route::get('nephrology/{nephrologyRegistration}', [AppointmentNephrologyController::class, 'show'])->name('nephrology.show');
+            Route::get('prosthetics', [AppointmentProstheticsController::class, 'index'])->name('prosthetics.index');
+            Route::post('prosthetics/referrals', [AppointmentProstheticsController::class, 'storeReferral'])->name('prosthetics.referrals.store');
+            Route::get('prosthetics/referrals/{referral}', [AppointmentProstheticsController::class, 'showReferral'])->name('prosthetics.referrals.show');
         });
         Route::post('/{appointment}/accept', [AppointmentController::class, 'accept'])->name('accept');
         Route::put('/{appointment}/change-department', [AppointmentController::class, 'changeDepartment'])->name('change-department');

@@ -6,6 +6,7 @@ export { default as DentistSection } from './DentistSection';
 export { default as NephrologySection } from './NephrologySection';
 export { default as PhysiotherapySection } from './PhysiotherapySection';
 export { default as PrescriptionSection } from './PrescriptionSection';
+export { default as ProstheticsSection } from './ProstheticsSection';
 export {
     AnesthesiaSection,
     ConsultationSection,

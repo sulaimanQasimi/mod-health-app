@@ -391,11 +391,20 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{underReview}/visits/{visit}', [UnderReviewController::class, 'destroyVisit'])->name('visits.destroy');
     });
 
-    Route::prefix('hospitalizations')->name('hospitalizations.')->group(function () {
+    Route::prefix('hospitalizations')->name('hospitalizations.')->middleware('permission:show-hospitalizations-menu')->group(function () {
         Route::get('/', [HospitalizationController::class, 'index'])->name('index');
         Route::get('/discharged', [HospitalizationController::class, 'discharged'])->name('discharged');
-        Route::get('/room-management', [HospitalizationController::class, 'roomManagement'])->name('room-management');
         Route::get('/report', [HospitalizationController::class, 'report'])->name('report');
+        Route::get('/room-management', [HospitalizationController::class, 'roomManagement'])
+            ->middleware('role:admin|super_admin')
+            ->name('room-management');
+        Route::get('/{hospitalization}/edit', [HospitalizationController::class, 'edit'])->name('edit');
+        Route::get('/{hospitalization}', [HospitalizationController::class, 'show'])->name('show');
+        Route::match(['put', 'post'], '/{hospitalization}', [HospitalizationController::class, 'update'])->name('update');
+        Route::post('/{hospitalization}/discharge', [HospitalizationController::class, 'discharge'])->name('discharge');
+        Route::post('/{hospitalization}/visits', [HospitalizationController::class, 'storeVisit'])->name('visits.store');
+        Route::match(['put', 'post'], '/{hospitalization}/visits/{visit}', [HospitalizationController::class, 'updateVisit'])->name('visits.update');
+        Route::delete('/{hospitalization}/visits/{visit}', [HospitalizationController::class, 'destroyVisit'])->name('visits.destroy');
     });
 
     Route::prefix('vital-sign-types')->name('vital-sign-types.')->group(function () {

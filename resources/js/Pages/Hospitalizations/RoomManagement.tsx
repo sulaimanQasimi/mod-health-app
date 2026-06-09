@@ -78,6 +78,12 @@ export default function HospitalizationsRoomManagement({
                     </form>
                 </HospitalizationPanel>
 
+                {rooms.length === 0 && (
+                    <p className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-400">
+                        {t('global.no_records_found')}
+                    </p>
+                )}
+
                 {selectedRoomId && (
                     <>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -161,11 +167,11 @@ export default function HospitalizationsRoomManagement({
                                                 {bed.patient_name}
                                             </p>
                                         )}
-                                        {bed.hospitalization_id && (
+                                        {bed.hospitalization_url && (
                                             <div className="mt-3">
                                                 <TableActionButton
                                                     kind="view"
-                                                    href={`/react/hospitalizations/${bed.hospitalization_id}`}
+                                                    href={bed.hospitalization_url}
                                                     title={t('global.view')}
                                                 />
                                             </div>

@@ -453,40 +453,42 @@ class HospitalizationController extends Controller
 
     public function roomManagement(Request $request): Response
     {
-        $this->authorizeMenu();
-        abort_unless(request()->user()->hasRole(['admin', 'super_admin']), 403);
+        $this->authorizeRoomManagement();
 
-        $rooms = $this->branchRooms();
+        $rooms = $this->branchRoomsForManagement();
         $selectedRoomId = (int) $request->input('room_id', 0);
         $beds = [];
+        $selectedRoom = null;
 
         if ($selectedRoomId > 0) {
-            $room = Room::query()
-                ->where('branch_id', $this->branchId())
-                ->find($selectedRoomId);
+            $selectedRoom = $this->findRoomForManagement($selectedRoomId);
+            abort_unless($selectedRoom !== null, 404);
+            $this->authorize('manage', $selectedRoom);
 
-            if ($room) {
-                $bedModels = $room->allBeds()->orderBy('number')->get();
-                $activeByBed = Hospitalization::query()
-                    ->whereIn('bed_id', $bedModels->pluck('id'))
-                    ->where('is_discharged', 0)
-                    ->with('patient:id,name')
-                    ->get()
-                    ->keyBy('bed_id');
+            $bedModels = $selectedRoom->allBeds()->orderBy('number')->get();
+            $activeByBed = Hospitalization::query()
+                ->whereIn('bed_id', $bedModels->pluck('id'))
+                ->where('is_discharged', 0)
+                ->visibleForAuthUserDepartment()
+                ->with('patient:id,name')
+                ->get()
+                ->keyBy('bed_id');
 
-                $beds = $bedModels->map(fn (Bed $bed) => [
-                    'id' => $bed->id,
-                    'number' => $bed->number,
-                    'is_occupied' => (bool) $bed->is_occupied,
-                    'patient_name' => $activeByBed->get($bed->id)?->patient?->name,
-                    'hospitalization_id' => $activeByBed->get($bed->id)?->id,
-                ])->values()->all();
-            }
+            $beds = $bedModels->map(fn (Bed $bed) => [
+                'id' => $bed->id,
+                'number' => $bed->number,
+                'is_occupied' => (bool) $bed->is_occupied,
+                'patient_name' => $activeByBed->get($bed->id)?->patient?->name,
+                'hospitalization_id' => $activeByBed->get($bed->id)?->id,
+                'hospitalization_url' => $activeByBed->get($bed->id)
+                    ? route('react.hospitalizations.show', $activeByBed->get($bed->id))
+                    : null,
+            ])->values()->all();
         }
 
         return Inertia::render('Hospitalizations/RoomManagement', [
             'rooms' => $rooms,
-            'selectedRoomId' => $selectedRoomId ?: null,
+            'selectedRoomId' => $selectedRoom?->id,
             'beds' => $beds,
             'filters' => ['room_id' => (string) $request->input('room_id', '')],
             'urls' => [
@@ -572,6 +574,12 @@ class HospitalizationController extends Controller
     /**
      * @return list<array{id: int, name: string}>
      */
+    protected function authorizeRoomManagement(): void
+    {
+        $this->authorizeMenu();
+        $this->authorize('manageAny', Room::class);
+    }
+
     private function scopedDepartmentId(): ?int
     {
         $user = request()->user();
@@ -580,6 +588,32 @@ class HospitalizationController extends Controller
         }
 
         return $user?->department_id;
+    }
+
+    /**
+     * @return list<array{id: int, name: string}>
+     */
+    private function branchRoomsForManagement(): array
+    {
+        return $this->branchRoomQuery()
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Room $room) => ['id' => $room->id, 'name' => $room->name])
+            ->values()
+            ->all();
+    }
+
+    private function findRoomForManagement(int $roomId): ?Room
+    {
+        return $this->branchRoomQuery()->find($roomId);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<Room>
+     */
+    private function branchRoomQuery()
+    {
+        return Room::query()->manageableForHospitalization();
     }
 
     private function branchRooms(?int $departmentId = null): array
@@ -817,7 +851,7 @@ class HospitalizationController extends Controller
             'current' => route('react.hospitalizations.index'),
             'discharged' => route('react.hospitalizations.discharged'),
             'report' => route('react.hospitalizations.report'),
-            'room_management' => $user?->hasRole(['admin', 'super_admin'])
+            'room_management' => $user?->can('manageAny', Room::class)
                 ? route('react.hospitalizations.room-management')
                 : null,
         ];
@@ -829,8 +863,12 @@ class HospitalizationController extends Controller
         $hospitalizationQuery = Hospitalization::query()
             ->where('branch_id', $branchId)
             ->visibleForAuthUserDepartment();
+        $departmentId = $this->scopedDepartmentId();
         $bedQuery = Bed::query()
-            ->whereHas('room', fn ($query) => $query->where('branch_id', $branchId));
+            ->whereHas('room', function ($query) use ($branchId, $departmentId) {
+                $query->where('branch_id', $branchId)
+                    ->when($departmentId, fn ($roomQuery) => $roomQuery->where('department_id', $departmentId));
+            });
         $dischargedQuery = (clone $hospitalizationQuery)->where('is_discharged', '1');
 
         return [

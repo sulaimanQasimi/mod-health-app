@@ -397,7 +397,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/discharged', [HospitalizationController::class, 'discharged'])->name('discharged');
         Route::get('/report', [HospitalizationController::class, 'report'])->name('report');
         Route::get('/room-management', [HospitalizationController::class, 'roomManagement'])
-            ->middleware('role:admin|super_admin')
+            ->middleware('permission:manage-hospitalization-rooms')
             ->name('room-management');
         Route::get('/{hospitalization}/vital-signs/meta', [HospitalizationVitalSignController::class, 'meta'])->name('vital-signs.meta');
         Route::get('/{hospitalization}/vital-signs', [HospitalizationVitalSignController::class, 'index'])->name('vital-signs.index');

@@ -1086,11 +1086,11 @@ $hospitalization->appointment->update([
      */
     public function roomManagement(Request $request)
     {
-        $branchId = auth()->user()->branch_id;
-        $rooms = Room::select('id', 'name')
-            ->when($branchId, function ($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
-            })
+        $this->authorize('manageAny', Room::class);
+
+        $rooms = Room::query()
+            ->manageableForHospitalization()
+            ->select('id', 'name')
             ->orderBy('name')
             ->get();
 
@@ -1098,32 +1098,32 @@ $hospitalization->appointment->update([
         $bedsWithOccupation = collect();
 
         // Rooms that have at least one occupied bed (active hospitalization) — for swap room dropdown
-        $roomIdsWithOccupiedBeds = Hospitalization::where('is_discharged', 0)
-            ->whereHas('room', function ($q) use ($branchId) {
-                if ($branchId) {
-                    $q->where('branch_id', $branchId);
-                }
-            })
+        $roomIdsWithOccupiedBeds = Hospitalization::query()
+            ->where('is_discharged', 0)
+            ->visibleForAuthUserDepartment()
+            ->whereHas('room', fn ($q) => $q->manageableForHospitalization())
             ->pluck('room_id')
             ->unique()
             ->values()
             ->toArray();
-        $roomsWithOccupiedBeds = Room::select('id', 'name')
-            ->when($branchId, function ($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
-            })
+        $roomsWithOccupiedBeds = Room::query()
+            ->manageableForHospitalization()
+            ->select('id', 'name')
             ->whereIn('id', $roomIdsWithOccupiedBeds)
             ->orderBy('name')
             ->get();
 
         if ($request->filled('room_id')) {
             $roomId = $request->room_id;
-            $selectedRoom = Room::find($roomId);
+            $selectedRoom = Room::query()->manageableForHospitalization()->find($roomId);
             if ($selectedRoom) {
+                $this->authorize('manage', $selectedRoom);
+
                 $beds = $selectedRoom->allBeds()->orderBy('number')->get();
                 $bedIds = $beds->pluck('id');
                 $activeHospitalizations = Hospitalization::whereIn('bed_id', $bedIds)
                     ->where('is_discharged', 0)
+                    ->visibleForAuthUserDepartment()
                     ->with('patient:id,name')
                     ->get()
                     ->keyBy('bed_id');

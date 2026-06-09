@@ -263,7 +263,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-room-bed/{hospitalization}', [HospitalizationController::class, 'changeRoomBed'])->name('changeRoomBed');
         Route::get('rooms-by-department', [HospitalizationController::class, 'roomsByDepartment'])->name('roomsByDepartment');
         Route::put('update-room-bed/{hospitalization}', [HospitalizationController::class, 'updateRoomBed'])->name('updateRoomBed');
-        Route::get('room-management', [HospitalizationController::class, 'roomManagement'])->name('roomManagement')->middleware('role:admin|super_admin');
+        Route::get('room-management', [HospitalizationController::class, 'roomManagement'])->name('roomManagement')->middleware('permission:manage-hospitalization-rooms');
         Route::post('{hospitalization}/unoccupy-bed', [HospitalizationController::class, 'unoccupyBed'])->name('unoccupyBed')->middleware('role:admin|super_admin');
         Route::post('{hospitalization}/swap-bed', [HospitalizationController::class, 'swapBed'])->name('swapBed')->middleware('role:admin|super_admin');
         Route::post('{hospitalization}/swap-room', [HospitalizationController::class, 'swapRoom'])->name('swapRoom')->middleware('role:admin|super_admin');

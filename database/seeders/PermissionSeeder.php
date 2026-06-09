@@ -1213,6 +1213,15 @@ class PermissionSeeder extends Seeder
         );
 
         Permission::updateOrCreate(
+            ['name' => 'manage-hospitalization-rooms'],
+            [
+                'name_dr' => 'مدیریت اطاق های بستر',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
             ['name' => 'refer-to-anesthesia'],
             [
                 'name_dr' => 'معرفی مریض به اناستیزی',
@@ -1969,6 +1978,13 @@ class PermissionSeeder extends Seeder
                 'issue-blood',
                 'receive-blood-units',
             ]);
+        }
+
+        foreach (['admin', 'super_admin'] as $roleName) {
+            $role = Role::where('name', $roleName)->first();
+            if ($role) {
+                $role->givePermissionTo('manage-hospitalization-rooms');
+            }
         }
 
         User::find(1)->givePermissionTo(Permission::all());

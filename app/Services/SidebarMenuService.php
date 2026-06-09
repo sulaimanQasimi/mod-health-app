@@ -201,7 +201,7 @@ class SidebarMenuService
                 $this->item('hospitalizations', 'global.under_hospitalizations', null, 'react.hospitalizations.index'),
                 $this->item('hospitalizations-discharged', 'global.discharged_hospitalizations', null, 'react.hospitalizations.discharged'),
             ];
-            if ($user->hasRole(['admin', 'super_admin'])) {
+            if ($user->can('manageAny', \App\Models\Room::class)) {
                 $children[] = $this->item('hospitalizations-rooms', 'global.room_management', null, 'react.hospitalizations.room-management');
             }
             $children[] = $this->item('hospitalizations-report', 'global.reports', null, 'react.hospitalizations.report');

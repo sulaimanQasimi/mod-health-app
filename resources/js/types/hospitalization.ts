@@ -178,4 +178,5 @@ export interface HospitalizationRoomBedRow {
     is_occupied: boolean;
     patient_name?: string | null;
     hospitalization_id?: number | null;
+    hospitalization_url?: string | null;
 }

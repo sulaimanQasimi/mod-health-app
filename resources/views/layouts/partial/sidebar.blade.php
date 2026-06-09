@@ -508,13 +508,13 @@
                             <div>{{ localize('global.discharged_hospitalizations') }}</div>
                         </a>
                     </li>
-                    @if (auth()->user()->hasRole(['admin', 'super_admin']))
+                    @can('manageAny', \App\Models\Room::class)
                         <li class="menu-item {{ Route::is('hospitalizations.roomManagement') ? 'active' : '' }}">
                             <a href="{{ route('hospitalizations.roomManagement') }}" class="menu-link">
                                 <div>{{ localize('global.room_management') }}</div>
                             </a>
                         </li>
-                    @endif
+                    @endcan
                     <li class="menu-item {{ Route::is('hospitalizations.report') ? 'active' : '' }}">
                         <a href="{{ route('hospitalizations.report') }}" class="menu-link">
                             <div>{{ localize('global.reports') }}</div>

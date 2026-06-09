@@ -7,6 +7,7 @@ use App\Http\Controllers\V1\AppointmentSections\Concerns\AuthorizesAppointmentAc
 use App\Jobs\SendNewHospitalizationNotification;
 use App\Models\Appointment;
 use App\Models\Bed;
+use App\Models\Department;
 use App\Models\Hospitalization;
 use App\Models\Room;
 use Illuminate\Http\JsonResponse;
@@ -26,10 +27,15 @@ class HospitalizationController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'rooms' => Room::query()
+                'default_department_id' => $appointment->department_id,
+                'departments' => Department::query()
                     ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
                     ->orderBy('name')
                     ->get(['id', 'name']),
+                'rooms' => Room::query()
+                    ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'department_id']),
                 'beds' => Bed::query()
                     ->when($branchId, fn ($q) => $q->whereHas('room', fn ($room) => $room->where('branch_id', $branchId)))
                     ->orderBy('number')
@@ -83,12 +89,20 @@ class HospitalizationController extends Controller
         $validated = $request->validate([
             'reason' => 'required|string',
             'remarks' => 'required|string',
+            'department_id' => 'required|exists:departments,id',
             'room_id' => 'required|exists:rooms,id',
             'bed_id' => 'required|exists:beds,id',
         ]);
 
+        $room = Room::findOrFail($validated['room_id']);
+        abort_unless(
+            $room->department_id === null || (int) $room->department_id === (int) $validated['department_id'],
+            422
+        );
+
         $bed = Bed::findOrFail($validated['bed_id']);
         abort_if((bool) $bed->is_occupied, 422);
+        abort_unless((int) $bed->room_id === (int) $validated['room_id'], 422);
 
         $bed->update(['is_occupied' => true]);
 
@@ -100,6 +114,7 @@ class HospitalizationController extends Controller
             'patient_id' => $appointment->patient_id,
             'appointment_id' => $appointment->id,
             'branch_id' => $appointment->branch_id ?? $request->user()->branch_id,
+            'department_id' => $validated['department_id'],
             'is_discharged' => 0,
             'food_type_id' => json_encode([]),
         ]);

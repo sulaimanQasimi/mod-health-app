@@ -62,8 +62,12 @@ class RoomController extends Controller
             'name' => 'required',
             'branch_id' => 'required',
             'floor_id' => 'required',
-            'department_id' => 'required',
+            'department_id' => 'nullable|exists:departments,id',
         ]);
+
+        if (empty($data['department_id'])) {
+            $data['department_id'] = null;
+        }
 
         Room::create($data);
 
@@ -100,8 +104,12 @@ class RoomController extends Controller
             'name' => 'required',
             'branch_id' => 'required',
             'floor_id' => 'required',
-            'department_id' => 'required',
+            'department_id' => 'nullable|exists:departments,id',
         ]);
+
+        if (empty($data['department_id'])) {
+            $data['department_id'] = null;
+        }
 
         $room->update($data);
 

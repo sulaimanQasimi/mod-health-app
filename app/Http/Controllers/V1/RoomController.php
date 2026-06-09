@@ -146,7 +146,7 @@ class RoomController extends Controller
                 'id' => $room->id,
                 'name' => $room->name,
                 'floor_id' => (string) $room->floor_id,
-                'department_id' => (string) $room->department_id,
+                'department_id' => $room->department_id ? (string) $room->department_id : '',
             ],
             'formData' => $this->buildFormData(),
             'urls' => $this->formUrls($room),
@@ -207,8 +207,12 @@ class RoomController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:191',
             'floor_id' => 'required|exists:floors,id',
-            'department_id' => 'required|exists:departments,id',
+            'department_id' => 'nullable|exists:departments,id',
         ]);
+
+        if (empty($data['department_id'])) {
+            $data['department_id'] = null;
+        }
 
         $data['branch_id'] = $request->user()->branch_id ?? $room?->branch_id;
 

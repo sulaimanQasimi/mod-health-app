@@ -41,9 +41,15 @@ interface HospitalizationListItem {
     urls?: { show?: string; edit?: string };
 }
 
+interface DepartmentOption {
+    id: number;
+    name: string;
+}
+
 interface RoomOption {
     id: number;
     name: string;
+    department_id: number | null;
 }
 
 interface BedOption {
@@ -77,11 +83,13 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
     const [submitting, setSubmitting] = useState(false);
     const [data, setData] = useState<HospitalizationSectionData | null>(null);
     const [createOpen, setCreateOpen] = useState(false);
+    const [departments, setDepartments] = useState<DepartmentOption[]>([]);
     const [rooms, setRooms] = useState<RoomOption[]>([]);
     const [beds, setBeds] = useState<BedOption[]>([]);
     const [form, setForm] = useState({
         reason: '',
         remarks: '',
+        department_id: '',
         room_id: '',
         bed_id: '',
     });
@@ -107,8 +115,18 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
         });
         const payload = await response.json();
         if (payload.success) {
+            setDepartments(payload.data.departments ?? []);
             setRooms(payload.data.rooms ?? []);
             setBeds(payload.data.beds ?? []);
+            const defaultDepartmentId = payload.data.default_department_id
+                ? String(payload.data.default_department_id)
+                : '';
+            setForm((prev) => ({
+                ...prev,
+                department_id: defaultDepartmentId,
+                room_id: '',
+                bed_id: '',
+            }));
         }
     }, [baseUrl]);
 
@@ -122,18 +140,39 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
         }
     }, [createOpen, loadMeta]);
 
+    const filteredRooms = useMemo(() => {
+        if (!form.department_id) {
+            return [];
+        }
+
+        const departmentId = Number(form.department_id);
+
+        return rooms.filter(
+            (room) => room.department_id === null || room.department_id === departmentId
+        );
+    }, [rooms, form.department_id]);
+
     const filteredBeds = useMemo(
         () => beds.filter((bed) => String(bed.room_id) === form.room_id || String(bed.id) === form.bed_id),
         [beds, form.room_id, form.bed_id]
     );
 
+    const departmentOptions = useMemo(
+        () =>
+            departments.map((department) => ({
+                value: String(department.id),
+                label: department.name,
+            })),
+        [departments]
+    );
+
     const roomOptions = useMemo(
         () =>
-            rooms.map((room) => ({
+            filteredRooms.map((room) => ({
                 value: String(room.id),
                 label: room.name,
             })),
-        [rooms]
+        [filteredRooms]
     );
 
     const bedOptions = useMemo(
@@ -165,7 +204,7 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
                 return;
             }
             setCreateOpen(false);
-            setForm({ reason: '', remarks: '', room_id: '', bed_id: '' });
+            setForm({ reason: '', remarks: '', department_id: '', room_id: '', bed_id: '' });
             await loadData();
         } finally {
             setSubmitting(false);
@@ -309,6 +348,24 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
                                 onChange={(e) => setForm((prev) => ({ ...prev, remarks: e.target.value }))}
                             />
                         </div>
+                        <div>
+                            <Label htmlFor="hospitalization-department">{t('global.department')}</Label>
+                            <SearchableSelect
+                                id="hospitalization-department"
+                                required
+                                value={form.department_id}
+                                onChange={(value) =>
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        department_id: value,
+                                        room_id: '',
+                                        bed_id: '',
+                                    }))
+                                }
+                                options={departmentOptions}
+                                placeholder={t('global.select')}
+                            />
+                        </div>
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="hospitalization-room">{t('global.rooms')}</Label>
@@ -321,6 +378,7 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
                                     }
                                     options={roomOptions}
                                     placeholder={t('global.select')}
+                                    disabled={!form.department_id}
                                 />
                             </div>
                             <div>

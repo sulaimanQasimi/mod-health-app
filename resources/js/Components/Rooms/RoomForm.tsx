@@ -9,7 +9,7 @@ interface RoomFormProps {
     mode: 'create' | 'edit';
     urls: SettingsFormUrls;
     formData: { floors: OptionItem[]; departments: OptionItem[] };
-    room?: { id: number; name: string; floor_id: string; department_id: string };
+    room?: { id: number; name: string; floor_id: string; department_id: string | null };
 }
 
 export default function RoomForm({ mode, urls, formData, room }: RoomFormProps) {
@@ -47,11 +47,14 @@ export default function RoomForm({ mode, urls, formData, room }: RoomFormProps) 
                 {errors.floor_id && <p className="mt-1 text-sm text-red-600">{errors.floor_id}</p>}
             </div>
             <div>
-                <Label htmlFor="department_id">{t('global.department')} *</Label>
+                <Label htmlFor="department_id">{t('global.department')}</Label>
                 <SearchableSelect
                     value={data.department_id}
                     onChange={(value) => setData('department_id', value)}
-                    options={formData.departments.map((d) => ({ value: String(d.id), label: d.name }))}
+                    options={[
+                        { value: '', label: t('global.select') },
+                        ...formData.departments.map((d) => ({ value: String(d.id), label: d.name })),
+                    ]}
                     placeholder={t('global.select')}
                 />
                 {errors.department_id && <p className="mt-1 text-sm text-red-600">{errors.department_id}</p>}

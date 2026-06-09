@@ -13,7 +13,7 @@ class Hospitalization extends Model
     use SoftDeletes;
 
     protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id',
-    'food_type_id','is_discharged','branch_id','discharge_remark','discharge_status',
+    'food_type_id','is_discharged','branch_id','department_id','discharge_remark','discharge_status',
     'patinet_companion','companion_father_name','relation_to_patient','companion_card_type','discharged_at','under_review_id','i_c_u_id'];
 
     /**
@@ -32,8 +32,11 @@ class Hospitalization extends Model
         }else{
         $departmentId = $user->department_id;
         if ($departmentId !== null) {
-            return $query->whereHas('appointment', function ($q) use ($departmentId) {
-                $q->where('department_id', $departmentId);
+            return $query->where(function ($q) use ($departmentId) {
+                $q->where('department_id', $departmentId)
+                    ->orWhereHas('appointment', function ($appointmentQuery) use ($departmentId) {
+                        $appointmentQuery->where('department_id', $departmentId);
+                    });
             });
         }
           }
@@ -56,7 +59,11 @@ class Hospitalization extends Model
             return true;
         }
         if ($user->department_id !== null) {
-            $this->loadMissing('appointment');
+            $this->loadMissing(['appointment', 'department']);
+
+            if ($this->department_id !== null) {
+                return (int) $this->department_id === (int) $user->department_id;
+            }
 
             return $this->appointment
                 && (int) $this->appointment->department_id === (int) $user->department_id;
@@ -71,7 +78,21 @@ class Hospitalization extends Model
         self::creating(function ($model) {
             $user = Auth::user();
             $model->created_by = $user->id ?? 0;
-            
+
+            if (empty($model->department_id) && ! empty($model->appointment_id)) {
+                $appointment = Appointment::find($model->appointment_id);
+                if ($appointment?->department_id) {
+                    $model->department_id = $appointment->department_id;
+                }
+            }
+
+            if (empty($model->department_id) && ! empty($model->room_id)) {
+                $room = Room::find($model->room_id);
+                if ($room?->department_id) {
+                    $model->department_id = $room->department_id;
+                }
+            }
+
             // Validate doctor_id exists in doctors table if provided
             if (!empty($model->doctor_id) && !Doctor::where('id', $model->doctor_id)->exists()) {
                 $model->doctor_id = null;
@@ -143,6 +164,11 @@ class Hospitalization extends Model
     public function appointment()
     {
         return $this->belongsTo(Appointment::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 
     public function bloodBanks()

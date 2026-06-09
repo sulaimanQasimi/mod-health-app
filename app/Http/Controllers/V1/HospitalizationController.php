@@ -63,6 +63,7 @@ class HospitalizationController extends Controller
                 'room:id,name',
                 'bed:id,number',
                 'doctor:id,name',
+                'department:id,name',
                 'appointment.department:id,name',
             ])
             ->orderByDesc('created_at');
@@ -75,7 +76,7 @@ class HospitalizationController extends Controller
             'patient_id_card' => $item->patient?->id_card,
             'patient_name' => $item->patient?->name,
             'father_name' => $item->patient?->father_name,
-            'department_name' => $item->appointment?->department?->name,
+                'department_name' => $item->department?->name ?? $item->appointment?->department?->name,
             'room_name' => $item->room?->name,
             'bed_number' => $item->bed?->number,
             'doctor_name' => $item->doctor?->name,
@@ -306,6 +307,13 @@ class HospitalizationController extends Controller
             Bed::query()->whereKey($validated['bed_id'])->update(['is_occupied' => 1]);
         }
 
+        $departmentId = null;
+        if (! empty($validated['appointment_id'])) {
+            $departmentId = \App\Models\Appointment::query()
+                ->whereKey($validated['appointment_id'])
+                ->value('department_id');
+        }
+
         $hospitalization->update([
             'reason' => $validated['reason'],
             'remarks' => $validated['remarks'],
@@ -314,6 +322,7 @@ class HospitalizationController extends Controller
             'patient_id' => $validated['patient_id'],
             'appointment_id' => $validated['appointment_id'] ?? null,
             'branch_id' => $validated['branch_id'],
+            'department_id' => $departmentId ?? \App\Models\Room::query()->whereKey($validated['room_id'])->value('department_id'),
             'food_type_id' => json_encode($validated['food_type_ids'] ?? []),
             'patinet_companion' => $validated['patinet_companion'] ?? null,
             'companion_father_name' => $validated['companion_father_name'] ?? null,

@@ -1,24 +1,14 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, Card } from 'flowbite-react';
+import { Badge, Button, Card } from 'flowbite-react';
 import { useState } from 'react';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { ProstheticReferralDetail } from '../../../types/prosthetics';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 interface ShowProps {
-    referral: {
-        id: number;
-        referral_number: string;
-        status: string;
-        referral_date: string | null;
-        reason: string | null;
-        diagnosis_summary: string | null;
-        notes: string | null;
-        converted_case_id: number | null;
-        patient: { id: number; name: string } | null;
-        converted_case: { id: number; case_number: string } | null;
-    };
+    referral: ProstheticReferralDetail;
     urls: {
         index: string;
         edit: string;
@@ -38,6 +28,8 @@ export default function ProstheticsReferralsShow({ referral, urls }: ShowProps) 
         setProcessing(true);
         router.post(url, data, { onFinish: () => setProcessing(false) });
     };
+
+    const canAcceptReject = !['rejected', 'cancelled', 'converted_to_case'].includes(referral.status);
 
     return (
         <DashboardLayout>
@@ -78,14 +70,47 @@ export default function ProstheticsReferralsShow({ referral, urls }: ShowProps) 
                     }
                 />
 
-                <Card className="space-y-2 text-sm">
+                <Card>
+                    <div className="mb-4 flex flex-wrap gap-2">
+                        <Badge color="info">{referral.status}</Badge>
+                        {referral.urgency && <Badge color="gray">{referral.urgency}</Badge>}
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {[
+                            [t('global.date'), referral.referral_date],
+                            [t('global.patient_name'), referral.patient?.name],
+                            [t('global.nid'), referral.patient?.nid],
+                            [t('global.phone'), referral.patient?.phone],
+                            [t('global.requested_department'), referral.referring_facility],
+                            [t('global.doctor'), referral.referring_doctor],
+                            [t('global.prosthetics_service_type'), referral.requested_service_type],
+                        ].map(([label, value]) => (
+                            <div
+                                key={String(label)}
+                                className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40"
+                            >
+                                <p className="text-xs text-gray-500">{label}</p>
+                                <p className="font-medium">{value || '—'}</p>
+                            </div>
+                        ))}
+                    </div>
+                </Card>
+
+                <Card className="space-y-3 text-sm">
                     <p><strong>{t('global.reason')}:</strong> {referral.reason || '—'}</p>
                     <p><strong>{t('global.diagnose')}:</strong> {referral.diagnosis_summary || '—'}</p>
                     <p><strong>{t('global.notes')}:</strong> {referral.notes || '—'}</p>
+                    {referral.converted_case && (
+                        <p>
+                            <strong>{t('global.prosthetics_case')}:</strong>{' '}
+                            <code>{referral.converted_case.case_number}</code>
+                        </p>
+                    )}
                 </Card>
 
-                {referral.status !== 'rejected' && (
+                {canAcceptReject && (
                     <Card>
+                        <h3 className="mb-3 text-sm font-semibold">{t('global.actions')}</h3>
                         <div className="flex flex-wrap items-start gap-2">
                             <Button color="green" size="sm" disabled={processing} onClick={() => postAction(urls.accept)}>
                                 {t('global.yes')}

@@ -13,6 +13,10 @@ export interface ProstheticReferralListItem {
     referral_number: string;
     status: string;
     referral_date: string | null;
+    urgency: string | null;
+    requested_service_type: string | null;
+    patient_name: string | null;
+    patient_nid: string | null;
     patient?: {
         id: number;
         name: string;
@@ -21,6 +25,41 @@ export interface ProstheticReferralListItem {
         nid?: string;
         id_card?: string;
     };
+    urls?: {
+        show?: string;
+    };
+}
+
+export interface ProstheticReferralFilters {
+    q: string;
+    referral_number: string;
+    patient_id: string;
+    patient_name: string;
+    phone: string;
+    nid: string;
+    id_card: string;
+    status: string;
+    urgency: string;
+    requested_service_type: string;
+    from: string;
+    to: string;
+}
+
+export interface ProstheticReferralDetail {
+    id: number;
+    referral_number: string;
+    status: string;
+    referral_date: string | null;
+    referring_facility: string | null;
+    referring_doctor: string | null;
+    reason: string | null;
+    diagnosis_summary: string | null;
+    urgency: string | null;
+    requested_service_type: string | null;
+    notes: string | null;
+    converted_case_id: number | null;
+    patient: { id: number; name: string; phone?: string | null; nid?: string | null } | null;
+    converted_case: { id: number; case_number: string } | null;
 }
 
 export interface ProstheticCaseListItem {

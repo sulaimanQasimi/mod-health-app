@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProstheticStockController as LegacyProstheticStockController;
 use App\Http\Controllers\V1\Concerns\ManagesProstheticsAccess;
+use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\ProstheticComponentCatalog;
 use App\Models\ProstheticStockBalance;
 use App\Models\ProstheticStockMovement;
@@ -16,6 +17,7 @@ use Inertia\Response;
 class ProstheticStockController extends Controller
 {
     use ManagesProstheticsAccess;
+    use PaginatesInertiaIndex;
 
     public function index(Request $request): Response
     {
@@ -36,7 +38,15 @@ class ProstheticStockController extends Controller
             });
         }
 
-        $balances = $query->paginate(40)->withQueryString();
+        $paginator = $this->paginateQuery($query, $request, 40, [20, 40, 80]);
+        $balances = $this->paginationPayload($paginator, fn (ProstheticStockBalance $balance) => [
+            'id' => $balance->id,
+            'quantity' => (float) $balance->quantity,
+            'catalog_item' => $balance->catalogItem ? [
+                'item_code' => $balance->catalogItem->item_code,
+                'name' => $balance->catalogItem->name,
+            ] : null,
+        ]);
 
         $movements = ProstheticStockMovement::query()
             ->with(['catalogItem:id,item_code,name'])

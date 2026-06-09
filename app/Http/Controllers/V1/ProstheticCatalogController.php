@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\ManagesProstheticsAccess;
+use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\ProstheticComponentCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ use Inertia\Response;
 class ProstheticCatalogController extends Controller
 {
     use ManagesProstheticsAccess;
+    use PaginatesInertiaIndex;
 
     public function index(Request $request): Response
     {
@@ -30,7 +32,14 @@ class ProstheticCatalogController extends Controller
             });
         }
 
-        $items = $query->paginate(40)->withQueryString();
+        $paginator = $this->paginateQuery($query, $request, 40, [20, 40, 80]);
+        $items = $this->paginationPayload($paginator, fn (ProstheticComponentCatalog $item) => [
+            'id' => $item->id,
+            'item_code' => $item->item_code,
+            'name' => $item->name,
+            'category' => $item->category,
+            'standard_cost' => $item->standard_cost,
+        ]);
 
         return Inertia::render('Prosthetics/Catalog/Index', [
             'items' => $items,

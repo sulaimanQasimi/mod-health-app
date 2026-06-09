@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProstheticAttachmentController as LegacyProstheticAttachmentController;
 use App\Http\Controllers\ProstheticCaseController as LegacyProstheticCaseController;
 use App\Http\Controllers\V1\Concerns\ManagesProstheticsAccess;
+use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\ProstheticCase;
 use App\Models\ProstheticComponentCatalog;
 use App\Models\ProstheticReferral;
@@ -20,6 +21,7 @@ use Inertia\Response;
 class ProstheticCaseController extends Controller
 {
     use ManagesProstheticsAccess;
+    use PaginatesInertiaIndex;
 
     public function index(Request $request): Response
     {
@@ -48,7 +50,20 @@ class ProstheticCaseController extends Controller
             });
         }
 
-        $cases = $query->paginate(25)->withQueryString();
+        $paginator = $this->paginateQuery($query, $request, 25, [10, 15, 25, 50]);
+        $cases = $this->paginationPayload($paginator, fn (ProstheticCase $case) => [
+            'id' => $case->id,
+            'case_number' => $case->case_number,
+            'status' => $case->status,
+            'updated_at' => $case->updated_at?->toIso8601String(),
+            'patient' => $case->patient ? [
+                'id' => $case->patient->id,
+                'name' => $case->patient->name,
+                'last_name' => $case->patient->last_name,
+                'phone' => $case->patient->phone,
+                'nid' => $case->patient->nid,
+            ] : null,
+        ]);
 
         return Inertia::render('Prosthetics/Cases/Index', [
             'cases' => $cases,

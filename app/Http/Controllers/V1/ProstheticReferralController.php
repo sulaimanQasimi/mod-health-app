@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProstheticReferralController as LegacyProstheticReferralController;
 use App\Http\Controllers\V1\Concerns\ManagesProstheticsAccess;
+use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\Patient;
 use App\Models\ProstheticCase;
 use App\Models\ProstheticReferral;
@@ -20,6 +21,7 @@ use Inertia\Response;
 class ProstheticReferralController extends Controller
 {
     use ManagesProstheticsAccess;
+    use PaginatesInertiaIndex;
 
     public function index(Request $request): Response
     {
@@ -73,7 +75,11 @@ class ProstheticReferralController extends Controller
             $query->whereDate('referral_date', '<=', $request->to);
         }
 
-        $referrals = $query->paginate(25)->withQueryString();
+        $paginator = $this->paginateQuery($query, $request, 25, [10, 15, 25, 50]);
+        $referrals = $this->paginationPayload(
+            $paginator,
+            fn (ProstheticReferral $referral) => $this->transformListItem($referral),
+        );
 
         return Inertia::render('Prosthetics/Referrals/Index', [
             'referrals' => $referrals,
@@ -105,14 +111,18 @@ class ProstheticReferralController extends Controller
         ]);
     }
 
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $this->authorizeProstheticsMenu();
 
         return Inertia::render('Prosthetics/Referrals/Create', [
+            'prefill' => [
+                'patient_id' => $request->filled('patient_id') ? (int) $request->patient_id : null,
+            ],
             'urls' => [
                 'index' => route('react.prosthetics.referrals.index'),
                 'store' => route('react.prosthetics.referrals.store'),
+                'patientSearch' => route('react.prosthetics.referrals.patients.search'),
             ],
         ]);
     }
@@ -150,29 +160,8 @@ class ProstheticReferralController extends Controller
     {
         $this->authorizeReferral($referral);
 
-        $referral->load(['patient:id,name,last_name,phone,nid,id_card', 'convertedCase:id,case_number']);
-
         return Inertia::render('Prosthetics/Referrals/Show', [
-            'referral' => [
-                'id' => $referral->id,
-                'referral_number' => $referral->referral_number,
-                'status' => $referral->status,
-                'referral_date' => $referral->referral_date?->format('Y-m-d'),
-                'referring_facility' => $referral->referring_facility,
-                'referring_doctor' => $referral->referring_doctor,
-                'reason' => $referral->reason,
-                'diagnosis_summary' => $referral->diagnosis_summary,
-                'notes' => $referral->notes,
-                'converted_case_id' => $referral->converted_case_id,
-                'patient' => $referral->patient ? [
-                    'id' => $referral->patient->id,
-                    'name' => trim($referral->patient->name.' '.$referral->patient->last_name),
-                ] : null,
-                'converted_case' => $referral->convertedCase ? [
-                    'id' => $referral->convertedCase->id,
-                    'case_number' => $referral->convertedCase->case_number,
-                ] : null,
-            ],
+            'referral' => $this->transformDetail($referral),
             'urls' => $this->referralUrls($referral),
         ]);
     }
@@ -288,6 +277,61 @@ class ProstheticReferralController extends Controller
             ->get(['id', 'name', 'father_name', 'phone', 'nid']);
 
         return response()->json($patients);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformListItem(ProstheticReferral $referral): array
+    {
+        return [
+            'id' => $referral->id,
+            'referral_number' => $referral->referral_number,
+            'status' => $referral->status,
+            'referral_date' => $referral->referral_date?->format('Y-m-d'),
+            'urgency' => $referral->urgency,
+            'requested_service_type' => $referral->requested_service_type,
+            'patient_name' => $referral->patient
+                ? trim($referral->patient->name.' '.($referral->patient->last_name ?? ''))
+                : null,
+            'patient_nid' => $referral->patient?->nid,
+            'urls' => [
+                'show' => route('react.prosthetics.referrals.show', $referral),
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformDetail(ProstheticReferral $referral): array
+    {
+        $referral->loadMissing(['patient:id,name,last_name,phone,nid,id_card', 'convertedCase:id,case_number']);
+
+        return [
+            'id' => $referral->id,
+            'referral_number' => $referral->referral_number,
+            'status' => $referral->status,
+            'referral_date' => $referral->referral_date?->format('Y-m-d'),
+            'referring_facility' => $referral->referring_facility,
+            'referring_doctor' => $referral->referring_doctor,
+            'reason' => $referral->reason,
+            'diagnosis_summary' => $referral->diagnosis_summary,
+            'urgency' => $referral->urgency,
+            'requested_service_type' => $referral->requested_service_type,
+            'notes' => $referral->notes,
+            'converted_case_id' => $referral->converted_case_id,
+            'patient' => $referral->patient ? [
+                'id' => $referral->patient->id,
+                'name' => trim($referral->patient->name.' '.$referral->patient->last_name),
+                'phone' => $referral->patient->phone,
+                'nid' => $referral->patient->nid,
+            ] : null,
+            'converted_case' => $referral->convertedCase ? [
+                'id' => $referral->convertedCase->id,
+                'case_number' => $referral->convertedCase->case_number,
+            ] : null,
+        ];
     }
 
     /**

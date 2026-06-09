@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\ManagesProstheticsAccess;
+use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\ProstheticCase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ use Inertia\Response;
 class ProstheticsReportController extends Controller
 {
     use ManagesProstheticsAccess;
+    use PaginatesInertiaIndex;
 
     public function index(Request $request): Response
     {
@@ -33,13 +35,26 @@ class ProstheticsReportController extends Controller
                 ->whereDate('prosthetic_cases.created_at', '<=', $to);
         }
 
-        $cases = $caseQuery
+        $caseQuery
             ->with([
                 'deliveries' => fn ($q) => $q->orderByDesc('delivered_at')->take(1),
             ])
-            ->orderByDesc('created_at')
-            ->paginate(20)
-            ->withQueryString();
+            ->orderByDesc('created_at');
+
+        $paginator = $this->paginateQuery($caseQuery, $request, 20, [10, 20, 50]);
+        $cases = $this->paginationPayload($paginator, fn (ProstheticCase $case) => [
+            'id' => $case->id,
+            'case_number' => $case->case_number,
+            'status' => $case->status,
+            'created_at' => $case->created_at?->format('Y-m-d'),
+            'patient' => $case->patient ? [
+                'name' => $case->patient->name,
+                'last_name' => $case->patient->last_name,
+            ] : null,
+            'deliveries' => $case->deliveries->map(fn ($delivery) => [
+                'delivered_at' => $delivery->delivered_at?->format('Y-m-d'),
+            ])->values()->all(),
+        ]);
 
         $statusCounts = ProstheticCase::query()
             ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
@@ -68,7 +83,7 @@ class ProstheticsReportController extends Controller
             'summary' => [
                 'avg_days' => $avgDays,
                 'delivered_count' => $deliveredCount,
-                'total_cases' => $cases->total(),
+                'total_cases' => $cases['meta']['total'],
             ],
             'filters' => array_merge([
                 'status' => '',

@@ -2,9 +2,13 @@ import { Link } from '@inertiajs/react';
 import { PaginationLink, PaginationMeta } from '../types/settings';
 
 export function buildPaginationSummary(
-    meta: PaginationMeta,
+    meta: PaginationMeta | undefined,
     t: (key: string) => string,
 ): string {
+    if (!meta) {
+        return '';
+    }
+
     if (meta.from && meta.to) {
         return `${t('global.showing')} ${meta.from}-${meta.to} ${t('global.of')} ${meta.total}`;
     }

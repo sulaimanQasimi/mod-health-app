@@ -1,8 +1,27 @@
 import { Head, router } from '@inertiajs/react';
-import { Badge, Button, Card, Label, Textarea, TextInput } from 'flowbite-react';
+import { Button, Label, Textarea, TextInput } from 'flowbite-react';
 import { ChangeEvent, FormEvent, useMemo, useState } from 'react';
+import CaseSectionPanel, {
+    CaseDataTable,
+    CaseDataTableBody,
+    CaseDataTableHead,
+    CaseDataTableRow,
+    CaseDataTableTd,
+    CaseDataTableTh,
+    CaseFormActions,
+} from '../../../Components/ProstheticsCases/CaseSectionPanel';
+import CaseSummaryHeader from '../../../Components/ProstheticsCases/CaseSummaryHeader';
+import CaseWorkflowStepper from '../../../Components/ProstheticsCases/CaseWorkflowStepper';
+import {
+    CASE_FILE_INPUT_CLASS,
+    CASE_INFO_PANEL_CLASS,
+    CASE_MUTED_NOTE_CLASS,
+    CASE_SELECT_CLASS,
+    CASE_SELECT_SM_CLASS,
+} from '../../../Components/ProstheticsCases/caseShowUi';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
+import TableActionButton from '../../../Components/ui/TableActionButton';
 import { useTranslation } from '../../../hooks/useTranslation';
 import {
     ProstheticCaseDetail,
@@ -11,7 +30,7 @@ import {
     ProstheticMeasurementRow,
     ProstheticPrescriptionLine,
 } from '../../../types/prosthetics';
-import { SETTINGS_WIDE_FORM_WIDTH } from '../../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 interface CatalogOption {
     id: number;
@@ -27,26 +46,6 @@ interface ShowProps {
     permissions: ProstheticCasePermissions;
     workflowSteps: string[];
     urls: Record<string, string>;
-}
-
-function SectionCard({
-    title,
-    badge,
-    children,
-}: {
-    title: string;
-    badge?: string;
-    children: React.ReactNode;
-}) {
-    return (
-        <Card>
-            <div className="mb-4 flex items-center justify-between gap-2">
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h3>
-                {badge && <Badge color="warning">{badge}</Badge>}
-            </div>
-            {children}
-        </Card>
-    );
 }
 
 export default function ProstheticsCasesShow({
@@ -67,6 +66,8 @@ export default function ProstheticsCasesShow({
         }, {});
         return ranks[prostheticCase.status] ?? -1;
     }, [prostheticCase.status, workflowSteps]);
+
+    const isStatus = (...statuses: string[]) => statuses.includes(prostheticCase.status);
 
     const [assessment, setAssessment] = useState({
         fit_outcome: prostheticCase.assessment?.fit_outcome ?? 'pending',
@@ -122,12 +123,18 @@ export default function ProstheticsCasesShow({
 
     const post = (url: string, data: Record<string, unknown> = {}) => {
         setProcessing(true);
-        router.post(url, data, { preserveScroll: true, onFinish: () => setProcessing(false) });
+        router.post(url, data as Parameters<typeof router.post>[1], {
+            preserveScroll: true,
+            onFinish: () => setProcessing(false),
+        });
     };
 
     const put = (url: string, data: Record<string, unknown>) => {
         setProcessing(true);
-        router.put(url, data, { preserveScroll: true, onFinish: () => setProcessing(false) });
+        router.put(url, data as Parameters<typeof router.put>[1], {
+            preserveScroll: true,
+            onFinish: () => setProcessing(false),
+        });
     };
 
     const updateMeasurementRow = (index: number, field: keyof ProstheticMeasurementRow, value: string) => {
@@ -165,225 +172,248 @@ export default function ProstheticsCasesShow({
         });
     };
 
+    const completedBadge = t('global.completed');
+    const readOnlyBadge = t('global.prosthetics_read_only_badge');
+    const lockedBadge = `${t('global.prosthetics_locked')} v${prostheticCase.measurement_set.version}`;
+
     return (
         <DashboardLayout>
             <Head title={prostheticCase.case_number} />
 
-            <div className={`mx-auto space-y-6 ${SETTINGS_WIDE_FORM_WIDTH}`}>
+            <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <SettingsPageHeader
                     title={prostheticCase.case_number}
-                    subtitle={`${prostheticCase.patient_name ?? '—'} (ID ${prostheticCase.patient_id})`}
+                    subtitle={t('global.prosthetics_case_detail')}
                     icon="bx-briefcase"
-                    accent="from-emerald-500 to-teal-600"
+                    accent="from-slate-600 to-slate-700"
                     backHref={urls.index}
                     backLabel={t('global.back')}
-                    action={
-                        <div className="flex flex-wrap gap-2">
-                            <Badge color="info">
-                                {t(`global.prosthetics_case_status_${prostheticCase.status}`)}
-                            </Badge>
-                            <Button as="a" href={urls.print} color="green" outline size="sm" target="_blank">
-                                {t('global.prosthetics_print_summary')}
-                            </Button>
-                        </div>
-                    }
                 />
 
+                <CaseSummaryHeader prostheticCase={prostheticCase} printUrl={urls.print} />
+
                 {permissions.is_read_only && (
-                    <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-800">
+                    <div className={CASE_INFO_PANEL_CLASS}>
+                        <i className="bx bx-lock-alt me-2 align-middle" />
                         {t('global.prosthetics_case_readonly_notice')}
                     </div>
                 )}
 
-                <Card>
-                    <div className="flex flex-wrap gap-2">
-                        {workflowSteps.map((step, index) => {
-                            const done = index <= caseRank;
-                            return (
-                                <Badge key={step} color={done ? 'info' : 'gray'} className="rounded-full">
-                                    {index + 1}. {t(`global.prosthetics_case_status_${step}`)}
-                                </Badge>
-                            );
-                        })}
-                    </div>
-                </Card>
+                <div className="rounded-xl border border-gray-200 bg-white px-4 py-4 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                    <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        {t('global.prosthetics_workflow')}
+                    </p>
+                    <CaseWorkflowStepper steps={workflowSteps} currentRank={caseRank} />
+                </div>
 
-                <SectionCard
-                    title={t('global.prosthetics_assessment')}
-                    badge={!permissions.edit_assessment ? t('global.completed') : undefined}
-                >
-                    <form
-                        className="space-y-3"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            post(urls.assessment, assessment);
-                        }}
+                <div className="space-y-4">
+                    <CaseSectionPanel
+                        id="case-assessment"
+                        icon="bx-user-check"
+                        title={t('global.prosthetics_assessment')}
+                        badge={!permissions.edit_assessment ? completedBadge : undefined}
+                        badgeTone={!permissions.edit_assessment ? 'done' : 'neutral'}
+                        defaultOpen={isStatus('new', 'referred', 'under_assessment')}
                     >
-                        <div>
-                            <Label value={t('global.prosthetics_fit_outcome_label')} />
-                            <select
+                        <form
+                            className="space-y-4"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                post(urls.assessment, assessment);
+                            }}
+                        >
+                            <div>
+                                <div className="mb-1.5 text-gray-600">
+                                    <Label>{t('global.prosthetics_fit_outcome_label')}</Label>
+                                </div>
+                                <select
+                                    disabled={!permissions.edit_assessment}
+                                    className={CASE_SELECT_CLASS}
+                                    value={assessment.fit_outcome}
+                                    onChange={(e) =>
+                                        setAssessment((prev) => ({ ...prev, fit_outcome: e.target.value }))
+                                    }
+                                >
+                                    {formOptions.fit_outcomes.map((option) => (
+                                        <option key={option} value={option}>
+                                            {t(`global.prosthetics_fit_outcome_${option}`)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="grid gap-4 lg:grid-cols-2">
+                                <Textarea
+                                    rows={3}
+                                    disabled={!permissions.edit_assessment}
+                                    placeholder={t('global.prosthetics_history_present_condition_placeholder')}
+                                    value={assessment.history_present_condition}
+                                    onChange={(e) =>
+                                        setAssessment((prev) => ({
+                                            ...prev,
+                                            history_present_condition: e.target.value,
+                                        }))
+                                    }
+                                />
+                                <Textarea
+                                    rows={3}
+                                    disabled={!permissions.edit_assessment}
+                                    placeholder={t('global.prosthetics_skin_stump_placeholder')}
+                                    value={assessment.skin_stump_notes}
+                                    onChange={(e) =>
+                                        setAssessment((prev) => ({ ...prev, skin_stump_notes: e.target.value }))
+                                    }
+                                />
+                            </div>
+                            <Textarea
+                                rows={2}
                                 disabled={!permissions.edit_assessment}
-                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700"
-                                value={assessment.fit_outcome}
-                                onChange={(e) => setAssessment((prev) => ({ ...prev, fit_outcome: e.target.value }))}
-                            >
-                                {formOptions.fit_outcomes.map((option) => (
-                                    <option key={option} value={option}>
-                                        {t(`global.prosthetics_fit_outcome_${option}`)}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <Textarea
-                            rows={2}
-                            disabled={!permissions.edit_assessment}
-                            placeholder={t('global.prosthetics_history_present_condition_placeholder')}
-                            value={assessment.history_present_condition}
-                            onChange={(e) =>
-                                setAssessment((prev) => ({ ...prev, history_present_condition: e.target.value }))
-                            }
-                        />
-                        <Textarea
-                            rows={2}
-                            disabled={!permissions.edit_assessment}
-                            placeholder={t('global.prosthetics_skin_stump_placeholder')}
-                            value={assessment.skin_stump_notes}
-                            onChange={(e) => setAssessment((prev) => ({ ...prev, skin_stump_notes: e.target.value }))}
-                        />
-                        <Textarea
-                            rows={2}
-                            disabled={!permissions.edit_assessment}
-                            placeholder={t('global.prosthetics_functional_goals_placeholder')}
-                            value={assessment.functional_goals}
-                            onChange={(e) => setAssessment((prev) => ({ ...prev, functional_goals: e.target.value }))}
-                        />
-                        {permissions.edit_assessment && (
-                            <Button type="submit" color="blue" size="sm" disabled={processing}>
-                                {t('global.save')}
-                            </Button>
-                        )}
-                    </form>
-                </SectionCard>
+                                placeholder={t('global.prosthetics_functional_goals_placeholder')}
+                                value={assessment.functional_goals}
+                                onChange={(e) =>
+                                    setAssessment((prev) => ({ ...prev, functional_goals: e.target.value }))
+                                }
+                            />
+                            {permissions.edit_assessment && (
+                                <CaseFormActions>
+                                    <Button type="submit" color="blue" size="sm" disabled={processing}>
+                                        {t('global.save')}
+                                    </Button>
+                                </CaseFormActions>
+                            )}
+                        </form>
+                    </CaseSectionPanel>
 
-                <SectionCard
-                    title={t('global.prosthetics_measurements')}
-                    badge={
-                        prostheticCase.measurement_set.is_locked
-                            ? `${t('global.prosthetics_locked')} v${prostheticCase.measurement_set.version}`
-                            : undefined
-                    }
-                >
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            post(urls.measurements, { rows: measurementRows });
-                        }}
+                    <CaseSectionPanel
+                        id="case-measurements"
+                        icon="bx-ruler"
+                        title={t('global.prosthetics_measurements')}
+                        badge={
+                            prostheticCase.measurement_set.is_locked
+                                ? lockedBadge
+                                : !permissions.edit_measurements
+                                  ? completedBadge
+                                  : undefined
+                        }
+                        badgeTone={prostheticCase.measurement_set.is_locked ? 'locked' : 'done'}
+                        defaultOpen={isStatus('under_assessment') && !prostheticCase.measurement_set.is_locked}
                     >
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm">
-                                <thead className="border-b text-xs uppercase text-gray-500">
-                                    <tr>
-                                        <th className="px-2 py-2">{t('global.name')}</th>
-                                        <th className="px-2 py-2">{t('global.value')}</th>
-                                        <th className="px-2 py-2">{t('global.unit')}</th>
-                                        <th className="px-2 py-2">{t('global.notes')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                        <form
+                            className="space-y-4"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                post(urls.measurements, { rows: measurementRows });
+                            }}
+                        >
+                            <CaseDataTable>
+                                <CaseDataTableHead>
+                                    <CaseDataTableTh>{t('global.name')}</CaseDataTableTh>
+                                    <CaseDataTableTh>{t('global.value')}</CaseDataTableTh>
+                                    <CaseDataTableTh>{t('global.unit')}</CaseDataTableTh>
+                                    <CaseDataTableTh>{t('global.notes')}</CaseDataTableTh>
+                                </CaseDataTableHead>
+                                <CaseDataTableBody>
                                     {measurementRows.map((row, index) => (
-                                        <tr key={index} className="border-b dark:border-gray-700">
+                                        <CaseDataTableRow key={index}>
                                             {(['name', 'value_numeric', 'unit', 'notes'] as const).map((field) => (
-                                                <td key={field} className="px-2 py-1">
+                                                <CaseDataTableTd key={field}>
                                                     <TextInput
                                                         sizing="sm"
                                                         disabled={measurementsDisabled}
                                                         value={String(row[field] ?? '')}
-                                                        onChange={(e) => updateMeasurementRow(index, field, e.target.value)}
+                                                        onChange={(e) =>
+                                                            updateMeasurementRow(index, field, e.target.value)
+                                                        }
                                                     />
-                                                </td>
+                                                </CaseDataTableTd>
                                             ))}
-                                        </tr>
+                                        </CaseDataTableRow>
                                     ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        {!measurementsDisabled && (
-                            <Button type="submit" color="blue" size="sm" className="mt-3" disabled={processing}>
-                                {t('global.save')}
-                            </Button>
-                        )}
-                    </form>
-                    {permissions.edit_measurements && !prostheticCase.measurement_set.is_locked && (
-                        <Button
-                            color="yellow"
-                            outline
-                            size="sm"
-                            className="mt-2"
-                            disabled={processing}
-                            onClick={() => post(urls.measurements_lock)}
-                        >
-                            {t('global.prosthetics_lock_measurement_set')}
-                        </Button>
-                    )}
-                </SectionCard>
+                                </CaseDataTableBody>
+                            </CaseDataTable>
+                            {!measurementsDisabled && (
+                                <CaseFormActions>
+                                    <Button type="submit" color="blue" size="sm" disabled={processing}>
+                                        {t('global.save')}
+                                    </Button>
+                                    {permissions.edit_measurements && !prostheticCase.measurement_set.is_locked && (
+                                        <Button
+                                            type="button"
+                                            color="light"
+                                            size="sm"
+                                            disabled={processing}
+                                            onClick={() => post(urls.measurements_lock)}
+                                        >
+                                            {t('global.prosthetics_lock_measurement_set')}
+                                        </Button>
+                                    )}
+                                </CaseFormActions>
+                            )}
+                        </form>
+                    </CaseSectionPanel>
 
-                <SectionCard
-                    title={t('global.prosthetics_prescription')}
-                    badge={!permissions.edit_prescription ? t('global.completed') : undefined}
-                >
-                    <form
-                        className="space-y-3"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            post(urls.prescription, {
-                                device_timing: prescription.device_timing,
-                                special_instructions: prescription.special_instructions,
-                                lines: prescription.lines,
-                            });
-                        }}
+                    <CaseSectionPanel
+                        id="case-prescription"
+                        icon="bx-file"
+                        title={t('global.prosthetics_prescription')}
+                        badge={!permissions.edit_prescription ? completedBadge : undefined}
+                        badgeTone={!permissions.edit_prescription ? 'done' : 'neutral'}
+                        defaultOpen={isStatus('measurement_completed')}
                     >
-                        <div>
-                            <Label value={t('global.prosthetics_device_timing_label')} />
-                            <select
+                        <form
+                            className="space-y-4"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                post(urls.prescription, {
+                                    device_timing: prescription.device_timing,
+                                    special_instructions: prescription.special_instructions,
+                                    lines: prescription.lines,
+                                });
+                            }}
+                        >
+                            <div className="max-w-sm">
+                                <div className="mb-1.5 text-gray-600">
+                                    <Label>{t('global.prosthetics_device_timing_label')}</Label>
+                                </div>
+                                <select
+                                    disabled={!permissions.edit_prescription}
+                                    className={CASE_SELECT_CLASS}
+                                    value={prescription.device_timing}
+                                    onChange={(e) =>
+                                        setPrescription((prev) => ({ ...prev, device_timing: e.target.value }))
+                                    }
+                                >
+                                    {formOptions.device_timings.map((timing) => (
+                                        <option key={timing} value={timing}>
+                                            {t(`global.prosthetics_device_timing_${timing}`)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <Textarea
+                                rows={2}
                                 disabled={!permissions.edit_prescription}
-                                className="mt-1 block w-full max-w-xs rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700"
-                                value={prescription.device_timing}
+                                placeholder={t('global.prosthetics_special_instructions_placeholder')}
+                                value={prescription.special_instructions ?? ''}
                                 onChange={(e) =>
-                                    setPrescription((prev) => ({ ...prev, device_timing: e.target.value }))
+                                    setPrescription((prev) => ({
+                                        ...prev,
+                                        special_instructions: e.target.value,
+                                    }))
                                 }
-                            >
-                                {formOptions.device_timings.map((timing) => (
-                                    <option key={timing} value={timing}>
-                                        {t(`global.prosthetics_device_timing_${timing}`)}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <Textarea
-                            rows={2}
-                            disabled={!permissions.edit_prescription}
-                            placeholder={t('global.prosthetics_special_instructions_placeholder')}
-                            value={prescription.special_instructions ?? ''}
-                            onChange={(e) =>
-                                setPrescription((prev) => ({ ...prev, special_instructions: e.target.value }))
-                            }
-                        />
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm">
-                                <thead className="border-b text-xs uppercase text-gray-500">
-                                    <tr>
-                                        <th className="px-2 py-2">{t('global.prosthetics_component')}</th>
-                                        <th className="px-2 py-2">{t('global.quantity')}</th>
-                                        <th className="px-2 py-2">{t('global.notes')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                            />
+                            <CaseDataTable>
+                                <CaseDataTableHead>
+                                    <CaseDataTableTh>{t('global.prosthetics_component')}</CaseDataTableTh>
+                                    <CaseDataTableTh className="w-28">{t('global.quantity')}</CaseDataTableTh>
+                                    <CaseDataTableTh>{t('global.notes')}</CaseDataTableTh>
+                                </CaseDataTableHead>
+                                <CaseDataTableBody>
                                     {prescription.lines.map((line, index) => (
-                                        <tr key={index} className="border-b dark:border-gray-700">
-                                            <td className="px-2 py-1">
+                                        <CaseDataTableRow key={index}>
+                                            <CaseDataTableTd>
                                                 <select
                                                     disabled={!permissions.edit_prescription}
-                                                    className="w-full min-w-[220px] rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                                                    className={CASE_SELECT_SM_CLASS}
                                                     value={String(line.catalog_id)}
                                                     onChange={(e) =>
                                                         updatePrescriptionLine(index, 'catalog_id', e.target.value)
@@ -396,8 +426,8 @@ export default function ProstheticsCasesShow({
                                                         </option>
                                                     ))}
                                                 </select>
-                                            </td>
-                                            <td className="px-2 py-1">
+                                            </CaseDataTableTd>
+                                            <CaseDataTableTd>
                                                 <TextInput
                                                     sizing="sm"
                                                     type="number"
@@ -409,8 +439,8 @@ export default function ProstheticsCasesShow({
                                                         updatePrescriptionLine(index, 'quantity', e.target.value)
                                                     }
                                                 />
-                                            </td>
-                                            <td className="px-2 py-1">
+                                            </CaseDataTableTd>
+                                            <CaseDataTableTd>
                                                 <TextInput
                                                     sizing="sm"
                                                     disabled={!permissions.edit_prescription}
@@ -419,438 +449,553 @@ export default function ProstheticsCasesShow({
                                                         updatePrescriptionLine(index, 'notes', e.target.value)
                                                     }
                                                 />
-                                            </td>
-                                        </tr>
+                                            </CaseDataTableTd>
+                                        </CaseDataTableRow>
                                     ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        {permissions.edit_prescription && (
-                            <Button type="submit" color="blue" size="sm" disabled={processing}>
-                                {t('global.save')} & {t('global.prosthetics_finalize_prescription')}
-                            </Button>
-                        )}
-                    </form>
-                </SectionCard>
-
-                {prostheticCase.estimate && (
-                    <SectionCard
-                        title={t('global.prosthetics_estimate')}
-                        badge={!permissions.edit_estimate ? t('global.prosthetics_read_only_badge') : undefined}
-                    >
-                        <p className="mb-2 text-sm">
-                            {t('global.parts')}: <strong>{prostheticCase.estimate.parts_total.toFixed(2)}</strong>{' '}
-                            {prostheticCase.estimate.currency}
-                        </p>
-                        <form
-                            className="flex flex-wrap items-end gap-3"
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                post(urls.estimate, {
-                                    estimate_id: prostheticCase.estimate?.id,
-                                    ...estimateForm,
-                                });
-                            }}
-                        >
-                            <div>
-                                <Label value={t('global.prosthetics_labor')} />
-                                <TextInput
-                                    sizing="sm"
-                                    type="number"
-                                    step="0.01"
-                                    disabled={!permissions.edit_estimate}
-                                    value={String(estimateForm.labor_total)}
-                                    onChange={(e) =>
-                                        setEstimateForm((prev) => ({
-                                            ...prev,
-                                            labor_total: Number(e.target.value),
-                                        }))
-                                    }
-                                />
-                            </div>
-                            <div>
-                                <Label value={t('global.prosthetics_discount')} />
-                                <TextInput
-                                    sizing="sm"
-                                    type="number"
-                                    step="0.01"
-                                    disabled={!permissions.edit_estimate}
-                                    value={String(estimateForm.discount)}
-                                    onChange={(e) =>
-                                        setEstimateForm((prev) => ({
-                                            ...prev,
-                                            discount: Number(e.target.value),
-                                        }))
-                                    }
-                                />
-                            </div>
-                            {permissions.edit_estimate && (
-                                <Button type="submit" color="blue" size="sm" disabled={processing}>
-                                    {t('global.save')}
-                                </Button>
+                                </CaseDataTableBody>
+                            </CaseDataTable>
+                            {permissions.edit_prescription && (
+                                <CaseFormActions>
+                                    <Button type="submit" color="blue" size="sm" disabled={processing}>
+                                        {t('global.save')} & {t('global.prosthetics_finalize_prescription')}
+                                    </Button>
+                                </CaseFormActions>
                             )}
                         </form>
-                        <p className="mt-2 text-sm">
-                            <strong>{t('global.total')}:</strong> {prostheticCase.estimate.total.toFixed(2)}{' '}
-                            {prostheticCase.estimate.currency} ({prostheticCase.estimate.status})
-                        </p>
-                    </SectionCard>
-                )}
+                    </CaseSectionPanel>
 
-                <SectionCard title={t('global.prosthetics_workflow')}>
-                    <div className="flex flex-wrap gap-2">
-                        {permissions.submit_for_approval && (
-                            <Button color="blue" outline size="sm" disabled={processing} onClick={() => post(urls.submit_approval)}>
-                                {t('global.prosthetics_submit_for_approval')}
-                            </Button>
-                        )}
-                        {permissions.approve_case && (
-                            <Button color="green" size="sm" disabled={processing} onClick={() => post(urls.approve)}>
-                                {t('global.prosthetics_approve_case')}
-                            </Button>
-                        )}
-                        {!permissions.submit_for_approval && !permissions.approve_case && (
-                            <span className="text-sm text-gray-500">
-                                {t('global.prosthetics_workflow_actions_locked')}
-                            </span>
-                        )}
-                    </div>
-                </SectionCard>
-
-                <SectionCard title={t('global.prosthetics_work_order')}>
-                    {prostheticCase.work_order ? (
-                        <div className="space-y-3">
-                            <p className="text-sm">
-                                <code>{prostheticCase.work_order.work_order_number}</code>
-                                <span className="ml-2 text-gray-500">
-                                    — {prostheticCase.work_order.status} /{' '}
-                                    {t(`global.prosthetics_work_order_stage_${prostheticCase.work_order.production_stage}`)}
-                                </span>
-                            </p>
+                    {prostheticCase.estimate && (
+                        <CaseSectionPanel
+                            id="case-estimate"
+                            icon="bx-calculator"
+                            title={t('global.prosthetics_estimate')}
+                            badge={!permissions.edit_estimate ? readOnlyBadge : undefined}
+                            badgeTone="locked"
+                            defaultOpen={isStatus('prescription_completed')}
+                        >
+                            <div className="mb-4 grid gap-3 sm:grid-cols-3">
+                                <div className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-gray-800/50">
+                                    <p className="text-xs text-gray-500">{t('global.parts')}</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                        {prostheticCase.estimate.parts_total.toFixed(2)} {prostheticCase.estimate.currency}
+                                    </p>
+                                </div>
+                                <div className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-gray-800/50">
+                                    <p className="text-xs text-gray-500">{t('global.total')}</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                        {prostheticCase.estimate.total.toFixed(2)} {prostheticCase.estimate.currency}
+                                    </p>
+                                </div>
+                                <div className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-gray-800/50">
+                                    <p className="text-xs text-gray-500">{t('global.status')}</p>
+                                    <p className="text-sm font-semibold capitalize text-gray-900 dark:text-white">
+                                        {prostheticCase.estimate.status}
+                                    </p>
+                                </div>
+                            </div>
                             <form
-                                className="flex flex-wrap items-end gap-2"
+                                className="flex flex-wrap items-end gap-4"
                                 onSubmit={(e) => {
                                     e.preventDefault();
-                                    if (urls.work_order_update) {
-                                        put(urls.work_order_update, { production_stage: workOrderStage });
-                                    }
+                                    post(urls.estimate, {
+                                        estimate_id: prostheticCase.estimate?.id,
+                                        ...estimateForm,
+                                    });
                                 }}
                             >
-                                <select
-                                    disabled={!permissions.update_work_order}
-                                    className="rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700"
-                                    value={workOrderStage}
-                                    onChange={(e) => setWorkOrderStage(e.target.value)}
-                                >
-                                    {formOptions.work_order_stages.map((stage) => (
-                                        <option key={stage} value={stage}>
-                                            {t(`global.prosthetics_work_order_stage_${stage}`)}
-                                        </option>
-                                    ))}
-                                </select>
-                                {permissions.update_work_order && (
+                                <div className="min-w-[140px]">
+                                    <div className="mb-1.5 text-gray-600">
+                                        <Label>{t('global.prosthetics_labor')}</Label>
+                                    </div>
+                                    <TextInput
+                                        sizing="sm"
+                                        type="number"
+                                        step="0.01"
+                                        disabled={!permissions.edit_estimate}
+                                        value={String(estimateForm.labor_total)}
+                                        onChange={(e) =>
+                                            setEstimateForm((prev) => ({
+                                                ...prev,
+                                                labor_total: Number(e.target.value),
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <div className="min-w-[140px]">
+                                    <div className="mb-1.5 text-gray-600">
+                                        <Label>{t('global.prosthetics_discount')}</Label>
+                                    </div>
+                                    <TextInput
+                                        sizing="sm"
+                                        type="number"
+                                        step="0.01"
+                                        disabled={!permissions.edit_estimate}
+                                        value={String(estimateForm.discount)}
+                                        onChange={(e) =>
+                                            setEstimateForm((prev) => ({
+                                                ...prev,
+                                                discount: Number(e.target.value),
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                {permissions.edit_estimate && (
                                     <Button type="submit" color="blue" size="sm" disabled={processing}>
                                         {t('global.save')}
                                     </Button>
                                 )}
                             </form>
-                            {permissions.issue_stock ? (
+                        </CaseSectionPanel>
+                    )}
+
+                    <CaseSectionPanel
+                        id="case-workflow"
+                        icon="bx-git-merge"
+                        title={t('global.prosthetics_workflow')}
+                        defaultOpen={isStatus('prescription_completed', 'waiting_approval')}
+                    >
+                        <div className="flex flex-wrap gap-2">
+                            {permissions.submit_for_approval && (
                                 <Button
-                                    color="red"
-                                    outline
+                                    color="blue"
                                     size="sm"
                                     disabled={processing}
-                                    onClick={() =>
-                                        post(urls.issue_stock, {
-                                            prosthetic_work_order_id: prostheticCase.work_order?.id,
-                                        })
-                                    }
+                                    onClick={() => post(urls.submit_approval)}
                                 >
-                                    {t('global.prosthetics_issue_components')}
+                                    {t('global.prosthetics_submit_for_approval')}
                                 </Button>
-                            ) : (
-                                <p className="text-sm text-gray-500">{t('global.prosthetics_stock_issue_locked')}</p>
+                            )}
+                            {permissions.approve_case && (
+                                <Button color="blue" size="sm" disabled={processing} onClick={() => post(urls.approve)}>
+                                    {t('global.prosthetics_approve_case')}
+                                </Button>
+                            )}
+                            {!permissions.submit_for_approval && !permissions.approve_case && (
+                                <p className={CASE_MUTED_NOTE_CLASS}>
+                                    {t('global.prosthetics_workflow_actions_locked')}
+                                </p>
                             )}
                         </div>
-                    ) : permissions.create_work_order ? (
-                        <Button color="blue" size="sm" disabled={processing} onClick={() => post(urls.work_order)}>
-                            {t('global.prosthetics_create_work_order')}
-                        </Button>
-                    ) : (
-                        <p className="text-sm text-gray-500">
-                            {t('global.prosthetics_work_order_available_after_approval')}
-                        </p>
-                    )}
-                </SectionCard>
+                    </CaseSectionPanel>
 
-                <SectionCard
-                    title={t('global.prosthetics_fitting')}
-                    badge={!permissions.store_fitting ? t('global.prosthetics_read_only_badge') : undefined}
-                >
-                    <form
-                        className="flex flex-wrap items-end gap-2"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            post(urls.fitting, fittingForm);
-                        }}
+                    <CaseSectionPanel
+                        id="case-work-order"
+                        icon="bx-wrench"
+                        title={t('global.prosthetics_work_order')}
+                        defaultOpen={isStatus('approved', 'in_production')}
                     >
-                        <TextInput
-                            type="date"
-                            sizing="sm"
-                            disabled={!permissions.store_fitting}
-                            value={fittingForm.session_date}
-                            onChange={(e) => setFittingForm((prev) => ({ ...prev, session_date: e.target.value }))}
-                        />
-                        <select
-                            disabled={!permissions.store_fitting}
-                            className="rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700"
-                            value={fittingForm.outcome}
-                            onChange={(e) => setFittingForm((prev) => ({ ...prev, outcome: e.target.value }))}
-                        >
-                            {formOptions.fitting_outcomes.map((outcome) => (
-                                <option key={outcome} value={outcome}>
-                                    {t(`global.prosthetics_fitting_outcome_${outcome}`)}
-                                </option>
-                            ))}
-                        </select>
-                        <TextInput
-                            sizing="sm"
-                            placeholder={t('global.notes')}
-                            disabled={!permissions.store_fitting}
-                            value={fittingForm.notes}
-                            onChange={(e) => setFittingForm((prev) => ({ ...prev, notes: e.target.value }))}
-                        />
-                        {permissions.store_fitting && (
-                            <Button type="submit" color="blue" size="sm" disabled={processing}>
-                                {t('global.save')}
+                        {prostheticCase.work_order ? (
+                            <div className="space-y-4">
+                                <div className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2.5 dark:border-gray-800 dark:bg-gray-800/50">
+                                    <p className="font-mono text-sm font-medium text-gray-900 dark:text-white">
+                                        {prostheticCase.work_order.work_order_number}
+                                    </p>
+                                    <p className={`mt-1 ${CASE_MUTED_NOTE_CLASS}`}>
+                                        {prostheticCase.work_order.status} ·{' '}
+                                        {t(
+                                            `global.prosthetics_work_order_stage_${prostheticCase.work_order.production_stage}`
+                                        )}
+                                    </p>
+                                </div>
+                                <form
+                                    className="flex flex-wrap items-end gap-3"
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        if (urls.work_order_update) {
+                                            put(urls.work_order_update, { production_stage: workOrderStage });
+                                        }
+                                    }}
+                                >
+                                    <div className="min-w-[220px]">
+                                        <div className="mb-1.5 text-gray-600">
+                                            <Label>{t('global.status')}</Label>
+                                        </div>
+                                        <select
+                                            disabled={!permissions.update_work_order}
+                                            className={CASE_SELECT_CLASS}
+                                            value={workOrderStage}
+                                            onChange={(e) => setWorkOrderStage(e.target.value)}
+                                        >
+                                            {formOptions.work_order_stages.map((stage) => (
+                                                <option key={stage} value={stage}>
+                                                    {t(`global.prosthetics_work_order_stage_${stage}`)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    {permissions.update_work_order && (
+                                        <Button type="submit" color="blue" size="sm" disabled={processing}>
+                                            {t('global.save')}
+                                        </Button>
+                                    )}
+                                </form>
+                                {permissions.issue_stock ? (
+                                    <Button
+                                        color="light"
+                                        size="sm"
+                                        disabled={processing}
+                                        onClick={() =>
+                                            post(urls.issue_stock, {
+                                                prosthetic_work_order_id: prostheticCase.work_order?.id,
+                                            })
+                                        }
+                                    >
+                                        {t('global.prosthetics_issue_components')}
+                                    </Button>
+                                ) : (
+                                    <p className={CASE_MUTED_NOTE_CLASS}>
+                                        {t('global.prosthetics_stock_issue_locked')}
+                                    </p>
+                                )}
+                            </div>
+                        ) : permissions.create_work_order ? (
+                            <Button color="blue" size="sm" disabled={processing} onClick={() => post(urls.work_order)}>
+                                {t('global.prosthetics_create_work_order')}
                             </Button>
+                        ) : (
+                            <p className={CASE_MUTED_NOTE_CLASS}>
+                                {t('global.prosthetics_work_order_available_after_approval')}
+                            </p>
                         )}
-                    </form>
-                </SectionCard>
+                    </CaseSectionPanel>
 
-                <SectionCard
-                    title={t('global.prosthetics_delivery')}
-                    badge={!permissions.store_delivery ? t('global.prosthetics_read_only_badge') : undefined}
-                >
-                    <form className="grid gap-3 md:grid-cols-2" onSubmit={(e) => {
-                        e.preventDefault();
-                        post(urls.delivery, {
-                            ...deliveryForm,
-                            handover_signed: deliveryForm.handover_signed ? '1' : '0',
-                        });
-                    }}>
-                        <div>
-                            <Label value={t('global.prosthetics_delivery_date')} />
-                            <TextInput
-                                type="date"
-                                sizing="sm"
-                                disabled={!permissions.store_delivery}
-                                value={deliveryForm.delivered_at}
-                                onChange={(e) => setDeliveryForm((prev) => ({ ...prev, delivered_at: e.target.value }))}
-                            />
-                        </div>
-                        <div>
-                            <Label value={t('global.prosthetics_received_by')} />
-                            <TextInput
-                                sizing="sm"
-                                disabled={!permissions.store_delivery}
-                                value={deliveryForm.received_by_name}
-                                onChange={(e) =>
-                                    setDeliveryForm((prev) => ({ ...prev, received_by_name: e.target.value }))
-                                }
-                            />
-                        </div>
-                        <label className="flex items-center gap-2 text-sm">
-                            <input
-                                type="checkbox"
-                                disabled={!permissions.store_delivery}
-                                checked={deliveryForm.handover_signed}
-                                onChange={(e) =>
-                                    setDeliveryForm((prev) => ({ ...prev, handover_signed: e.target.checked }))
-                                }
-                            />
-                            {t('global.prosthetics_handover_signed')}
-                        </label>
-                        <div className="md:col-span-2">
-                            <Textarea
-                                rows={2}
-                                placeholder={t('global.notes')}
-                                disabled={!permissions.store_delivery}
-                                value={deliveryForm.notes}
-                                onChange={(e) => setDeliveryForm((prev) => ({ ...prev, notes: e.target.value }))}
-                            />
-                        </div>
-                        {permissions.store_delivery && (
-                            <Button type="submit" color="blue" size="sm" disabled={processing}>
-                                {t('global.save')}
-                            </Button>
-                        )}
-                    </form>
-                </SectionCard>
-
-                <SectionCard
-                    title={t('global.prosthetics_follow_up')}
-                    badge={!permissions.store_follow_up ? t('global.prosthetics_read_only_badge') : undefined}
-                >
-                    <form
-                        className="flex flex-wrap items-end gap-2"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            post(urls.follow_up, followUpForm);
-                        }}
+                    <CaseSectionPanel
+                        id="case-fitting"
+                        icon="bx-walk"
+                        title={t('global.prosthetics_fitting')}
+                        badge={!permissions.store_fitting ? readOnlyBadge : undefined}
+                        badgeTone="locked"
+                        defaultOpen={isStatus('in_production', 'trial_fit')}
                     >
-                        <TextInput
-                            type="date"
-                            sizing="sm"
-                            disabled={!permissions.store_follow_up}
-                            value={followUpForm.scheduled_at}
-                            onChange={(e) => setFollowUpForm((prev) => ({ ...prev, scheduled_at: e.target.value }))}
-                        />
-                        <select
-                            disabled={!permissions.store_follow_up}
-                            className="rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700"
-                            value={followUpForm.follow_up_type}
-                            onChange={(e) =>
-                                setFollowUpForm((prev) => ({ ...prev, follow_up_type: e.target.value }))
-                            }
+                        <form
+                            className="grid gap-3 md:grid-cols-2 lg:grid-cols-4 lg:items-end"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                post(urls.fitting, fittingForm);
+                            }}
                         >
-                            {formOptions.follow_up_types.map((type) => (
-                                <option key={type} value={type}>
-                                    {t(`global.prosthetics_follow_up_type_${type}`)}
-                                </option>
-                            ))}
-                        </select>
-                        {permissions.store_follow_up && (
-                            <Button type="submit" color="blue" size="sm" disabled={processing}>
-                                {t('global.save')}
-                            </Button>
-                        )}
-                    </form>
-                </SectionCard>
-
-                <SectionCard title={t('global.prosthetics_attachments')}>
-                    <form className="mb-4 space-y-3" onSubmit={handleAttachmentUpload}>
-                        <div className="grid gap-3 md:grid-cols-2">
                             <div>
-                                <Label value={t('global.category')} />
+                                <div className="mb-1.5 text-gray-600">
+                                    <Label>{t('global.date')}</Label>
+                                </div>
+                                <TextInput
+                                    type="date"
+                                    sizing="sm"
+                                    disabled={!permissions.store_fitting}
+                                    value={fittingForm.session_date}
+                                    onChange={(e) =>
+                                        setFittingForm((prev) => ({ ...prev, session_date: e.target.value }))
+                                    }
+                                />
+                            </div>
+                            <div>
+                                <div className="mb-1.5 text-gray-600">
+                                    <Label>{t('global.status')}</Label>
+                                </div>
+                                <select
+                                    disabled={!permissions.store_fitting}
+                                    className={CASE_SELECT_CLASS}
+                                    value={fittingForm.outcome}
+                                    onChange={(e) =>
+                                        setFittingForm((prev) => ({ ...prev, outcome: e.target.value }))
+                                    }
+                                >
+                                    {formOptions.fitting_outcomes.map((outcome) => (
+                                        <option key={outcome} value={outcome}>
+                                            {t(`global.prosthetics_fitting_outcome_${outcome}`)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="lg:col-span-2">
+                                <div className="mb-1.5 text-gray-600">
+                                    <Label>{t('global.notes')}</Label>
+                                </div>
                                 <TextInput
                                     sizing="sm"
-                                    disabled={!permissions.manage_attachments}
-                                    value={attachmentForm.category}
+                                    placeholder={t('global.notes')}
+                                    disabled={!permissions.store_fitting}
+                                    value={fittingForm.notes}
                                     onChange={(e) =>
-                                        setAttachmentForm((prev) => ({ ...prev, category: e.target.value }))
+                                        setFittingForm((prev) => ({ ...prev, notes: e.target.value }))
+                                    }
+                                />
+                            </div>
+                            {permissions.store_fitting && (
+                                <div className="md:col-span-2 lg:col-span-4">
+                                    <Button type="submit" color="blue" size="sm" disabled={processing}>
+                                        {t('global.save')}
+                                    </Button>
+                                </div>
+                            )}
+                        </form>
+                    </CaseSectionPanel>
+
+                    <CaseSectionPanel
+                        id="case-delivery"
+                        icon="bx-package"
+                        title={t('global.prosthetics_delivery')}
+                        badge={!permissions.store_delivery ? readOnlyBadge : undefined}
+                        badgeTone="locked"
+                        defaultOpen={isStatus('trial_fit')}
+                    >
+                        <form
+                            className="grid gap-4 md:grid-cols-2"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                post(urls.delivery, {
+                                    ...deliveryForm,
+                                    handover_signed: deliveryForm.handover_signed ? '1' : '0',
+                                });
+                            }}
+                        >
+                            <div>
+                                <div className="mb-1.5 text-gray-600">
+                                    <Label>{t('global.prosthetics_delivery_date')}</Label>
+                                </div>
+                                <TextInput
+                                    type="date"
+                                    sizing="sm"
+                                    disabled={!permissions.store_delivery}
+                                    value={deliveryForm.delivered_at}
+                                    onChange={(e) =>
+                                        setDeliveryForm((prev) => ({ ...prev, delivered_at: e.target.value }))
                                     }
                                 />
                             </div>
                             <div>
-                                <Label value={t('global.prosthetics_files')} />
-                                <input
-                                    type="file"
-                                    multiple
-                                    disabled={!permissions.manage_attachments}
-                                    className="block w-full text-sm"
-                                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                        setAttachmentForm((prev) => ({ ...prev, files: e.target.files }))
+                                <div className="mb-1.5 text-gray-600">
+                                    <Label>{t('global.prosthetics_received_by')}</Label>
+                                </div>
+                                <TextInput
+                                    sizing="sm"
+                                    disabled={!permissions.store_delivery}
+                                    value={deliveryForm.received_by_name}
+                                    onChange={(e) =>
+                                        setDeliveryForm((prev) => ({ ...prev, received_by_name: e.target.value }))
                                     }
                                 />
                             </div>
-                        </div>
-                        <TextInput
-                            sizing="sm"
-                            placeholder={t('global.prosthetics_description_optional')}
-                            disabled={!permissions.manage_attachments}
-                            value={attachmentForm.description}
-                            onChange={(e) =>
-                                setAttachmentForm((prev) => ({ ...prev, description: e.target.value }))
-                            }
-                        />
-                        {permissions.manage_attachments && (
-                            <Button type="submit" color="blue" size="sm" disabled={processing}>
-                                {t('global.prosthetics_upload')}
-                            </Button>
-                        )}
-                        {!permissions.manage_attachments && (
-                            <p className="text-sm text-gray-500">{t('global.prosthetics_attachments_readonly_notice')}</p>
-                        )}
-                    </form>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                            <thead className="border-b text-xs uppercase text-gray-500">
-                                <tr>
-                                    <th className="px-2 py-2">{t('global.file')}</th>
-                                    <th className="px-2 py-2">{t('global.category')}</th>
-                                    <th className="px-2 py-2">{t('global.date')}</th>
-                                    <th className="px-2 py-2" />
-                                </tr>
-                            </thead>
-                            <tbody>
+                            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                <input
+                                    type="checkbox"
+                                    className="rounded border-gray-300 text-slate-700 focus:ring-slate-500"
+                                    disabled={!permissions.store_delivery}
+                                    checked={deliveryForm.handover_signed}
+                                    onChange={(e) =>
+                                        setDeliveryForm((prev) => ({ ...prev, handover_signed: e.target.checked }))
+                                    }
+                                />
+                                {t('global.prosthetics_handover_signed')}
+                            </label>
+                            <div className="md:col-span-2">
+                                <div className="mb-1.5 text-gray-600">
+                                    <Label>{t('global.notes')}</Label>
+                                </div>
+                                <Textarea
+                                    rows={2}
+                                    disabled={!permissions.store_delivery}
+                                    value={deliveryForm.notes}
+                                    onChange={(e) =>
+                                        setDeliveryForm((prev) => ({ ...prev, notes: e.target.value }))
+                                    }
+                                />
+                            </div>
+                            {permissions.store_delivery && (
+                                <div className="md:col-span-2">
+                                    <Button type="submit" color="blue" size="sm" disabled={processing}>
+                                        {t('global.save')}
+                                    </Button>
+                                </div>
+                            )}
+                        </form>
+                    </CaseSectionPanel>
+
+                    <CaseSectionPanel
+                        id="case-follow-up"
+                        icon="bx-calendar"
+                        title={t('global.prosthetics_follow_up')}
+                        badge={!permissions.store_follow_up ? readOnlyBadge : undefined}
+                        badgeTone="locked"
+                        defaultOpen={isStatus('delivered')}
+                    >
+                        <form
+                            className="flex flex-wrap items-end gap-3"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                post(urls.follow_up, followUpForm);
+                            }}
+                        >
+                            <div>
+                                <div className="mb-1.5 text-gray-600">
+                                    <Label>{t('global.date')}</Label>
+                                </div>
+                                <TextInput
+                                    type="date"
+                                    sizing="sm"
+                                    disabled={!permissions.store_follow_up}
+                                    value={followUpForm.scheduled_at}
+                                    onChange={(e) =>
+                                        setFollowUpForm((prev) => ({ ...prev, scheduled_at: e.target.value }))
+                                    }
+                                />
+                            </div>
+                            <div className="min-w-[180px]">
+                                <div className="mb-1.5 text-gray-600">
+                                    <Label>{t('global.type')}</Label>
+                                </div>
+                                <select
+                                    disabled={!permissions.store_follow_up}
+                                    className={CASE_SELECT_CLASS}
+                                    value={followUpForm.follow_up_type}
+                                    onChange={(e) =>
+                                        setFollowUpForm((prev) => ({ ...prev, follow_up_type: e.target.value }))
+                                    }
+                                >
+                                    {formOptions.follow_up_types.map((type) => (
+                                        <option key={type} value={type}>
+                                            {t(`global.prosthetics_follow_up_type_${type}`)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            {permissions.store_follow_up && (
+                                <Button type="submit" color="blue" size="sm" disabled={processing}>
+                                    {t('global.save')}
+                                </Button>
+                            )}
+                        </form>
+                    </CaseSectionPanel>
+
+                    <CaseSectionPanel
+                        id="case-attachments"
+                        icon="bx-paperclip"
+                        title={t('global.prosthetics_attachments')}
+                        badge={String(prostheticCase.attachments.length)}
+                        defaultOpen={false}
+                    >
+                        <form className="mb-5 space-y-4" onSubmit={handleAttachmentUpload}>
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div>
+                                    <div className="mb-1.5 text-gray-600">
+                                        <Label>{t('global.category')}</Label>
+                                    </div>
+                                    <TextInput
+                                        sizing="sm"
+                                        disabled={!permissions.manage_attachments}
+                                        value={attachmentForm.category}
+                                        onChange={(e) =>
+                                            setAttachmentForm((prev) => ({ ...prev, category: e.target.value }))
+                                        }
+                                    />
+                                </div>
+                                <div>
+                                    <div className="mb-1.5 text-gray-600">
+                                        <Label>{t('global.prosthetics_files')}</Label>
+                                    </div>
+                                    <input
+                                        type="file"
+                                        multiple
+                                        disabled={!permissions.manage_attachments}
+                                        className={CASE_FILE_INPUT_CLASS}
+                                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                            setAttachmentForm((prev) => ({ ...prev, files: e.target.files }))
+                                        }
+                                    />
+                                </div>
+                            </div>
+                            <TextInput
+                                sizing="sm"
+                                placeholder={t('global.prosthetics_description_optional')}
+                                disabled={!permissions.manage_attachments}
+                                value={attachmentForm.description}
+                                onChange={(e) =>
+                                    setAttachmentForm((prev) => ({ ...prev, description: e.target.value }))
+                                }
+                            />
+                            {permissions.manage_attachments ? (
+                                <Button type="submit" color="blue" size="sm" disabled={processing}>
+                                    {t('global.prosthetics_upload')}
+                                </Button>
+                            ) : (
+                                <p className={CASE_MUTED_NOTE_CLASS}>
+                                    {t('global.prosthetics_attachments_readonly_notice')}
+                                </p>
+                            )}
+                        </form>
+
+                        <CaseDataTable>
+                            <CaseDataTableHead>
+                                <CaseDataTableTh>{t('global.file')}</CaseDataTableTh>
+                                <CaseDataTableTh>{t('global.category')}</CaseDataTableTh>
+                                <CaseDataTableTh>{t('global.date')}</CaseDataTableTh>
+                                <CaseDataTableTh className="w-16 text-end">{t('global.actions')}</CaseDataTableTh>
+                            </CaseDataTableHead>
+                            <CaseDataTableBody>
                                 {prostheticCase.attachments.map((attachment) => (
-                                    <tr key={attachment.id} className="border-b dark:border-gray-700">
-                                        <td className="px-2 py-2">
+                                    <CaseDataTableRow key={attachment.id}>
+                                        <CaseDataTableTd>
                                             {attachment.file_url ? (
                                                 <a
                                                     href={attachment.file_url}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="text-blue-600 hover:underline"
+                                                    className="font-medium text-slate-700 hover:text-slate-900 hover:underline dark:text-slate-300"
                                                 >
                                                     {attachment.original_name}
                                                 </a>
                                             ) : (
                                                 attachment.original_name
                                             )}
-                                        </td>
-                                        <td className="px-2 py-2">{attachment.category}</td>
-                                        <td className="px-2 py-2">{attachment.created_at ?? '—'}</td>
-                                        <td className="px-2 py-2 text-right">
+                                        </CaseDataTableTd>
+                                        <CaseDataTableTd className="text-gray-600">{attachment.category}</CaseDataTableTd>
+                                        <CaseDataTableTd className="text-gray-500" dir="ltr">
+                                            {attachment.created_at ?? '—'}
+                                        </CaseDataTableTd>
+                                        <CaseDataTableTd className="text-end">
                                             {permissions.manage_attachments && (
-                                                <Button
-                                                    color="red"
-                                                    outline
-                                                    size="xs"
+                                                <TableActionButton
+                                                    kind="delete"
+                                                    confirm={t('global.prosthetics_delete_attachment_confirm')}
                                                     disabled={processing}
-                                                    onClick={() => {
-                                                        if (
-                                                            window.confirm(
-                                                                t('global.prosthetics_delete_attachment_confirm')
-                                                            )
-                                                        ) {
-                                                            router.delete(`${urls.attachment_delete}/${attachment.id}`, {
-                                                                preserveScroll: true,
-                                                            });
-                                                        }
-                                                    }}
-                                                >
-                                                    {t('global.delete')}
-                                                </Button>
+                                                    onClick={() =>
+                                                        router.delete(
+                                                            `${urls.attachment_delete}/${attachment.id}`,
+                                                            { preserveScroll: true }
+                                                        )
+                                                    }
+                                                />
                                             )}
-                                        </td>
-                                    </tr>
+                                        </CaseDataTableTd>
+                                    </CaseDataTableRow>
                                 ))}
                                 {prostheticCase.attachments.length === 0 && (
-                                    <tr>
-                                        <td colSpan={4} className="px-2 py-4 text-center text-gray-500">
+                                    <CaseDataTableRow>
+                                        <CaseDataTableTd colSpan={4} className="py-8 text-center text-gray-500">
                                             {t('global.no_attachments')}
-                                        </td>
-                                    </tr>
+                                        </CaseDataTableTd>
+                                    </CaseDataTableRow>
                                 )}
-                            </tbody>
-                        </table>
-                    </div>
-                </SectionCard>
+                            </CaseDataTableBody>
+                        </CaseDataTable>
+                    </CaseSectionPanel>
+                </div>
 
                 {permissions.close_case && (
-                    <Button
-                        color="light"
-                        disabled={processing}
-                        onClick={() => {
-                            if (window.confirm(t('global.prosthetics_close_case_confirm'))) {
-                                post(urls.close);
-                            }
-                        }}
-                    >
-                        {t('global.prosthetics_close_case')}
-                    </Button>
+                    <div className="flex justify-end border-t border-gray-200 pt-4 dark:border-gray-700">
+                        <Button
+                            color="light"
+                            size="sm"
+                            disabled={processing}
+                            onClick={() => {
+                                if (window.confirm(t('global.prosthetics_close_case_confirm'))) {
+                                    post(urls.close);
+                                }
+                            }}
+                        >
+                            {t('global.prosthetics_close_case')}
+                        </Button>
+                    </div>
                 )}
             </div>
         </DashboardLayout>

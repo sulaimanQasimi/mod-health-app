@@ -27,7 +27,17 @@ class UnderReview extends Model
             $model->updated_by = $user->id ?? 0;
         });
 
+        self::updated(function (UnderReview $model) {
+            if ($model->wasChanged('is_discharged') && (bool) $model->is_discharged && $model->bed_id) {
+                Bed::query()->whereKey($model->bed_id)->update(['is_occupied' => 0]);
+            }
+        });
+
         self::deleting(function ($model) {
+            if (! (bool) $model->is_discharged && $model->bed_id) {
+                Bed::query()->whereKey($model->bed_id)->update(['is_occupied' => 0]);
+            }
+
             $user = Auth::user();
             $model->deleted_by = $user->id ?? 0;
             $model->save();

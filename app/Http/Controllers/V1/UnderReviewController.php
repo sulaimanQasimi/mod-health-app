@@ -13,6 +13,7 @@ use App\Models\UnderReview;
 use App\Models\Visit;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -207,8 +208,8 @@ class UnderReviewController extends Controller
         $validated['doctor_id'] = $appointment->doctor_id;
 
         if ((int) $validated['bed_id'] !== (int) $underReview->bed_id) {
-            Bed::findOrFail($underReview->bed_id)?->update(['is_occupied' => false]);
-            Bed::findOrFail($validated['bed_id'])->update(['is_occupied' => true]);
+            $this->releaseBed($underReview->bed_id);
+            Bed::query()->whereKey($validated['bed_id'])->update(['is_occupied' => 1]);
         }
 
         $underReview->update($validated);
@@ -223,17 +224,18 @@ class UnderReviewController extends Controller
         $this->authorizeMenu();
         $this->ensureBranch($underReview);
         abort_unless($request->user()->can('edit-under-reviews'), 403);
+        abort_if((bool) $underReview->is_discharged, 403);
 
         $validated = $request->validate([
             'discharge_remark' => 'required|string',
         ]);
 
-        $underReview->update([
-            'is_discharged' => 1,
-            'discharge_remark' => $validated['discharge_remark'],
-        ]);
-
-        Bed::findOrFail($underReview->bed_id)?->update(['is_occupied' => false]);
+        DB::transaction(function () use ($underReview, $validated) {
+            $underReview->update([
+                'is_discharged' => 1,
+                'discharge_remark' => $validated['discharge_remark'],
+            ]);
+        });
 
         return redirect()
             ->route('react.under-reviews.show', $underReview)
@@ -375,6 +377,15 @@ class UnderReviewController extends Controller
             'nursing_assessments_count' => $underReview->nursingAssessments->count(),
             'hospitalizations_count' => $underReview->hospitalization->count(),
         ];
+    }
+
+    private function releaseBed(?int $bedId): void
+    {
+        if (! $bedId) {
+            return;
+        }
+
+        Bed::query()->whereKey($bedId)->update(['is_occupied' => 0]);
     }
 
     private function formatDate(?\Illuminate\Support\Carbon $date): ?string

@@ -43,7 +43,7 @@ export default function HospitalizationDischargedFilters({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:items-end">
+        <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:items-end [&_label]:text-xs [&_label]:font-semibold [&_label]:uppercase [&_label]:tracking-wide [&_label]:text-gray-500">
             <div>
                 <Label htmlFor="discharged-q">{t('global.patient_name')}</Label>
                 <TextInput

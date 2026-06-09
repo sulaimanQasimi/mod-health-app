@@ -1,7 +1,8 @@
 import { Head, router } from '@inertiajs/react';
-import { Button, Card, Label, Textarea, TextInput } from 'flowbite-react';
-import { FormEvent, useMemo, useState } from 'react';
+import { Button, Label, Textarea, TextInput } from 'flowbite-react';
+import { FormEvent, ReactNode, useMemo, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import { HOSPITALIZATION_FORM_SECTION_CLASS } from '../../Components/Hospitalizations/hospitalizationUi';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -19,6 +20,26 @@ interface EditProps {
     foodTypes: HospitalizationOption[];
     relations: HospitalizationOption[];
     urls: { show: string; update: string };
+}
+
+function FormSection({
+    title,
+    icon,
+    children,
+}: {
+    title: string;
+    icon: string;
+    children: ReactNode;
+}) {
+    return (
+        <section className={HOSPITALIZATION_FORM_SECTION_CLASS}>
+            <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                <i className={`bx ${icon} text-lg text-emerald-600 dark:text-emerald-400`} />
+                {title}
+            </h3>
+            {children}
+        </section>
+    );
 }
 
 export default function HospitalizationsEdit({
@@ -84,14 +105,15 @@ export default function HospitalizationsEdit({
             <div className={`mx-auto space-y-6 ${SETTINGS_FORM_WIDTH}`}>
                 <SettingsPageHeader
                     title={t('global.edit_hospitalization')}
+                    subtitle={`#${hospitalization.id}`}
                     icon="bx-edit"
-                    accent="from-emerald-600 to-emerald-700"
+                    accent="from-emerald-600 to-teal-700"
                     backHref={urls.show}
                     backLabel={t('global.back')}
                 />
 
-                <Card>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <FormSection title={t('global.reason')} icon="bx-info-circle">
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="reason">{t('global.reason')}</Label>
@@ -114,7 +136,9 @@ export default function HospitalizationsEdit({
                                 />
                             </div>
                         </div>
+                    </FormSection>
 
+                    <FormSection title={t('global.room')} icon="bx-building-house">
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="room_id">{t('global.rooms')}</Label>
@@ -153,102 +177,99 @@ export default function HospitalizationsEdit({
                                 />
                             </div>
                         </div>
+                    </FormSection>
 
-                        <div>
-                            <Label>{t('global.food_type')}</Label>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                                {foodTypes.map((foodType) => {
-                                    const id = String(foodType.id);
-                                    const selected = form.food_type_ids.includes(id);
-                                    return (
-                                        <button
-                                            key={foodType.id}
-                                            type="button"
-                                            onClick={() => toggleFoodType(id)}
-                                            className={`rounded-full border px-3 py-1 text-sm transition-colors ${
-                                                selected
-                                                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200'
-                                                    : 'border-gray-200 text-gray-600 hover:border-emerald-300 dark:border-gray-600 dark:text-gray-300'
-                                            }`}
-                                        >
-                                            {foodType.name}
-                                        </button>
-                                    );
-                                })}
+                    <FormSection title={t('global.food_type')} icon="bx-food-menu">
+                        <div className="flex flex-wrap gap-2">
+                            {foodTypes.map((foodType) => {
+                                const id = String(foodType.id);
+                                const selected = form.food_type_ids.includes(id);
+                                return (
+                                    <button
+                                        key={foodType.id}
+                                        type="button"
+                                        onClick={() => toggleFoodType(id)}
+                                        className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all ${
+                                            selected
+                                                ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm dark:bg-emerald-900/30 dark:text-emerald-200'
+                                                : 'border-gray-200 text-gray-600 hover:border-emerald-300 hover:bg-emerald-50/50 dark:border-gray-600 dark:text-gray-300'
+                                        }`}
+                                    >
+                                        {foodType.name}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </FormSection>
+
+                    <FormSection title={t('global.patient_companion_info')} icon="bx-group">
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                                <Label htmlFor="patinet_companion">{t('global.companion_name')}</Label>
+                                <TextInput
+                                    id="patinet_companion"
+                                    value={form.patinet_companion}
+                                    onChange={(e) =>
+                                        setForm((prev) => ({ ...prev, patinet_companion: e.target.value }))
+                                    }
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="companion_father_name">
+                                    {t('global.companion_father_name')}
+                                </Label>
+                                <TextInput
+                                    id="companion_father_name"
+                                    value={form.companion_father_name}
+                                    onChange={(e) =>
+                                        setForm((prev) => ({
+                                            ...prev,
+                                            companion_father_name: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="relation_to_patient">{t('global.relation_to_patient')}</Label>
+                                <SearchableSelect
+                                    id="relation_to_patient"
+                                    value={form.relation_to_patient}
+                                    onChange={(value) =>
+                                        setForm((prev) => ({ ...prev, relation_to_patient: value }))
+                                    }
+                                    options={[
+                                        { value: '', label: t('global.select') },
+                                        ...relations.map((relation) => ({
+                                            value: String(relation.id),
+                                            label: relation.name,
+                                        })),
+                                    ]}
+                                    placeholder={t('global.select')}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="companion_card_type">{t('global.companion_card_type')}</Label>
+                                <TextInput
+                                    id="companion_card_type"
+                                    value={form.companion_card_type}
+                                    onChange={(e) =>
+                                        setForm((prev) => ({ ...prev, companion_card_type: e.target.value }))
+                                    }
+                                />
                             </div>
                         </div>
+                    </FormSection>
 
-                        <div>
-                            <h3 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                                {t('global.patient_companion_info')}
-                            </h3>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div>
-                                    <Label htmlFor="patinet_companion">{t('global.companion_name')}</Label>
-                                    <TextInput
-                                        id="patinet_companion"
-                                        value={form.patinet_companion}
-                                        onChange={(e) =>
-                                            setForm((prev) => ({ ...prev, patinet_companion: e.target.value }))
-                                        }
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="companion_father_name">
-                                        {t('global.companion_father_name')}
-                                    </Label>
-                                    <TextInput
-                                        id="companion_father_name"
-                                        value={form.companion_father_name}
-                                        onChange={(e) =>
-                                            setForm((prev) => ({
-                                                ...prev,
-                                                companion_father_name: e.target.value,
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="relation_to_patient">{t('global.relation_to_patient')}</Label>
-                                    <SearchableSelect
-                                        id="relation_to_patient"
-                                        value={form.relation_to_patient}
-                                        onChange={(value) =>
-                                            setForm((prev) => ({ ...prev, relation_to_patient: value }))
-                                        }
-                                        options={[
-                                            { value: '', label: t('global.select') },
-                                            ...relations.map((relation) => ({
-                                                value: String(relation.id),
-                                                label: relation.name,
-                                            })),
-                                        ]}
-                                        placeholder={t('global.select')}
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="companion_card_type">{t('global.companion_card_type')}</Label>
-                                    <TextInput
-                                        id="companion_card_type"
-                                        value={form.companion_card_type}
-                                        onChange={(e) =>
-                                            setForm((prev) => ({ ...prev, companion_card_type: e.target.value }))
-                                        }
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-2 border-t border-gray-100 pt-4 dark:border-gray-700">
-                            <Button type="submit" color="success" disabled={processing}>
-                                {t('global.save')}
-                            </Button>
-                            <Button as="a" href={urls.show} color="light">
-                                {t('global.cancel')}
-                            </Button>
-                        </div>
-                    </form>
-                </Card>
+                    <div className="flex gap-2 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                        <Button type="submit" color="success" disabled={processing}>
+                            <i className="bx bx-check me-2" />
+                            {t('global.save')}
+                        </Button>
+                        <Button as="a" href={urls.show} color="light">
+                            {t('global.cancel')}
+                        </Button>
+                    </div>
+                </form>
             </div>
         </DashboardLayout>
     );

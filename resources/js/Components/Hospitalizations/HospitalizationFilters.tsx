@@ -36,7 +36,7 @@ export default function HospitalizationFilters({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 lg:items-end">
+        <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 lg:items-end [&_label]:text-xs [&_label]:font-semibold [&_label]:uppercase [&_label]:tracking-wide [&_label]:text-gray-500">
             <div className="lg:col-span-2">
                 <Label htmlFor="hospitalization-q">{t('global.search')}</Label>
                 <TextInput

@@ -88,14 +88,12 @@ class HospitalizationController extends Controller
 
         return Inertia::render('Hospitalizations/Index', [
             'hospitalizations' => $items,
+            'stats' => $this->branchStats(),
             'filters' => $this->collectFilters($request, ['q', 'room_id', 'date_from', 'date_to']),
             'filterOptions' => [
                 'rooms' => $this->branchRooms(),
             ],
-            'urls' => [
-                'current' => route('react.hospitalizations.index'),
-                'discharged' => route('react.hospitalizations.discharged'),
-            ],
+            'urls' => $this->indexUrls($request),
         ]);
     }
 
@@ -137,6 +135,7 @@ class HospitalizationController extends Controller
 
         return Inertia::render('Hospitalizations/Discharged', [
             'hospitalizations' => $items,
+            'stats' => $this->branchStats(),
             'filters' => $this->collectFilters($request, [
                 'q',
                 'patient_id',
@@ -167,9 +166,11 @@ class HospitalizationController extends Controller
         $hospitalization->load([
             'patient:id,name,father_name,id_card,phone',
             'doctor:id,name',
+            'department:id,name',
             'room:id,name',
             'bed:id,number',
             'appointment:id,patient_id,doctor_id,is_completed,department_id',
+            'appointment.department:id,name',
             'visits.doctor:id,name',
             'bloodBanks:id,hospitalization_id,group,created_at',
             'vitalSigns.vitalSignType:id,name',
@@ -682,6 +683,8 @@ class HospitalizationController extends Controller
                 'phone' => $hospitalization->patient->phone,
             ] : null,
             'doctor_name' => $hospitalization->doctor?->name,
+            'department_name' => $hospitalization->department?->name
+                ?? $hospitalization->appointment?->department?->name,
             'room_name' => $hospitalization->room?->name,
             'bed_number' => $hospitalization->bed?->number,
             'visits' => $hospitalization->visits->map(fn (Visit $visit) => [
@@ -741,6 +744,41 @@ class HospitalizationController extends Controller
             'complaints_count' => $hospitalization->complaints->count(),
             'icu_count' => $hospitalization->icu->count(),
             'anesthesia_count' => $hospitalization->anesthesias->count(),
+        ];
+    }
+
+    private function indexUrls(Request $request): array
+    {
+        $user = $request->user();
+
+        return [
+            'current' => route('react.hospitalizations.index'),
+            'discharged' => route('react.hospitalizations.discharged'),
+            'report' => route('react.hospitalizations.report'),
+            'room_management' => $user?->hasRole(['admin', 'super_admin'])
+                ? route('react.hospitalizations.room-management')
+                : null,
+        ];
+    }
+
+    private function branchStats(): array
+    {
+        $branchId = $this->branchId();
+        $hospitalizationQuery = Hospitalization::query()
+            ->where('branch_id', $branchId)
+            ->visibleForAuthUserDepartment();
+        $bedQuery = Bed::query()
+            ->whereHas('room', fn ($query) => $query->where('branch_id', $branchId));
+        $dischargedQuery = (clone $hospitalizationQuery)->where('is_discharged', '1');
+
+        return [
+            'active' => (clone $hospitalizationQuery)->where('is_discharged', '0')->count(),
+            'discharged' => (clone $dischargedQuery)->count(),
+            'occupied_beds' => (clone $bedQuery)->where('is_occupied', true)->count(),
+            'total_beds' => (clone $bedQuery)->count(),
+            'recovered' => (clone $dischargedQuery)->where('discharge_status', 'recovered')->count(),
+            'moved' => (clone $dischargedQuery)->where('discharge_status', 'moved')->count(),
+            'died' => (clone $dischargedQuery)->where('discharge_status', 'died')->count(),
         ];
     }
 

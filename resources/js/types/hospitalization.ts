@@ -1,5 +1,15 @@
 import { PaginationLink, PaginationMeta } from './settings';
 
+export interface HospitalizationDashboardStats {
+    active: number;
+    discharged: number;
+    occupied_beds: number;
+    total_beds: number;
+    recovered?: number;
+    moved?: number;
+    died?: number;
+}
+
 export interface HospitalizationListItem {
     id: number;
     patient_id_card: string | null;
@@ -82,6 +92,7 @@ export interface HospitalizationDetail {
     admission_time: string | null;
     discharged_at: string | null;
     appointment_id: number | null;
+    department_name?: string | null;
     patient: {
         id: number;
         name: string;

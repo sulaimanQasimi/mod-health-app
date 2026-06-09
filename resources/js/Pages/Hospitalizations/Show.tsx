@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea } from 'flowbite-react';
+import { Badge, Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
@@ -8,6 +8,7 @@ import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import HospitalizationSummary from '../../Components/Hospitalizations/HospitalizationSummary';
 import HospitalizationVitalSignSection from '../../Components/Hospitalizations/HospitalizationVitalSignSection';
 import {
+    dischargeStatusBadgeColor,
     HOSPITALIZATION_DISCHARGED_PANEL_CLASS,
     HOSPITALIZATION_MUTED_NOTE_CLASS,
 } from '../../Components/Hospitalizations/hospitalizationUi';
@@ -160,10 +161,18 @@ export default function HospitalizationsShow({
 
             <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <SettingsPageHeader
-                    title={t('global.hospitalization_details')}
-                    subtitle={`#${hospitalization.id}`}
+                    title={patientLabel}
+                    subtitle={[
+                        `#${hospitalization.id}`,
+                        hospitalization.department_name,
+                        hospitalization.room_name && hospitalization.bed_number
+                            ? `${hospitalization.room_name} / ${hospitalization.bed_number}`
+                            : null,
+                    ]
+                        .filter(Boolean)
+                        .join(' · ')}
                     icon="bx-bed"
-                    accent="from-emerald-600 to-emerald-700"
+                    accent="from-emerald-600 to-teal-700"
                     backHref={urls.index}
                     backLabel={t('global.back')}
                     action={
@@ -181,7 +190,7 @@ export default function HospitalizationsShow({
                                 </Button>
                             )}
                             {permissions.discharge && (
-                                <Button color="light" size="sm" onClick={() => setDischargeOpen(true)}>
+                                <Button color="failure" size="sm" onClick={() => setDischargeOpen(true)}>
                                     <i className="bx bx-log-out me-2" />
                                     {t('global.discharge_patient')}
                                 </Button>
@@ -200,22 +209,29 @@ export default function HospitalizationsShow({
 
                 {hospitalization.is_discharged && (
                     <div className={HOSPITALIZATION_DISCHARGED_PANEL_CLASS}>
-                        {hospitalization.discharge_status && (
-                            <p className="font-medium">
-                                {t('global.discharge_status')}:{' '}
-                                {t(`global.${hospitalization.discharge_status}` as 'global.recovered')}
-                            </p>
-                        )}
-                        {hospitalization.discharge_remark && (
-                            <p className="mt-1">
-                                {t('global.discharge_remark')}: {hospitalization.discharge_remark}
-                            </p>
-                        )}
-                        {hospitalization.discharged_at && (
-                            <p className="mt-1 text-sm opacity-80">
-                                {t('global.discharge_date')}: {hospitalization.discharged_at}
-                            </p>
-                        )}
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-200/60 dark:bg-amber-900/40">
+                            <i className="bx bx-info-circle text-lg text-amber-800 dark:text-amber-200" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <p className="font-semibold">{t('global.discharged')}</p>
+                                {hospitalization.discharge_status && (
+                                    <Badge color={dischargeStatusBadgeColor(hospitalization.discharge_status)}>
+                                        {t(`global.${hospitalization.discharge_status}` as 'global.recovered')}
+                                    </Badge>
+                                )}
+                            </div>
+                            {hospitalization.discharge_remark && (
+                                <p className="mt-1 text-amber-900/90 dark:text-amber-100/90">
+                                    {hospitalization.discharge_remark}
+                                </p>
+                            )}
+                            {hospitalization.discharged_at && (
+                                <p className="mt-1 text-xs opacity-80">
+                                    {t('global.discharge_date')}: {hospitalization.discharged_at}
+                                </p>
+                            )}
+                        </div>
                     </div>
                 )}
 
@@ -245,6 +261,13 @@ export default function HospitalizationsShow({
                 )}
 
                 <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-1 pt-1">
+                        <i className="bx bx-clinic text-lg text-emerald-600 dark:text-emerald-400" />
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                            {t('global.clinical_findings')}
+                        </h3>
+                    </div>
+
                     <UnderReviewSectionPanel
                         id="hospitalization-blood-bank"
                         icon="bx-donate-blood"
@@ -508,9 +531,14 @@ export default function HospitalizationsShow({
                 </div>
             </div>
 
-            <Modal show={dischargeOpen} onClose={() => setDischargeOpen(false)}>
+            <Modal show={dischargeOpen} onClose={() => setDischargeOpen(false)} size="md">
                 <form onSubmit={handleDischarge}>
-                    <ModalHeader>{t('global.discharge_patient')}</ModalHeader>
+                    <ModalHeader>
+                        <span className="flex items-center gap-2">
+                            <i className="bx bx-log-out text-emerald-600" />
+                            {t('global.discharge_patient')}
+                        </span>
+                    </ModalHeader>
                     <ModalBody className="space-y-4">
                         <div>
                             <Label htmlFor="discharge-status">{t('global.discharge_status')}</Label>

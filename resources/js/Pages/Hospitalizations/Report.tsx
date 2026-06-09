@@ -1,7 +1,8 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { Button, Card, Label, TextInput } from 'flowbite-react';
+import { Head, router } from '@inertiajs/react';
+import { Badge, Button, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import HospitalizationPanel from '../../Components/Hospitalizations/HospitalizationPanel';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
@@ -59,12 +60,22 @@ export default function HospitalizationsReport({ items, filters, filterOptions, 
                     title={t('global.reports')}
                     subtitle={t('global.hospitalizations')}
                     icon="bx-bar-chart-alt-2"
-                    accent="from-emerald-600 to-emerald-700"
+                    accent="from-emerald-600 to-teal-700"
                     backHref={urls.index}
                     backLabel={t('global.back')}
                 />
 
-                <Card>
+                <HospitalizationPanel
+                    variant="filter"
+                    title={t('global.search')}
+                    icon="bx-filter-alt"
+                    action={
+                        <Button as="a" href={urls.export} color="light" size="sm" target="_blank">
+                            <i className="bx bx-export me-2" />
+                            {t('global.export')}
+                        </Button>
+                    }
+                >
                     <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         <div>
                             <Label htmlFor="patient_name">{t('global.patient_name')}</Label>
@@ -145,20 +156,26 @@ export default function HospitalizationsReport({ items, filters, filterOptions, 
                         </div>
                         <div className="flex flex-wrap items-end gap-2 lg:col-span-3">
                             <Button type="submit" color="success" size="sm" disabled={processing}>
+                                <i className="bx bx-search me-2" />
                                 {t('global.search')}
-                            </Button>
-                            <Button as="a" href={urls.export} color="light" size="sm" target="_blank">
-                                {t('global.export')}
                             </Button>
                         </div>
                     </form>
-                </Card>
+                </HospitalizationPanel>
 
-                <Card>
-                    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                <HospitalizationPanel
+                    title={t('global.reports')}
+                    icon="bx-spreadsheet"
+                    action={
+                        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                            {items.length} {t('global.records')}
+                        </span>
+                    }
+                >
+                    <div className="overflow-x-auto">
                         <Table>
                             <TableHeader>
-                                <TableRow>
+                                <TableRow className="bg-gray-50/80 dark:bg-gray-800/60">
                                     <TableHead>{t('global.id')}</TableHead>
                                     <TableHead>{t('global.patient_name')}</TableHead>
                                     <TableHead>{t('global.doctor')}</TableHead>
@@ -172,16 +189,21 @@ export default function HospitalizationsReport({ items, filters, filterOptions, 
                             </TableHeader>
                             <TableBody>
                                 {items.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>{item.id}</TableCell>
-                                        <TableCell>{item.patient_name ?? '—'}</TableCell>
+                                    <TableRow
+                                        key={item.id}
+                                        className="hover:bg-emerald-50/40 dark:hover:bg-emerald-950/10"
+                                    >
+                                        <TableCell className="font-mono text-xs text-gray-500">#{item.id}</TableCell>
+                                        <TableCell className="font-medium">{item.patient_name ?? '—'}</TableCell>
                                         <TableCell className="text-gray-600">{item.doctor_name ?? '—'}</TableCell>
                                         <TableCell className="text-gray-600">{item.room_name ?? '—'}</TableCell>
                                         <TableCell className="text-gray-600">{item.bed_number ?? '—'}</TableCell>
                                         <TableCell dir="ltr">{item.admission_date ?? '—'}</TableCell>
                                         <TableCell dir="ltr">{item.discharged_at ?? '—'}</TableCell>
                                         <TableCell>
-                                            {item.is_discharged ? t('global.discharged') : t('global.active')}
+                                            <Badge color={item.is_discharged ? 'gray' : 'success'} className="w-fit">
+                                                {item.is_discharged ? t('global.discharged') : t('global.active')}
+                                            </Badge>
                                         </TableCell>
                                         <TableCell className="text-end">
                                             <TableActionButton
@@ -194,7 +216,7 @@ export default function HospitalizationsReport({ items, filters, filterOptions, 
                                 ))}
                                 {items.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={9} className="py-10 text-center text-gray-500">
+                                        <TableCell colSpan={9} className="py-14 text-center text-gray-500">
                                             {t('global.no_records_found')}
                                         </TableCell>
                                     </TableRow>
@@ -202,7 +224,7 @@ export default function HospitalizationsReport({ items, filters, filterOptions, 
                             </TableBody>
                         </Table>
                     </div>
-                </Card>
+                </HospitalizationPanel>
             </div>
         </DashboardLayout>
     );

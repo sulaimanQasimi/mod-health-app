@@ -70,13 +70,6 @@ class ProstheticsController extends Controller
         return $this->sectionIndexResponse($items, $appointment, [
             'view' => true,
             'create_referral' => $canCreate,
-            'create_case' => $canCreate,
-        ], [
-            'urls' => [
-                'create_case' => route('react.prosthetics.cases.create', [
-                    'patient_id' => $appointment->patient_id,
-                ]),
-            ],
         ]);
     }
 

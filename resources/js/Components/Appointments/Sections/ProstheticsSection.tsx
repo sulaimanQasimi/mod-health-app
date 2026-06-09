@@ -164,20 +164,12 @@ export default function ProstheticsSection({ appointmentId }: ProstheticsSection
                 <SectionLoadingState />
             ) : (
                 <>
-                    {(data?.permissions.create_referral || data?.permissions.create_case) && (
-                        <div className="mb-4 flex flex-wrap justify-end gap-2">
-                            {data?.permissions.create_referral && (
-                                <Button size="sm" color="blue" onClick={() => setCreateOpen(true)}>
-                                    <i className="bx bx-plus me-2" />
-                                    {t('global.prosthetics_new_referral')}
-                                </Button>
-                            )}
-                            {data?.permissions.create_case && data.urls?.create_case && (
-                                <Button size="sm" color="light" as="a" href={data.urls.create_case}>
-                                    <i className="bx bx-briefcase me-2" />
-                                    {t('global.prosthetics_new_case')}
-                                </Button>
-                            )}
+                    {data?.permissions.create_referral && (
+                        <div className="mb-4 flex justify-end">
+                            <Button size="sm" color="blue" onClick={() => setCreateOpen(true)}>
+                                <i className="bx bx-plus me-2" />
+                                {t('global.prosthetics_new_referral')}
+                            </Button>
                         </div>
                     )}
 

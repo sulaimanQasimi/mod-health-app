@@ -179,6 +179,9 @@ class AppointmentController extends Controller
                 'edit' => $request->user()->can('update', $appointment),
                 'printToken' => ! $appointment->is_completed,
             ],
+            'sectionPermissions' => [
+                'underReview' => $request->user()->can('show-under-review-menu'),
+            ],
             'urls' => [
                 'index' => route('react.appointments.index'),
                 'edit' => route('react.appointments.edit', $appointment),

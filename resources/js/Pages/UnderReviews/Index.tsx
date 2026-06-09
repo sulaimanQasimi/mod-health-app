@@ -53,6 +53,7 @@ export default function UnderReviewsIndex({ underReviews, filters: serverFilters
                     subtitle={t('global.patients_list')}
                     icon="bx-revision"
                     accent="from-slate-600 to-slate-700"
+                    backLabel={t('global.back')}
                 />
 
                 <Card>
@@ -70,7 +71,7 @@ export default function UnderReviewsIndex({ underReviews, filters: serverFilters
                         {buildPaginationSummary(underReviews.meta, t)}
                     </div>
                     <UnderReviewTable items={underReviews.data} />
-                    <SettingsPagination links={underReviews.links} className="mt-4" />
+                    <SettingsPagination links={underReviews.links} />
                 </Card>
             </div>
         </DashboardLayout>

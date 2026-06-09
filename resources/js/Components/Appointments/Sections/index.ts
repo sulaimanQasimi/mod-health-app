@@ -7,6 +7,7 @@ export { default as NephrologySection } from './NephrologySection';
 export { default as PhysiotherapySection } from './PhysiotherapySection';
 export { default as PrescriptionSection } from './PrescriptionSection';
 export { default as ProstheticsSection } from './ProstheticsSection';
+export { default as UnderReviewSection } from './UnderReviewSection';
 export {
     AnesthesiaSection,
     ConsultationSection,
@@ -18,5 +19,4 @@ export {
     OperationSection,
     ReferDepartmentSection,
     RelatedVisitsSection,
-    UnderReviewSection,
 } from './OtherSections';

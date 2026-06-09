@@ -99,48 +99,6 @@ export function ReferDepartmentSection({ appointmentId }: SectionProps) {
     );
 }
 
-export function UnderReviewSection({ appointmentId }: SectionProps) {
-    const { t } = useTranslation();
-    return (
-        <SimpleTableSection
-            appointmentId={appointmentId}
-            sectionPath="under-review"
-            accordionId={`under-review-${appointmentId}`}
-            icon="bx-revision"
-            title={t('global.under_review')}
-            emptyMessage={t('global.no_previous_under_reviews')}
-            columns={[
-                { key: 'reason', header: t('global.reason') },
-                { key: 'remarks', header: t('global.remarks'), muted: true },
-                { key: 'room_name', header: t('global.room'), muted: true },
-                { key: 'bed_number', header: t('global.bed'), muted: true },
-            ]}
-            rowActions={(item, ctx) => (
-                <>
-                    {item.urls?.show && (
-                        <SectionActionButton icon="bx-show" title={t('global.show')} href={item.urls.show as string} colorClass="text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900/30" />
-                    )}
-                    {item.urls?.edit && (
-                        <SectionActionButton icon="bx-edit" title={t('global.edit')} href={item.urls.edit as string} colorClass="text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30" />
-                    )}
-                    {ctx.permissions.delete && item.id && (
-                        <SectionActionButton
-                            icon="bx-trash"
-                            title={t('global.delete')}
-                            onClick={() => {
-                                if (window.confirm(t('global.confirm_delete'))) {
-                                    ctx.destroy(`/${item.id}`);
-                                }
-                            }}
-                            colorClass="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
-                        />
-                    )}
-                </>
-            )}
-        />
-    );
-}
-
 export function RelatedVisitsSection({ appointmentId }: SectionProps) {
     const { t } = useTranslation();
     return (

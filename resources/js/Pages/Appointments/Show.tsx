@@ -56,6 +56,9 @@ interface ShowAppointmentProps {
         edit: boolean;
         printToken: boolean;
     };
+    sectionPermissions: {
+        underReview: boolean;
+    };
     urls: {
         index: string;
         edit: string;
@@ -69,6 +72,7 @@ export default function ShowAppointment({
     appointment,
     patientHistory,
     permissions,
+    sectionPermissions,
     urls,
 }: ShowAppointmentProps) {
     const { t } = useTranslation();
@@ -183,7 +187,7 @@ export default function ShowAppointment({
                     <HospitalizationCheckupSection appointmentId={id} />
                     <ConsultationSection appointmentId={id} />
                     <ReferDepartmentSection appointmentId={id} />
-                    <UnderReviewSection appointmentId={id} />
+                    {sectionPermissions.underReview && <UnderReviewSection appointmentId={id} />}
                     <RelatedVisitsSection appointmentId={id} />
                     <HospitalizationSection appointmentId={id} />
                     <HospitalizationVisitsSection appointmentId={id} />

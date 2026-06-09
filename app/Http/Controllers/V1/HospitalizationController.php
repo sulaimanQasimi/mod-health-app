@@ -14,6 +14,7 @@ use App\Models\NurseNote;
 use App\Models\Relation;
 use App\Models\Room;
 use App\Models\User;
+use App\Models\VitalSign;
 use App\Models\Visit;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\RedirectResponse;
@@ -224,6 +225,7 @@ class HospitalizationController extends Controller
                 'prescription' => $user->can('show-prescriptions-menu'),
                 'lab' => $user->can('show-labs-menu'),
                 'physiotherapy' => $user->can('show-physiotherapy-procedures'),
+                'vital_signs' => $user->can('viewAny', VitalSign::class),
             ],
             'urls' => [
                 'index' => route('react.hospitalizations.index'),

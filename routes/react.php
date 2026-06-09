@@ -45,6 +45,7 @@ use App\Http\Controllers\V1\FloorController;
 use App\Http\Controllers\V1\FoodTypeController;
 use App\Http\Controllers\V1\HemodialysisSessionController;
 use App\Http\Controllers\V1\HospitalizationController;
+use App\Http\Controllers\V1\HospitalizationSections\VitalSignController as HospitalizationVitalSignController;
 use App\Http\Controllers\V1\ICUController;
 use App\Http\Controllers\V1\IncomeController;
 use App\Http\Controllers\V1\LabTypeController;
@@ -398,6 +399,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/room-management', [HospitalizationController::class, 'roomManagement'])
             ->middleware('role:admin|super_admin')
             ->name('room-management');
+        Route::get('/{hospitalization}/vital-signs/meta', [HospitalizationVitalSignController::class, 'meta'])->name('vital-signs.meta');
+        Route::get('/{hospitalization}/vital-signs', [HospitalizationVitalSignController::class, 'index'])->name('vital-signs.index');
+        Route::post('/{hospitalization}/vital-signs', [HospitalizationVitalSignController::class, 'store'])->name('vital-signs.store');
         Route::get('/{hospitalization}/edit', [HospitalizationController::class, 'edit'])->name('edit');
         Route::get('/{hospitalization}', [HospitalizationController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/{hospitalization}', [HospitalizationController::class, 'update'])->name('update');

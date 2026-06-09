@@ -6,6 +6,7 @@ import PrescriptionSection from '../../Components/Appointments/Sections/Prescrip
 import PhysiotherapySection from '../../Components/Appointments/Sections/PhysiotherapySection';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import HospitalizationSummary from '../../Components/Hospitalizations/HospitalizationSummary';
+import HospitalizationVitalSignSection from '../../Components/Hospitalizations/HospitalizationVitalSignSection';
 import {
     HOSPITALIZATION_DISCHARGED_PANEL_CLASS,
     HOSPITALIZATION_MUTED_NOTE_CLASS,
@@ -32,6 +33,7 @@ interface ShowProps {
         prescription: boolean;
         lab: boolean;
         physiotherapy: boolean;
+        vital_signs: boolean;
     };
     urls: {
         index: string;
@@ -235,6 +237,13 @@ export default function HospitalizationsShow({
                     <div className={HOSPITALIZATION_MUTED_NOTE_CLASS}>{t('global.not_available')}</div>
                 )}
 
+                {sectionPermissions.vital_signs && (
+                    <HospitalizationVitalSignSection
+                        hospitalizationId={hospitalization.id}
+                        isDischarged={hospitalization.is_discharged}
+                    />
+                )}
+
                 <div className="space-y-4">
                     <UnderReviewSectionPanel
                         id="hospitalization-blood-bank"
@@ -362,23 +371,6 @@ export default function HospitalizationsShow({
                                 )}
                             </UnderReviewDataTableBody>
                         </UnderReviewDataTable>
-                    </UnderReviewSectionPanel>
-
-                    <UnderReviewSectionPanel
-                        id="hospitalization-vitals"
-                        icon="bx-pulse"
-                        title={t('global.vital_signs')}
-                        count={hospitalization.vital_signs.length}
-                    >
-                        <ClinicalDataTable
-                            headers={[t('global.type'), t('global.schedules'), t('global.date')]}
-                            rows={hospitalization.vital_signs.map((row) => [
-                                row.type_name,
-                                row.schedules_count,
-                                row.recorded_at,
-                            ])}
-                            emptyMessage={t('global.no_records_found')}
-                        />
                     </UnderReviewSectionPanel>
 
                     <UnderReviewSectionPanel

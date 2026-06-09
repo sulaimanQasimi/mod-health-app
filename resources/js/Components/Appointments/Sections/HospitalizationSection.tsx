@@ -10,6 +10,7 @@ import {
 } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { usePage } from '@inertiajs/react';
+import SearchableSelect from '../../ui/SearchableSelect';
 import {
     Table,
     TableBody,
@@ -66,9 +67,6 @@ interface HospitalizationSectionData {
         branch_id?: number;
     };
 }
-
-const SELECT_CLASS =
-    'block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
 
 export default function HospitalizationSection({ appointmentId }: HospitalizationSectionProps) {
     const { t } = useTranslation();
@@ -127,6 +125,25 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
     const filteredBeds = useMemo(
         () => beds.filter((bed) => String(bed.room_id) === form.room_id || String(bed.id) === form.bed_id),
         [beds, form.room_id, form.bed_id]
+    );
+
+    const roomOptions = useMemo(
+        () =>
+            rooms.map((room) => ({
+                value: String(room.id),
+                label: room.name,
+            })),
+        [rooms]
+    );
+
+    const bedOptions = useMemo(
+        () =>
+            filteredBeds.map((bed) => ({
+                value: String(bed.id),
+                label: `${bed.number}${bed.is_occupied ? ` (${t('global.occupied')})` : ''}`,
+                disabled: bed.is_occupied,
+            })),
+        [filteredBeds, t]
     );
 
     const handleCreate = async (event: FormEvent) => {
@@ -295,44 +312,28 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="hospitalization-room">{t('global.rooms')}</Label>
-                                <select
+                                <SearchableSelect
                                     id="hospitalization-room"
                                     required
-                                    className={SELECT_CLASS}
                                     value={form.room_id}
-                                    onChange={(e) =>
-                                        setForm((prev) => ({ ...prev, room_id: e.target.value, bed_id: '' }))
+                                    onChange={(value) =>
+                                        setForm((prev) => ({ ...prev, room_id: value, bed_id: '' }))
                                     }
-                                >
-                                    <option value="">{t('global.select')}</option>
-                                    {rooms.map((room) => (
-                                        <option key={room.id} value={room.id}>
-                                            {room.name}
-                                        </option>
-                                    ))}
-                                </select>
+                                    options={roomOptions}
+                                    placeholder={t('global.select')}
+                                />
                             </div>
                             <div>
                                 <Label htmlFor="hospitalization-bed">{t('global.beds')}</Label>
-                                <select
+                                <SearchableSelect
                                     id="hospitalization-bed"
                                     required
-                                    className={SELECT_CLASS}
                                     value={form.bed_id}
-                                    onChange={(e) => setForm((prev) => ({ ...prev, bed_id: e.target.value }))}
-                                >
-                                    <option value="">{t('global.select')}</option>
-                                    {filteredBeds.map((bed) => (
-                                        <option
-                                            key={bed.id}
-                                            value={bed.id}
-                                            disabled={bed.is_occupied}
-                                        >
-                                            {bed.number}
-                                            {bed.is_occupied ? ` (${t('global.occupied')})` : ''}
-                                        </option>
-                                    ))}
-                                </select>
+                                    onChange={(value) => setForm((prev) => ({ ...prev, bed_id: value }))}
+                                    options={bedOptions}
+                                    placeholder={t('global.select')}
+                                    disabled={!form.room_id}
+                                />
                             </div>
                         </div>
                     </ModalBody>

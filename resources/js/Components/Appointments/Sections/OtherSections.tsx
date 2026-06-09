@@ -118,47 +118,6 @@ export function RelatedVisitsSection({ appointmentId }: SectionProps) {
     );
 }
 
-export function HospitalizationSection({ appointmentId }: SectionProps) {
-    const { t } = useTranslation();
-    return (
-        <SimpleTableSection
-            appointmentId={appointmentId}
-            sectionPath="hospitalization"
-            accordionId={`hospitalization-${appointmentId}`}
-            icon="bx-bed"
-            iconClassName="text-emerald-500"
-            title={t('global.hospitalize')}
-            badgeColor="success"
-            emptyMessage={t('global.no_previous_hospitalizations')}
-            columns={[
-                { key: 'description', header: t('global.description') },
-                { key: 'room_name', header: t('global.room'), muted: true },
-                { key: 'bed_number', header: t('global.bed'), muted: true },
-                { key: 'created_at', header: t('global.date'), muted: true },
-            ]}
-            rowActions={(item, ctx) => (
-                <>
-                    {item.urls?.edit && (
-                        <SectionActionButton icon="bx-edit" title={t('global.edit')} href={item.urls.edit as string} colorClass="text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30" />
-                    )}
-                    {ctx.permissions.delete && item.id && (
-                        <SectionActionButton
-                            icon="bx-trash"
-                            title={t('global.delete')}
-                            onClick={() => {
-                                if (window.confirm(t('global.confirm_delete'))) {
-                                    ctx.destroy(`/${item.id}`);
-                                }
-                            }}
-                            colorClass="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
-                        />
-                    )}
-                </>
-            )}
-        />
-    );
-}
-
 export function HospitalizationVisitsSection({ appointmentId }: SectionProps) {
     const { t } = useTranslation();
     return (

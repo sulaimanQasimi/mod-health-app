@@ -152,7 +152,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('under-review', [AppointmentUnderReviewController::class, 'store'])->name('under-review.store');
             Route::delete('under-review/{underReview}', [AppointmentUnderReviewController::class, 'destroy'])->name('under-review.destroy');
             Route::get('related-visits', [RelatedVisitsController::class, 'index'])->name('related-visits.index');
+            Route::get('hospitalization/meta', [AppointmentHospitalizationController::class, 'meta'])->name('hospitalization.meta');
             Route::get('hospitalization', [AppointmentHospitalizationController::class, 'index'])->name('hospitalization.index');
+            Route::post('hospitalization', [AppointmentHospitalizationController::class, 'store'])->name('hospitalization.store');
             Route::delete('hospitalization/{hospitalization}', [AppointmentHospitalizationController::class, 'destroy'])->name('hospitalization.destroy');
             Route::get('hospitalization-visits', [HospitalizationVisitsController::class, 'index'])->name('hospitalization-visits.index');
             Route::get('anesthesia', [AppointmentAnesthesiaController::class, 'index'])->name('anesthesia.index');

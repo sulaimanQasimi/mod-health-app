@@ -58,6 +58,7 @@ interface ShowAppointmentProps {
     };
     sectionPermissions: {
         underReview: boolean;
+        hospitalization: boolean;
     };
     urls: {
         index: string;
@@ -180,6 +181,7 @@ export default function ShowAppointment({
                     <PrescriptionSection appointmentId={id} />
                     <AdviceSection appointmentId={id} />
                     <LabTestSection appointmentId={id} />
+                    {sectionPermissions.hospitalization && <HospitalizationSection appointmentId={id} />}
                     <PhysiotherapySection appointmentId={id} />
                     <DentistSection appointmentId={id} />
                     <NephrologySection appointmentId={id} />
@@ -189,7 +191,6 @@ export default function ShowAppointment({
                     <ReferDepartmentSection appointmentId={id} />
                     {sectionPermissions.underReview && <UnderReviewSection appointmentId={id} />}
                     <RelatedVisitsSection appointmentId={id} />
-                    <HospitalizationSection appointmentId={id} />
                     <HospitalizationVisitsSection appointmentId={id} />
                     <AnesthesiaSection appointmentId={id} />
                     <OperationSection appointmentId={id} />

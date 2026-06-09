@@ -12,13 +12,15 @@ import {
 import SearchableSelect from '../../ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
-import AppointmentSectionAccordion, {
+import {
     SectionEmptyState,
     SectionLoadingState,
+    SectionShell,
 } from './AppointmentSectionAccordion';
 
 interface DiagnosisSectionProps {
     appointmentId: number;
+    embedded?: boolean;
 }
 
 interface DiagnosisItem {
@@ -61,7 +63,7 @@ const EMPTY_FORM: DiagnosisFormState = {
     pain: '',
 };
 
-export default function DiagnosisSection({ appointmentId }: DiagnosisSectionProps) {
+export default function DiagnosisSection({ appointmentId, embedded = false }: DiagnosisSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
     const [loading, setLoading] = useState(true);
@@ -163,7 +165,8 @@ export default function DiagnosisSection({ appointmentId }: DiagnosisSectionProp
     };
 
     return (
-        <AppointmentSectionAccordion
+        <SectionShell
+            embedded={embedded}
             id={`diagnosis-${appointmentId}`}
             icon="bx-popsicle"
             iconClassName="text-amber-500"
@@ -284,6 +287,6 @@ export default function DiagnosisSection({ appointmentId }: DiagnosisSectionProp
                     </ModalFooter>
                 </form>
             </Modal>
-        </AppointmentSectionAccordion>
+        </SectionShell>
     );
 }

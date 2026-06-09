@@ -275,7 +275,7 @@ export default function ShowNephrologyRegistration({
                         )}
 
                         {activeTab === 'diagnose' && registration.appointment_id && (
-                            <DiagnosisSection appointmentId={registration.appointment_id} />
+                            <DiagnosisSection appointmentId={registration.appointment_id} embedded />
                         )}
 
                         {activeTab === 'lab' && registration.appointment_id && (

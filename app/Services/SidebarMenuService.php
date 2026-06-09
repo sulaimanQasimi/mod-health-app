@@ -205,16 +205,8 @@ class SidebarMenuService
                 $children[] = $this->item('hospitalizations-rooms', 'global.room_management', null, 'react.hospitalizations.room-management');
             }
             $children[] = $this->item('hospitalizations-report', 'global.reports', null, 'react.hospitalizations.report');
-            if ($user->can('show-vital-sign-types-menu')) {
-                $children[] = $this->item('vital-sign-types-hosp', 'global.vital_sign_types', null, 'react.vital-sign-types.index');
-            }
-            if ($user->can('show-vital-signs-menu')) {
-                $children[] = $this->item('vital-signs-hosp', 'global.vital_signs', null, 'react.vital-signs.index');
-            }
             $items[] = $this->group('hospitalizations', 'global.hospitalizations', 'bx-bed', [
                 'react.hospitalizations.*',
-                'react.vital-sign-types.*',
-                'react.vital-signs.*',
             ], $children);
         }
 
@@ -356,9 +348,6 @@ class SidebarMenuService
             if ($user->can('show-vital-sign-types-menu')) {
                 $children[] = $this->item('vital-sign-types-settings', 'global.vital_sign_types', null, 'react.vital-sign-types.index');
             }
-            if ($user->can('show-vital-signs-menu')) {
-                $children[] = $this->item('vital-signs-settings', 'global.vital_signs', null, 'react.vital-signs.index');
-            }
             if ($user->hasRole('super_admin')) {
                 $children[] = $this->item('backups-super', 'global.backups', null, 'react.backups.index');
             }
@@ -386,7 +375,6 @@ class SidebarMenuService
                 'react.branches.*',
                 'react.nurses.*',
                 'react.vital-sign-types.*',
-                'react.vital-signs.*',
             ], $children);
         }
 

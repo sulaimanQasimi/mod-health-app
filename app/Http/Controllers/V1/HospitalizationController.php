@@ -182,15 +182,6 @@ class HospitalizationController extends Controller
             'anesthesias:id,hospitalization_id,created_at',
         ]);
 
-        $diabetesCharts = DiabetesChart::query()
-            ->where('diabetes_chartable_type', Hospitalization::class)
-            ->where('diabetes_chartable_id', $hospitalization->id)
-            ->with(['nurse:id,first_name,last_name', 'medicine:id,name'])
-            ->orderByDesc('date')
-            ->orderByDesc('time')
-            ->limit(50)
-            ->get();
-
         $nurseNotes = NurseNote::query()
             ->where('morphable_type', Hospitalization::class)
             ->where('morphable_id', $hospitalization->id)
@@ -212,7 +203,7 @@ class HospitalizationController extends Controller
         $user = $request->user();
 
         return Inertia::render('Hospitalizations/Show', [
-            'hospitalization' => $this->transformDetail($hospitalization, $diabetesCharts, $nurseNotes, $medicationRecords),
+            'hospitalization' => $this->transformDetail($hospitalization, $nurseNotes, $medicationRecords),
             'permissions' => [
                 'edit' => $user->can('edit-hospitalizations'),
                 'discharge' => ! (bool) $hospitalization->is_discharged && $user->can('edit-hospitalizations'),
@@ -224,6 +215,7 @@ class HospitalizationController extends Controller
                 'physiotherapy' => $user->can('show-physiotherapy-procedures'),
                 'vital_signs' => $user->can('viewAny', VitalSign::class),
                 'visits' => $user->can('show-hospitalizations-menu'),
+                'diabetes_charts' => $user->can('viewAny', DiabetesChart::class),
             ],
             'urls' => [
                 'index' => route('react.hospitalizations.index'),
@@ -769,7 +761,6 @@ class HospitalizationController extends Controller
      */
     private function transformDetail(
         Hospitalization $hospitalization,
-        $diabetesCharts,
         $nurseNotes,
         $medicationRecords,
     ): array {
@@ -800,18 +791,6 @@ class HospitalizationController extends Controller
                 'id' => $item->id,
                 'group' => $item->group,
                 'created_at' => $this->formatDate($item->created_at),
-            ])->values()->all(),
-            'diabetes_charts' => $diabetesCharts->map(fn (DiabetesChart $chart) => [
-                'id' => $chart->id,
-                'date' => $chart->date,
-                'time' => $chart->time,
-                'rbs' => $chart->rbs,
-                'fbs' => $chart->fbs,
-                'insulin_dose' => $chart->insulin_dose,
-                'nurse_name' => $chart->nurse
-                    ? trim($chart->nurse->first_name.' '.$chart->nurse->last_name)
-                    : null,
-                'medicine_name' => $chart->medicine?->name,
             ])->values()->all(),
             'nurse_notes' => $nurseNotes->map(fn (NurseNote $note) => [
                 'id' => $note->id,

@@ -6,6 +6,7 @@ import PrescriptionSection from '../../Components/Appointments/Sections/Prescrip
 import PhysiotherapySection from '../../Components/Appointments/Sections/PhysiotherapySection';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import HospitalizationSummary from '../../Components/Hospitalizations/HospitalizationSummary';
+import HospitalizationDiabetesChartSection from '../../Components/Hospitalizations/HospitalizationDiabetesChartSection';
 import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
 import HospitalizationVitalSignSection from '../../Components/Hospitalizations/HospitalizationVitalSignSection';
 import {
@@ -36,6 +37,7 @@ interface ShowProps {
         physiotherapy: boolean;
         vital_signs: boolean;
         visits: boolean;
+        diabetes_charts: boolean;
     };
     urls: {
         index: string;
@@ -234,6 +236,13 @@ export default function HospitalizationsShow({
                     />
                 )}
 
+                {sectionPermissions.diabetes_charts && (
+                    <HospitalizationDiabetesChartSection
+                        hospitalizationId={hospitalization.id}
+                        isDischarged={hospitalization.is_discharged}
+                    />
+                )}
+
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 px-1 pt-1">
                         <i className="bx bx-clinic text-lg text-emerald-600 dark:text-emerald-400" />
@@ -251,33 +260,6 @@ export default function HospitalizationsShow({
                         <ClinicalDataTable
                             headers={[t('global.blood_group'), t('global.date')]}
                             rows={hospitalization.blood_banks.map((row) => [row.group, row.created_at])}
-                            emptyMessage={t('global.no_records_found')}
-                        />
-                    </UnderReviewSectionPanel>
-
-                    <UnderReviewSectionPanel
-                        id="hospitalization-diabetes"
-                        icon="bx-droplet"
-                        title={t('global.diabetes_charts')}
-                        count={hospitalization.diabetes_charts.length}
-                    >
-                        <ClinicalDataTable
-                            headers={[
-                                t('global.date'),
-                                t('global.time'),
-                                'RBS',
-                                'FBS',
-                                t('global.nurse'),
-                                t('global.medicine'),
-                            ]}
-                            rows={hospitalization.diabetes_charts.map((row) => [
-                                row.date,
-                                row.time,
-                                row.rbs,
-                                row.fbs,
-                                row.nurse_name,
-                                row.medicine_name,
-                            ])}
                             emptyMessage={t('global.no_records_found')}
                         />
                     </UnderReviewSectionPanel>

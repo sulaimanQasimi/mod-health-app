@@ -1,5 +1,4 @@
 import {
-    Badge,
     Button,
     Label,
     Modal,
@@ -28,6 +27,7 @@ import {
     SectionLoadingState,
     SectionShell,
 } from './AppointmentSectionAccordion';
+import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
 interface PrescriptionSectionProps {
@@ -407,11 +407,11 @@ export default function PrescriptionSection({
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{item.patient_name ?? '—'}</TableCell>
                                         <TableCell>
-                                            <Badge color={item.is_completed ? 'success' : 'failure'}>
+                                            <TableBadge color={item.is_completed ? 'success' : 'failure'}>
                                                 {item.is_completed
                                                     ? t('global.delivered')
                                                     : t('global.not_delivered')}
-                                            </Badge>
+                                            </TableBadge>
                                         </TableCell>
                                         <TableCell muted>{item.created_at ?? '—'}</TableCell>
                                         <TableCell align="center">
@@ -468,9 +468,9 @@ export default function PrescriptionSection({
                             formItems.map((item, index) => (
                                 <div
                                     key={`prescription-item-${index}`}
-                                    className="grid gap-3 rounded-xl border border-gray-100 p-4 dark:border-gray-700 md:grid-cols-6"
+                                    className="grid grid-cols-1 gap-3 rounded-xl border border-gray-100 p-4 sm:grid-cols-2 lg:grid-cols-12 dark:border-gray-700"
                                 >
-                                    <div className="md:col-span-2">
+                                    <div className="sm:col-span-2 lg:col-span-3">
                                         <Label>{t('global.medicine_name')}</Label>
                                         <SearchableSelect
                                             value={item.medicine_id}
@@ -483,7 +483,7 @@ export default function PrescriptionSection({
                                             required
                                         />
                                     </div>
-                                    <div className="md:col-span-2">
+                                    <div className="sm:col-span-2 lg:col-span-2">
                                         <Label>{t('global.usage_type')}</Label>
                                         <SearchableSelect
                                             value={item.usage_type_id}
@@ -496,7 +496,7 @@ export default function PrescriptionSection({
                                             required
                                         />
                                     </div>
-                                    <div>
+                                    <div className="lg:col-span-2">
                                         <Label>{t('global.dosage')}</Label>
                                         <TextInput
                                             type="number"
@@ -513,7 +513,7 @@ export default function PrescriptionSection({
                                             </p>
                                         )}
                                     </div>
-                                    <div>
+                                    <div className="lg:col-span-2">
                                         <Label>{t('global.frequency')}</Label>
                                         <TextInput
                                             required
@@ -523,7 +523,7 @@ export default function PrescriptionSection({
                                             }
                                         />
                                     </div>
-                                    <div>
+                                    <div className="lg:col-span-1">
                                         <Label>{t('global.amount')}</Label>
                                         <TextInput
                                             type="number"
@@ -535,7 +535,13 @@ export default function PrescriptionSection({
                                             }
                                         />
                                     </div>
-                                    <div className="flex items-end md:col-span-6">
+                                    <div className="flex flex-wrap items-end justify-end gap-2 sm:col-span-2 lg:col-span-2">
+                                        {index === formItems.length - 1 && (
+                                            <Button type="button" size="sm" color="blue" onClick={addFormItem}>
+                                                <i className="bx bx-plus me-2" />
+                                                {t('global.add_prescription_item')}
+                                            </Button>
+                                        )}
                                         {formItems.length > 1 && (
                                             <Button
                                                 type="button"
@@ -550,10 +556,6 @@ export default function PrescriptionSection({
                                 </div>
                             ))
                         )}
-                        <Button type="button" size="sm" color="blue" onClick={addFormItem}>
-                            <i className="bx bx-plus me-2" />
-                            {t('global.add_prescription_item')}
-                        </Button>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="gray" type="button" onClick={closeCreate} disabled={submitting}>
@@ -604,11 +606,11 @@ export default function PrescriptionSection({
                                             <TableCell>{item.frequency}</TableCell>
                                             <TableCell>{item.amount}</TableCell>
                                             <TableCell>
-                                                <Badge color={item.is_delivered ? 'success' : 'failure'}>
+                                                <TableBadge color={item.is_delivered ? 'success' : 'failure'}>
                                                     {item.is_delivered
                                                         ? t('global.delivered')
                                                         : t('global.not_delivered')}
-                                                </Badge>
+                                                </TableBadge>
                                             </TableCell>
                                             {data?.permissions.edit && (
                                                 <TableCell align="center">

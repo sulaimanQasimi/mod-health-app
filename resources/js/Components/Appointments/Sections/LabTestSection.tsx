@@ -1,5 +1,4 @@
 import {
-    Badge,
     Button,
     Label,
     Modal,
@@ -29,6 +28,7 @@ import {
     SectionLoadingState,
     SectionShell,
 } from './AppointmentSectionAccordion';
+import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
 interface LabTestSectionProps {
@@ -293,21 +293,21 @@ export default function LabTestSection({ appointmentId, embedded = false }: LabT
                                     <TableRow key={item.id}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>
-                                            <Badge color="info">{item.ref_no ?? '—'}</Badge>
+                                            <TableBadge color="info">{item.ref_no ?? '—'}</TableBadge>
                                         </TableCell>
                                         <TableCell>{item.patient_name ?? '—'}</TableCell>
                                         <TableCell>{item.test_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.category_name ?? '—'}</TableCell>
                                         <TableCell>{item.parameters_count}</TableCell>
                                         <TableCell>
-                                            <Badge color={STATUS_COLORS[item.status] ?? 'gray'}>
+                                            <TableBadge color={STATUS_COLORS[item.status] ?? 'gray'}>
                                                 {statusLabel(item.status)}
-                                            </Badge>
+                                            </TableBadge>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge color={PRIORITY_COLORS[item.priority] ?? 'gray'}>
+                                            <TableBadge color={PRIORITY_COLORS[item.priority] ?? 'gray'}>
                                                 {priorityLabel(item.priority)}
-                                            </Badge>
+                                            </TableBadge>
                                         </TableCell>
                                         <TableCell muted>{item.doctor_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.assigned_to_name ?? '—'}</TableCell>
@@ -417,9 +417,9 @@ export default function LabTestSection({ appointmentId, embedded = false }: LabT
                                 </div>
                                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
                                     <p className="text-xs text-gray-500">{t('global.status')}</p>
-                                    <Badge color={STATUS_COLORS[selectedRegistration.status] ?? 'gray'}>
+                                    <TableBadge color={STATUS_COLORS[selectedRegistration.status] ?? 'gray'}>
                                         {statusLabel(selectedRegistration.status)}
-                                    </Badge>
+                                    </TableBadge>
                                 </div>
                                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
                                     <p className="text-xs text-gray-500">{t('global.doctor_name')}</p>
@@ -458,11 +458,11 @@ export default function LabTestSection({ appointmentId, embedded = false }: LabT
                                                 <TableCell muted>{parameter.normal_range ?? '—'}</TableCell>
                                                 <TableCell>{parameter.result ?? '—'}</TableCell>
                                                 <TableCell>
-                                                    <Badge color={parameter.result ? 'success' : 'gray'}>
+                                                    <TableBadge color={parameter.result ? 'success' : 'gray'}>
                                                         {parameter.result
                                                             ? t('global.completed')
                                                             : t('global.pending')}
-                                                    </Badge>
+                                                    </TableBadge>
                                                 </TableCell>
                                             </TableRow>
                                         ))}

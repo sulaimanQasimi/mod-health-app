@@ -1,4 +1,5 @@
-import { Badge, Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea, TextInput } from 'flowbite-react';
+import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea, TextInput } from 'flowbite-react';
+import TableBadge from '../../ui/TableBadge';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import {
@@ -200,11 +201,11 @@ export default function DiagnosisSection({ appointmentId, embedded = false }: Di
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{item.description}</TableCell>
                                         <TableCell>
-                                            <Badge color={item.type === '0' ? 'warning' : 'info'}>
+                                            <TableBadge color={item.type === '0' ? 'warning' : 'info'}>
                                                 {item.type === '0'
                                                     ? t('global.primary_diagnoses')
                                                     : t('global.final_diagnoses')}
-                                            </Badge>
+                                            </TableBadge>
                                         </TableCell>
                                         <TableCell muted>{item.created_at ?? '—'}</TableCell>
                                         <TableCell align="center">

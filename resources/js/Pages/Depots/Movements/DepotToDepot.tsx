@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Alert, Button, Card, Label, Spinner, TextInput, Textarea } from 'flowbite-react';
 import { FormEvent, useMemo, useState } from 'react';
+import DepotItemKindField from '../../../Components/Depots/DepotItemKindField';
 import DepotNavTabs from '../../../Components/Depots/DepotNavTabs';
 import { useAvailableStock } from '../../../Components/Depots/useAvailableStock';
 import { DEPOT_PRIMARY_BTN_CLASS } from '../../../Components/Depots/depotUi';
@@ -54,14 +55,17 @@ export default function DepotToDepotMovement({
         }
     };
 
+    const switchItemKind = (kind: 'medicine' | 'tool') => {
+        setItemKind(kind);
+        setData((prev) => ({ ...prev, medicine_id: '', tool_id: '' }));
+    };
+
     const selectMedicine = (value: string) => {
-        setItemKind('medicine');
-        setData((prev) => ({ ...prev, medicine_id: value, tool_id: '' }));
+        setData((prev) => ({ ...prev, medicine_id: value }));
     };
 
     const selectTool = (value: string) => {
-        setItemKind('tool');
-        setData((prev) => ({ ...prev, tool_id: value, medicine_id: '' }));
+        setData((prev) => ({ ...prev, tool_id: value }));
     };
 
     return (
@@ -115,38 +119,17 @@ export default function DepotToDepotMovement({
                                     <p className="mt-1 text-sm text-red-600">{errors.to_depot_id}</p>
                                 )}
                             </div>
-                            <div>
-                                <Label>{t('global.medicine')}</Label>
-                                <SearchableSelect
-                                    value={data.medicine_id}
-                                    onChange={selectMedicine}
-                                    options={[
-                                        { value: '', label: t('global.select') },
-                                        ...formData.medicines.map((item) => ({
-                                            value: String(item.id),
-                                            label: item.name,
-                                        })),
-                                    ]}
-                                />
-                                {errors.medicine_id && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.medicine_id}</p>
-                                )}
-                            </div>
-                            <div>
-                                <Label>{t('global.depot.tool')}</Label>
-                                <SearchableSelect
-                                    value={data.tool_id}
-                                    onChange={selectTool}
-                                    options={[
-                                        { value: '', label: t('global.select') },
-                                        ...formData.tools.map((item) => ({
-                                            value: String(item.id),
-                                            label: item.name,
-                                        })),
-                                    ]}
-                                />
-                                {errors.tool_id && <p className="mt-1 text-sm text-red-600">{errors.tool_id}</p>}
-                            </div>
+                            <DepotItemKindField
+                                kind={itemKind}
+                                onKindChange={switchItemKind}
+                                medicineId={data.medicine_id}
+                                toolId={data.tool_id}
+                                onMedicineChange={selectMedicine}
+                                onToolChange={selectTool}
+                                formData={formData}
+                                medicineError={errors.medicine_id}
+                                toolError={errors.tool_id}
+                            />
                             <div>
                                 <Label>{t('global.quantity')} *</Label>
                                 <TextInput

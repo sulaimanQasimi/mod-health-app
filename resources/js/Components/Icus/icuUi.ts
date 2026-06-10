@@ -1,4 +1,4 @@
-import { IcuDetail } from '../../types/icu';
+import { IcuDetail, IcuListVariant } from '../../types/icu';
 
 export const ICU_CARD_CLASS =
     'overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900';
@@ -17,6 +17,40 @@ export const ICU_REJECT_BTN_CLASS =
 
 export const ICU_PRINT_BTN_CLASS =
     'inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:from-violet-600 hover:to-purple-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900';
+
+export const ICU_PANEL_ICON_CLASS = 'text-rose-600 dark:text-rose-400';
+
+export const ICU_PANEL_ICON_BG_CLASS = 'bg-rose-50 dark:bg-rose-950/30';
+
+export const ICU_APPLY_BTN_CLASS =
+    'inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-rose-500 to-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-rose-600 hover:to-red-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60';
+
+export const ICU_LIST_VARIANT_CONFIG: Record<
+    IcuListVariant,
+    { accent: string; icon: string; subtitleKey: string; statIcon: string; statGradient: string }
+> = {
+    new: {
+        accent: 'from-sky-600 to-blue-700',
+        icon: 'bx-plus-circle',
+        subtitleKey: 'global.new_icus',
+        statIcon: 'bx-time-five',
+        statGradient: 'from-sky-500 to-blue-600',
+    },
+    approved: {
+        accent: 'from-emerald-600 to-teal-700',
+        icon: 'bx-check-circle',
+        subtitleKey: 'global.approved_icus',
+        statIcon: 'bx-pulse',
+        statGradient: 'from-emerald-500 to-teal-600',
+    },
+    rejected: {
+        accent: 'from-rose-600 to-red-700',
+        icon: 'bx-x-circle',
+        subtitleKey: 'global.rejected_icus',
+        statIcon: 'bx-block',
+        statGradient: 'from-rose-500 to-red-600',
+    },
+};
 
 export function patientInitials(name?: string | null): string {
     if (!name?.trim()) {

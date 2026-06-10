@@ -36,8 +36,9 @@ export default function IcuDischargeTabs({ value, onChange, disabled }: IcuDisch
     const current = (value || 'in_icu') as IcuDischargeFilter;
 
     return (
-        <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        <div className="rounded-xl border border-rose-100 bg-rose-50/50 p-4 dark:border-rose-900/40 dark:bg-rose-950/20">
+            <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-rose-700 dark:text-rose-300">
+                <i className="bx bx-pie-chart-alt" />
                 {t('global.filter_by_discharge')}
             </p>
             <div className="flex flex-wrap gap-2">

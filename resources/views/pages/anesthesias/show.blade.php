@@ -311,6 +311,19 @@
                             </div>
                         </div>
 
+                        @if ($anesthesia->status == 'approved' && ! $anesthesia->is_referred_to_operation)
+                            <hr class="border border-label-primary">
+                            <div class="d-flex justify-content-center mb-2 p-2">
+                                <form action="{{ route('anesthesias.refer-to-operation', $anesthesia) }}" method="POST"
+                                    onsubmit="return confirm('{{ localize('global.refere_to_operation') }}?')">
+                                    @csrf
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="bx bx-cut me-1"></i>{{ localize('global.refere_to_operation') }}
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
+
                         @if ($anesthesia->status == 'new')
                             <hr class="border border-label-primary">
                             <div class="d-flex justify-content-center mb-2 p-2">
@@ -333,7 +346,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="createAnasthesiaModalLabel{{ $anesthesia->id }}">
-                                            {{ localize('global.refere_to_operation') }}</h5>
+                                            {{ localize('global.approve') }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>

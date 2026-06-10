@@ -111,6 +111,7 @@ class OperationController extends Controller
 
         $query = Anesthesia::with(['patient', 'operationType'])
             ->where('status', 'approved')
+            ->where('is_referred_to_operation', true)
             ->where('is_operation_approved', '0')
             ->where('is_reserved', '0');
 

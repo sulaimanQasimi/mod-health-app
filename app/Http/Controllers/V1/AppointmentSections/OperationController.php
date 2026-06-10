@@ -16,6 +16,7 @@ class OperationController extends Controller
         $this->authorizeAppointmentView($appointment);
 
         $items = $appointment->approved_anesthesias()
+            ->where('is_referred_to_operation', true)
             ->with(['operationType:id,name', 'patient:id,name'])
             ->latest()
             ->get()

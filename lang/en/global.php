@@ -4068,6 +4068,8 @@ return [
     'outcome_record_deleted_successfully.' => 'Outcome record was deleted successfully',
     'anesthesia_created_successfully.' => 'Anesthesia was created successfully',
     'anesthesia_updated_successfully.' => 'Anesthesia was updated successfully',
+    'anesthesia_referred_to_operation_successfully.' => 'Patient was referred to operation successfully',
+    'anesthesia_pending_review' => 'Pending anesthesia review',
     'anesthesia_deleted_successfully.' => 'Anesthesia was deleted successfully',
     'anesthesia_not_found.' => 'Anesthesia not found',
     'icu_created_successfully.' => 'ICU was created successfully',

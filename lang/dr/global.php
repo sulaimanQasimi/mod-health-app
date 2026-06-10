@@ -1684,6 +1684,8 @@ return [
     'please_select_items_to_export' => 'لطفا اقلامی که می خواهید خروجی دهید را انتخاب کنید',
     'anesthesia_created_successfully.' => 'انستیزی با موفقیت ایجاد شد',
     'anesthesia_updated_successfully.' => 'انستیزی با موفقیت ابدیت شد',
+    'anesthesia_referred_to_operation_successfully.' => 'مریض با موفقیت به عملیات معرفی شد',
+    'anesthesia_pending_review' => 'در انتظار تایید انستیزی',
     'anesthesia_deleted_successfully.' => 'انستیزی با موفقیت حذف شد',
     'anesthesia_not_found.' => 'انستیزی یافت نشد',
     'anesthesia_item_status_updated_successfully' => 'حالت قلم انستیزی با موفقیت ابدیت شد',

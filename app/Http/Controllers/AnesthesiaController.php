@@ -281,12 +281,27 @@ class AnesthesiaController extends Controller
        
         $anesthesia->update($data);
 
-        if ($data['status'] == 'approved') {
-            SendNewOperationNotification::dispatch($anesthesia->created_by, $anesthesia->id);
+        if (($data['status'] ?? null) === 'approved') {
+            return redirect()
+                ->route('anesthesias.show', $anesthesia)
+                ->with('success', localize('global.anesthesia_updated_successfully.'));
         }
 
-
         return redirect()->route('anesthesias.new')->with('success', localize('global.anesthesia_updated_successfully.'));
+    }
+
+    public function referToOperation(Request $request, Anesthesia $anesthesia)
+    {
+        abort_unless($anesthesia->status === 'approved', 422);
+        abort_if($anesthesia->is_referred_to_operation, 422);
+
+        $anesthesia->update(['is_referred_to_operation' => true]);
+
+        SendNewOperationNotification::dispatch($anesthesia->created_by, $anesthesia->id);
+
+        return redirect()
+            ->route('anesthesias.show', $anesthesia)
+            ->with('success', localize('global.anesthesia_referred_to_operation_successfully.'));
     }
 
     public function updateAnesthesia(Request $request, Anesthesia $anesthesia)

@@ -102,12 +102,16 @@ class AnesthesiaController extends Controller
                 'delete' => $user->can('delete-anesthesias'),
                 'approve' => $anesthesia->status === 'new' && $user->can('edit-anesthesias'),
                 'reject' => $anesthesia->status === 'new' && $user->can('edit-anesthesias'),
+                'referToOperation' => $anesthesia->status === 'approved'
+                    && ! $anesthesia->is_referred_to_operation
+                    && $user->can('edit-anesthesias'),
             ],
             'sectionPermissions' => [
                 'prescription' => $user->can('show-prescriptions-menu') && (bool) $anesthesia->appointment_id,
             ],
             'urls' => [
                 'update' => route('react.anesthesias.update', $anesthesia),
+                'referToOperation' => route('react.anesthesias.refer-to-operation', $anesthesia),
                 'destroy' => route('react.anesthesias.destroy', $anesthesia),
                 'edit' => route('react.anesthesias.edit', $anesthesia),
                 'back' => $this->backUrlForAnesthesiaStatus($anesthesia->status),
@@ -187,7 +191,9 @@ class AnesthesiaController extends Controller
         $anesthesia->update($data);
 
         if (($data['status'] ?? null) === 'approved') {
-            SendNewOperationNotification::dispatch($anesthesia->created_by, $anesthesia->id);
+            return redirect()
+                ->route('react.anesthesias.show', $anesthesia)
+                ->with('success', localize('global.anesthesia_updated_successfully.'));
         }
 
         $redirect = $this->backUrlForAnesthesiaStatus($anesthesia->fresh()->status);
@@ -195,6 +201,23 @@ class AnesthesiaController extends Controller
         return redirect()
             ->to($redirect)
             ->with('success', localize('global.anesthesia_updated_successfully.'));
+    }
+
+    public function referToOperation(Request $request, Anesthesia $anesthesia): RedirectResponse
+    {
+        $this->authorizeAnesthesiaMenu();
+        $this->ensureBranch($anesthesia);
+        abort_unless($request->user()->can('edit-anesthesias'), 403);
+        abort_unless($anesthesia->status === 'approved', 422);
+        abort_if($anesthesia->is_referred_to_operation, 422);
+
+        $anesthesia->update(['is_referred_to_operation' => true]);
+
+        SendNewOperationNotification::dispatch($anesthesia->created_by, $anesthesia->id);
+
+        return redirect()
+            ->route('react.anesthesias.show', $anesthesia)
+            ->with('success', localize('global.anesthesia_referred_to_operation_successfully.'));
     }
 
     public function updateDetails(Request $request, Anesthesia $anesthesia): RedirectResponse
@@ -462,6 +485,7 @@ class AnesthesiaController extends Controller
             'operation_anesthesia_log_id' => $anesthesia->operation_anesthesia_log_id,
             'operation_anesthesist_id' => $anesthesia->operation_anesthesist_id,
             'operation_assistants_names' => $assistantNames,
+            'is_referred_to_operation' => (bool) $anesthesia->is_referred_to_operation,
         ];
     }
 

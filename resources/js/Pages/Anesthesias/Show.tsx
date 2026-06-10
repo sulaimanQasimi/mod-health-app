@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from 'react';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import AnesthesiaSummary from '../../Components/Anesthesias/AnesthesiaSummary';
 import {
+    ANESTHESIA_APPLY_BTN_CLASS,
     ANESTHESIA_APPROVE_BTN_CLASS,
     ANESTHESIA_PENDING_PANEL_CLASS,
     ANESTHESIA_REJECT_BTN_CLASS,
@@ -30,6 +31,7 @@ interface ShowProps {
     };
     urls: AnesthesiaListUrls & {
         update: string;
+        referToOperation: string;
         destroy: string;
         edit: string;
         back: string;
@@ -58,6 +60,7 @@ export default function AnesthesiasShow({
 
     const patientLabel = anesthesiaPatientLabel(anesthesia);
     const showPendingActions = anesthesia.status === 'new' && (permissions.approve || permissions.reject);
+    const showReferToOperation = permissions.referToOperation;
     const hasAppointment = Boolean(anesthesia.appointment_id);
 
     const doctorOptions = useMemo(
@@ -125,6 +128,18 @@ export default function AnesthesiasShow({
         );
     };
 
+    const handleReferToOperation = () => {
+        if (!window.confirm(t('global.refere_to_operation'))) {
+            return;
+        }
+
+        setProcessing(true);
+        router.post(urls.referToOperation, {}, {
+            preserveScroll: true,
+            onFinish: () => setProcessing(false),
+        });
+    };
+
     return (
         <DashboardLayout>
             <Head title={patientLabel} />
@@ -157,6 +172,17 @@ export default function AnesthesiasShow({
                                     {t('global.reject')}
                                 </button>
                             )}
+                            {showReferToOperation && (
+                                <button
+                                    type="button"
+                                    className={ANESTHESIA_APPLY_BTN_CLASS}
+                                    onClick={handleReferToOperation}
+                                    disabled={processing}
+                                >
+                                    <i className="bx bx-cut text-lg" />
+                                    {t('global.refere_to_operation')}
+                                </button>
+                            )}
                         </SettingsPageActions>
                     }
                 />
@@ -172,10 +198,10 @@ export default function AnesthesiasShow({
                                 </div>
                                 <div className="min-w-0">
                                     <p className="text-base font-bold text-violet-950 dark:text-violet-50">
-                                        {t('global.refere_to_operation')}
+                                        {t('global.anesthesia_pending_review')}
                                     </p>
                                     <p className="mt-1 line-clamp-2 text-sm text-violet-800/80 dark:text-violet-200/80">
-                                        {t('global.operation_plan')}: {anesthesia.plan ?? '—'}
+                                        {t('global.anesthesia_details')}: {anesthesia.plan ?? '—'}
                                     </p>
                                 </div>
                             </div>
@@ -197,6 +223,35 @@ export default function AnesthesiasShow({
                     </div>
                 )}
 
+                {showReferToOperation && (
+                    <div className="overflow-hidden rounded-xl border border-amber-200/90 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 shadow-md dark:border-amber-900/50 dark:from-amber-950/50 dark:via-orange-950/30 dark:to-yellow-950/20">
+                        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex min-w-0 items-start gap-4">
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-md">
+                                    <i className="bx bx-cut text-2xl" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-base font-bold text-amber-950 dark:text-amber-50">
+                                        {t('global.refere_to_operation')}
+                                    </p>
+                                    <p className="mt-1 text-sm text-amber-800/80 dark:text-amber-200/80">
+                                        {t('global.approved')}: {anesthesia.operation_type_name ?? '—'}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                className={ANESTHESIA_APPLY_BTN_CLASS}
+                                onClick={handleReferToOperation}
+                                disabled={processing}
+                            >
+                                <i className="bx bx-send text-lg" />
+                                {t('global.refere_to_operation')}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {hasAppointment && sectionPermissions.prescription && anesthesia.appointment_id && (
                     <PrescriptionSection appointmentId={anesthesia.appointment_id} />
                 )}
@@ -208,7 +263,7 @@ export default function AnesthesiasShow({
                         <ModalHeader className="border-0 p-0 text-white">
                             <span className="flex items-center gap-2">
                                 <i className="bx bx-check-circle text-xl" />
-                                {t('global.refere_to_operation')}
+                                {t('global.approve')}
                             </span>
                         </ModalHeader>
                     </div>

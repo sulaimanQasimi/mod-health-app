@@ -559,6 +559,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/report', [AnesthesiaController::class, 'report'])->name('report');
         Route::get('/{anesthesia}/edit', [AnesthesiaController::class, 'edit'])->name('edit');
         Route::put('/{anesthesia}/details', [AnesthesiaController::class, 'updateDetails'])->name('update-details');
+        Route::post('/{anesthesia}/refer-to-operation', [AnesthesiaController::class, 'referToOperation'])->name('refer-to-operation');
         Route::get('/{anesthesia}', [AnesthesiaController::class, 'show'])->name('show');
         Route::put('/{anesthesia}', [AnesthesiaController::class, 'update'])->name('update');
         Route::delete('/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');

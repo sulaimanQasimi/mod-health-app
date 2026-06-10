@@ -113,6 +113,7 @@ export interface AnesthesiaDetail {
     operation_anesthesia_log_id: number | null;
     operation_anesthesist_id: number | null;
     operation_assistants_names?: string[];
+    is_referred_to_operation?: boolean;
 }
 
 export interface AnesthesiaEditForm {
@@ -144,4 +145,5 @@ export interface AnesthesiaShowPermissions {
     delete: boolean;
     approve: boolean;
     reject: boolean;
+    referToOperation: boolean;
 }

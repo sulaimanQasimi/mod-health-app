@@ -5,7 +5,6 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\ManagesDepotAccess;
 use App\Http\Controllers\V1\Concerns\ProvidesDepotFormData;
-use App\Http\Requests\Depot\StoreDepotToDepotRequest;
 use App\Http\Requests\Depot\StoreDepotToPharmacyRequest;
 use App\Models\Depot;
 use App\Models\DepotTransaction;
@@ -28,55 +27,14 @@ class DepotMovementController extends Controller
         private readonly DepotStockService $stockService,
     ) {}
 
-    public function depotToDepot(Request $request): Response
+    public function depotToDepot(Request $request): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.movement.depot_to_depot');
+        $this->authorizeDepotPermission('depot.request.create');
 
-        return Inertia::render('Depots/Movements/DepotToDepot', [
-            'defaults' => [
-                'from_depot_id' => (string) $request->query('from_depot_id', ''),
-                'to_depot_id' => (string) $request->query('to_depot_id', ''),
-            ],
-            'formData' => $this->depotFormOptions(),
-            'navUrls' => $this->depotNavUrls(),
-            'urls' => [
-                'store' => route('react.depots.movements.depot-to-depot.store'),
-                'transactions' => route('react.depots.transactions.index'),
-                'stockAvailable' => route('react.depots.stock.available'),
-            ],
+        return redirect()->route('react.depots.requests.create', [
+            'source_depot_id' => $request->query('from_depot_id'),
+            'requesting_depot_id' => $request->query('to_depot_id'),
         ]);
-    }
-
-    public function storeDepotToDepot(StoreDepotToDepotRequest $request): RedirectResponse
-    {
-        $this->authorizeDepotPermission('depot.movement.depot_to_depot');
-
-        $data = $request->validated();
-        $itemType = ! empty($data['medicine_id'])
-            ? DepotTransaction::ITEM_MEDICINE
-            : DepotTransaction::ITEM_TOOL;
-        $itemId = (int) ($data['medicine_id'] ?? $data['tool_id']);
-
-        DB::transaction(function () use ($data, $itemType, $itemId) {
-            Depot::whereKey($data['from_depot_id'])->lockForUpdate()->firstOrFail();
-            Depot::whereKey($data['to_depot_id'])->lockForUpdate()->firstOrFail();
-
-            $this->stockService->lockLedger((int) $data['from_depot_id'], $itemType, $itemId);
-            $this->stockService->ensureAvailable($itemType, (int) $data['from_depot_id'], $itemId, (int) $data['quantity']);
-
-            DepotTransaction::create([
-                ...$data,
-                'depot_id' => $data['from_depot_id'],
-                'type' => DepotTransaction::TYPE_DEPOT_TO_DEPOT,
-                'transaction_type' => 'transfer',
-                'status' => DepotTransaction::STATUS_COMPLETED,
-                'user_id' => Auth::id(),
-            ]);
-        });
-
-        return redirect()
-            ->route('react.depots.transactions.index')
-            ->with('success', localize('global.depot.depot_to_depot_completed_successfully.'));
     }
 
     public function depotToPharmacy(Request $request): Response

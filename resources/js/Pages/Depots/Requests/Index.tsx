@@ -236,7 +236,7 @@ export default function IndexDepotRequests({
                                     <TableHeader>{t('global.request_number')}</TableHeader>
                                     <TableHeader>{t('global.depot.requesting_depot')}</TableHeader>
                                     <TableHeader>{t('global.depot.source_depot')}</TableHeader>
-                                    <TableHeader>{t('global.item')}</TableHeader>
+                                    <TableHeader>{t('global.depot.transfer_lines')}</TableHeader>
                                     <TableHeader align="center">{t('global.quantity')}</TableHeader>
                                     <TableHeader>{t('global.status')}</TableHeader>
                                     <TableHeader>{t('global.created_at')}</TableHeader>
@@ -250,8 +250,13 @@ export default function IndexDepotRequests({
                                         <TableCell className="font-medium">{item.request_number ?? '—'}</TableCell>
                                         <TableCell muted>{item.requesting_depot_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.source_depot_name ?? '—'}</TableCell>
-                                        <TableCell muted>{item.item_name ?? '—'}</TableCell>
-                                        <TableCell align="center">{item.quantity.toLocaleString()}</TableCell>
+                                        <TableCell muted>
+                                            {item.items_summary}
+                                            <span className="ms-1 text-xs text-gray-400">
+                                                ({item.items_count})
+                                            </span>
+                                        </TableCell>
+                                        <TableCell align="center">{item.total_quantity.toLocaleString()}</TableCell>
                                         <TableCell>
                                             <Badge color={depotStatusBadgeColor(item.status)}>{item.status}</Badge>
                                         </TableCell>

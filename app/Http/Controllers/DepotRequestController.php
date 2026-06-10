@@ -25,9 +25,9 @@ class DepotRequestController extends Controller
         $query = DepotRequest::with([
             'requestingDepot',
             'sourceDepot',
-            'medicine',
-            'tool',
-            'unit',
+            'items.medicine',
+            'items.tool',
+            'items.unit',
             'requestedBy',
             'approvedBy',
             'fulfilledBy',
@@ -43,10 +43,10 @@ class DepotRequestController extends Controller
             $query->where('status', $request->status);
         }
         if ($request->filled('medicine_id')) {
-            $query->where('medicine_id', $request->medicine_id);
+            $query->whereHas('items', fn ($q) => $q->where('medicine_id', $request->medicine_id));
         }
         if ($request->filled('tool_id')) {
-            $query->where('tool_id', $request->tool_id);
+            $query->whereHas('items', fn ($q) => $q->where('tool_id', $request->tool_id));
         }
         if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);
@@ -58,8 +58,8 @@ class DepotRequestController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('request_number', 'like', "%{$search}%")
-                    ->orWhereHas('medicine', fn ($m) => $m->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('tool', fn ($t) => $t->where('name', 'like', "%{$search}%"));
+                    ->orWhereHas('items.medicine', fn ($m) => $m->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('items.tool', fn ($t) => $t->where('name', 'like', "%{$search}%"));
             });
         }
 
@@ -80,11 +80,19 @@ class DepotRequestController extends Controller
     {
         $data = $request->validated();
 
-        $depotRequest = DepotRequest::create([
-            ...$data,
-            'status' => DepotRequest::STATUS_DRAFT,
-            'requested_by' => Auth::id(),
-        ]);
+        $depotRequest = \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
+            $depotRequest = DepotRequest::create([
+                'requesting_depot_id' => $data['requesting_depot_id'],
+                'source_depot_id' => $data['source_depot_id'],
+                'notes' => $data['notes'] ?? null,
+                'status' => DepotRequest::STATUS_DRAFT,
+                'requested_by' => Auth::id(),
+            ]);
+
+            $this->requestService->syncItems($depotRequest, $data['items']);
+
+            return $depotRequest;
+        });
 
         if ($request->boolean('submit_now')) {
             $this->requestService->submit($depotRequest);
@@ -99,13 +107,14 @@ class DepotRequestController extends Controller
         $depotRequest->load([
             'requestingDepot',
             'sourceDepot',
-            'medicine',
-            'tool',
-            'unit',
+            'items.medicine',
+            'items.tool',
+            'items.unit',
+            'items.depotTransaction',
             'requestedBy',
             'approvedBy',
             'fulfilledBy',
-            'depotTransaction',
+            'transactions',
             'statusLogs.user',
         ]);
 

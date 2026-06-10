@@ -336,13 +336,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/requests/create', [DepotRequestController::class, 'create'])->name('requests.create');
         Route::post('/requests', [DepotRequestController::class, 'store'])->name('requests.store');
         Route::get('/requests/{depotRequest}', [DepotRequestController::class, 'show'])->name('requests.show');
+        Route::get('/requests/{depotRequest}/edit', [DepotRequestController::class, 'edit'])->name('requests.edit');
+        Route::put('/requests/{depotRequest}', [DepotRequestController::class, 'update'])->name('requests.update');
         Route::post('/requests/{depotRequest}/submit', [DepotRequestController::class, 'submit'])->name('requests.submit');
         Route::post('/requests/{depotRequest}/approve', [DepotRequestController::class, 'approve'])->name('requests.approve');
         Route::post('/requests/{depotRequest}/reject', [DepotRequestController::class, 'reject'])->name('requests.reject');
         Route::post('/requests/{depotRequest}/fulfill', [DepotRequestController::class, 'fulfill'])->name('requests.fulfill');
         Route::post('/requests/{depotRequest}/cancel', [DepotRequestController::class, 'cancel'])->name('requests.cancel');
         Route::get('/movements/depot-to-depot', [DepotMovementController::class, 'depotToDepot'])->name('movements.depot-to-depot');
-        Route::post('/movements/depot-to-depot', [DepotMovementController::class, 'storeDepotToDepot'])->name('movements.depot-to-depot.store');
         Route::get('/movements/depot-to-pharmacy', [DepotMovementController::class, 'depotToPharmacy'])->name('movements.depot-to-pharmacy');
         Route::post('/movements/depot-to-pharmacy', [DepotMovementController::class, 'storeDepotToPharmacy'])->name('movements.depot-to-pharmacy.store');
         Route::get('/reports', [DepotReportController::class, 'index'])->name('reports.index');

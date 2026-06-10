@@ -84,16 +84,52 @@ export interface DepotTransactionListItem {
     created_by_name: string | null;
 }
 
+export interface DepotRequestLineDetail {
+    id: number;
+    medicine_id: number | null;
+    tool_id: number | null;
+    unit_id: number | null;
+    item_type: string | null;
+    item_name: string;
+    quantity: number;
+    unit_name: string | null;
+    batch_number: string | null;
+    transaction_id: number | null;
+    transaction_number: string | null;
+}
+
 export interface DepotRequestListItem {
     id: number;
     request_number: string | null;
     status: string;
-    quantity: number;
-    item_name: string | null;
+    items_count: number;
+    total_quantity: number;
+    items_summary: string;
     requesting_depot_name: string | null;
     source_depot_name: string | null;
     requested_by_name: string | null;
     created_at: string | null;
+}
+
+export interface DepotRequestDetail extends DepotRequestListItem {
+    requesting_depot_id: number;
+    source_depot_id: number;
+    notes: string | null;
+    workflow_rank: number;
+    rejection_reason: string | null;
+    approved_by_name: string | null;
+    fulfilled_by_name: string | null;
+    approved_at: string | null;
+    fulfilled_at: string | null;
+    items: DepotRequestLineDetail[];
+    transfers: Array<{ id: number; transaction_number: string | null }>;
+    status_logs: Array<{
+        from_status: string;
+        to_status: string;
+        notes: string | null;
+        user_name: string | null;
+        created_at: string | null;
+    }>;
 }
 
 export type PaginatedDepots = PaginatedResult<DepotListItem>;

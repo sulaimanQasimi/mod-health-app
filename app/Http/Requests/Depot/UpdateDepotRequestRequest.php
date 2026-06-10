@@ -5,7 +5,7 @@ namespace App\Http\Requests\Depot;
 use App\Http\Requests\Depot\Concerns\ValidatesDepotRequestItems;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreDepotRequestRequest extends FormRequest
+class UpdateDepotRequestRequest extends FormRequest
 {
     use ValidatesDepotRequestItems;
 

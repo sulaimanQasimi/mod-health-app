@@ -1,63 +1,63 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Button, Card, Checkbox, Label, Spinner, Textarea } from 'flowbite-react';
+import { Button, Card, Label, Spinner, Textarea } from 'flowbite-react';
 import { FormEvent } from 'react';
 import DepotNavTabs from '../../../Components/Depots/DepotNavTabs';
-import DepotRequestItemsEditor, {
-    DepotRequestLineItem,
-    emptyRequestLine,
-} from '../../../Components/Depots/DepotRequestItemsEditor';
+import DepotRequestItemsEditor, { DepotRequestLineItem } from '../../../Components/Depots/DepotRequestItemsEditor';
 import { DEPOT_PRIMARY_BTN_CLASS } from '../../../Components/Depots/depotUi';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotFormData, DepotNavUrls } from '../../../types/depot';
+import { DepotFormData, DepotNavUrls, DepotRequestDetail } from '../../../types/depot';
 import { SETTINGS_WIDE_FORM_WIDTH } from '../../../utils/settingsUi';
 
-export default function CreateDepotRequest({
-    defaults,
+function toFormItems(items: DepotRequestDetail['items']): DepotRequestLineItem[] {
+    return items.map((item) => ({
+        medicine_id: item.medicine_id ? String(item.medicine_id) : '',
+        tool_id: item.tool_id ? String(item.tool_id) : '',
+        quantity: String(item.quantity),
+        unit_id: item.unit_id ? String(item.unit_id) : '',
+        batch_number: item.batch_number ?? '',
+    }));
+}
+
+export default function EditDepotRequest({
+    request: depotRequest,
     formData,
     navUrls,
     urls,
 }: {
-    defaults: { requesting_depot_id: string; source_depot_id: string };
+    request: DepotRequestDetail;
     formData: DepotFormData;
     navUrls: DepotNavUrls;
-    urls: { index: string; store: string; stockAvailable: string };
+    urls: { index: string; show: string; update: string; stockAvailable: string };
 }) {
     const { t } = useTranslation();
 
-    const { data, setData, post, processing, errors } = useForm<{
-        requesting_depot_id: string;
-        source_depot_id: string;
-        notes: string;
-        items: DepotRequestLineItem[];
-        submit_now: boolean;
-    }>({
-        requesting_depot_id: defaults.requesting_depot_id,
-        source_depot_id: defaults.source_depot_id,
-        notes: '',
-        items: [emptyRequestLine()],
-        submit_now: false,
+    const { data, setData, put, processing, errors } = useForm({
+        requesting_depot_id: String(depotRequest.requesting_depot_id ?? ''),
+        source_depot_id: String(depotRequest.source_depot_id ?? ''),
+        notes: depotRequest.notes ?? '',
+        items: toFormItems(depotRequest.items),
     });
 
     const submit = (event: FormEvent) => {
         event.preventDefault();
-        post(urls.store, { preserveScroll: true });
+        put(urls.update, { preserveScroll: true });
     };
 
     return (
         <DashboardLayout>
-            <Head title={t('global.depot.new_request')} />
+            <Head title={depotRequest.request_number ?? t('global.edit')} />
             <div className={`mx-auto ${SETTINGS_WIDE_FORM_WIDTH} space-y-4`}>
                 <DepotNavTabs active="requests" urls={navUrls} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader
-                        title={t('global.depot.new_request')}
-                        subtitle={t('global.depot.requests')}
-                        icon="bx-git-pull-request"
+                        title={depotRequest.request_number ?? `#${depotRequest.id}`}
+                        subtitle={t('global.edit')}
+                        icon="bx-edit"
                         accent="from-violet-500 to-purple-600"
-                        backHref={urls.index}
+                        backHref={urls.show}
                         backLabel={t('global.back')}
                     />
 
@@ -117,20 +117,12 @@ export default function CreateDepotRequest({
                             />
                         </div>
 
-                        <label className="flex items-center gap-2">
-                            <Checkbox
-                                checked={data.submit_now}
-                                onChange={(event) => setData('submit_now', event.target.checked)}
-                            />
-                            <span>{t('global.prosthetics_submit_for_approval')}</span>
-                        </label>
-
                         <div className="flex gap-2">
                             <button type="submit" className={DEPOT_PRIMARY_BTN_CLASS} disabled={processing}>
                                 {processing && <Spinner size="sm" className="me-2" />}
                                 {t('global.save')}
                             </button>
-                            <Button color="light" as={Link} href={urls.index}>
+                            <Button color="light" as={Link} href={urls.show}>
                                 {t('global.cancel')}
                             </Button>
                         </div>

@@ -32,7 +32,7 @@ trait ManagesDepotAccess
             'index' => route('react.depots.index'),
             'transactions' => route('react.depots.transactions.index'),
             'requests' => route('react.depots.requests.index'),
-            'depotToDepot' => route('react.depots.movements.depot-to-depot'),
+            'depotToDepot' => route('react.depots.requests.create'),
             'depotToPharmacy' => route('react.depots.movements.depot-to-pharmacy'),
             'reports' => route('react.depots.reports.index'),
             'tools' => route('react.tools.index'),

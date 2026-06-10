@@ -403,6 +403,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{hospitalization}/vital-signs/meta', [HospitalizationVitalSignController::class, 'meta'])->name('vital-signs.meta');
         Route::get('/{hospitalization}/vital-signs', [HospitalizationVitalSignController::class, 'index'])->name('vital-signs.index');
         Route::post('/{hospitalization}/vital-signs', [HospitalizationVitalSignController::class, 'store'])->name('vital-signs.store');
+        Route::get('/{hospitalization}/visits/meta', [HospitalizationVisitController::class, 'meta'])->name('visits.meta');
         Route::get('/{hospitalization}/visits', [HospitalizationVisitController::class, 'index'])->name('visits.index');
         Route::post('/{hospitalization}/visits', [HospitalizationVisitController::class, 'store'])->name('visits.store');
         Route::match(['put', 'post'], '/{hospitalization}/visits/{visit}', [HospitalizationVisitController::class, 'update'])->name('visits.update');

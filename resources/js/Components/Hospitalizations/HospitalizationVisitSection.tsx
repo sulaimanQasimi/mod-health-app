@@ -1,4 +1,5 @@
 import {
+    Badge,
     Button,
     Label,
     Modal,
@@ -7,6 +8,7 @@ import {
     ModalHeader,
     Spinner,
     Textarea,
+    TextInput,
 } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { usePage } from '@inertiajs/react';
@@ -32,11 +34,41 @@ interface HospitalizationVisitSectionProps {
     isDischarged?: boolean;
 }
 
+interface FoodTypeOption {
+    id: number;
+    name: string;
+}
+
 interface VisitListItem {
     id: number;
     description: string | null;
     doctor_name: string | null;
     visit_date: string | null;
+    bp: string | null;
+    pr: string | null;
+    rr: string | null;
+    t: string | null;
+    spo2: string | null;
+    pain: string | null;
+    antibiotic: string | null;
+    food_type_ids: number[];
+    food_type_names: string[];
+    intake: string | null;
+    output: string | null;
+}
+
+interface VisitFormState {
+    description: string;
+    bp: string;
+    pr: string;
+    rr: string;
+    t: string;
+    spo2: string;
+    pain: string;
+    antibiotic: string;
+    food_type_ids: number[];
+    intake: string;
+    output: string;
 }
 
 interface SectionData {
@@ -50,6 +82,167 @@ interface SectionData {
     };
 }
 
+const EMPTY_FORM: VisitFormState = {
+    description: '',
+    bp: '',
+    pr: '',
+    rr: '',
+    t: '',
+    spo2: '',
+    pain: '',
+    antibiotic: '',
+    food_type_ids: [],
+    intake: '',
+    output: '',
+};
+
+function VitalSignBadges({ visit, t }: { visit: VisitListItem; t: (key: string) => string }) {
+    const items = [
+        { key: 'bp', label: t('global.bp'), value: visit.bp },
+        { key: 'pr', label: t('global.pr'), value: visit.pr },
+        { key: 'rr', label: t('global.rr'), value: visit.rr },
+        { key: 't', label: t('global.t'), value: visit.t },
+        { key: 'spo2', label: t('global.spo2'), value: visit.spo2 },
+        { key: 'pain', label: t('global.pain'), value: visit.pain },
+    ].filter((item) => item.value);
+
+    if (items.length === 0) {
+        return <span className="text-gray-400">—</span>;
+    }
+
+    return (
+        <div className="flex flex-wrap gap-1">
+            {items.map((item) => (
+                <Badge key={item.key} color="info" className="whitespace-nowrap">
+                    {item.label}: {item.value}
+                </Badge>
+            ))}
+        </div>
+    );
+}
+
+function VisitFormFields({
+    form,
+    setForm,
+    foodTypes,
+    t,
+}: {
+    form: VisitFormState;
+    setForm: React.Dispatch<React.SetStateAction<VisitFormState>>;
+    foodTypes: FoodTypeOption[];
+    t: (key: string) => string;
+}) {
+    const toggleFoodType = (foodTypeId: number) => {
+        setForm((prev) => ({
+            ...prev,
+            food_type_ids: prev.food_type_ids.includes(foodTypeId)
+                ? prev.food_type_ids.filter((id) => id !== foodTypeId)
+                : [...prev.food_type_ids, foodTypeId],
+        }));
+    };
+
+    return (
+        <div className="space-y-5">
+            <div>
+                <Label htmlFor="visit-description">{t('global.description')}</Label>
+                <Textarea
+                    id="visit-description"
+                    rows={3}
+                    required
+                    className="mt-2"
+                    value={form.description}
+                    onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+                />
+            </div>
+
+            <div>
+                <p className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
+                    {t('global.vital_signs')}
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                    {(
+                        [
+                            ['bp', 'global.bp'],
+                            ['pr', 'global.pr'],
+                            ['rr', 'global.rr'],
+                            ['t', 'global.t'],
+                            ['spo2', 'global.spo2'],
+                            ['pain', 'global.pain'],
+                        ] as const
+                    ).map(([field, labelKey]) => (
+                        <div key={field}>
+                            <Label htmlFor={`visit-${field}`}>{t(labelKey)}</Label>
+                            <TextInput
+                                id={`visit-${field}`}
+                                className="mt-1"
+                                value={form[field]}
+                                onChange={(e) =>
+                                    setForm((prev) => ({ ...prev, [field]: e.target.value }))
+                                }
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                    <Label htmlFor="visit-antibiotic">{t('global.antibiotic')}</Label>
+                    <TextInput
+                        id="visit-antibiotic"
+                        className="mt-1"
+                        value={form.antibiotic}
+                        onChange={(e) => setForm((prev) => ({ ...prev, antibiotic: e.target.value }))}
+                    />
+                </div>
+                <div>
+                    <Label>{t('global.food_type')}</Label>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                        {foodTypes.map((foodType) => {
+                            const selected = form.food_type_ids.includes(foodType.id);
+                            return (
+                                <button
+                                    key={foodType.id}
+                                    type="button"
+                                    onClick={() => toggleFoodType(foodType.id)}
+                                    className={`rounded-full border px-3 py-1 text-sm font-medium transition-all ${
+                                        selected
+                                            ? 'border-cyan-500 bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-200'
+                                            : 'border-gray-200 text-gray-600 hover:border-cyan-300 dark:border-gray-600 dark:text-gray-300'
+                                    }`}
+                                >
+                                    {foodType.name}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                    <Label htmlFor="visit-intake">{t('global.intake')}</Label>
+                    <TextInput
+                        id="visit-intake"
+                        className="mt-1"
+                        value={form.intake}
+                        onChange={(e) => setForm((prev) => ({ ...prev, intake: e.target.value }))}
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="visit-output">{t('global.output')}</Label>
+                    <TextInput
+                        id="visit-output"
+                        className="mt-1"
+                        value={form.output}
+                        onChange={(e) => setForm((prev) => ({ ...prev, output: e.target.value }))}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function HospitalizationVisitSection({
     hospitalizationId,
     isDischarged = false,
@@ -61,10 +254,12 @@ export default function HospitalizationVisitSection({
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [data, setData] = useState<SectionData | null>(null);
-    const [createOpen, setCreateOpen] = useState(false);
-    const [description, setDescription] = useState('');
+    const [foodTypes, setFoodTypes] = useState<FoodTypeOption[]>([]);
+    const [formOpen, setFormOpen] = useState(false);
+    const [detailsOpen, setDetailsOpen] = useState(false);
     const [editingVisitId, setEditingVisitId] = useState<number | null>(null);
-    const [editingDescription, setEditingDescription] = useState('');
+    const [selectedVisit, setSelectedVisit] = useState<VisitListItem | null>(null);
+    const [form, setForm] = useState<VisitFormState>(EMPTY_FORM);
 
     const loadData = useCallback(async () => {
         setLoading(true);
@@ -81,11 +276,21 @@ export default function HospitalizationVisitSection({
         }
     }, [baseUrl]);
 
+    const loadMeta = useCallback(async () => {
+        const response = await fetch(`${baseUrl}/meta`, {
+            headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        });
+        const payload = await response.json();
+        if (payload.success) {
+            setFoodTypes(payload.data.food_types ?? []);
+        }
+    }, [baseUrl]);
+
     useEffect(() => {
         loadData();
     }, [loadData]);
 
-    const postJson = async (url: string, method: string, body?: Record<string, string>) => {
+    const postJson = async (url: string, method: string, body?: Record<string, unknown>) => {
         setSubmitting(true);
         try {
             const response = await fetch(url, {
@@ -109,29 +314,65 @@ export default function HospitalizationVisitSection({
         }
     };
 
-    const handleCreate = async (event: FormEvent) => {
-        event.preventDefault();
-        if (!description.trim()) {
-            return;
-        }
-        const ok = await postJson(baseUrl, 'POST', { description });
-        if (ok) {
-            setDescription('');
-            setCreateOpen(false);
-        }
+    const openCreate = async () => {
+        await loadMeta();
+        setEditingVisitId(null);
+        setForm(EMPTY_FORM);
+        setFormOpen(true);
     };
 
-    const handleUpdate = async (event: FormEvent) => {
+    const openEdit = async (visit: VisitListItem) => {
+        await loadMeta();
+        setEditingVisitId(visit.id);
+        setForm({
+            description: visit.description ?? '',
+            bp: visit.bp ?? '',
+            pr: visit.pr ?? '',
+            rr: visit.rr ?? '',
+            t: visit.t ?? '',
+            spo2: visit.spo2 ?? '',
+            pain: visit.pain ?? '',
+            antibiotic: visit.antibiotic ?? '',
+            food_type_ids: visit.food_type_ids ?? [],
+            intake: visit.intake ?? '',
+            output: visit.output ?? '',
+        });
+        setDetailsOpen(false);
+        setFormOpen(true);
+    };
+
+    const closeForm = () => {
+        setFormOpen(false);
+        setEditingVisitId(null);
+        setForm(EMPTY_FORM);
+    };
+
+    const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
-        if (!editingVisitId || !editingDescription.trim()) {
+        if (!form.description.trim()) {
             return;
         }
-        const ok = await postJson(`${baseUrl}/${editingVisitId}`, 'PUT', {
-            description: editingDescription,
-        });
+
+        const payload = {
+            description: form.description,
+            bp: form.bp || null,
+            pr: form.pr || null,
+            rr: form.rr || null,
+            t: form.t || null,
+            spo2: form.spo2 || null,
+            pain: form.pain || null,
+            antibiotic: form.antibiotic || null,
+            food_type_id: form.food_type_ids,
+            intake: form.intake || null,
+            output: form.output || null,
+        };
+
+        const ok = editingVisitId
+            ? await postJson(`${baseUrl}/${editingVisitId}`, 'PUT', payload)
+            : await postJson(baseUrl, 'POST', payload);
+
         if (ok) {
-            setEditingVisitId(null);
-            setEditingDescription('');
+            closeForm();
         }
     };
 
@@ -139,7 +380,11 @@ export default function HospitalizationVisitSection({
         if (!window.confirm(t('global.confirm_delete'))) {
             return;
         }
-        await postJson(`${baseUrl}/${visitId}`, 'DELETE');
+        const ok = await postJson(`${baseUrl}/${visitId}`, 'DELETE');
+        if (ok) {
+            setDetailsOpen(false);
+            setSelectedVisit(null);
+        }
     };
 
     if (!loading && data?.permissions.view === false) {
@@ -163,7 +408,7 @@ export default function HospitalizationVisitSection({
                     <>
                         {data?.permissions.create && !isDischarged && (
                             <div className="mb-4 flex justify-end">
-                                <Button size="sm" color="success" onClick={() => setCreateOpen(true)}>
+                                <Button size="sm" color="success" onClick={openCreate}>
                                     <i className="bx bx-plus me-2" />
                                     {t('global.add_visit')}
                                 </Button>
@@ -178,81 +423,71 @@ export default function HospitalizationVisitSection({
                                         <TableHeader>{t('global.description')}</TableHeader>
                                         <TableHeader>{t('global.by')}</TableHeader>
                                         <TableHeader>{t('global.date')}</TableHeader>
-                                        {(data?.permissions.edit || data?.permissions.delete) && (
-                                            <TableHeader align="right" className="w-24">
-                                                {t('global.actions')}
-                                            </TableHeader>
-                                        )}
+                                        <TableHeader>{t('global.vital_signs')}</TableHeader>
+                                        <TableHeader>{t('global.antibiotic')}</TableHeader>
+                                        <TableHeader>{t('global.food_type')}</TableHeader>
+                                        <TableHeader>{t('global.intake')}</TableHeader>
+                                        <TableHeader>{t('global.output')}</TableHeader>
+                                        <TableHeader align="right" className="w-28">
+                                            {t('global.actions')}
+                                        </TableHeader>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {data?.items.map((visit, index) => (
                                         <TableRow key={visit.id}>
                                             <TableCell className="text-gray-500">{index + 1}</TableCell>
-                                            <TableCell>
-                                                {editingVisitId === visit.id ? (
-                                                    <form
-                                                        onSubmit={handleUpdate}
-                                                        className="flex flex-col gap-2 sm:flex-row"
-                                                    >
-                                                        <Textarea
-                                                            rows={2}
-                                                            className="min-w-0 flex-1"
-                                                            value={editingDescription}
-                                                            onChange={(e) =>
-                                                                setEditingDescription(e.target.value)
-                                                            }
-                                                        />
-                                                        <div className="flex shrink-0 gap-1">
-                                                            <Button
-                                                                type="submit"
-                                                                size="xs"
-                                                                color="success"
-                                                                disabled={submitting}
-                                                            >
-                                                                {t('global.save')}
-                                                            </Button>
-                                                            <Button
-                                                                type="button"
-                                                                size="xs"
-                                                                color="light"
-                                                                onClick={() => setEditingVisitId(null)}
-                                                            >
-                                                                {t('global.cancel')}
-                                                            </Button>
-                                                        </div>
-                                                    </form>
-                                                ) : (
-                                                    visit.description ?? '—'
-                                                )}
-                                            </TableCell>
+                                            <TableCell>{visit.description ?? '—'}</TableCell>
                                             <TableCell muted>{visit.doctor_name ?? '—'}</TableCell>
                                             <TableCell muted dir="ltr">
                                                 {visit.visit_date ?? '—'}
                                             </TableCell>
-                                            {(data?.permissions.edit || data?.permissions.delete) && (
-                                                <TableCell align="right">
-                                                    {data?.permissions.edit && editingVisitId !== visit.id && (
-                                                        <SectionActionButton
-                                                            icon="bx-edit"
-                                                            title={t('global.edit')}
-                                                            onClick={() => {
-                                                                setEditingVisitId(visit.id);
-                                                                setEditingDescription(visit.description ?? '');
-                                                            }}
-                                                            colorClass="text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30"
-                                                        />
-                                                    )}
-                                                    {data?.permissions.delete && (
-                                                        <SectionActionButton
-                                                            icon="bx-trash"
-                                                            title={t('global.delete')}
-                                                            onClick={() => handleDelete(visit.id)}
-                                                            colorClass="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
-                                                        />
-                                                    )}
-                                                </TableCell>
-                                            )}
+                                            <TableCell>
+                                                <VitalSignBadges visit={visit} t={t} />
+                                            </TableCell>
+                                            <TableCell muted>{visit.antibiotic ?? '—'}</TableCell>
+                                            <TableCell>
+                                                {visit.food_type_names.length > 0 ? (
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {visit.food_type_names.map((name) => (
+                                                            <Badge key={name} color="purple">
+                                                                {name}
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    '—'
+                                                )}
+                                            </TableCell>
+                                            <TableCell muted>{visit.intake ?? '—'}</TableCell>
+                                            <TableCell muted>{visit.output ?? '—'}</TableCell>
+                                            <TableCell align="right">
+                                                <SectionActionButton
+                                                    icon="bx-expand"
+                                                    title={t('global.view')}
+                                                    onClick={() => {
+                                                        setSelectedVisit(visit);
+                                                        setDetailsOpen(true);
+                                                    }}
+                                                    colorClass="text-cyan-600 hover:bg-cyan-50 dark:text-cyan-400 dark:hover:bg-cyan-900/30"
+                                                />
+                                                {data?.permissions.edit && !isDischarged && (
+                                                    <SectionActionButton
+                                                        icon="bx-edit"
+                                                        title={t('global.edit')}
+                                                        onClick={() => openEdit(visit)}
+                                                        colorClass="text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30"
+                                                    />
+                                                )}
+                                                {data?.permissions.delete && !isDischarged && (
+                                                    <SectionActionButton
+                                                        icon="bx-trash"
+                                                        title={t('global.delete')}
+                                                        onClick={() => handleDelete(visit.id)}
+                                                        colorClass="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
+                                                    />
+                                                )}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -264,22 +499,16 @@ export default function HospitalizationVisitSection({
                 )}
             </SectionShell>
 
-            <Modal show={createOpen} onClose={() => setCreateOpen(false)}>
-                <form onSubmit={handleCreate}>
-                    <ModalHeader>{t('global.add_visit')}</ModalHeader>
+            <Modal show={formOpen} onClose={closeForm} size="4xl">
+                <form onSubmit={handleSubmit}>
+                    <ModalHeader>
+                        {editingVisitId ? t('global.edit') : t('global.add_visit')}
+                    </ModalHeader>
                     <ModalBody>
-                        <Label htmlFor="visit-description">{t('global.description')}</Label>
-                        <Textarea
-                            id="visit-description"
-                            rows={4}
-                            required
-                            className="mt-2"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
+                        <VisitFormFields form={form} setForm={setForm} foodTypes={foodTypes} t={t} />
                     </ModalBody>
                     <ModalFooter>
-                        <Button type="button" color="light" onClick={() => setCreateOpen(false)}>
+                        <Button type="button" color="light" onClick={closeForm}>
                             {t('global.cancel')}
                         </Button>
                         <Button type="submit" color="success" disabled={submitting}>
@@ -288,6 +517,97 @@ export default function HospitalizationVisitSection({
                         </Button>
                     </ModalFooter>
                 </form>
+            </Modal>
+
+            <Modal show={detailsOpen} onClose={() => setDetailsOpen(false)} size="4xl">
+                <ModalHeader>{t('global.visits')}</ModalHeader>
+                <ModalBody className="space-y-4">
+                    {selectedVisit && (
+                        <>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div>
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        {t('global.by')}
+                                    </p>
+                                    <p className="mt-1">{selectedVisit.doctor_name ?? '—'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        {t('global.date')}
+                                    </p>
+                                    <p className="mt-1" dir="ltr">
+                                        {selectedVisit.visit_date ?? '—'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p className="text-xs font-medium uppercase text-gray-500">
+                                    {t('global.description')}
+                                </p>
+                                <p className="mt-1 whitespace-pre-wrap">{selectedVisit.description ?? '—'}</p>
+                            </div>
+
+                            <div>
+                                <p className="mb-2 text-sm font-semibold">{t('global.vital_signs')}</p>
+                                <VitalSignBadges visit={selectedVisit} t={t} />
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div>
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        {t('global.antibiotic')}
+                                    </p>
+                                    <p className="mt-1">{selectedVisit.antibiotic ?? '—'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        {t('global.food_type')}
+                                    </p>
+                                    <div className="mt-1 flex flex-wrap gap-1">
+                                        {selectedVisit.food_type_names.length > 0
+                                            ? selectedVisit.food_type_names.map((name) => (
+                                                  <Badge key={name} color="purple">
+                                                      {name}
+                                                  </Badge>
+                                              ))
+                                            : '—'}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div>
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        {t('global.intake')}
+                                    </p>
+                                    <p className="mt-1">{selectedVisit.intake ?? '—'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        {t('global.output')}
+                                    </p>
+                                    <p className="mt-1">{selectedVisit.output ?? '—'}</p>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </ModalBody>
+                <ModalFooter>
+                    {selectedVisit && data?.permissions.edit && !isDischarged && (
+                        <Button color="warning" onClick={() => openEdit(selectedVisit)}>
+                            {t('global.edit')}
+                        </Button>
+                    )}
+                    {selectedVisit && data?.permissions.delete && !isDischarged && (
+                        <Button color="failure" onClick={() => handleDelete(selectedVisit.id)}>
+                            {t('global.delete')}
+                        </Button>
+                    )}
+                    <Button color="light" onClick={() => setDetailsOpen(false)}>
+                        {t('global.close')}
+                    </Button>
+                </ModalFooter>
             </Modal>
         </>
     );

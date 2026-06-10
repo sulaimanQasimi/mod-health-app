@@ -19,6 +19,7 @@ import {
     TableHeader,
     TableRow,
 } from '../ui/Table';
+import PersianDateInput from '../ui/PersianDateInput';
 import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
@@ -77,6 +78,9 @@ interface SectionData {
     urls?: { print?: string | null };
 }
 
+const MODAL_BODY_CLASS = 'max-h-[min(72vh,760px)] overflow-y-auto';
+const SCHEDULE_DATE_INPUT_ID = 'vital-schedule-date';
+
 const EMPTY_ROW = (): ScheduleRow => ({
     vital_sign_type_id: '',
     morning_time: '',
@@ -126,6 +130,7 @@ export default function HospitalizationVitalSignSection({
     const [data, setData] = useState<SectionData | null>(null);
     const [manageOpen, setManageOpen] = useState(false);
     const [detailsOpen, setDetailsOpen] = useState(false);
+    const [formError, setFormError] = useState<string | null>(null);
     const [selectedDay, setSelectedDay] = useState<VitalSignDayGroup | null>(null);
     const [vitalSignTypes, setVitalSignTypes] = useState<VitalSignTypeOption[]>([]);
     const [schedulesByDate, setSchedulesByDate] = useState<Record<string, MetaScheduleRow[]>>({});
@@ -189,7 +194,10 @@ export default function HospitalizationVitalSignSection({
     );
 
     const openManageForDate = async (date?: string) => {
+        setFormError(null);
+        setDetailsOpen(false);
         setManageOpen(true);
+
         const meta = await loadMeta();
         const targetDate = date ?? meta?.default_schedule_date ?? '';
         setScheduleDate(targetDate);
@@ -198,6 +206,7 @@ export default function HospitalizationVitalSignSection({
 
     const handleDateChange = (date: string) => {
         setScheduleDate(date);
+        setFormError(null);
         setRows(mapMetaRows(schedulesByDate[date]));
     };
 
@@ -205,6 +214,12 @@ export default function HospitalizationVitalSignSection({
         setManageOpen(false);
         setRows([EMPTY_ROW()]);
         setScheduleDate('');
+        setFormError(null);
+    };
+
+    const resolveScheduleDate = () => {
+        const input = document.getElementById(SCHEDULE_DATE_INPUT_ID) as HTMLInputElement | null;
+        return (input?.value ?? scheduleDate).trim();
     };
 
     const viewDay = (group: VitalSignDayGroup) => {
@@ -227,6 +242,7 @@ export default function HospitalizationVitalSignSection({
     const handleSave = async (event: FormEvent) => {
         event.preventDefault();
 
+        const resolvedDate = resolveScheduleDate();
         const scheduleRows = rows
             .filter((row) => row.vital_sign_type_id)
             .map((row) => ({
@@ -237,11 +253,20 @@ export default function HospitalizationVitalSignSection({
                 vital_sign_id: row.vital_sign_id ?? null,
             }));
 
-        if (!scheduleDate || scheduleRows.length === 0) {
+        if (!resolvedDate) {
+            setFormError(t('global.date') + ': ' + t('global.required'));
             return;
         }
 
+        if (scheduleRows.length === 0) {
+            setFormError(t('global.select') + ' ' + t('global.vital_sign_type'));
+            return;
+        }
+
+        setScheduleDate(resolvedDate);
+        setFormError(null);
         setSubmitting(true);
+
         try {
             const response = await fetch(baseUrl, {
                 method: 'POST',
@@ -252,12 +277,17 @@ export default function HospitalizationVitalSignSection({
                     'X-CSRF-TOKEN': csrfToken,
                 },
                 body: JSON.stringify({
-                    schedule_date: scheduleDate,
+                    schedule_date: resolvedDate,
                     schedule_rows: scheduleRows,
                 }),
             });
             const payload = await response.json();
             if (!response.ok || !payload.success) {
+                setFormError(
+                    typeof payload.message === 'string'
+                        ? payload.message
+                        : t('global.request_failed'),
+                );
                 return;
             }
             closeManage();
@@ -386,49 +416,75 @@ export default function HospitalizationVitalSignSection({
                 )}
             </SectionShell>
 
-            <Modal show={detailsOpen} onClose={() => setDetailsOpen(false)} size="4xl">
-                <ModalHeader>{t('global.vital_signs')}</ModalHeader>
-                <ModalBody>
+            <Modal show={detailsOpen} onClose={() => setDetailsOpen(false)} size="7xl">
+                <ModalHeader>{t('global.view_vital_signs')}</ModalHeader>
+                <ModalBody className={`space-y-4 ${MODAL_BODY_CLASS}`}>
                     {selectedDay && (
-                        <div className="space-y-4">
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                                <strong>{t('global.date')}:</strong>{' '}
-                                <span dir="ltr">{selectedDay.date}</span>
-                            </p>
-                            <Table>
-                                <TableHead>
-                                    <TableRow variant="header">
-                                        <TableHeader>{t('global.vital_sign_type')}</TableHeader>
-                                        <TableHeader>{t('global.morning_time')}</TableHeader>
-                                        <TableHeader>{t('global.evening_time')}</TableHeader>
-                                        <TableHeader>{t('global.nurse')}</TableHeader>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {selectedDay.items.map((item) => (
-                                        <TableRow key={item.schedule_id}>
-                                            <TableCell>
-                                                <Badge color="gray">{item.type_name ?? '—'}</Badge>
-                                            </TableCell>
-                                            <TableCell>{item.morning_time ?? '—'}</TableCell>
-                                            <TableCell>{item.evening_time ?? '—'}</TableCell>
-                                            <TableCell muted>{item.nurse_name ?? '—'}</TableCell>
+                        <>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="rounded-lg border border-gray-100 bg-gray-50/80 px-3 py-2 dark:border-gray-700 dark:bg-gray-800/50">
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        {t('global.date')}
+                                    </p>
+                                    <p className="mt-1 font-medium" dir="ltr">
+                                        {selectedDay.date}
+                                    </p>
+                                </div>
+                                <div className="rounded-lg border border-gray-100 bg-gray-50/80 px-3 py-2 dark:border-gray-700 dark:bg-gray-800/50">
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        {t('global.vital_sign_type')}
+                                    </p>
+                                    <p className="mt-1 font-medium">
+                                        {selectedDay.items.length} {t('global.records')}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="rounded-xl border border-gray-100 dark:border-gray-700">
+                                <Table embedded className="min-w-[720px]">
+                                    <TableHead>
+                                        <TableRow variant="header">
+                                            <TableHeader>{t('global.vital_sign_type')}</TableHeader>
+                                            <TableHeader>{t('global.morning_time')}</TableHeader>
+                                            <TableHeader>{t('global.evening_time')}</TableHeader>
+                                            <TableHeader>{t('global.nurse')}</TableHeader>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
+                                    </TableHead>
+                                    <TableBody>
+                                        {selectedDay.items.map((item) => (
+                                            <TableRow key={item.schedule_id}>
+                                                <TableCell>
+                                                    <Badge color="failure">{item.type_name ?? '—'}</Badge>
+                                                </TableCell>
+                                                <TableCell dir="ltr">{item.morning_time ?? '—'}</TableCell>
+                                                <TableCell dir="ltr">{item.evening_time ?? '—'}</TableCell>
+                                                <TableCell muted>{item.nurse_name ?? '—'}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </>
                     )}
                 </ModalBody>
                 <ModalFooter>
+                    {data?.urls?.print && (
+                        <Button
+                            color="blue"
+                            as="a"
+                            href={data.urls.print}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <i className="bx bx-printer me-2" />
+                            {t('global.print_vital_signs_chart')}
+                        </Button>
+                    )}
                     {data?.permissions.manage && !isDischarged && selectedDay && (
                         <Button
-                            color="failure"
+                            color="warning"
                             type="button"
-                            onClick={() => {
-                                setDetailsOpen(false);
-                                openManageForDate(selectedDay.date);
-                            }}
+                            onClick={() => openManageForDate(selectedDay.date)}
                         >
                             <i className="bx bx-edit me-2" />
                             {t('global.edit')}
@@ -440,88 +496,102 @@ export default function HospitalizationVitalSignSection({
                 </ModalFooter>
             </Modal>
 
-            <Modal show={manageOpen} onClose={closeManage} size="4xl">
+            <Modal show={manageOpen} onClose={closeManage} size="7xl">
+                <ModalHeader>{t('global.manage_vital_signs')}</ModalHeader>
                 <form onSubmit={handleSave}>
-                    <ModalHeader>{t('global.manage_vital_signs')}</ModalHeader>
-                    <ModalBody className="space-y-4">
+                    <ModalBody className={`space-y-4 ${MODAL_BODY_CLASS}`}>
                         {metaLoading ? (
                             <SectionLoadingState />
                         ) : (
                             <>
+                                {formError && (
+                                    <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
+                                        {formError}
+                                    </div>
+                                )}
+
                                 <div className="rounded-xl border border-gray-100 p-4 dark:border-gray-700">
-                                    <Label htmlFor="vital-schedule-date">{t('global.date')}</Label>
-                                    <TextInput
-                                        id="vital-schedule-date"
+                                    <Label htmlFor={SCHEDULE_DATE_INPUT_ID}>{t('global.date')}</Label>
+                                    <PersianDateInput
+                                        id={SCHEDULE_DATE_INPUT_ID}
                                         className="mt-2 max-w-xs"
-                                        dir="ltr"
-                                        placeholder="1403/01/01"
                                         required
                                         value={scheduleDate}
-                                        onChange={(e) => handleDateChange(e.target.value)}
+                                        onChange={handleDateChange}
                                     />
                                 </div>
 
-                                <Table>
-                                    <TableHead>
-                                        <TableRow variant="header">
-                                            <TableHeader>{t('global.vital_sign_type')}</TableHeader>
-                                            <TableHeader>{t('global.morning_time')}</TableHeader>
-                                            <TableHeader>{t('global.evening_time')}</TableHeader>
-                                            <TableHeader align="center">{t('global.actions')}</TableHeader>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {rows.map((row, index) => (
-                                            <TableRow key={`row-${index}`}>
-                                                <TableCell>
-                                                    <SearchableSelect
-                                                        value={row.vital_sign_type_id}
-                                                        onChange={(value) =>
-                                                            updateRow(index, { vital_sign_type_id: value })
-                                                        }
-                                                        options={typeOptions.map((option) => ({
-                                                            ...option,
-                                                            disabled:
-                                                                usedTypeIds.has(option.value) &&
-                                                                option.value !== row.vital_sign_type_id,
-                                                        }))}
-                                                        placeholder={t('global.select')}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <TextInput
-                                                        placeholder={t('global.enter_morning_time')}
-                                                        value={row.morning_time}
-                                                        onChange={(e) =>
-                                                            updateRow(index, { morning_time: e.target.value })
-                                                        }
-                                                    />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <TextInput
-                                                        placeholder={t('global.enter_evening_time')}
-                                                        value={row.evening_time}
-                                                        onChange={(e) =>
-                                                            updateRow(index, { evening_time: e.target.value })
-                                                        }
-                                                    />
-                                                </TableCell>
-                                                <TableCell align="center">
-                                                    {rows.length > 1 && (
-                                                        <SectionActionButton
-                                                            icon="bx-trash"
-                                                            title={t('global.delete')}
-                                                            onClick={() => removeRow(index)}
-                                                            colorClass="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
-                                                        />
-                                                    )}
-                                                </TableCell>
+                                <div className="rounded-xl border border-gray-100 dark:border-gray-700">
+                                    <Table embedded className="min-w-[760px]">
+                                        <TableHead>
+                                            <TableRow variant="header">
+                                                <TableHeader>{t('global.vital_sign_type')}</TableHeader>
+                                                <TableHeader>{t('global.morning_time')}</TableHeader>
+                                                <TableHeader>{t('global.evening_time')}</TableHeader>
+                                                <TableHeader align="center" className="w-20">
+                                                    {t('global.actions')}
+                                                </TableHeader>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHead>
+                                        <TableBody>
+                                            {rows.map((row, index) => (
+                                                <TableRow key={`row-${index}`}>
+                                                    <TableCell className="min-w-[220px]">
+                                                        <SearchableSelect
+                                                            value={row.vital_sign_type_id}
+                                                            onChange={(value) =>
+                                                                updateRow(index, { vital_sign_type_id: value })
+                                                            }
+                                                            options={typeOptions.map((option) => ({
+                                                                ...option,
+                                                                disabled:
+                                                                    usedTypeIds.has(option.value) &&
+                                                                    option.value !== row.vital_sign_type_id,
+                                                            }))}
+                                                            placeholder={t('global.select')}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <TextInput
+                                                            dir="ltr"
+                                                            placeholder={t('global.enter_morning_time')}
+                                                            value={row.morning_time}
+                                                            onChange={(e) =>
+                                                                updateRow(index, {
+                                                                    morning_time: e.target.value,
+                                                                })
+                                                            }
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <TextInput
+                                                            dir="ltr"
+                                                            placeholder={t('global.enter_evening_time')}
+                                                            value={row.evening_time}
+                                                            onChange={(e) =>
+                                                                updateRow(index, {
+                                                                    evening_time: e.target.value,
+                                                                })
+                                                            }
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        {rows.length > 1 && (
+                                                            <SectionActionButton
+                                                                icon="bx-trash"
+                                                                title={t('global.delete')}
+                                                                onClick={() => removeRow(index)}
+                                                                colorClass="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
+                                                            />
+                                                        )}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
 
-                                <Button type="button" size="sm" color="failure" onClick={addRow}>
+                                <Button type="button" size="sm" color="light" onClick={addRow}>
                                     <i className="bx bx-plus me-2" />
                                     {t('global.add')}
                                 </Button>

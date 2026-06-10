@@ -216,6 +216,20 @@ class IcuReferralService
                 ? ($data['recovered_bed_id'] ?? null)
                 : ($data['transfer_bed_id'] ?? null);
 
+            if ($dischargeStatus === 'recovered' && (! $newRoomId || ! $newBedId)) {
+                if ($readmitTarget?->bed_id) {
+                    Bed::query()->whereKey($readmitTarget->bed_id)->update(['is_occupied' => false]);
+                }
+
+                $readmitTarget?->update([
+                    'is_discharged' => 1,
+                    'room_id' => null,
+                    'bed_id' => null,
+                ]);
+
+                return;
+            }
+
             if ($readmitTarget && $newRoomId && $newBedId) {
                 if ($readmitTarget->bed_id) {
                     Bed::query()->whereKey($readmitTarget->bed_id)->update(['is_occupied' => false]);

@@ -1,10 +1,12 @@
 import { router } from '@inertiajs/react';
-import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner, Textarea, TextInput } from 'flowbite-react';
+import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 
 type DischargeStatus = '' | 'recovered' | 'died' | 'moved';
+
+const DISCHARGE_STATUS_OPTIONS = ['recovered', 'died', 'moved'] as const;
 
 interface DepartmentOption {
     id: number;
@@ -41,8 +43,6 @@ const EMPTY_FORM = {
     move_department_id: '',
     transfer_room_id: '',
     transfer_bed_id: '',
-    recovered_room_id: '',
-    recovered_bed_id: '',
     brief_history: '',
 };
 
@@ -97,7 +97,7 @@ export default function IcuDischargeModal({
         }
     }, [open, loadMeta]);
 
-    const roomId = form.discharge_status === 'recovered' ? form.recovered_room_id : form.transfer_room_id;
+    const roomId = form.transfer_room_id;
 
     const filteredRooms = useMemo(() => {
         if (form.discharge_status !== 'moved' || !form.move_department_id) {
@@ -129,13 +129,6 @@ export default function IcuDischargeModal({
             }
         }
 
-        if (form.discharge_status === 'recovered') {
-            if (!form.recovered_room_id || !form.recovered_bed_id) {
-                setError(t('global.select_room_first'));
-                return;
-            }
-        }
-
         const payload: Record<string, string> = {
             discharge_status: form.discharge_status,
             is_discharged: '1',
@@ -144,8 +137,6 @@ export default function IcuDischargeModal({
 
         if (form.discharge_status === 'recovered') {
             payload.discharge_remark = form.discharge_remark;
-            payload.recovered_room_id = form.recovered_room_id;
-            payload.recovered_bed_id = form.recovered_bed_id;
         }
 
         if (form.discharge_status === 'died') {
@@ -192,22 +183,22 @@ export default function IcuDischargeModal({
 
                             <div>
                                 <Label htmlFor="icu-discharge-status">{t('global.discharge_status')}</Label>
-                                <Select
+                                <SearchableSelect
                                     id="icu-discharge-status"
                                     required
                                     value={form.discharge_status}
-                                    onChange={(e) =>
+                                    onChange={(value) =>
                                         setForm((prev) => ({
                                             ...prev,
-                                            discharge_status: e.target.value as DischargeStatus,
+                                            discharge_status: value as DischargeStatus,
                                         }))
                                     }
-                                >
-                                    <option value="">{t('global.select')}</option>
-                                    <option value="recovered">{t('global.recovered')}</option>
-                                    <option value="died">{t('global.died')}</option>
-                                    <option value="moved">{t('global.moved')}</option>
-                                </Select>
+                                    options={DISCHARGE_STATUS_OPTIONS.map((status) => ({
+                                        value: status,
+                                        label: t(`global.${status}` as 'global.recovered'),
+                                    }))}
+                                    placeholder={t('global.select')}
+                                />
                             </div>
 
                             {form.discharge_status === 'recovered' && (
@@ -215,44 +206,6 @@ export default function IcuDischargeModal({
                                     <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
                                         {t('global.recovery_details')}
                                     </p>
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <div>
-                                            <Label>{t('global.room')}</Label>
-                                            <SearchableSelect
-                                                value={form.recovered_room_id}
-                                                onChange={(value) =>
-                                                    setForm((prev) => ({
-                                                        ...prev,
-                                                        recovered_room_id: value,
-                                                        recovered_bed_id: '',
-                                                    }))
-                                                }
-                                                options={[
-                                                    { value: '', label: t('global.select_room_first') },
-                                                    ...rooms.map((room) => ({
-                                                        value: String(room.id),
-                                                        label: room.name,
-                                                    })),
-                                                ]}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label>{t('global.bed')}</Label>
-                                            <SearchableSelect
-                                                value={form.recovered_bed_id}
-                                                onChange={(value) =>
-                                                    setForm((prev) => ({ ...prev, recovered_bed_id: value }))
-                                                }
-                                                options={[
-                                                    { value: '', label: t('global.select_room_first') },
-                                                    ...filteredBeds.map((bed) => ({
-                                                        value: String(bed.id),
-                                                        label: String(bed.number),
-                                                    })),
-                                                ]}
-                                            />
-                                        </div>
-                                    </div>
                                     <div>
                                         <Label htmlFor="icu-discharge-remark">{t('global.discharge_remark')}</Label>
                                         <Textarea

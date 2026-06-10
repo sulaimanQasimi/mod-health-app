@@ -100,4 +100,9 @@ class ICU extends Model
         return $this->hasMany(Hospitalization::class);
     }
 
+    public function placementHospitalization()
+    {
+        return $this->hasOne(Hospitalization::class, 'i_c_u_id')->latestOfMany();
+    }
+
 }

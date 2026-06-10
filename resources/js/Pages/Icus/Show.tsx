@@ -3,6 +3,7 @@ import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Tex
 import { FormEvent, useState } from 'react';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
+import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
 import IcuSummary from '../../Components/Icus/IcuSummary';
 import {
     ICU_APPROVE_BTN_CLASS,
@@ -19,7 +20,7 @@ import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 interface ShowProps {
     icu: IcuDetail;
     permissions: IcuShowPermissions;
-    sectionPermissions: { prescription: boolean; lab: boolean };
+    sectionPermissions: { prescription: boolean; lab: boolean; visits: boolean };
     urls: IcuListUrls & {
         update: string;
         destroy: string;
@@ -190,12 +191,19 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
                     </div>
                 )}
 
-                {hasAppointment && icu.status === 'approved' && (
+                {icu.status === 'approved' && (
                     <div className="space-y-4">
-                        {sectionPermissions.prescription && icu.appointment_id && (
+                        {sectionPermissions.visits && (
+                            <HospitalizationVisitSection
+                                icuId={icu.id}
+                                isDischarged={icu.is_discharged}
+                                iconClassName="text-rose-500"
+                            />
+                        )}
+                        {hasAppointment && sectionPermissions.prescription && icu.appointment_id && (
                             <PrescriptionSection appointmentId={icu.appointment_id} />
                         )}
-                        {sectionPermissions.lab && icu.appointment_id && (
+                        {hasAppointment && sectionPermissions.lab && icu.appointment_id && (
                             <LabTestSection appointmentId={icu.appointment_id} />
                         )}
                     </div>

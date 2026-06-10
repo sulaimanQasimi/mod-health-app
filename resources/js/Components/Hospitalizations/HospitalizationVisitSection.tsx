@@ -30,8 +30,10 @@ import {
 import { SectionActionButton } from '../Appointments/Sections/SimpleTableSection';
 
 interface HospitalizationVisitSectionProps {
-    hospitalizationId: number;
+    hospitalizationId?: number;
+    icuId?: number;
     isDischarged?: boolean;
+    iconClassName?: string;
 }
 
 interface FoodTypeOption {
@@ -269,11 +271,16 @@ function VisitFormFields({
 
 export default function HospitalizationVisitSection({
     hospitalizationId,
+    icuId,
     isDischarged = false,
+    iconClassName = 'text-cyan-500',
 }: HospitalizationVisitSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/hospitalizations/${hospitalizationId}/visits`;
+    const sectionKey = icuId ?? hospitalizationId;
+    const baseUrl = icuId
+        ? `/react/icus/${icuId}/visits`
+        : `/react/hospitalizations/${hospitalizationId}/visits`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -434,9 +441,9 @@ export default function HospitalizationVisitSection({
     return (
         <>
             <SectionShell
-                id={`hospitalization-visits-${hospitalizationId}`}
+                id={`${icuId ? 'icu' : 'hospitalization'}-visits-${sectionKey}`}
                 icon="bx-glasses"
-                iconClassName="text-cyan-500"
+                iconClassName={iconClassName}
                 title={t('global.visits')}
                 count={data?.count}
                 badgeColor="info"

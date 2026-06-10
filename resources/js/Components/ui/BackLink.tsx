@@ -28,8 +28,8 @@ export default function BackLink({ href, children, className }: BackLinkProps) {
                 className,
             )}
         >
-            <BackArrowIcon className="shrink-0 text-lg" />
             <span>{children}</span>
+            <BackArrowIcon className="shrink-0 text-lg" />
         </Button>
     );
 }

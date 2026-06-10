@@ -36,8 +36,8 @@ export default function SettingsPageHeader({
                 </div>
             </div>
             <div className="flex flex-wrap gap-2">
-                {backHref && <BackLink href={backHref}>{backLabel}</BackLink>}
                 {action}
+                {backHref && <BackLink href={backHref}>{backLabel}</BackLink>}
             </div>
         </div>
     );

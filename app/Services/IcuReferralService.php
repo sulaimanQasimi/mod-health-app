@@ -221,11 +221,22 @@ class IcuReferralService
                     Bed::query()->whereKey($readmitTarget->bed_id)->update(['is_occupied' => false]);
                 }
 
-                $readmitTarget?->update([
+                $hospitalizationDischarge = [
                     'is_discharged' => 1,
                     'room_id' => null,
                     'bed_id' => null,
-                ]);
+                    'discharge_status' => 'recovered',
+                    'discharge_remark' => $data['discharge_remark'] ?? null,
+                    'discharged_at' => $data['discharged_at'] ?? now(),
+                ];
+
+                $readmitTarget?->update($hospitalizationDischarge);
+
+                if ($placement && (! $readmitTarget || (int) $placement->id !== (int) $readmitTarget->id)) {
+                    $placement->update($hospitalizationDischarge);
+                }
+
+                $this->completeAppointmentsForIcu($icu, $readmitTarget, $placement);
 
                 return;
             }
@@ -253,6 +264,26 @@ class IcuReferralService
                 }
             }
         });
+    }
+
+    private function completeAppointmentsForIcu(
+        ICU $icu,
+        ?Hospitalization $readmitTarget,
+        ?Hospitalization $placement,
+    ): void {
+        $appointmentIds = array_values(array_unique(array_filter([
+            $icu->appointment_id,
+            $readmitTarget?->appointment_id,
+            $placement?->appointment_id,
+        ])));
+
+        if ($appointmentIds === []) {
+            return;
+        }
+
+        Appointment::query()
+            ->whereIn('id', $appointmentIds)
+            ->update(['is_completed' => 1]);
     }
 
     public static function formatListItem(ICU $icu): array

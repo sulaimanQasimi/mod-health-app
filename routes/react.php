@@ -124,6 +124,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/doctor', [AppointmentController::class, 'doctor'])->name('doctor');
         Route::get('/completed', [AppointmentController::class, 'completed'])->name('completed');
         Route::get('/report', [AppointmentController::class, 'report'])->name('report');
+        Route::put('/{appointment}/complete', [AppointmentController::class, 'complete'])->name('complete');
         Route::get('/{appointment}', [AppointmentController::class, 'show'])->name('show');
         Route::prefix('{appointment}')->name('sections.')->group(function () {
             Route::get('blood-bank', [AppointmentBloodBankController::class, 'index'])->name('blood-bank.index');

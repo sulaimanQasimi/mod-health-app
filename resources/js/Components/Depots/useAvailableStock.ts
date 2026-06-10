@@ -24,9 +24,16 @@ export function useAvailableStock(
             });
             const response = await fetch(`${stockUrl}?${params.toString()}`, {
                 headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
             });
+            if (!response.ok) {
+                setAvailable(null);
+                return;
+            }
             const payload = await response.json();
             if (payload.success) {
+                setAvailable(payload.available_stock ?? null);
+            } else {
                 setAvailable(payload.available_stock ?? null);
             }
         } finally {

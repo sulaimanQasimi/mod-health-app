@@ -93,4 +93,15 @@ trait ManagesDepotAccess
 
         return false;
     }
+
+    protected function authorizeDepotStockView(): void
+    {
+        abort_unless($this->userCanAny([
+            'depot.transaction.view',
+            'depot.transaction.create',
+            'depot.movement.depot_to_pharmacy',
+            'depot.request.create',
+            'depot.request.fulfill',
+        ]), 403);
+    }
 }

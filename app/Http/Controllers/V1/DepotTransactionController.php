@@ -187,7 +187,7 @@ class DepotTransactionController extends Controller
 
     public function availableStock(Request $request): JsonResponse
     {
-        $this->authorizeDepotPermission('depot.transaction.view');
+        $this->authorizeDepotStockView();
 
         $request->validate([
             'depot_id' => ['required', 'exists:depots,id'],

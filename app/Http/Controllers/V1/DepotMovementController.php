@@ -66,18 +66,27 @@ class DepotMovementController extends Controller
             Depot::whereKey($data['from_depot_id'])->lockForUpdate()->firstOrFail();
 
             $transactionDate = $data['transaction_date'] ?? now()->toDateString();
+            $fromDepotId = (int) $data['from_depot_id'];
+
+            $aggregatedQuantities = [];
+            foreach ($data['items'] as $item) {
+                $medicineId = (int) $item['medicine_id'];
+                $aggregatedQuantities[$medicineId] = ($aggregatedQuantities[$medicineId] ?? 0) + (int) $item['quantity'];
+            }
+
+            foreach ($aggregatedQuantities as $medicineId => $totalQuantity) {
+                $this->stockService->lockLedger($fromDepotId, DepotTransaction::ITEM_MEDICINE, $medicineId);
+                $this->stockService->ensureAvailable(
+                    DepotTransaction::ITEM_MEDICINE,
+                    $fromDepotId,
+                    $medicineId,
+                    $totalQuantity
+                );
+            }
 
             foreach ($data['items'] as $item) {
                 $medicineId = (int) $item['medicine_id'];
                 $quantity = (int) $item['quantity'];
-
-                $this->stockService->lockLedger((int) $data['from_depot_id'], DepotTransaction::ITEM_MEDICINE, $medicineId);
-                $this->stockService->ensureAvailable(
-                    DepotTransaction::ITEM_MEDICINE,
-                    (int) $data['from_depot_id'],
-                    $medicineId,
-                    $quantity
-                );
 
                 $transactionNumber = DepotTransaction::nextTransactionNumber();
 

@@ -205,7 +205,10 @@ class DepotController extends Controller
                 'stock' => route('react.depots.stock', $depot),
                 'transactionCreate' => route('react.depots.transactions.create', ['depot_id' => $depot->id]),
                 'requestCreate' => route('react.depots.requests.create', ['requesting_depot_id' => $depot->id]),
-                'depotToPharmacy' => route('react.depots.movements.depot-to-pharmacy', ['from_depot_id' => $depot->id]),
+                'depotToPharmacy' => route('react.depots.movements.depot-to-pharmacy', array_filter([
+                    'from_depot_id' => $depot->id,
+                    'pharmacy_id' => $depot->pharmacy_id,
+                ])),
             ],
         ]);
     }

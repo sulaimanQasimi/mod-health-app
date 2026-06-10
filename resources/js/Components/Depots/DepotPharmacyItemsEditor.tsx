@@ -1,4 +1,5 @@
 import { Alert, Button, Spinner, TextInput } from 'flowbite-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DepotFormData } from '../../types/depot';
 import SearchableSelect from '../ui/SearchableSelect';
@@ -25,19 +26,33 @@ interface LineStockProps {
     stockUrl: string;
     depotId: string;
     line: DepotPharmacyLineItem;
+    duplicateTotal: number;
     onUseAvailable: (quantity: string) => void;
+    onExceedsChange: (exceeds: boolean) => void;
 }
 
-function LineStockHint({ stockUrl, depotId, line, onUseAvailable }: LineStockProps) {
+function LineStockHint({
+    stockUrl,
+    depotId,
+    line,
+    duplicateTotal,
+    onUseAvailable,
+    onExceedsChange,
+}: LineStockProps) {
     const { t } = useTranslation();
     const { available, loading } = useAvailableStock(stockUrl, depotId, 'medicine', line.medicine_id);
+
+    const lineQuantity = line.quantity !== '' ? Number(line.quantity) : 0;
+    const exceedsStock =
+        available !== null && lineQuantity > 0 && duplicateTotal > available;
+
+    useEffect(() => {
+        onExceedsChange(exceedsStock);
+    }, [exceedsStock, onExceedsChange]);
 
     if (!depotId || !line.medicine_id) {
         return null;
     }
-
-    const exceedsStock =
-        available !== null && line.quantity !== '' && Number(line.quantity) > available;
 
     return (
         <div className="mt-1.5 space-y-1">
@@ -67,6 +82,11 @@ function LineStockHint({ stockUrl, depotId, line, onUseAvailable }: LineStockPro
             {exceedsStock && (
                 <p className="text-xs text-amber-600 dark:text-amber-400">
                     {t('global.depot.quantity_exceeds_stock')}
+                    {duplicateTotal > lineQuantity && (
+                        <span className="ms-1">
+                            ({t('global.quantity')}: {duplicateTotal.toLocaleString()})
+                        </span>
+                    )}
                 </p>
             )}
         </div>
@@ -81,6 +101,7 @@ interface DepotPharmacyItemsEditorProps {
     stockUrl?: string;
     errors?: Record<string, string>;
     disabled?: boolean;
+    onStockIssuesChange?: (hasIssues: boolean) => void;
 }
 
 export default function DepotPharmacyItemsEditor({
@@ -91,8 +112,50 @@ export default function DepotPharmacyItemsEditor({
     stockUrl,
     errors = {},
     disabled = false,
+    onStockIssuesChange,
 }: DepotPharmacyItemsEditorProps) {
     const { t } = useTranslation();
+    const [lineExceeds, setLineExceeds] = useState<Record<number, boolean>>({});
+
+    const medicineTotals = useMemo(() => {
+        const totals = new Map<string, number>();
+        items.forEach((line) => {
+            if (!line.medicine_id || !line.quantity) {
+                return;
+            }
+            const qty = Number(line.quantity);
+            if (Number.isNaN(qty) || qty <= 0) {
+                return;
+            }
+            totals.set(line.medicine_id, (totals.get(line.medicine_id) ?? 0) + qty);
+        });
+        return totals;
+    }, [items]);
+
+    const duplicateMedicineIds = useMemo(() => {
+        const counts = new Map<string, number>();
+        items.forEach((line) => {
+            if (line.medicine_id) {
+                counts.set(line.medicine_id, (counts.get(line.medicine_id) ?? 0) + 1);
+            }
+        });
+        return new Set(
+            [...counts.entries()].filter(([, count]) => count > 1).map(([id]) => id),
+        );
+    }, [items]);
+
+    useEffect(() => {
+        onStockIssuesChange?.(Object.values(lineExceeds).some(Boolean));
+    }, [lineExceeds, onStockIssuesChange]);
+
+    const updateLineExceeds = (index: number, exceeds: boolean) => {
+        setLineExceeds((prev) => {
+            if (prev[index] === exceeds) {
+                return prev;
+            }
+            return { ...prev, [index]: exceeds };
+        });
+    };
 
     const updateLine = (index: number, patch: Partial<DepotPharmacyLineItem>) => {
         onChange(items.map((line, i) => (i === index ? { ...line, ...patch } : line)));
@@ -106,6 +169,11 @@ export default function DepotPharmacyItemsEditor({
         if (items.length <= 1) {
             return;
         }
+        setLineExceeds((prev) => {
+            const next = { ...prev };
+            delete next[index];
+            return next;
+        });
         onChange(items.filter((_, i) => i !== index));
     };
 
@@ -130,9 +198,21 @@ export default function DepotPharmacyItemsEditor({
                 </Alert>
             )}
 
+            {duplicateMedicineIds.size > 0 && (
+                <Alert color="warning">
+                    <span className="text-sm">{t('global.depot.duplicate_medicine_lines')}</span>
+                </Alert>
+            )}
+
             {errors.items && (
                 <Alert color="failure">
                     <span className="text-sm">{errors.items}</span>
+                </Alert>
+            )}
+
+            {formData.medicines.length === 0 && (
+                <Alert color="warning">
+                    <span className="text-sm">{t('global.no_data_found')}</span>
                 </Alert>
             )}
 
@@ -156,7 +236,10 @@ export default function DepotPharmacyItemsEditor({
                     {items.map((line, index) => {
                         const medicineError = errors[`items.${index}.medicine_id`];
                         const quantityError = errors[`items.${index}.quantity`];
-
+                        const expiryError = errors[`items.${index}.expiry_date`];
+                        const duplicateTotal = line.medicine_id
+                            ? medicineTotals.get(line.medicine_id) ?? 0
+                            : 0;
                         return (
                             <TableRow key={index}>
                                 <TableCell muted className="align-top">
@@ -183,7 +266,9 @@ export default function DepotPharmacyItemsEditor({
                                             stockUrl={stockUrl}
                                             depotId={depotId}
                                             line={line}
+                                            duplicateTotal={duplicateTotal}
                                             onUseAvailable={(quantity) => updateLine(index, { quantity })}
+                                            onExceedsChange={(exceeds) => updateLineExceeds(index, exceeds)}
                                         />
                                     )}
                                 </TableCell>
@@ -234,6 +319,9 @@ export default function DepotPharmacyItemsEditor({
                                             updateLine(index, { expiry_date: event.target.value })
                                         }
                                     />
+                                    {expiryError && (
+                                        <p className="mt-1 text-xs text-red-600">{expiryError}</p>
+                                    )}
                                 </TableCell>
                                 <TableCell align="center" className="align-top">
                                     <Button

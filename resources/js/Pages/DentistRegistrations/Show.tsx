@@ -281,7 +281,7 @@ export default function ShowDentistRegistration({
                 />
 
                 <Card className="shadow-sm">
-                    <h2 className="mb-4 text-center text-sm font-semibold text-gray-900 dark:text-white">
+                    <h2 className="mb-4 text-center text-sm text-gray-900 dark:text-white">
                         {t('global.registration_information')}
                     </h2>
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -290,13 +290,13 @@ export default function ShowDentistRegistration({
                                 key={String(label)}
                                 className="rounded-xl border border-gray-100 bg-gray-50 p-4 text-center dark:border-gray-700 dark:bg-gray-800/40"
                             >
-                                <p className="text-xs text-gray-500">{label}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
                                 {label === t('global.status') ? (
                                     <div className="mt-2">
                                         <DentistRegistrationStatusBadge status={registration.status} />
                                     </div>
                                 ) : (
-                                    <p className="mt-2 font-semibold text-gray-900 dark:text-white">{value ?? '—'}</p>
+                                    <p className="mt-2 text-gray-900 dark:text-white">{value ?? '—'}</p>
                                 )}
                             </div>
                         ))}
@@ -304,7 +304,8 @@ export default function ShowDentistRegistration({
 
                     {registration.notes && (
                         <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                            <strong>{t('global.notes')}:</strong> {registration.notes}
+                            <span className="text-gray-600 dark:text-gray-300">{t('global.notes')}:</span>{' '}
+                            {registration.notes}
                         </div>
                     )}
 
@@ -336,7 +337,7 @@ export default function ShowDentistRegistration({
                                 key={tab.key}
                                 type="button"
                                 onClick={() => setActiveTab(tab.key)}
-                                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
+                                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition ${
                                     activeTab === tab.key
                                         ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                                         : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50'
@@ -345,7 +346,7 @@ export default function ShowDentistRegistration({
                                 <i className={`bx ${tab.icon}`} />
                                 {tab.label}
                                 {tab.count != null && tab.count > 0 && (
-                                    <Badge color="info" size="xs">
+                                    <Badge color="info" size="xs" className="font-normal">
                                         {tab.count}
                                     </Badge>
                                 )}
@@ -433,7 +434,7 @@ export default function ShowDentistRegistration({
                                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                                         {registration.xrays.map((item) => (
                                             <Card key={item.id} className="shadow-sm">
-                                                <h3 className="font-semibold">{item.xray_type}</h3>
+                                                <h3 className="text-gray-900 dark:text-white">{item.xray_type}</h3>
                                                 <p className="text-sm text-gray-500" dir="ltr">
                                                     {item.xray_date ?? '—'}
                                                 </p>
@@ -492,10 +493,12 @@ export default function ShowDentistRegistration({
                                                 <div className="flex items-start justify-between gap-3">
                                                     <div>
                                                         <div className="mb-2 flex flex-wrap items-center gap-2">
-                                                            <span className="font-semibold" dir="ltr">
+                                                            <span className="text-gray-900 dark:text-white" dir="ltr">
                                                                 {item.note_date ?? '—'}
                                                             </span>
-                                                            <Badge color="gray">{item.note_type}</Badge>
+                                                            <Badge color="gray" className="font-normal">
+                                                                {item.note_type}
+                                                            </Badge>
                                                         </div>
                                                         <p className="text-sm">{item.content}</p>
                                                     </div>

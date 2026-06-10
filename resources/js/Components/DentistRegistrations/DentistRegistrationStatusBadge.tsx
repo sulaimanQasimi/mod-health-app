@@ -26,5 +26,9 @@ export default function DentistRegistrationStatusBadge({ status }: DentistRegist
 
     const color = STATUS_COLORS[status as DentistRegistrationStatus] ?? 'gray';
 
-    return <Badge color={color}>{labels[status] ?? status}</Badge>;
+    return (
+        <Badge color={color} className="w-fit font-normal">
+            {labels[status] ?? status}
+        </Badge>
+    );
 }

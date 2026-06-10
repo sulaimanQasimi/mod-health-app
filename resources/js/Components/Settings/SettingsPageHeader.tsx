@@ -33,7 +33,7 @@ export default function SettingsPageHeader({
                     <i className={`bx ${icon} text-xl`} />
                 </div>
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h1>
+                    <h1 className="text-xl text-gray-900 dark:text-white">{title}</h1>
                     {subtitle && (
                         <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
                     )}

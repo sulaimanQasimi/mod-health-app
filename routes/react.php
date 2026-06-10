@@ -52,6 +52,7 @@ use App\Http\Controllers\V1\HospitalizationSections\NutritionCareController as H
 use App\Http\Controllers\V1\HospitalizationSections\VitalSignController as HospitalizationVitalSignController;
 use App\Http\Controllers\V1\HospitalizationSections\VisitController as HospitalizationVisitController;
 use App\Http\Controllers\V1\ICUController;
+use App\Http\Controllers\V1\ICUSections\DailyProgressController as IcuDailyProgressController;
 use App\Http\Controllers\V1\ICUSections\ProcedureController as IcuProcedureController;
 use App\Http\Controllers\V1\ICUSections\VisitController as IcuVisitController;
 use App\Http\Controllers\V1\IncomeController;
@@ -496,6 +497,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{icu}/procedures', [IcuProcedureController::class, 'store'])->name('procedures.store');
         Route::match(['put', 'post'], '/{icu}/procedures/{icuProcedure}', [IcuProcedureController::class, 'update'])->name('procedures.update');
         Route::delete('/{icu}/procedures/{icuProcedure}', [IcuProcedureController::class, 'destroy'])->name('procedures.destroy');
+        Route::get('/{icu}/daily-progress/meta', [IcuDailyProgressController::class, 'meta'])->name('daily-progress.meta');
+        Route::get('/{icu}/daily-progress/{dailyIcuProgress}', [IcuDailyProgressController::class, 'show'])->name('daily-progress.show');
+        Route::get('/{icu}/daily-progress', [IcuDailyProgressController::class, 'index'])->name('daily-progress.index');
+        Route::post('/{icu}/daily-progress', [IcuDailyProgressController::class, 'store'])->name('daily-progress.store');
+        Route::match(['put', 'post'], '/{icu}/daily-progress/{dailyIcuProgress}', [IcuDailyProgressController::class, 'update'])->name('daily-progress.update');
+        Route::delete('/{icu}/daily-progress/{dailyIcuProgress}', [IcuDailyProgressController::class, 'destroy'])->name('daily-progress.destroy');
         Route::get('/{icu}/visits/meta', [IcuVisitController::class, 'meta'])->name('visits.meta');
         Route::get('/{icu}/visits/{visit}', [IcuVisitController::class, 'show'])->name('visits.show');
         Route::get('/{icu}/visits', [IcuVisitController::class, 'index'])->name('visits.index');

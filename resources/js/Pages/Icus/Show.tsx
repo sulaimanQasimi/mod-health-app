@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
+import IcuDailyProgressSection from '../../Components/Icus/IcuDailyProgressSection';
 import IcuDischargeModal from '../../Components/Icus/IcuDischargeModal';
 import IcuProcedureSection from '../../Components/Icus/IcuProcedureSection';
 import IcuSummary from '../../Components/Icus/IcuSummary';
@@ -28,6 +29,7 @@ interface ShowProps {
         lab: boolean;
         visits: boolean;
         procedures: boolean;
+        daily_progress: boolean;
     };
     urls: IcuListUrls & {
         update: string;
@@ -225,6 +227,13 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
                                 icuId={icu.id}
                                 isDischarged={icu.is_discharged}
                                 iconClassName="text-violet-500"
+                            />
+                        )}
+                        {sectionPermissions.daily_progress && (
+                            <IcuDailyProgressSection
+                                icuId={icu.id}
+                                isDischarged={icu.is_discharged}
+                                iconClassName="text-sky-500"
                             />
                         )}
                         {hasAppointment && sectionPermissions.prescription && icu.appointment_id && (

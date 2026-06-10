@@ -1,4 +1,4 @@
-import { type MouseEvent, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { type KeyboardEvent, type MouseEvent, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import type { SearchableSelectOption } from './SearchableSelect';
 
@@ -110,18 +110,30 @@ export default function SearchableMultiSelect({
         }
     };
 
+    const handleTriggerKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (disabled) {
+            return;
+        }
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleOpen();
+        }
+    };
+
     return (
         <div ref={containerRef} className={mergeClasses('relative w-full', className)} dir={dir}>
-            <button
+            <div
                 id={id}
-                type="button"
-                disabled={disabled}
+                role="combobox"
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
                 aria-controls={listboxId}
+                aria-disabled={disabled || undefined}
+                tabIndex={disabled ? -1 : 0}
                 onClick={toggleOpen}
+                onKeyDown={handleTriggerKeyDown}
                 className={mergeClasses(
-                    'flex min-h-[42px] w-full items-center justify-between gap-2 rounded-lg border bg-gray-50 px-3 py-2 text-sm text-gray-900 transition-colors',
+                    'flex min-h-[42px] w-full cursor-pointer items-center justify-between gap-2 rounded-lg border bg-gray-50 px-3 py-2 text-sm text-gray-900 transition-colors',
                     'border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20',
                     'dark:border-gray-600 dark:bg-gray-700 dark:text-white',
                     disabled && 'cursor-not-allowed opacity-60',
@@ -158,7 +170,7 @@ export default function SearchableMultiSelect({
                         isOpen && 'rotate-180',
                     )}
                 />
-            </button>
+            </div>
 
             {isOpen && (
                 <div

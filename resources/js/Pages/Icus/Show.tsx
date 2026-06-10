@@ -5,6 +5,7 @@ import LabTestSection from '../../Components/Appointments/Sections/LabTestSectio
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
 import IcuDischargeModal from '../../Components/Icus/IcuDischargeModal';
+import IcuProcedureSection from '../../Components/Icus/IcuProcedureSection';
 import IcuSummary from '../../Components/Icus/IcuSummary';
 import {
     ICU_APPROVE_BTN_CLASS,
@@ -22,7 +23,12 @@ import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 interface ShowProps {
     icu: IcuDetail;
     permissions: IcuShowPermissions;
-    sectionPermissions: { prescription: boolean; lab: boolean; visits: boolean };
+    sectionPermissions: {
+        prescription: boolean;
+        lab: boolean;
+        visits: boolean;
+        procedures: boolean;
+    };
     urls: IcuListUrls & {
         update: string;
         destroy: string;
@@ -212,6 +218,13 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
                                 icuId={icu.id}
                                 isDischarged={icu.is_discharged}
                                 iconClassName="text-rose-500"
+                            />
+                        )}
+                        {sectionPermissions.procedures && (
+                            <IcuProcedureSection
+                                icuId={icu.id}
+                                isDischarged={icu.is_discharged}
+                                iconClassName="text-violet-500"
                             />
                         )}
                         {hasAppointment && sectionPermissions.prescription && icu.appointment_id && (

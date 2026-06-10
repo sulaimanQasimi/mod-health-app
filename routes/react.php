@@ -52,6 +52,7 @@ use App\Http\Controllers\V1\HospitalizationSections\NutritionCareController as H
 use App\Http\Controllers\V1\HospitalizationSections\VitalSignController as HospitalizationVitalSignController;
 use App\Http\Controllers\V1\HospitalizationSections\VisitController as HospitalizationVisitController;
 use App\Http\Controllers\V1\ICUController;
+use App\Http\Controllers\V1\ICUSections\ProcedureController as IcuProcedureController;
 use App\Http\Controllers\V1\ICUSections\VisitController as IcuVisitController;
 use App\Http\Controllers\V1\IncomeController;
 use App\Http\Controllers\V1\LabTypeController;
@@ -489,6 +490,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/rejected', [ICUController::class, 'rejected'])->name('rejected');
         Route::get('/report', [ICUController::class, 'report'])->name('report');
         Route::get('/{icu}/discharge/meta', [ICUController::class, 'dischargeMeta'])->name('discharge.meta');
+        Route::get('/{icu}/procedures/meta', [IcuProcedureController::class, 'meta'])->name('procedures.meta');
+        Route::get('/{icu}/procedures/{icuProcedure}', [IcuProcedureController::class, 'show'])->name('procedures.show');
+        Route::get('/{icu}/procedures', [IcuProcedureController::class, 'index'])->name('procedures.index');
+        Route::post('/{icu}/procedures', [IcuProcedureController::class, 'store'])->name('procedures.store');
+        Route::match(['put', 'post'], '/{icu}/procedures/{icuProcedure}', [IcuProcedureController::class, 'update'])->name('procedures.update');
+        Route::delete('/{icu}/procedures/{icuProcedure}', [IcuProcedureController::class, 'destroy'])->name('procedures.destroy');
         Route::get('/{icu}/visits/meta', [IcuVisitController::class, 'meta'])->name('visits.meta');
         Route::get('/{icu}/visits/{visit}', [IcuVisitController::class, 'show'])->name('visits.show');
         Route::get('/{icu}/visits', [IcuVisitController::class, 'index'])->name('visits.index');

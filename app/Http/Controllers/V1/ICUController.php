@@ -153,6 +153,7 @@ class ICUController extends Controller
                 'prescription' => $user->can('show-prescriptions-menu') && (bool) $icu->appointment_id,
                 'lab' => $user->can('show-labs-menu') && (bool) $icu->appointment_id,
                 'visits' => $user->can('show-icu-menu') && $icu->status === 'approved',
+                'procedures' => $user->can('show-icu-menu') && $icu->status === 'approved',
             ],
             'urls' => [
                 'update' => route('react.icus.update', $icu),

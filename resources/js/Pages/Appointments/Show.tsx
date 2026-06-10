@@ -153,8 +153,13 @@ export default function ShowAppointment({
                             </h3>
                             <ul className="space-y-2">
                                 {patientHistory.primary.map((item, index) => (
-                                    <li key={`primary-${index}`} className="rounded-lg border-s-4 border-amber-400 bg-gray-50 p-3 text-sm dark:bg-gray-800/40">
-                                        <Badge color="warning" className="mb-1">{item.date ?? '—'}</Badge>
+                                    <li
+                                        key={`primary-${index}`}
+                                        className="rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/50 dark:text-gray-300"
+                                    >
+                                        <Badge color="warning" className="mb-1.5 w-fit font-normal">
+                                            {item.date ?? '—'}
+                                        </Badge>
                                         <p>{item.description}</p>
                                     </li>
                                 ))}
@@ -166,8 +171,13 @@ export default function ShowAppointment({
                             </h3>
                             <ul className="space-y-2">
                                 {patientHistory.final.map((item, index) => (
-                                    <li key={`final-${index}`} className="rounded-lg border-s-4 border-emerald-400 bg-gray-50 p-3 text-sm dark:bg-gray-800/40">
-                                        <Badge color="success" className="mb-1">{item.date ?? '—'}</Badge>
+                                    <li
+                                        key={`final-${index}`}
+                                        className="rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/50 dark:text-gray-300"
+                                    >
+                                        <Badge color="success" className="mb-1.5 w-fit font-normal">
+                                            {item.date ?? '—'}
+                                        </Badge>
                                         <p>{item.description}</p>
                                     </li>
                                 ))}

@@ -52,6 +52,7 @@ use App\Http\Controllers\V1\HospitalizationSections\NutritionCareController as H
 use App\Http\Controllers\V1\HospitalizationSections\VitalSignController as HospitalizationVitalSignController;
 use App\Http\Controllers\V1\HospitalizationSections\VisitController as HospitalizationVisitController;
 use App\Http\Controllers\V1\ICUController;
+use App\Http\Controllers\V1\ICUSections\VisitController as IcuVisitController;
 use App\Http\Controllers\V1\IncomeController;
 use App\Http\Controllers\V1\LabTypeController;
 use App\Http\Controllers\V1\LaboratoryController;
@@ -487,6 +488,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/approved', [ICUController::class, 'approved'])->name('approved');
         Route::get('/rejected', [ICUController::class, 'rejected'])->name('rejected');
         Route::get('/report', [ICUController::class, 'report'])->name('report');
+        Route::get('/{icu}/visits/meta', [IcuVisitController::class, 'meta'])->name('visits.meta');
+        Route::get('/{icu}/visits/{visit}', [IcuVisitController::class, 'show'])->name('visits.show');
+        Route::get('/{icu}/visits', [IcuVisitController::class, 'index'])->name('visits.index');
+        Route::post('/{icu}/visits', [IcuVisitController::class, 'store'])->name('visits.store');
+        Route::match(['put', 'post'], '/{icu}/visits/{visit}', [IcuVisitController::class, 'update'])->name('visits.update');
+        Route::delete('/{icu}/visits/{visit}', [IcuVisitController::class, 'destroy'])->name('visits.destroy');
         Route::get('/{icu}', [ICUController::class, 'show'])->name('show');
         Route::put('/{icu}', [ICUController::class, 'update'])->name('update');
         Route::delete('/{icu}', [ICUController::class, 'destroy'])->name('destroy');

@@ -121,7 +121,7 @@ class DiabetesChartController extends Controller
         abort_unless($nurse, 403);
 
         $validated = $request->validate($this->validationRules());
-
+        $validated['date'] = Verta::parse($validated['date'])->toCarbon();
         DiabetesChart::create([
             ...$this->chartPayload($validated),
             'nurse_id' => $nurse->id,
@@ -139,7 +139,7 @@ class DiabetesChartController extends Controller
         $this->authorize('update', $diabetesChart);
 
         $validated = $request->validate($this->validationRules());
-
+        $validated['date'] = Verta::parse($validated['date'])->toCarbon();
         $diabetesChart->update($this->chartPayload($validated));
 
         return response()->json(['success' => true]);
@@ -222,67 +222,10 @@ class DiabetesChartController extends Controller
             'fbs' => $validated['fbs'] ?? null,
             'unit' => $validated['unit'] ?? null,
             'time' => $validated['time'] ?? null,
-            'date' => $this->parseDate($validated['date'])->toDateString(),
+            'date' => $validated['date']->toDateString(),
         ];
     }
 
-    private function parseDate(string $date): Carbon
-    {
-        $normalized = $this->normalizeDateInput($date);
-
-        if ($normalized === '') {
-            throw ValidationException::withMessages([
-                'date' => [localize('global.invalid_visit_date_format')],
-            ]);
-        }
-
-        if (! preg_match('/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/', $normalized, $matches)) {
-            throw ValidationException::withMessages([
-                'date' => [localize('global.invalid_visit_date_format')],
-            ]);
-        }
-
-        $year = (int) $matches[1];
-        $month = (int) $matches[2];
-        $day = (int) $matches[3];
-
-        if ($year >= 1900 && $year <= 2100) {
-            if (! checkdate($month, $day, $year)) {
-                throw ValidationException::withMessages([
-                    'date' => [localize('global.invalid_visit_date_format')],
-                ]);
-            }
-
-            return Carbon::createFromDate($year, $month, $day)->startOfDay();
-        }
-
-        if ($year >= 1200 && $year <= 1500) {
-            try {
-                $jalaliDate = Verta::createJalaliDate($year, $month, $day);
-
-                return Carbon::createFromFormat('Y-m-d', $jalaliDate->format('Y-m-d'))->startOfDay();
-            } catch (\Throwable) {
-                throw ValidationException::withMessages([
-                    'date' => [localize('global.invalid_visit_date_format')],
-                ]);
-            }
-        }
-
-        throw ValidationException::withMessages([
-            'date' => [localize('global.invalid_visit_date_format')],
-        ]);
-    }
-
-    private function normalizeDateInput(string $date): string
-    {
-        $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-        $arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-
-        $value = str_replace($persian, range(0, 9), str_replace($arabic, range(0, 9), trim($date)));
-        $value = str_replace('-', '/', $value);
-
-        return preg_replace('/\s+/', '', $value) ?? $value;
-    }
 
     /**
      * @return array<string, mixed>

@@ -254,12 +254,12 @@ export default function HospitalizationVitalSignSection({
             }));
 
         if (!resolvedDate) {
-            setFormError(t('global.date') + ': ' + t('global.required'));
+            setFormError(t('global.select_date'));
             return;
         }
 
         if (scheduleRows.length === 0) {
-            setFormError(t('global.select') + ' ' + t('global.vital_sign_type'));
+            setFormError(`${t('global.select')} ${t('global.vital_sign_type')}`);
             return;
         }
 
@@ -333,7 +333,7 @@ export default function HospitalizationVitalSignSection({
                             {data?.permissions.manage && !isDischarged && (
                                 <Button size="sm" color="failure" onClick={() => openManageForDate()}>
                                     <i className="bx bx-plus me-2" />
-                                    {t('global.add')}
+                                    {t('global.manage_vital_signs')}
                                 </Button>
                             )}
                         </div>

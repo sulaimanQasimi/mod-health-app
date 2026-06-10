@@ -119,6 +119,7 @@ export default function PersianDateInput({
             placeholder={placeholder}
             required={required}
             disabled={disabled}
+            onBlur={(event) => onChange(event.target.value)}
             className={className ? `${inputClassName} ${className}` : inputClassName}
         />
     );

@@ -343,8 +343,13 @@ export default function HospitalizationDiabetesChartSection({
         setForm(EMPTY_FORM);
     };
 
+    const resolveFormDate = () => {
+        const input = document.getElementById('diabetes-chart-date') as HTMLInputElement | null;
+        return (input?.value ?? form.date).trim();
+    };
+
     const buildPayload = () => ({
-        date: form.date,
+        date: resolveFormDate(),
         time: form.time || null,
         rbs: form.rbs ? Number(form.rbs) : null,
         fbs: form.fbs ? Number(form.fbs) : null,
@@ -355,9 +360,11 @@ export default function HospitalizationDiabetesChartSection({
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
-        if (!form.date.trim()) {
+        const date = resolveFormDate();
+        if (!date) {
             return;
         }
+        setForm((prev) => ({ ...prev, date }));
 
         const ok = editingChartId
             ? await postJson(`${baseUrl}/${editingChartId}`, 'PUT', buildPayload())

@@ -10,6 +10,7 @@ use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class DiabetesChartController extends Controller
 {
@@ -203,8 +204,8 @@ class DiabetesChartController extends Controller
             'rbs' => 'nullable|numeric|min:0|max:999.99',
             'fbs' => 'nullable|numeric|min:0|max:999.99',
             'unit' => 'nullable|string|max:20',
-            'time' => 'nullable|date_format:H:i',
-            'date' => 'required|string',
+            'time' => ['nullable', 'regex:/^\d{2}:\d{2}(:\d{2})?$/'],
+            'date' => ['required', 'string', 'filled'],
         ];
     }
 
@@ -227,11 +228,60 @@ class DiabetesChartController extends Controller
 
     private function parseDate(string $date): Carbon
     {
-        try {
-            return Verta::parse($date)->datetime();
-        } catch (\Throwable) {
-            abort(422, 'Invalid date format.');
+        $normalized = $this->normalizeDateInput($date);
+
+        if ($normalized === '') {
+            throw ValidationException::withMessages([
+                'date' => [localize('global.invalid_visit_date_format')],
+            ]);
         }
+
+        if (! preg_match('/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/', $normalized, $matches)) {
+            throw ValidationException::withMessages([
+                'date' => [localize('global.invalid_visit_date_format')],
+            ]);
+        }
+
+        $year = (int) $matches[1];
+        $month = (int) $matches[2];
+        $day = (int) $matches[3];
+
+        if ($year >= 1900 && $year <= 2100) {
+            if (! checkdate($month, $day, $year)) {
+                throw ValidationException::withMessages([
+                    'date' => [localize('global.invalid_visit_date_format')],
+                ]);
+            }
+
+            return Carbon::createFromDate($year, $month, $day)->startOfDay();
+        }
+
+        if ($year >= 1200 && $year <= 1500) {
+            try {
+                $jalaliDate = Verta::createJalaliDate($year, $month, $day);
+
+                return Carbon::createFromFormat('Y-m-d', $jalaliDate->format('Y-m-d'))->startOfDay();
+            } catch (\Throwable) {
+                throw ValidationException::withMessages([
+                    'date' => [localize('global.invalid_visit_date_format')],
+                ]);
+            }
+        }
+
+        throw ValidationException::withMessages([
+            'date' => [localize('global.invalid_visit_date_format')],
+        ]);
+    }
+
+    private function normalizeDateInput(string $date): string
+    {
+        $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        $arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+
+        $value = str_replace($persian, range(0, 9), str_replace($arabic, range(0, 9), trim($date)));
+        $value = str_replace('-', '/', $value);
+
+        return preg_replace('/\s+/', '', $value) ?? $value;
     }
 
     /**

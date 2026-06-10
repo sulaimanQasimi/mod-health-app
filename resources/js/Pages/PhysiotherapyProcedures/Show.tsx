@@ -18,7 +18,7 @@ import PhysiotherapyProcedureProgressBar from '../../Components/PhysiotherapyPro
 import PhysiotherapyProcedureReviews from '../../Components/PhysiotherapyProcedures/PhysiotherapyProcedureReviews';
 import PhysiotherapyProcedureStatusBadge from '../../Components/PhysiotherapyProcedures/PhysiotherapyProcedureStatusBadge';
 import UpdateProgressModal from '../../Components/PhysiotherapyProcedures/UpdateProgressModal';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -28,7 +28,7 @@ import {
     PhysiotherapyProcedureShowPermissions,
     PhysiotherapyProcedureStatus,
 } from '../../types/physiotherapyProcedure';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH, settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface ShowPhysiotherapyProcedureProps {
     procedure: PhysiotherapyProcedureDetail;
@@ -160,32 +160,50 @@ export default function ShowPhysiotherapyProcedure({
                     backHref={urls.index}
                     backLabel={t('global.back')}
                     action={
-                        <div className="flex flex-wrap gap-2">
+                        <SettingsPageActions>
                             {urls.appointment && (
-                                <Button as={Link} href={urls.appointment} color="light" size="sm">
+                                <Button
+                                    as={Link}
+                                    href={urls.appointment}
+                                    size="sm"
+                                    className={settingsHeaderButtonClass.secondary}
+                                >
                                     <i className="bx bx-calendar me-2" />
                                     {t('global.appointment')}
                                 </Button>
                             )}
                             {canUpdateProgress && (
-                                <Button color="warning" size="sm" onClick={() => setProgressOpen(true)}>
+                                <Button
+                                    size="sm"
+                                    onClick={() => setProgressOpen(true)}
+                                    className={settingsHeaderButtonClass.warning}
+                                >
                                     <i className="bx bx-edit me-2" />
                                     {t('global.update_progress')}
                                 </Button>
                             )}
                             {permissions.edit && formOptions && (
-                                <Button color="light" size="sm" onClick={() => setEditOpen(true)}>
+                                <Button
+                                    size="sm"
+                                    onClick={() => setEditOpen(true)}
+                                    className={settingsHeaderButtonClass.secondary}
+                                >
                                     <i className="bx bx-edit-alt me-2" />
                                     {t('global.edit')}
                                 </Button>
                             )}
                             {permissions.delete && (
-                                <Button color="failure" size="sm" onClick={handleDelete} disabled={processing}>
+                                <Button
+                                    size="sm"
+                                    onClick={handleDelete}
+                                    disabled={processing}
+                                    className={settingsHeaderButtonClass.danger}
+                                >
                                     <i className="bx bx-trash me-2" />
                                     {t('global.delete')}
                                 </Button>
                             )}
-                        </div>
+                        </SettingsPageActions>
                     }
                 />
 
@@ -193,10 +211,10 @@ export default function ShowPhysiotherapyProcedure({
                     <div className="bg-gradient-to-r from-cyan-500/10 via-teal-500/10 to-emerald-500/10 px-6 py-5 dark:from-cyan-900/20 dark:via-teal-900/20 dark:to-emerald-900/20">
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                                <h2 className="text-xl text-gray-900 dark:text-white">
                                     {procedure.patient_name ?? '—'}
                                 </h2>
-                                <p className="mt-1 text-sm text-gray-500">
+                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                     {procedure.physiotherapy_type} · {procedure.physiotherapist}
                                 </p>
                             </div>
@@ -210,16 +228,16 @@ export default function ShowPhysiotherapyProcedure({
                                 key={String(label)}
                                 className="rounded-xl border border-gray-100 bg-gray-50/80 p-4 dark:border-gray-700/60 dark:bg-gray-800/40"
                             >
-                                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{label}</p>
-                                <p className="mt-2 font-semibold text-gray-900 dark:text-white">{value ?? '—'}</p>
+                                <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{label}</p>
+                                <p className="mt-2 text-gray-900 dark:text-white">{value ?? '—'}</p>
                             </div>
                         ))}
                     </div>
 
                     <div className="border-t border-gray-100 px-6 py-5 dark:border-gray-700">
                         <div className="mb-2 flex items-center justify-between">
-                            <h3 className="font-medium text-gray-900 dark:text-white">{t('global.progress')}</h3>
-                            <Badge color="info">
+                            <h3 className="text-gray-900 dark:text-white">{t('global.progress')}</h3>
+                            <Badge color="info" className="font-normal">
                                 {procedure.counter}/{procedure.days_count}
                             </Badge>
                         </div>
@@ -234,12 +252,14 @@ export default function ShowPhysiotherapyProcedure({
                         <div className="grid gap-4 border-t border-gray-100 px-6 py-5 dark:border-gray-700 lg:grid-cols-2">
                             {procedure.description && (
                                 <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-4 text-sm dark:border-cyan-900/40 dark:bg-cyan-900/20">
-                                    <strong>{t('global.description')}:</strong> {procedure.description}
+                                    <span className="text-gray-600 dark:text-gray-300">{t('global.description')}:</span>{' '}
+                                    {procedure.description}
                                 </div>
                             )}
                             {procedure.notes && (
                                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <strong>{t('global.notes')}:</strong> {procedure.notes}
+                                    <span className="text-gray-600 dark:text-gray-300">{t('global.notes')}:</span>{' '}
+                                    {procedure.notes}
                                 </div>
                             )}
                         </div>

@@ -617,6 +617,7 @@ return [
     'mark_all_as_read' => 'همه خوانده شدند',
     'avatar' => 'عکس',
     'reception' => 'پذیرش',
+    'appointment' => 'ملاقات',
     'appointments' => 'ملاقات ها',
     'my_appointments' => 'ملاقات های من',
     'all_appointments' => ' همه ملاقات ها',

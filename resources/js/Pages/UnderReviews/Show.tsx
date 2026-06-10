@@ -5,7 +5,7 @@ import LabTestSection from '../../Components/Appointments/Sections/LabTestSectio
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import PhysiotherapySection from '../../Components/Appointments/Sections/PhysiotherapySection';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import UnderReviewSectionPanel, {
     UnderReviewDataTable,
     UnderReviewDataTableBody,
@@ -22,7 +22,7 @@ import {
 import TableActionButton from '../../Components/ui/TableActionButton';
 import { useTranslation } from '../../hooks/useTranslation';
 import { UnderReviewDetail, UnderReviewShowPermissions } from '../../types/underReview';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH, settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface ShowProps {
     underReview: UnderReviewDetail;
@@ -154,26 +154,40 @@ export default function UnderReviewsShow({
                     backHref={urls.index}
                     backLabel={t('global.back')}
                     action={
-                        <div className="flex flex-wrap gap-2">
+                        <SettingsPageActions>
                             {permissions.edit && (
-                                <Button as={Link} href={urls.edit} color="blue" size="sm">
+                                <Button
+                                    as={Link}
+                                    href={urls.edit}
+                                    size="sm"
+                                    className={settingsHeaderButtonClass.secondary}
+                                >
                                     <i className="bx bx-edit me-2" />
                                     {t('global.edit')}
                                 </Button>
                             )}
                             {permissions.discharge && (
-                                <Button color="light" size="sm" onClick={() => setDischargeOpen(true)}>
+                                <Button
+                                    size="sm"
+                                    onClick={() => setDischargeOpen(true)}
+                                    className={settingsHeaderButtonClass.secondary}
+                                >
                                     <i className="bx bx-log-out me-2" />
                                     {t('global.discharge_patient')}
                                 </Button>
                             )}
                             {urls.appointment && (
-                                <Button as={Link} href={urls.appointment} color="light" size="sm">
+                                <Button
+                                    as={Link}
+                                    href={urls.appointment}
+                                    size="sm"
+                                    className={settingsHeaderButtonClass.secondary}
+                                >
                                     <i className="bx bx-calendar me-2" />
                                     {t('global.appointment')}
                                 </Button>
                             )}
-                        </div>
+                        </SettingsPageActions>
                     }
                 />
 

@@ -1,6 +1,8 @@
 import { Badge, Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
+import TableActionButton from '../ui/TableActionButton';
+import { TableActions } from '../ui/TableActions';
 import {
     PhysiotherapyProcedureReview,
     PhysiotherapyProcedureShowPermissions,
@@ -110,26 +112,19 @@ export default function PhysiotherapyProcedureReviews({
                                     <span className="text-xs text-gray-500">{review.created_at}</span>
                                 </div>
                                 {(permissions.editReview || permissions.deleteReview) && (
-                                    <div className="flex gap-1">
-                                        {permissions.editReview && (
-                                            <Button size="xs" color="light" onClick={() => openEdit(review)}>
-                                                <i className="bx bx-edit" />
-                                            </Button>
-                                        )}
-                                        {permissions.deleteReview && (
-                                            <Button
-                                                size="xs"
-                                                color="failure"
-                                                onClick={() => {
-                                                    if (window.confirm(t('global.confirm_delete'))) {
-                                                        onDelete(review.id);
-                                                    }
-                                                }}
-                                            >
-                                                <i className="bx bx-trash" />
-                                            </Button>
-                                        )}
-                                    </div>
+                                    <TableActions className="flex gap-1">
+                                        <TableActionButton
+                                            kind="edit"
+                                            permission={permissions.editReview}
+                                            onClick={() => openEdit(review)}
+                                        />
+                                        <TableActionButton
+                                            kind="delete"
+                                            permission={permissions.deleteReview}
+                                            confirm={t('global.confirm_delete')}
+                                            onClick={() => onDelete(review.id)}
+                                        />
+                                    </TableActions>
                                 )}
                             </div>
                             <p className="text-sm text-gray-700 dark:text-gray-300">{review.description}</p>

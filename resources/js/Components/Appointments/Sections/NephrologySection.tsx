@@ -1,5 +1,4 @@
 import {
-    Badge,
     Button,
     Label,
     Modal,
@@ -26,6 +25,7 @@ import AppointmentSectionAccordion, {
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
+import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
 interface NephrologySectionProps {
@@ -199,7 +199,7 @@ export default function NephrologySection({ appointmentId }: NephrologySectionPr
                                     <TableRow key={item.id}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>
-                                            <Badge color="info">{item.ref_no ?? '—'}</Badge>
+                                            <TableBadge color="info">{item.ref_no ?? '—'}</TableBadge>
                                         </TableCell>
                                         <TableCell>{item.patient_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.doctor_name ?? '—'}</TableCell>
@@ -208,11 +208,11 @@ export default function NephrologySection({ appointmentId }: NephrologySectionPr
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex flex-wrap items-center gap-1">
-                                                <Badge color={STATUS_COLORS[item.status] ?? 'gray'}>
+                                                <TableBadge color={STATUS_COLORS[item.status] ?? 'gray'}>
                                                     {statusLabel(item.status)}
-                                                </Badge>
+                                                </TableBadge>
                                                 {item.needs_acceptance && (
-                                                    <Badge color="warning">{t('global.pending')}</Badge>
+                                                    <TableBadge color="warning">{t('global.pending')}</TableBadge>
                                                 )}
                                             </div>
                                         </TableCell>
@@ -294,9 +294,9 @@ export default function NephrologySection({ appointmentId }: NephrologySectionPr
                                 ))}
                             </div>
 
-                            <Badge color={STATUS_COLORS[selectedRegistration.status] ?? 'gray'}>
+                            <TableBadge color={STATUS_COLORS[selectedRegistration.status] ?? 'gray'}>
                                 {statusLabel(selectedRegistration.status)}
-                            </Badge>
+                            </TableBadge>
 
                             {selectedRegistration.needs_acceptance && (
                                 <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-200">

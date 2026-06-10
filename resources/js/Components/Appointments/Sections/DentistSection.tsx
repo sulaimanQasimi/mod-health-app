@@ -1,5 +1,4 @@
 import {
-    Badge,
     Button,
     Label,
     Modal,
@@ -28,6 +27,7 @@ import AppointmentSectionAccordion, {
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
+import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
 interface DentistSectionProps {
@@ -257,7 +257,7 @@ export default function DentistSection({ appointmentId }: DentistSectionProps) {
                                     <TableRow key={item.id}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>
-                                            <Badge color="info">{item.ref_no ?? '—'}</Badge>
+                                            <TableBadge color="info">{item.ref_no ?? '—'}</TableBadge>
                                         </TableCell>
                                         <TableCell>{item.patient_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.dentist_name ?? '—'}</TableCell>
@@ -265,21 +265,21 @@ export default function DentistSection({ appointmentId }: DentistSectionProps) {
                                             {item.registration_date ?? '—'}
                                         </TableCell>
                                         <TableCell>
-                                            <Badge color={STATUS_COLORS[item.status] ?? 'gray'}>
+                                            <TableBadge color={STATUS_COLORS[item.status] ?? 'gray'}>
                                                 {statusLabel(item.status)}
-                                            </Badge>
+                                            </TableBadge>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge color="info">{item.examinations_count}</Badge>
+                                            <TableBadge color="info">{item.examinations_count}</TableBadge>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge color="success">{item.treatments_count}</Badge>
+                                            <TableBadge color="success">{item.treatments_count}</TableBadge>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge color="warning">{item.xrays_count}</Badge>
+                                            <TableBadge color="warning">{item.xrays_count}</TableBadge>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge color="gray">{item.notes_count}</Badge>
+                                            <TableBadge color="gray">{item.notes_count}</TableBadge>
                                         </TableCell>
                                         <TableCell align="center">
                                             <div className="flex justify-center gap-1">
@@ -391,21 +391,21 @@ export default function DentistSection({ appointmentId }: DentistSectionProps) {
                             </div>
 
                             <div className="flex flex-wrap items-center gap-3">
-                                <Badge color={STATUS_COLORS[selectedRegistration.status] ?? 'gray'}>
+                                <TableBadge color={STATUS_COLORS[selectedRegistration.status] ?? 'gray'}>
                                     {statusLabel(selectedRegistration.status)}
-                                </Badge>
-                                <Badge color="info">
+                                </TableBadge>
+                                <TableBadge color="info">
                                     {t('global.examinations')}: {selectedRegistration.examinations_count}
-                                </Badge>
-                                <Badge color="success">
+                                </TableBadge>
+                                <TableBadge color="success">
                                     {t('global.treatments')}: {selectedRegistration.treatments_count}
-                                </Badge>
-                                <Badge color="warning">
+                                </TableBadge>
+                                <TableBadge color="warning">
                                     {t('global.xrays')}: {selectedRegistration.xrays_count}
-                                </Badge>
-                                <Badge color="gray">
+                                </TableBadge>
+                                <TableBadge color="gray">
                                     {t('global.notes')}: {selectedRegistration.notes_count}
-                                </Badge>
+                                </TableBadge>
                             </div>
 
                             {selectedRegistration.notes && (

@@ -1,5 +1,4 @@
 import {
-    Badge,
     Button,
     Label,
     Modal,
@@ -26,6 +25,7 @@ import AppointmentSectionAccordion, {
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
+import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
 interface ProstheticsSectionProps {
@@ -186,9 +186,9 @@ export default function ProstheticsSection({ appointmentId }: ProstheticsSection
                                     <TableRow key={`${item.record_type}-${item.id}`}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>
-                                            <Badge color={item.record_type === 'case' ? 'info' : 'indigo'}>
+                                            <TableBadge color={item.record_type === 'case' ? 'info' : 'indigo'}>
                                                 {recordTypeLabel(item.record_type)}
-                                            </Badge>
+                                            </TableBadge>
                                         </TableCell>
                                         <TableCell>
                                             <code className="text-sm">{item.number}</code>
@@ -197,7 +197,7 @@ export default function ProstheticsSection({ appointmentId }: ProstheticsSection
                                             {item.date ?? '—'}
                                         </TableCell>
                                         <TableCell>
-                                            <Badge color="gray">{statusLabel(item)}</Badge>
+                                            <TableBadge color="gray">{statusLabel(item)}</TableBadge>
                                         </TableCell>
                                         <TableCell align="center">
                                             <div className="flex justify-center gap-1">
@@ -286,7 +286,7 @@ export default function ProstheticsSection({ appointmentId }: ProstheticsSection
                                     <p className="font-semibold">{selectedReferral.referral_date ?? '—'}</p>
                                 </div>
                             </div>
-                            <Badge color="gray">{selectedReferral.status}</Badge>
+                            <TableBadge color="gray">{selectedReferral.status}</TableBadge>
                             {selectedReferral.reason && (
                                 <p>
                                     <strong>{t('global.reason')}:</strong> {selectedReferral.reason}

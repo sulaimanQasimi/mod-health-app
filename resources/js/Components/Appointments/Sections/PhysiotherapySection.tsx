@@ -1,5 +1,4 @@
 import {
-    Badge,
     Button,
     Label,
     Modal,
@@ -29,6 +28,7 @@ import AppointmentSectionAccordion, {
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
+import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
 interface PhysiotherapySectionProps {
@@ -313,15 +313,15 @@ export default function PhysiotherapySection({ appointmentId }: PhysiotherapySec
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge color={STATUS_COLORS[item.status] ?? 'gray'}>
+                                            <TableBadge color={STATUS_COLORS[item.status] ?? 'gray'}>
                                                 {statusLabel(item.status)}
-                                            </Badge>
+                                            </TableBadge>
                                         </TableCell>
                                         <TableCell muted>{item.start_date ?? '—'}</TableCell>
                                         <TableCell>
-                                            <Badge color={item.reviews_count > 0 ? 'info' : 'gray'}>
+                                            <TableBadge color={item.reviews_count > 0 ? 'info' : 'gray'}>
                                                 {item.reviews_count}
-                                            </Badge>
+                                            </TableBadge>
                                         </TableCell>
                                         <TableCell align="center">
                                             <div className="flex justify-center gap-1">
@@ -521,9 +521,9 @@ export default function PhysiotherapySection({ appointmentId }: PhysiotherapySec
                             <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/40">
                                 <div className="mb-2 flex items-center justify-between gap-3">
                                     <p className="text-sm font-medium">{t('global.progress')}</p>
-                                    <Badge color={STATUS_COLORS[selectedProcedure.status] ?? 'gray'}>
+                                    <TableBadge color={STATUS_COLORS[selectedProcedure.status] ?? 'gray'}>
                                         {statusLabel(selectedProcedure.status)}
-                                    </Badge>
+                                    </TableBadge>
                                 </div>
                                 <div className="mb-1 flex justify-between text-xs text-gray-500">
                                     <span>

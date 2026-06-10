@@ -44,6 +44,7 @@ interface VisitListItem {
     description: string | null;
     doctor_name: string | null;
     visit_date: string | null;
+    visit_time: string | null;
     bp: string | null;
     pr: string | null;
     rr: string | null;
@@ -96,15 +97,25 @@ const EMPTY_FORM: VisitFormState = {
     output: '',
 };
 
+const VITAL_SIGN_FIELDS = [
+    ['bp', 'global.bp'],
+    ['pr', 'global.pr'],
+    ['rr', 'global.rr'],
+    ['t', 'global.t'],
+    ['spo2', 'global.spo2'],
+    ['pain', 'global.pain'],
+] as const;
+
+function visitVitalSignItems(visit: VisitListItem, t: (key: string) => string) {
+    return VITAL_SIGN_FIELDS.map(([field, labelKey]) => ({
+        key: field,
+        label: t(labelKey),
+        value: visit[field],
+    })).filter((item) => item.value);
+}
+
 function VitalSignBadges({ visit, t }: { visit: VisitListItem; t: (key: string) => string }) {
-    const items = [
-        { key: 'bp', label: t('global.bp'), value: visit.bp },
-        { key: 'pr', label: t('global.pr'), value: visit.pr },
-        { key: 'rr', label: t('global.rr'), value: visit.rr },
-        { key: 't', label: t('global.t'), value: visit.t },
-        { key: 'spo2', label: t('global.spo2'), value: visit.spo2 },
-        { key: 'pain', label: t('global.pain'), value: visit.pain },
-    ].filter((item) => item.value);
+    const items = visitVitalSignItems(visit, t);
 
     if (items.length === 0) {
         return <span className="text-gray-400">—</span>;
@@ -116,6 +127,28 @@ function VitalSignBadges({ visit, t }: { visit: VisitListItem; t: (key: string) 
                 <Badge key={item.key} color="info" className="whitespace-nowrap">
                     {item.label}: {item.value}
                 </Badge>
+            ))}
+        </div>
+    );
+}
+
+function VitalSignDetails({ visit, t }: { visit: VisitListItem; t: (key: string) => string }) {
+    const items = visitVitalSignItems(visit, t);
+
+    if (items.length === 0) {
+        return <p className="text-sm text-gray-500">—</p>;
+    }
+
+    return (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((item) => (
+                <div
+                    key={item.key}
+                    className="rounded-lg border border-gray-100 bg-gray-50/80 px-3 py-2 dark:border-gray-700 dark:bg-gray-800/50"
+                >
+                    <p className="text-xs font-medium uppercase text-gray-500">{item.label}</p>
+                    <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-white">{item.value}</p>
+                </div>
             ))}
         </div>
     );
@@ -160,16 +193,7 @@ function VisitFormFields({
                     {t('global.vital_signs')}
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                    {(
-                        [
-                            ['bp', 'global.bp'],
-                            ['pr', 'global.pr'],
-                            ['rr', 'global.rr'],
-                            ['t', 'global.t'],
-                            ['spo2', 'global.spo2'],
-                            ['pain', 'global.pain'],
-                        ] as const
-                    ).map(([field, labelKey]) => (
+                    {VITAL_SIGN_FIELDS.map(([field, labelKey]) => (
                         <div key={field}>
                             <Label htmlFor={`visit-${field}`}>{t(labelKey)}</Label>
                             <TextInput
@@ -288,7 +312,8 @@ export default function HospitalizationVisitSection({
 
     useEffect(() => {
         loadData();
-    }, [loadData]);
+        loadMeta();
+    }, [loadData, loadMeta]);
 
     const postJson = async (url: string, method: string, body?: Record<string, unknown>) => {
         setSubmitting(true);
@@ -314,15 +339,13 @@ export default function HospitalizationVisitSection({
         }
     };
 
-    const openCreate = async () => {
-        await loadMeta();
+    const openCreate = () => {
         setEditingVisitId(null);
         setForm(EMPTY_FORM);
         setFormOpen(true);
     };
 
-    const openEdit = async (visit: VisitListItem) => {
-        await loadMeta();
+    const openEdit = (visit: VisitListItem) => {
         setEditingVisitId(visit.id);
         setForm({
             description: visit.description ?? '',
@@ -387,6 +410,23 @@ export default function HospitalizationVisitSection({
         }
     };
 
+    const openDetails = async (visit: VisitListItem) => {
+        setSelectedVisit(visit);
+        setDetailsOpen(true);
+
+        try {
+            const response = await fetch(`${baseUrl}/${visit.id}`, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            const payload = await response.json();
+            if (payload.success) {
+                setSelectedVisit(payload.data);
+            }
+        } catch {
+            // Keep row data when detail fetch fails.
+        }
+    };
+
     if (!loading && data?.permissions.view === false) {
         return null;
     }
@@ -416,14 +456,15 @@ export default function HospitalizationVisitSection({
                         )}
 
                         {(data?.items.length ?? 0) > 0 ? (
-                            <Table embedded>
+                            <Table embedded className="min-w-[1280px]">
                                 <TableHead>
                                     <TableRow variant="header">
                                         <TableHeader className="w-12">{t('global.number')}</TableHeader>
-                                        <TableHeader>{t('global.description')}</TableHeader>
+                                        <TableHeader className="min-w-[180px]">{t('global.description')}</TableHeader>
                                         <TableHeader>{t('global.by')}</TableHeader>
-                                        <TableHeader>{t('global.date')}</TableHeader>
-                                        <TableHeader>{t('global.vital_signs')}</TableHeader>
+                                        <TableHeader>{t('global.created_at')}</TableHeader>
+                                        <TableHeader>{t('global.time')}</TableHeader>
+                                        <TableHeader className="min-w-[180px]">{t('global.vital_signs')}</TableHeader>
                                         <TableHeader>{t('global.antibiotic')}</TableHeader>
                                         <TableHeader>{t('global.food_type')}</TableHeader>
                                         <TableHeader>{t('global.intake')}</TableHeader>
@@ -441,6 +482,9 @@ export default function HospitalizationVisitSection({
                                             <TableCell muted>{visit.doctor_name ?? '—'}</TableCell>
                                             <TableCell muted dir="ltr">
                                                 {visit.visit_date ?? '—'}
+                                            </TableCell>
+                                            <TableCell muted dir="ltr">
+                                                {visit.visit_time ?? '—'}
                                             </TableCell>
                                             <TableCell>
                                                 <VitalSignBadges visit={visit} t={t} />
@@ -465,10 +509,7 @@ export default function HospitalizationVisitSection({
                                                 <SectionActionButton
                                                     icon="bx-expand"
                                                     title={t('global.view')}
-                                                    onClick={() => {
-                                                        setSelectedVisit(visit);
-                                                        setDetailsOpen(true);
-                                                    }}
+                                                    onClick={() => openDetails(visit)}
                                                     colorClass="text-cyan-600 hover:bg-cyan-50 dark:text-cyan-400 dark:hover:bg-cyan-900/30"
                                                 />
                                                 {data?.permissions.edit && !isDischarged && (
@@ -499,7 +540,7 @@ export default function HospitalizationVisitSection({
                 )}
             </SectionShell>
 
-            <Modal show={formOpen} onClose={closeForm} size="4xl">
+            <Modal show={formOpen} onClose={closeForm} size="7xl">
                 <form onSubmit={handleSubmit}>
                     <ModalHeader>
                         {editingVisitId ? t('global.edit') : t('global.add_visit')}
@@ -519,12 +560,12 @@ export default function HospitalizationVisitSection({
                 </form>
             </Modal>
 
-            <Modal show={detailsOpen} onClose={() => setDetailsOpen(false)} size="4xl">
+            <Modal show={detailsOpen} onClose={() => setDetailsOpen(false)} size="7xl">
                 <ModalHeader>{t('global.visits')}</ModalHeader>
                 <ModalBody className="space-y-4">
                     {selectedVisit && (
                         <>
-                            <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 <div>
                                     <p className="text-xs font-medium uppercase text-gray-500">
                                         {t('global.by')}
@@ -533,10 +574,18 @@ export default function HospitalizationVisitSection({
                                 </div>
                                 <div>
                                     <p className="text-xs font-medium uppercase text-gray-500">
-                                        {t('global.date')}
+                                        {t('global.created_at')}
                                     </p>
                                     <p className="mt-1" dir="ltr">
                                         {selectedVisit.visit_date ?? '—'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        {t('global.time')}
+                                    </p>
+                                    <p className="mt-1" dir="ltr">
+                                        {selectedVisit.visit_time ?? '—'}
                                     </p>
                                 </div>
                             </div>
@@ -550,7 +599,7 @@ export default function HospitalizationVisitSection({
 
                             <div>
                                 <p className="mb-2 text-sm font-semibold">{t('global.vital_signs')}</p>
-                                <VitalSignBadges visit={selectedVisit} t={t} />
+                                <VitalSignDetails visit={selectedVisit} t={t} />
                             </div>
 
                             <div className="grid gap-4 sm:grid-cols-2">

@@ -131,8 +131,18 @@ export function HospitalizationVisitsSection({ appointmentId }: SectionProps) {
             columns={[
                 { key: 'description', header: t('global.description') },
                 { key: 'doctor_name', header: t('global.by'), muted: true },
-                { key: 'visit_date', header: t('global.visit_date'), muted: true },
+                { key: 'visit_date', header: t('global.created_at'), muted: true },
+                { key: 'visit_time', header: t('global.time'), muted: true },
                 { key: 'bp', header: t('global.bp'), muted: true },
+                { key: 'pr', header: t('global.pr'), muted: true },
+                { key: 'rr', header: t('global.rr'), muted: true },
+                { key: 't', header: t('global.t'), muted: true },
+                { key: 'spo2', header: t('global.spo2'), muted: true },
+                { key: 'pain', header: t('global.pain'), muted: true },
+                { key: 'antibiotic', header: t('global.antibiotic'), muted: true },
+                { key: 'food_type_names', header: t('global.food_type'), muted: true },
+                { key: 'intake', header: t('global.intake'), muted: true },
+                { key: 'output', header: t('global.output'), muted: true },
             ]}
         />
     );

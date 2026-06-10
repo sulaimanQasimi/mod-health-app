@@ -67,6 +67,20 @@ class VisitController extends Controller
         ]);
     }
 
+    public function show(Hospitalization $hospitalization, Visit $visit): JsonResponse
+    {
+        $this->ensureAccessible($hospitalization);
+        abort_unless($this->canView(request()->user()), 403);
+        abort_unless((int) $visit->hospitalization_id === (int) $hospitalization->id, 404);
+
+        $foodTypes = FoodType::query()->orderBy('name')->get(['id', 'name'])->keyBy('id');
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatVisit($visit->loadMissing('doctor:id,name'), $foodTypes),
+        ]);
+    }
+
     public function store(Request $request, Hospitalization $hospitalization): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
@@ -206,6 +220,7 @@ class VisitController extends Controller
             'description' => $visit->description,
             'doctor_name' => $visit->doctor?->name,
             'visit_date' => $visit->created_at ? verta($visit->created_at)->format('Y/m/d') : null,
+            'visit_time' => $visit->created_at?->format('H:i'),
             'bp' => $visit->bp,
             'pr' => $visit->pr,
             'rr' => $visit->rr,
@@ -223,18 +238,37 @@ class VisitController extends Controller
     /**
      * @return list<int>
      */
-    private function decodeFoodTypeIds(?string $foodTypeJson): array
+    private function decodeFoodTypeIds(mixed $foodTypeValue): array
     {
-        if (! $foodTypeJson) {
+        if ($foodTypeValue === null || $foodTypeValue === '') {
             return [];
         }
 
-        $decoded = json_decode($foodTypeJson, true);
+        if (is_array($foodTypeValue)) {
+            return array_values(array_map('intval', $foodTypeValue));
+        }
 
-        if (! is_array($decoded)) {
+        if (is_numeric($foodTypeValue)) {
+            return [(int) $foodTypeValue];
+        }
+
+        if (! is_string($foodTypeValue)) {
             return [];
         }
 
-        return array_values(array_map('intval', $decoded));
+        $decoded = json_decode($foodTypeValue, true);
+        if (is_array($decoded)) {
+            return array_values(array_map('intval', $decoded));
+        }
+
+        if (ctype_digit($foodTypeValue)) {
+            return [(int) $foodTypeValue];
+        }
+
+        return collect(explode(',', $foodTypeValue))
+            ->map(fn (string $id) => (int) trim($id))
+            ->filter(fn (int $id) => $id > 0)
+            ->values()
+            ->all();
     }
 }

@@ -132,7 +132,6 @@ export default function IcuDischargeModal({
         const payload: Record<string, string> = {
             discharge_status: form.discharge_status,
             is_discharged: '1',
-            discharged_at: new Date().toISOString(),
         };
 
         if (form.discharge_status === 'recovered') {

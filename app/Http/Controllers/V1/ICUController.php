@@ -223,7 +223,7 @@ class ICUController extends Controller
 
         if ($request->filled('discharge_status')) {
             $data['is_discharged'] = 1;
-            $data['discharged_at'] = $data['discharged_at'] ?? now();
+            $data['discharged_at'] = now();
             if ($request->discharge_status === 'moved' && empty($data['transfer_date'])) {
                 $data['transfer_date'] = now()->toDateString();
             }

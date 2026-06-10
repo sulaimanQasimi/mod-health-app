@@ -108,10 +108,18 @@ trait ManagesIcuListing
         }
     }
 
-    protected function formatIcuDate(?\Illuminate\Support\Carbon $date): ?string
+    protected function formatIcuDate(\Illuminate\Support\Carbon|string|null $date): ?string
     {
         if (! $date) {
             return null;
+        }
+
+        if (! $date instanceof \Illuminate\Support\Carbon) {
+            try {
+                $date = \Illuminate\Support\Carbon::parse($date);
+            } catch (\Throwable) {
+                return null;
+            }
         }
 
         try {

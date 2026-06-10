@@ -8,6 +8,7 @@ import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import HospitalizationSummary from '../../Components/Hospitalizations/HospitalizationSummary';
 import HospitalizationDiabetesChartSection from '../../Components/Hospitalizations/HospitalizationDiabetesChartSection';
 import HospitalizationNurseNoteSection from '../../Components/Hospitalizations/HospitalizationNurseNoteSection';
+import HospitalizationNutritionCareSection from '../../Components/Hospitalizations/HospitalizationNutritionCareSection';
 import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
 import HospitalizationVitalSignSection from '../../Components/Hospitalizations/HospitalizationVitalSignSection';
 import {
@@ -40,6 +41,7 @@ interface ShowProps {
         visits: boolean;
         diabetes_charts: boolean;
         nurse_notes: boolean;
+        nutrition_cares: boolean;
     };
     urls: {
         index: string;
@@ -252,6 +254,13 @@ export default function HospitalizationsShow({
                     />
                 )}
 
+                {sectionPermissions.nutrition_cares && (
+                    <HospitalizationNutritionCareSection
+                        hospitalizationId={hospitalization.id}
+                        isDischarged={hospitalization.is_discharged}
+                    />
+                )}
+
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 px-1 pt-1">
                         <i className="bx bx-clinic text-lg text-emerald-600 dark:text-emerald-400" />
@@ -286,19 +295,6 @@ export default function HospitalizationsShow({
                                 row.medicine_name,
                                 row.nurse_name,
                             ])}
-                            emptyMessage={t('global.no_records_found')}
-                        />
-                    </UnderReviewSectionPanel>
-
-                    <UnderReviewSectionPanel
-                        id="hospitalization-nutrition"
-                        icon="bx-food-menu"
-                        title={t('global.nutrition_care')}
-                        count={hospitalization.nutrition_cares.length}
-                    >
-                        <ClinicalDataTable
-                            headers={[t('global.date'), t('global.nurse')]}
-                            rows={hospitalization.nutrition_cares.map((row) => [row.date, row.nurse_name])}
                             emptyMessage={t('global.no_records_found')}
                         />
                     </UnderReviewSectionPanel>

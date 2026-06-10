@@ -11,6 +11,7 @@ use App\Models\FoodType;
 use App\Models\Hospitalization;
 use App\Models\MedicationAdministrationRecord;
 use App\Models\NurseNote;
+use App\Models\NutritionCare;
 use App\Models\Relation;
 use App\Models\Room;
 use App\Models\User;
@@ -173,8 +174,6 @@ class HospitalizationController extends Controller
             'bloodBanks:id,hospitalization_id,group,created_at',
             'vitalSigns.vitalSignType:id,name',
             'vitalSigns.schedules.nurse:id,first_name,last_name',
-            'nutritionCares.createdBy:id,name,last_name',
-            'nutritionCares.nurse:id,first_name,last_name',
             'nursingAssessments:id,morphable_id,morphable_type,created_at',
             'advices:id,hospitalization_id,description,created_at',
             'complaints:id,hospitalization_id,description,created_at',
@@ -208,6 +207,7 @@ class HospitalizationController extends Controller
                 'visits' => $user->can('show-hospitalizations-menu'),
                 'diabetes_charts' => $user->can('viewAny', DiabetesChart::class),
                 'nurse_notes' => $user->can('viewAny', NurseNote::class),
+                'nutrition_cares' => $user->can('viewAny', NutritionCare::class),
             ],
             'urls' => [
                 'index' => route('react.hospitalizations.index'),
@@ -795,13 +795,6 @@ class HospitalizationController extends Controller
                 'type_name' => $vital->vitalSignType?->name,
                 'schedules_count' => $vital->schedules->count(),
                 'recorded_at' => $this->formatDate($vital->created_at),
-            ])->values()->all(),
-            'nutrition_cares' => $hospitalization->nutritionCares->map(fn ($care) => [
-                'id' => $care->id,
-                'date' => $care->date,
-                'nurse_name' => $care->nurse
-                    ? trim($care->nurse->first_name.' '.$care->nurse->last_name)
-                    : null,
             ])->values()->all(),
             'nursing_assessments_count' => $hospitalization->nursingAssessments->count(),
             'advices_count' => $hospitalization->advices->count(),

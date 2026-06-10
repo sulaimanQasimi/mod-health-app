@@ -100,7 +100,6 @@ export interface HospitalizationDetail {
     blood_banks: HospitalizationBloodBank[];
     medication_records: HospitalizationClinicalRow[];
     vital_signs: HospitalizationClinicalRow[];
-    nutrition_cares: HospitalizationClinicalRow[];
     nursing_assessments_count: number;
     advices_count: number;
     complaints_count: number;

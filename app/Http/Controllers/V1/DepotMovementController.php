@@ -64,33 +64,53 @@ class DepotMovementController extends Controller
 
         DB::transaction(function () use ($data) {
             Depot::whereKey($data['from_depot_id'])->lockForUpdate()->firstOrFail();
-            $this->stockService->lockLedger((int) $data['from_depot_id'], DepotTransaction::ITEM_MEDICINE, (int) $data['medicine_id']);
-            $this->stockService->ensureAvailable(DepotTransaction::ITEM_MEDICINE, (int) $data['from_depot_id'], (int) $data['medicine_id'], (int) $data['quantity']);
 
-            $transactionNumber = DepotTransaction::nextTransactionNumber();
             $transactionDate = $data['transaction_date'] ?? now()->toDateString();
 
-            $fulfillment = PharmacyFulfillment::create([
-                'medicine_id' => $data['medicine_id'],
-                'unit_type' => $data['unit_id'] ? optional(Unit::find($data['unit_id']))->name : null,
-                'amount' => (string) $data['quantity'],
-                'form_no' => $transactionNumber,
-                'date' => $transactionDate,
-                'pharmacy_id' => $data['pharmacy_id'],
-                'user_id' => Auth::id(),
-            ]);
+            foreach ($data['items'] as $item) {
+                $medicineId = (int) $item['medicine_id'];
+                $quantity = (int) $item['quantity'];
 
-            DepotTransaction::create([
-                ...$data,
-                'transaction_number' => $transactionNumber,
-                'depot_id' => $data['from_depot_id'],
-                'type' => DepotTransaction::TYPE_DEPOT_TO_PHARMACY,
-                'transaction_type' => 'out',
-                'status' => DepotTransaction::STATUS_COMPLETED,
-                'user_id' => Auth::id(),
-                'transactionable_type' => PharmacyFulfillment::class,
-                'transactionable_id' => $fulfillment->id,
-            ]);
+                $this->stockService->lockLedger((int) $data['from_depot_id'], DepotTransaction::ITEM_MEDICINE, $medicineId);
+                $this->stockService->ensureAvailable(
+                    DepotTransaction::ITEM_MEDICINE,
+                    (int) $data['from_depot_id'],
+                    $medicineId,
+                    $quantity
+                );
+
+                $transactionNumber = DepotTransaction::nextTransactionNumber();
+
+                $fulfillment = PharmacyFulfillment::create([
+                    'medicine_id' => $medicineId,
+                    'unit_type' => ! empty($item['unit_id']) ? optional(Unit::find($item['unit_id']))->name : null,
+                    'amount' => (string) $quantity,
+                    'form_no' => $transactionNumber,
+                    'date' => $transactionDate,
+                    'pharmacy_id' => $data['pharmacy_id'],
+                    'user_id' => Auth::id(),
+                ]);
+
+                DepotTransaction::create([
+                    'from_depot_id' => $data['from_depot_id'],
+                    'depot_id' => $data['from_depot_id'],
+                    'pharmacy_id' => $data['pharmacy_id'],
+                    'medicine_id' => $medicineId,
+                    'unit_id' => $item['unit_id'] ?? null,
+                    'batch_number' => $item['batch_number'] ?? null,
+                    'expiry_date' => $item['expiry_date'] ?? null,
+                    'quantity' => $quantity,
+                    'transaction_date' => $transactionDate,
+                    'notes' => $data['notes'] ?? null,
+                    'transaction_number' => $transactionNumber,
+                    'type' => DepotTransaction::TYPE_DEPOT_TO_PHARMACY,
+                    'transaction_type' => 'out',
+                    'status' => DepotTransaction::STATUS_COMPLETED,
+                    'user_id' => Auth::id(),
+                    'transactionable_type' => PharmacyFulfillment::class,
+                    'transactionable_id' => $fulfillment->id,
+                ]);
+            }
         });
 
         return redirect()

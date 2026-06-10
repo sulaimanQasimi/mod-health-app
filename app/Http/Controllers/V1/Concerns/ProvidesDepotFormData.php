@@ -48,9 +48,10 @@ trait ProvidesDepotFormData
                 'id' => $item->id,
                 'name' => $item->name,
             ])->values()->all(),
-            'activeDepots' => Depot::query()->where('is_active', true)->orderBy('name')->get(['id', 'name'])->map(fn ($item) => [
+            'activeDepots' => Depot::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'pharmacy_id'])->map(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
+                'pharmacy_id' => $item->pharmacy_id,
             ])->values()->all(),
             'medicines' => Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(['id', 'name'])->map(fn ($item) => [
                 'id' => $item->id,

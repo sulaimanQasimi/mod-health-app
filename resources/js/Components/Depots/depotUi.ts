@@ -7,6 +7,12 @@ export const DEPOT_PRIMARY_BTN_CLASS =
 export const DEPOT_SUCCESS_BTN_CLASS =
     'inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:opacity-95 disabled:opacity-60';
 
+export const DEPOT_PHARMACY_BTN_CLASS =
+    'inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:opacity-95 disabled:opacity-60';
+
+export const DEPOT_SECTION_CLASS =
+    'rounded-xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-700/60 dark:bg-gray-800/30';
+
 export function depotStatusBadgeColor(status: string): 'info' | 'success' | 'failure' | 'warning' | 'gray' {
     if (status === 'completed' || status === 'fulfilled' || status === 'approved') return 'success';
     if (status === 'cancelled' || status === 'rejected') return 'failure';

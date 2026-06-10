@@ -57,12 +57,16 @@ export interface DepotDetail {
     assignments: DepotUserAssignment[];
 }
 
+export interface DepotActiveOption extends OptionItem {
+    pharmacy_id?: number | null;
+}
+
 export interface DepotFormData {
     branches: OptionItem[];
     departments: OptionItem[];
     pharmacies: OptionItem[];
     depots: OptionItem[];
-    activeDepots: OptionItem[];
+    activeDepots: DepotActiveOption[];
     medicines: OptionItem[];
     tools: OptionItem[];
     units: OptionItem[];

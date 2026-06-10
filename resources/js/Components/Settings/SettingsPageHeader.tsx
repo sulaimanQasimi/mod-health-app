@@ -1,6 +1,10 @@
 import { ReactNode } from 'react';
 import BackLink from '../ui/BackLink';
 
+export function SettingsPageActions({ children }: { children: ReactNode }) {
+    return <div className="flex flex-wrap items-center gap-2">{children}</div>;
+}
+
 interface SettingsPageHeaderProps {
     title: string;
     subtitle?: string;
@@ -29,13 +33,13 @@ export default function SettingsPageHeader({
                     <i className={`bx ${icon} text-xl`} />
                 </div>
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h1>
+                    <h1 className="text-xl text-gray-900 dark:text-white">{title}</h1>
                     {subtitle && (
                         <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
                     )}
                 </div>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
                 {action}
                 {backHref && <BackLink href={backHref}>{backLabel}</BackLink>}
             </div>

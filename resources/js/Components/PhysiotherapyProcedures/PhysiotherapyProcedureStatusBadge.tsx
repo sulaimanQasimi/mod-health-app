@@ -25,5 +25,9 @@ export default function PhysiotherapyProcedureStatusBadge({ status }: Physiother
 
     const color = STATUS_COLORS[status as PhysiotherapyProcedureStatus] ?? 'gray';
 
-    return <Badge color={color}>{labels[status] ?? status}</Badge>;
+    return (
+        <Badge color={color} className="w-fit font-normal">
+            {labels[status] ?? status}
+        </Badge>
+    );
 }

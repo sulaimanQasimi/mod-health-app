@@ -1282,6 +1282,7 @@ return [
     'mark_all_as_read' => 'Mark All As Read',
     'avatar' => 'Avatar',
     'reception' => 'Reception',
+    'appointment' => 'Appointment',
     'appointments' => 'Appointments',
     'my_appointments' => 'My Appointments',
     'all_appointments' => 'All Appointments',

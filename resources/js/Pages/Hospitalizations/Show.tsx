@@ -17,7 +17,7 @@ import {
     HOSPITALIZATION_DISCHARGED_PANEL_CLASS,
     HOSPITALIZATION_MUTED_NOTE_CLASS,
 } from '../../Components/Hospitalizations/hospitalizationUi';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import UnderReviewSectionPanel, {
     UnderReviewDataTable,
     UnderReviewDataTableBody,
@@ -29,7 +29,7 @@ import UnderReviewSectionPanel, {
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { HospitalizationDetail, HospitalizationShowPermissions } from '../../types/hospitalization';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH, settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface ShowProps {
     hospitalization: HospitalizationDetail;
@@ -151,32 +151,51 @@ export default function HospitalizationsShow({
                     backHref={urls.index}
                     backLabel={t('global.back')}
                     action={
-                        <div className="flex flex-wrap gap-2">
+                        <SettingsPageActions>
                             {permissions.edit && (
-                                <Button as={Link} href={urls.edit} color="success" size="sm">
+                                <Button
+                                    as={Link}
+                                    href={urls.edit}
+                                    size="sm"
+                                    className={settingsHeaderButtonClass.secondary}
+                                >
                                     <i className="bx bx-edit me-2" />
                                     {t('global.edit')}
                                 </Button>
                             )}
                             {permissions.change_room_bed && (
-                                <Button as="a" href={urls.change_room_bed} color="warning" size="sm">
+                                <Button
+                                    as="a"
+                                    href={urls.change_room_bed}
+                                    size="sm"
+                                    className={settingsHeaderButtonClass.warning}
+                                >
                                     <i className="bx bx-transfer me-2" />
                                     {t('global.change_room_bed')}
                                 </Button>
                             )}
                             {permissions.discharge && (
-                                <Button color="failure" size="sm" onClick={() => setDischargeOpen(true)}>
+                                <Button
+                                    size="sm"
+                                    onClick={() => setDischargeOpen(true)}
+                                    className={settingsHeaderButtonClass.danger}
+                                >
                                     <i className="bx bx-log-out me-2" />
                                     {t('global.discharge_patient')}
                                 </Button>
                             )}
                             {urls.appointment && (
-                                <Button as={Link} href={urls.appointment} color="light" size="sm">
+                                <Button
+                                    as={Link}
+                                    href={urls.appointment}
+                                    size="sm"
+                                    className={settingsHeaderButtonClass.secondary}
+                                >
                                     <i className="bx bx-calendar me-2" />
                                     {t('global.appointment')}
                                 </Button>
                             )}
-                        </div>
+                        </SettingsPageActions>
                     }
                 />
 

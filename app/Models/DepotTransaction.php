@@ -42,6 +42,7 @@ class DepotTransaction extends Model
         'quantity',
         'from_depot_id',
         'to_depot_id',
+        'depot_request_id',
         'transaction_date',
         'issued_date',
         'expiry_date',
@@ -206,7 +207,12 @@ class DepotTransaction extends Model
 
     public function depotRequest()
     {
-        return $this->hasOne(DepotRequest::class, 'depot_transaction_id');
+        return $this->belongsTo(DepotRequest::class);
+    }
+
+    public function depotRequestItem()
+    {
+        return $this->hasOne(DepotRequestItem::class);
     }
 
     public function scopeForDepot($query, int $depotId)

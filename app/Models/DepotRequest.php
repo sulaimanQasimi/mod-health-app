@@ -18,15 +18,17 @@ class DepotRequest extends Model
     public const STATUS_FULFILLED = 'fulfilled';
     public const STATUS_CANCELLED = 'cancelled';
 
+    public const WORKFLOW_STEPS = [
+        self::STATUS_DRAFT,
+        self::STATUS_PENDING,
+        self::STATUS_APPROVED,
+        self::STATUS_FULFILLED,
+    ];
+
     protected $fillable = [
         'request_number',
         'requesting_depot_id',
         'source_depot_id',
-        'medicine_id',
-        'tool_id',
-        'unit_id',
-        'quantity',
-        'batch_number',
         'notes',
         'status',
         'requested_by',
@@ -35,11 +37,9 @@ class DepotRequest extends Model
         'approved_at',
         'fulfilled_at',
         'rejection_reason',
-        'depot_transaction_id',
     ];
 
     protected $casts = [
-        'quantity' => 'integer',
         'approved_at' => 'datetime',
         'fulfilled_at' => 'datetime',
     ];
@@ -73,30 +73,52 @@ class DepotRequest extends Model
         return 'DRQ-' . now()->format('YmdHis') . '-' . str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
     }
 
-    public function itemType(): ?string
+    public function workflowRank(): int
     {
-        if ($this->medicine_id) {
-            return DepotTransaction::ITEM_MEDICINE;
+        $rank = array_search($this->status, self::WORKFLOW_STEPS, true);
+
+        return $rank === false ? 0 : $rank;
+    }
+
+    public function totalQuantity(): int
+    {
+        return (int) $this->items->sum('quantity');
+    }
+
+    public function itemsSummary(): string
+    {
+        $names = $this->items->map(fn (DepotRequestItem $item) => $item->itemName())->filter()->values();
+
+        if ($names->isEmpty()) {
+            return '-';
         }
 
-        if ($this->tool_id) {
-            return DepotTransaction::ITEM_TOOL;
+        if ($names->count() === 1) {
+            return $names->first();
         }
 
-        return null;
+        return $names->take(2)->join(', ') . ($names->count() > 2 ? ' +' . ($names->count() - 2) : '');
     }
 
     public function itemName(): string
     {
-        if ($this->medicine_id) {
-            return $this->medicine?->name ?? '-';
+        $this->loadMissing(['items.medicine', 'items.tool']);
+
+        return $this->itemsSummary();
+    }
+
+    public function getQuantityAttribute(): int
+    {
+        if ($this->relationLoaded('items')) {
+            return $this->totalQuantity();
         }
 
-        if ($this->tool_id) {
-            return $this->tool?->displayName() ?? '-';
-        }
+        return (int) $this->items()->sum('quantity');
+    }
 
-        return '-';
+    public function depotTransaction()
+    {
+        return $this->hasOne(DepotTransaction::class, 'depot_request_id')->latestOfMany('id');
     }
 
     public function requestingDepot()
@@ -109,19 +131,14 @@ class DepotRequest extends Model
         return $this->belongsTo(Depot::class, 'source_depot_id');
     }
 
-    public function medicine()
+    public function items()
     {
-        return $this->belongsTo(Medicine::class);
+        return $this->hasMany(DepotRequestItem::class)->orderBy('sort_order');
     }
 
-    public function tool()
+    public function transactions()
     {
-        return $this->belongsTo(Tool::class);
-    }
-
-    public function unit()
-    {
-        return $this->belongsTo(Unit::class);
+        return $this->hasMany(DepotTransaction::class);
     }
 
     public function requestedBy()
@@ -137,11 +154,6 @@ class DepotRequest extends Model
     public function fulfilledBy()
     {
         return $this->belongsTo(User::class, 'fulfilled_by');
-    }
-
-    public function depotTransaction()
-    {
-        return $this->belongsTo(DepotTransaction::class);
     }
 
     public function statusLogs()

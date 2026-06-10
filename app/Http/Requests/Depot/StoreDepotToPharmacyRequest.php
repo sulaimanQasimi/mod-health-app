@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Depot;
 
+use App\Http\Requests\Depot\Concerns\ValidatesDepotPharmacyItems;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDepotToPharmacyRequest extends FormRequest
 {
+    use ValidatesDepotPharmacyItems;
+
     public function authorize(): bool
     {
         return true;
@@ -16,14 +19,10 @@ class StoreDepotToPharmacyRequest extends FormRequest
         return [
             'from_depot_id' => ['required', 'exists:depots,id'],
             'pharmacy_id' => ['required', 'exists:pharmacies,id'],
-            'medicine_id' => ['required', 'exists:medicines,id'],
-            'unit_id' => ['nullable', 'exists:units,id'],
-            'batch_number' => ['nullable', 'string', 'max:255'],
-            'quantity' => ['required', 'integer', 'min:1'],
             'transaction_date' => ['nullable', 'date'],
             'issued_date' => ['nullable', 'date'],
-            'expiry_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:2000'],
+            ...$this->depotPharmacyItemRules(),
         ];
     }
 }

@@ -324,11 +324,35 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('depots')->name('depots.')->group(function () {
         Route::get('/', [DepotController::class, 'index'])->name('index');
+        Route::get('/create', [DepotController::class, 'create'])->name('create');
+        Route::post('/', [DepotController::class, 'store'])->name('store');
+        Route::get('/stock/available', [DepotTransactionController::class, 'availableStock'])->name('stock.available');
         Route::get('/transactions', [DepotTransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transactions/create', [DepotTransactionController::class, 'create'])->name('transactions.create');
+        Route::post('/transactions', [DepotTransactionController::class, 'store'])->name('transactions.store');
+        Route::get('/transactions/{depotTransaction}', [DepotTransactionController::class, 'show'])->name('transactions.show');
+        Route::patch('/transactions/{depotTransaction}/cancel', [DepotTransactionController::class, 'cancel'])->name('transactions.cancel');
         Route::get('/requests', [DepotRequestController::class, 'index'])->name('requests.index');
+        Route::get('/requests/create', [DepotRequestController::class, 'create'])->name('requests.create');
+        Route::post('/requests', [DepotRequestController::class, 'store'])->name('requests.store');
+        Route::get('/requests/{depotRequest}', [DepotRequestController::class, 'show'])->name('requests.show');
+        Route::get('/requests/{depotRequest}/edit', [DepotRequestController::class, 'edit'])->name('requests.edit');
+        Route::put('/requests/{depotRequest}', [DepotRequestController::class, 'update'])->name('requests.update');
+        Route::post('/requests/{depotRequest}/submit', [DepotRequestController::class, 'submit'])->name('requests.submit');
+        Route::post('/requests/{depotRequest}/approve', [DepotRequestController::class, 'approve'])->name('requests.approve');
+        Route::post('/requests/{depotRequest}/reject', [DepotRequestController::class, 'reject'])->name('requests.reject');
+        Route::post('/requests/{depotRequest}/fulfill', [DepotRequestController::class, 'fulfill'])->name('requests.fulfill');
+        Route::post('/requests/{depotRequest}/cancel', [DepotRequestController::class, 'cancel'])->name('requests.cancel');
         Route::get('/movements/depot-to-depot', [DepotMovementController::class, 'depotToDepot'])->name('movements.depot-to-depot');
         Route::get('/movements/depot-to-pharmacy', [DepotMovementController::class, 'depotToPharmacy'])->name('movements.depot-to-pharmacy');
+        Route::post('/movements/depot-to-pharmacy', [DepotMovementController::class, 'storeDepotToPharmacy'])->name('movements.depot-to-pharmacy.store');
         Route::get('/reports', [DepotReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export', [DepotReportController::class, 'export'])->name('reports.export');
+        Route::get('/{depot}/stock', [DepotController::class, 'stock'])->name('stock');
+        Route::get('/{depot}/edit', [DepotController::class, 'edit'])->name('edit');
+        Route::get('/{depot}', [DepotController::class, 'show'])->name('show');
+        Route::match(['put', 'post'], '/{depot}', [DepotController::class, 'update'])->name('update');
+        Route::delete('/{depot}', [DepotController::class, 'destroy'])->name('destroy');
     });
 
     Route::get('/tools', [ToolController::class, 'index'])->name('tools.index');

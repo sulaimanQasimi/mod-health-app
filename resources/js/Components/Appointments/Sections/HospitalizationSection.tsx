@@ -22,6 +22,7 @@ import {
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
 import AppointmentSectionAccordion, {
+    AccordionButton,
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
@@ -252,14 +253,9 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
                     <SectionLoadingState />
                 ) : (
                     <>
-                        {data?.permissions.create && (
-                            <div className="mb-4 flex justify-end">
-                                <Button size="sm" color="success" onClick={() => setCreateOpen(true)}>
-                                    <i className="bx bx-plus me-2" />
-                                    {t('global.add')}
-                                </Button>
-                            </div>
-                        )}
+                        <AccordionButton onClick={() => setCreateOpen(true)} permission={data?.permissions.create}>
+                            {t('global.add')}
+                        </AccordionButton>
 
                         {data && data.items.length > 0 ? (
                             <Table>

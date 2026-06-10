@@ -10,6 +10,7 @@ import {
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useAppointmentSection } from '../../../hooks/useAppointmentSection';
 import AppointmentSectionAccordion, {
+    AccordionActionBar,
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
@@ -74,9 +75,9 @@ export default function SimpleTableSection<T extends { id?: number | string }>({
             ) : (
                 <>
                     {headerAction && data && (
-                        <div className="mb-4 flex justify-end">
+                        <AccordionActionBar>
                             {headerAction({ permissions: data.permissions, reload })}
-                        </div>
+                        </AccordionActionBar>
                     )}
 
                     {data && data.items.length > 0 ? (

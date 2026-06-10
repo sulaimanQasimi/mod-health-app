@@ -22,6 +22,7 @@ import {
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
 import AppointmentSectionAccordion, {
+    AccordionButton,
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
@@ -175,14 +176,9 @@ export default function NephrologySection({ appointmentId }: NephrologySectionPr
                 <SectionLoadingState />
             ) : (
                 <>
-                    {data?.permissions.create && (
-                        <div className="mb-4 flex justify-end">
-                            <Button size="sm" color="blue" onClick={() => setCreateOpen(true)}>
-                                <i className="bx bx-plus me-2" />
-                                {t('global.start_nephrology_visit')}
-                            </Button>
-                        </div>
-                    )}
+                    <AccordionButton onClick={() => setCreateOpen(true)} permission={data?.permissions.create}>
+                        {t('global.start_nephrology_visit')}
+                    </AccordionButton>
 
                     {data && data.items.length > 0 ? (
                         <Table>

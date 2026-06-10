@@ -1,5 +1,35 @@
-import { Badge, Spinner } from 'flowbite-react';
+import { Badge, Button, Spinner } from 'flowbite-react';
 import { ReactNode, useState } from 'react';
+
+interface AccordionButtonProps {
+    onClick: () => void;
+    children: ReactNode;
+    /** When false the button is not rendered. Defaults to true. */
+    permission?: boolean;
+}
+
+export function AccordionButton({
+    onClick,
+    children,
+    permission = true,
+}: AccordionButtonProps) {
+    if (!permission) {
+        return null;
+    }
+
+    return (
+        <div className="mb-4 flex justify-end">
+            <Button size="sm" color="blue" onClick={onClick}>
+                <i className="bx bx-plus me-2 text-lg" />
+                {children}
+            </Button>
+        </div>
+    );
+}
+
+export function AccordionActionBar({ children }: { children: ReactNode }) {
+    return <div className="mb-4 flex justify-end">{children}</div>;
+}
 
 interface AppointmentSectionAccordionProps {
     id: string;

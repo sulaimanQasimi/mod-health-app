@@ -3,7 +3,7 @@ import { FormEvent, useState } from 'react';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useAppointmentSection } from '../../../hooks/useAppointmentSection';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/Table';
-import AppointmentSectionAccordion, { SectionEmptyState, SectionLoadingState } from './AppointmentSectionAccordion';
+import AppointmentSectionAccordion, { AccordionButton, SectionEmptyState, SectionLoadingState } from './AppointmentSectionAccordion';
 import { SectionActionButton } from './SimpleTableSection';
 
 interface BloodBankSectionProps {
@@ -53,14 +53,9 @@ export default function BloodBankSection({ appointmentId }: BloodBankSectionProp
                 <SectionLoadingState />
             ) : (
                 <>
-                    {data?.permissions.create && (
-                        <div className="mb-4 flex justify-end">
-                            <Button size="sm" color="success" onClick={() => setOpen(true)}>
-                                <i className="bx bx-plus me-2" />
-                                {t('global.add')}
-                            </Button>
-                        </div>
-                    )}
+                    <AccordionButton onClick={() => setOpen(true)} permission={data?.permissions.create}>
+                        {t('global.add')}
+                    </AccordionButton>
                     {data && data.items.length > 0 ? (
                         <Table>
                             <TableHead>

@@ -24,6 +24,7 @@ import SearchableSelect from '../../ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
 import {
+    AccordionButton,
     SectionEmptyState,
     SectionLoadingState,
     SectionShell,
@@ -265,14 +266,9 @@ export default function LabTestSection({ appointmentId, embedded = false }: LabT
                 <SectionLoadingState />
             ) : (
                 <>
-                    {data?.permissions.create && (
-                        <div className="mb-4 flex justify-end">
-                            <Button size="sm" color="blue" onClick={openCreate}>
-                                <i className="bx bx-plus me-2" />
-                                {t('global.add_lab_test_registration')}
-                            </Button>
-                        </div>
-                    )}
+                    <AccordionButton onClick={openCreate} permission={data?.permissions.create}>
+                        {t('global.add_lab_test_registration')}
+                    </AccordionButton>
 
                     {data && data.items.length > 0 ? (
                         <Table>

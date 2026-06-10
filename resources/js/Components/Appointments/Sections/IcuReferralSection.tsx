@@ -22,6 +22,7 @@ import SearchableSelect from '../../ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
 import AppointmentSectionAccordion, {
+    AccordionButton,
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
@@ -271,14 +272,9 @@ export default function IcuReferralSection({ appointmentId }: IcuReferralSection
                     <SectionLoadingState />
                 ) : (
                     <>
-                        {data?.permissions.create && (
-                            <div className="mb-4 flex justify-end">
-                                <Button size="sm" color="info" onClick={openCreate}>
-                                    <i className="bx bx-plus me-2" />
-                                    {t('global.refere_to_icu')}
-                                </Button>
-                            </div>
-                        )}
+                        <AccordionButton onClick={openCreate} permission={data?.permissions.create}>
+                            {t('global.refere_to_icu')}
+                        </AccordionButton>
 
                         {(data?.items.length ?? 0) > 0 ? (
                             <Table embedded className="min-w-[900px]">

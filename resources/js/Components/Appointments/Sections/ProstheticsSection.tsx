@@ -22,6 +22,7 @@ import {
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
 import AppointmentSectionAccordion, {
+    AccordionButton,
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
@@ -164,14 +165,9 @@ export default function ProstheticsSection({ appointmentId }: ProstheticsSection
                 <SectionLoadingState />
             ) : (
                 <>
-                    {data?.permissions.create_referral && (
-                        <div className="mb-4 flex justify-end">
-                            <Button size="sm" color="blue" onClick={() => setCreateOpen(true)}>
-                                <i className="bx bx-plus me-2" />
-                                {t('global.prosthetics_new_referral')}
-                            </Button>
-                        </div>
-                    )}
+                    <AccordionButton onClick={() => setCreateOpen(true)} permission={data?.permissions.create_referral}>
+                        {t('global.prosthetics_new_referral')}
+                    </AccordionButton>
 
                     {data && data.items.length > 0 ? (
                         <Table>

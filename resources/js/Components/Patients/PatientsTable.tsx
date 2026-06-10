@@ -13,7 +13,8 @@ import {
     TableHeader,
     TableRow,
 } from '../ui/Table';
-import { TableActionButton, TableActionLink, TableActions } from '../ui/TableActions';
+import TableActionButton from '../ui/TableActionButton';
+import { TableActions } from '../ui/TableActions';
 
 interface PatientsTableProps {
     patients: PatientListItem[];
@@ -95,28 +96,17 @@ export default function PatientsTable({
                             </TableCell>
                             <TableCell align="center" className="whitespace-nowrap">
                                 <TableActions>
-                                    <TableActionLink
-                                        href={`${urls.show}/${patient.id}`}
-                                        icon="bx-show"
-                                        title={t('global.view')}
-                                        variant="view"
+                                    <TableActionButton kind="view" href={`${urls.show}/${patient.id}`} />
+                                    <TableActionButton
+                                        kind="edit"
+                                        href={`${urls.edit}/${patient.id}/edit`}
+                                        permission={permissions.edit}
                                     />
-                                    {permissions.edit && (
-                                        <TableActionLink
-                                            href={`${urls.edit}/${patient.id}/edit`}
-                                            icon="bx-edit"
-                                            title={t('global.edit')}
-                                            variant="edit"
-                                        />
-                                    )}
-                                    {permissions.delete && (
-                                        <TableActionButton
-                                            icon="bx-trash"
-                                            title={t('global.delete')}
-                                            variant="delete"
-                                            onClick={() => onDelete(patient.id)}
-                                        />
-                                    )}
+                                    <TableActionButton
+                                        kind="delete"
+                                        permission={permissions.delete}
+                                        onClick={() => onDelete(patient.id)}
+                                    />
                                 </TableActions>
                             </TableCell>
                         </TableRow>

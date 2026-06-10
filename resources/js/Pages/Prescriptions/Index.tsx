@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Badge, Button, Card, Checkbox, Dropdown, DropdownItem, Label, Spinner, TextInput } from 'flowbite-react';
+import { Button, Card, Checkbox, Dropdown, DropdownItem, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
 import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
@@ -19,6 +19,7 @@ import {
 import { buildPaginationSummary } from '../../utils/pagination';
 import TableActionButton from '../../Components/ui/TableActionButton';
 import { TableActionsCell } from '../../Components/ui/TableActions';
+import TableBadge from '../../Components/ui/TableBadge';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 import { OptionItem } from '../../types/settings';
 
@@ -348,7 +349,11 @@ export default function IndexPrescriptions({
                                     <TableHeader>{t('global.patient_id')}</TableHeader>
                                     <TableHeader>{t('global.card_number')}</TableHeader>
                                     <TableHeader>
-                                        <button type="button" className="inline-flex items-center gap-1 font-semibold text-emerald-700" onClick={() => toggleSort('patient_name')}>
+                                        <button
+                                            type="button"
+                                            className="inline-flex items-center gap-1"
+                                            onClick={() => toggleSort('patient_name')}
+                                        >
                                             {t('global.patient_name')}
                                             <i className={`bx ${sortIcon('patient_name')}`} />
                                         </button>
@@ -388,14 +393,18 @@ export default function IndexPrescriptions({
                                         </TableCell>
                                         <TableCell>{(prescriptions.meta.from ?? 1) + index}</TableCell>
                                         <TableCell>{item.patient_id}</TableCell>
-                                        <TableCell>
-                                            <Badge color="gray">{item.card_number ?? '—'}</Badge>
+                                        <TableCell muted>
+                                            {item.card_number ? (
+                                                <TableBadge color="gray">{item.card_number}</TableBadge>
+                                            ) : (
+                                                '—'
+                                            )}
                                         </TableCell>
-                                        <TableCell className="font-semibold text-emerald-700">{item.patient_name}</TableCell>
+                                        <TableCell>{item.patient_name}</TableCell>
                                         <TableCell muted>{item.father_name ?? '—'}</TableCell>
                                         <TableCell muted>
                                             {item.token_number ? (
-                                                <Badge color="info">{item.token_number}</Badge>
+                                                <TableBadge color="info">{item.token_number}</TableBadge>
                                             ) : (
                                                 '—'
                                             )}
@@ -403,9 +412,11 @@ export default function IndexPrescriptions({
                                         <TableCell muted>{item.doctor_name}</TableCell>
                                         <TableCell muted>{item.created_at ?? '—'}</TableCell>
                                         <TableCell>
-                                            <Badge color={item.is_completed ? 'success' : 'warning'}>
-                                                {item.is_completed ? t('global.delivered') : t('global.not_delivered')}
-                                            </Badge>
+                                            <TableBadge color={item.is_completed ? 'success' : 'failure'}>
+                                                {item.is_completed
+                                                    ? t('global.delivered')
+                                                    : t('global.not_delivered')}
+                                            </TableBadge>
                                         </TableCell>
                                         <TableActionsCell>
                                             <TableActionButton

@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useRef } from 'react';
+import PersianDateInput from '../ui/PersianDateInput';
 import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem } from '../../types/settings';
@@ -124,10 +125,10 @@ export default function PharmacyFulfillmentForm({
             </div>
             <div>
                 <Label htmlFor="date">{t('global.date')} *</Label>
-                <TextInput
+                <PersianDateInput
                     id="date"
                     value={data.date}
-                    onChange={(event) => setData('date', event.target.value)}
+                    onChange={(value) => setData('date', value)}
                     required
                 />
                 {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}

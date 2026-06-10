@@ -419,6 +419,11 @@ class AnesthesiaController extends Controller
      */
     private function transformDetail(Anesthesia $anesthesia): array
     {
+        $assistantIds = json_decode($anesthesia->operation_assistants_id ?? '[]', true) ?: [];
+        $assistantNames = $assistantIds
+            ? Doctor::query()->whereIn('id', $assistantIds)->orderBy('name')->pluck('name')->all()
+            : [];
+
         return [
             'id' => $anesthesia->id,
             'status' => $anesthesia->status,
@@ -456,6 +461,7 @@ class AnesthesiaController extends Controller
             'bed_number' => $anesthesia->bed?->number,
             'operation_anesthesia_log_id' => $anesthesia->operation_anesthesia_log_id,
             'operation_anesthesist_id' => $anesthesia->operation_anesthesist_id,
+            'operation_assistants_names' => $assistantNames,
         ];
     }
 

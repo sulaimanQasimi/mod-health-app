@@ -1,6 +1,6 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner, Textarea } from 'flowbite-react';
-import { FormEvent, useState } from 'react';
+import { Head, router } from '@inertiajs/react';
+import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea } from 'flowbite-react';
+import { FormEvent, useMemo, useState } from 'react';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import AnesthesiaSummary from '../../Components/Anesthesias/AnesthesiaSummary';
 import {
@@ -11,6 +11,7 @@ import {
 } from '../../Components/Anesthesias/anesthesiaUi';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
+import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
     AnesthesiaDetail,
@@ -18,7 +19,7 @@ import {
     AnesthesiaListUrls,
     AnesthesiaShowPermissions,
 } from '../../types/anesthesia';
-import { SETTINGS_INDEX_WIDTH, settingsHeaderButtonClass } from '../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface ShowProps {
     anesthesia: AnesthesiaDetail;
@@ -51,13 +52,27 @@ export default function AnesthesiasShow({
     const [anesthesiaPlan, setAnesthesiaPlan] = useState(anesthesia.anesthesia_plan ?? '');
     const [anesthesiaType, setAnesthesiaType] = useState(anesthesia.anesthesia_type ?? '');
     const [anesthesiaLogId, setAnesthesiaLogId] = useState(
-        String(anesthesia.operation_anesthesia_log_id ?? '')
+        String(anesthesia.operation_anesthesia_log_id ?? ''),
     );
     const [anesthesistId, setAnesthesistId] = useState(String(anesthesia.operation_anesthesist_id ?? ''));
 
     const patientLabel = anesthesiaPatientLabel(anesthesia);
     const showPendingActions = anesthesia.status === 'new' && (permissions.approve || permissions.reject);
     const hasAppointment = Boolean(anesthesia.appointment_id);
+
+    const doctorOptions = useMemo(
+        () => hospitalDoctors.map((doctor) => ({ value: String(doctor.id), label: doctor.name })),
+        [hospitalDoctors],
+    );
+
+    const anesthesiaTypeOptions = useMemo(
+        () => [
+            { value: 'local', label: t('global.local') },
+            { value: 'spinal', label: t('global.spinal') },
+            { value: 'general', label: t('global.general') },
+        ],
+        [t],
+    );
 
     const put = (data: Record<string, string>, onSuccess?: () => void) => {
         setProcessing(true);
@@ -66,6 +81,21 @@ export default function AnesthesiasShow({
             onSuccess: () => onSuccess?.(),
             onFinish: () => setProcessing(false),
         });
+    };
+
+    const openApprove = () => {
+        setAnesthesiaLogReply('');
+        setAnesthesiaPlan(anesthesia.anesthesia_plan ?? '');
+        setAnesthesiaType(anesthesia.anesthesia_type ?? '');
+        setAnesthesiaLogId(String(anesthesia.operation_anesthesia_log_id ?? ''));
+        setAnesthesistId(String(anesthesia.operation_anesthesist_id ?? ''));
+        setApproveOpen(true);
+    };
+
+    const openReject = () => {
+        setAnesthesiaLogReply('');
+        setAnesthesiaPlan(anesthesia.anesthesia_plan ?? '');
+        setRejectOpen(true);
     };
 
     const handleApprove = (event: FormEvent) => {
@@ -79,7 +109,7 @@ export default function AnesthesiasShow({
                 operation_anesthesia_log_id: anesthesiaLogId,
                 operation_anesthesist_id: anesthesistId,
             },
-            () => setApproveOpen(false)
+            () => setApproveOpen(false),
         );
     };
 
@@ -91,16 +121,8 @@ export default function AnesthesiasShow({
                 anesthesia_log_reply: anesthesiaLogReply,
                 anesthesia_plan: anesthesiaPlan,
             },
-            () => setRejectOpen(false)
+            () => setRejectOpen(false),
         );
-    };
-
-    const handleDelete = () => {
-        if (!window.confirm(t('global.confirm_delete'))) return;
-        setProcessing(true);
-        router.delete(urls.destroy, {
-            onFinish: () => setProcessing(false),
-        });
     };
 
     return (
@@ -123,28 +145,17 @@ export default function AnesthesiasShow({
                     backLabel={t('global.back')}
                     action={
                         <SettingsPageActions>
-                            {urls.appointment && (
-                                <Button as={Link} href={urls.appointment} size="sm" className={settingsHeaderButtonClass.secondary}>
-                                    <i className="bx bx-calendar me-2" />
-                                    {t('global.appointment')}
-                                </Button>
+                            {permissions.approve && anesthesia.status === 'new' && (
+                                <button type="button" className={ANESTHESIA_APPROVE_BTN_CLASS} onClick={openApprove}>
+                                    <i className="bx bx-check text-lg" />
+                                    {t('global.approve')}
+                                </button>
                             )}
-                            {permissions.edit && (
-                                <Button as={Link} href={urls.edit} size="sm" className={settingsHeaderButtonClass.secondary}>
-                                    <i className="bx bx-edit me-2" />
-                                    {t('global.edit')}
-                                </Button>
-                            )}
-                            {permissions.delete && (
-                                <Button
-                                    size="sm"
-                                    className={settingsHeaderButtonClass.danger}
-                                    onClick={handleDelete}
-                                    disabled={processing}
-                                >
-                                    <i className="bx bx-trash me-2" />
-                                    {t('global.delete')}
-                                </Button>
+                            {permissions.reject && anesthesia.status === 'new' && (
+                                <button type="button" className={ANESTHESIA_REJECT_BTN_CLASS} onClick={openReject}>
+                                    <i className="bx bx-x text-lg" />
+                                    {t('global.reject')}
+                                </button>
                             )}
                         </SettingsPageActions>
                     }
@@ -157,34 +168,26 @@ export default function AnesthesiasShow({
                         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex min-w-0 items-start gap-4">
                                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-md">
-                                    <i className="bx bx-plus-medical text-2xl" />
+                                    <i className="bx bx-time-five text-2xl" />
                                 </div>
                                 <div className="min-w-0">
                                     <p className="text-base font-bold text-violet-950 dark:text-violet-50">
                                         {t('global.refere_to_operation')}
                                     </p>
-                                    <p className="mt-1 text-sm text-violet-800/80 dark:text-violet-200/80">
-                                        {t('global.anesthesia_details')}
+                                    <p className="mt-1 line-clamp-2 text-sm text-violet-800/80 dark:text-violet-200/80">
+                                        {t('global.operation_plan')}: {anesthesia.plan ?? '—'}
                                     </p>
                                 </div>
                             </div>
                             <div className="flex shrink-0 flex-wrap gap-2">
                                 {permissions.approve && (
-                                    <button
-                                        type="button"
-                                        className={ANESTHESIA_APPROVE_BTN_CLASS}
-                                        onClick={() => setApproveOpen(true)}
-                                    >
+                                    <button type="button" className={ANESTHESIA_APPROVE_BTN_CLASS} onClick={openApprove}>
                                         <i className="bx bx-check-circle text-lg" />
                                         {t('global.approve')}
                                     </button>
                                 )}
                                 {permissions.reject && (
-                                    <button
-                                        type="button"
-                                        className={ANESTHESIA_REJECT_BTN_CLASS}
-                                        onClick={() => setRejectOpen(true)}
-                                    >
+                                    <button type="button" className={ANESTHESIA_REJECT_BTN_CLASS} onClick={openReject}>
                                         <i className="bx bx-x-circle text-lg" />
                                         {t('global.reject')}
                                     </button>
@@ -210,9 +213,12 @@ export default function AnesthesiasShow({
                         </ModalHeader>
                     </div>
                     <form onSubmit={handleApprove}>
-                        <ModalBody className="space-y-4">
+                        <ModalBody className="space-y-4 bg-gray-50/60 p-5 dark:bg-gray-950/40">
                             <div>
-                                <Label htmlFor="approve-reply">{t('global.anesthesia_log_reply')}</Label>
+                                <Label htmlFor="approve-reply" className="mb-2 flex items-center gap-1.5">
+                                    <i className="bx bx-message-dots text-emerald-600" />
+                                    {t('global.anesthesia_log_reply')}
+                                </Label>
                                 <Textarea
                                     id="approve-reply"
                                     rows={3}
@@ -222,7 +228,10 @@ export default function AnesthesiasShow({
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="approve-plan">{t('global.anesthesia_plan')}</Label>
+                                <Label htmlFor="approve-plan" className="mb-2 flex items-center gap-1.5">
+                                    <i className="bx bx-note text-emerald-600" />
+                                    {t('global.anesthesia_plan')}
+                                </Label>
                                 <Textarea
                                     id="approve-plan"
                                     rows={3}
@@ -232,47 +241,40 @@ export default function AnesthesiasShow({
                             </div>
                             <div className="grid gap-4 md:grid-cols-3">
                                 <div>
-                                    <Label htmlFor="approve-log">{t('global.anesthesia_log')}</Label>
-                                    <Select
-                                        id="approve-log"
+                                    <Label className="mb-2 flex items-center gap-1.5">
+                                        <i className="bx bx-file-blank text-emerald-600" />
+                                        {t('global.anesthesia_log')}
+                                    </Label>
+                                    <SearchableSelect
                                         value={anesthesiaLogId}
-                                        onChange={(e) => setAnesthesiaLogId(e.target.value)}
-                                    >
-                                        <option value="">{t('global.select')}</option>
-                                        {hospitalDoctors.map((doctor) => (
-                                            <option key={doctor.id} value={doctor.id}>
-                                                {doctor.name}
-                                            </option>
-                                        ))}
-                                    </Select>
+                                        onChange={setAnesthesiaLogId}
+                                        options={doctorOptions}
+                                        placeholder={t('global.select')}
+                                    />
                                 </div>
                                 <div>
-                                    <Label htmlFor="approve-anesthesist">{t('global.anesthesist')}</Label>
-                                    <Select
-                                        id="approve-anesthesist"
+                                    <Label className="mb-2 flex items-center gap-1.5">
+                                        <i className="bx bx-user-circle text-emerald-600" />
+                                        {t('global.anesthesist')}
+                                    </Label>
+                                    <SearchableSelect
                                         value={anesthesistId}
-                                        onChange={(e) => setAnesthesistId(e.target.value)}
-                                    >
-                                        <option value="">{t('global.select')}</option>
-                                        {hospitalDoctors.map((doctor) => (
-                                            <option key={doctor.id} value={doctor.id}>
-                                                {doctor.name}
-                                            </option>
-                                        ))}
-                                    </Select>
+                                        onChange={setAnesthesistId}
+                                        options={doctorOptions}
+                                        placeholder={t('global.select')}
+                                    />
                                 </div>
                                 <div>
-                                    <Label htmlFor="approve-type">{t('global.anesthesia_type')}</Label>
-                                    <Select
-                                        id="approve-type"
+                                    <Label className="mb-2 flex items-center gap-1.5">
+                                        <i className="bx bx-pulse text-emerald-600" />
+                                        {t('global.anesthesia_type')}
+                                    </Label>
+                                    <SearchableSelect
                                         value={anesthesiaType}
-                                        onChange={(e) => setAnesthesiaType(e.target.value)}
-                                    >
-                                        <option value="">{t('global.select')}</option>
-                                        <option value="local">{t('global.local')}</option>
-                                        <option value="spinal">{t('global.spinal')}</option>
-                                        <option value="general">{t('global.general')}</option>
-                                    </Select>
+                                        onChange={setAnesthesiaType}
+                                        options={anesthesiaTypeOptions}
+                                        placeholder={t('global.select')}
+                                    />
                                 </div>
                             </div>
                         </ModalBody>
@@ -305,9 +307,12 @@ export default function AnesthesiasShow({
                         </ModalHeader>
                     </div>
                     <form onSubmit={handleReject}>
-                        <ModalBody className="space-y-4">
+                        <ModalBody className="space-y-4 bg-gray-50/60 p-5 dark:bg-gray-950/40">
                             <div>
-                                <Label htmlFor="reject-reason">{t('global.rejection_reason')}</Label>
+                                <Label htmlFor="reject-reason" className="mb-2 flex items-center gap-1.5">
+                                    <i className="bx bx-x-circle text-rose-600" />
+                                    {t('global.rejection_reason')}
+                                </Label>
                                 <Textarea
                                     id="reject-reason"
                                     rows={3}
@@ -317,7 +322,10 @@ export default function AnesthesiasShow({
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="reject-plan">{t('global.anesthesia_plan')}</Label>
+                                <Label htmlFor="reject-plan" className="mb-2 flex items-center gap-1.5">
+                                    <i className="bx bx-note text-rose-600" />
+                                    {t('global.anesthesia_plan')}
+                                </Label>
                                 <Textarea
                                     id="reject-plan"
                                     rows={3}

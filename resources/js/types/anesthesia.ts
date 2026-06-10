@@ -112,6 +112,7 @@ export interface AnesthesiaDetail {
     bed_number: string | number | null;
     operation_anesthesia_log_id: number | null;
     operation_anesthesist_id: number | null;
+    operation_assistants_names?: string[];
 }
 
 export interface AnesthesiaEditForm {

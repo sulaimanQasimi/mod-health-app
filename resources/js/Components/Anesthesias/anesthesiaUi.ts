@@ -3,6 +3,9 @@ import { AnesthesiaDetail, AnesthesiaListVariant } from '../../types/anesthesia'
 export const ANESTHESIA_CARD_CLASS =
     'overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900';
 
+export const ANESTHESIA_HERO_AVATAR_CLASS =
+    'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-lg font-bold text-white shadow-lg ring-2 ring-white/30 backdrop-blur-sm';
+
 export const ANESTHESIA_PENDING_PANEL_CLASS =
     'overflow-hidden rounded-xl border border-violet-200/90 bg-gradient-to-br from-violet-50 via-indigo-50 to-purple-50 shadow-md dark:border-violet-900/50 dark:from-violet-950/50 dark:via-indigo-950/30 dark:to-purple-950/20';
 
@@ -70,4 +73,18 @@ export function anesthesiaTypeLabel(type: string | null | undefined, t: (key: st
 
 export function anesthesiaPatientLabel(anesthesia: AnesthesiaDetail): string {
     return anesthesia.patient?.name ?? `#${anesthesia.id}`;
+}
+
+export function patientInitials(name?: string | null): string {
+    if (!name?.trim()) {
+        return '?';
+    }
+
+    return name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join('')
+        .toUpperCase();
 }

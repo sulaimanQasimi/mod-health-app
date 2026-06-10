@@ -92,13 +92,15 @@ class AnesthesiaController extends Controller
         $this->authorizeAppointmentView($appointment);
         abort_unless(! $appointment->is_completed && $request->user()->can('refer-to-anesthesia'), 403);
 
-        $validated = $request->validate($this->anesthesiaReferralService->validationRules());
+        $this->anesthesiaReferralService->normalizeReferralInput($request);
+
+        $validated = $request->validate($this->anesthesiaReferralService->formValidationRules());
         $validated['patient_id'] = $appointment->patient_id;
         $validated['appointment_id'] = $appointment->id;
         $validated['branch_id'] = $appointment->branch_id ?? $request->user()->branch_id;
         $validated['doctor_id'] = AnesthesiaReferralService::resolveDoctorId(
             $appointment->doctor_id,
-            isset($validated['doctor_id']) ? (int) $validated['doctor_id'] : null,
+            null,
             $request->user(),
         );
 

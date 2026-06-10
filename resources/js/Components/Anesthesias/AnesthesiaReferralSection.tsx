@@ -60,6 +60,22 @@ interface AnesthesiaReferralSectionProps {
 
 const MODAL_BODY_CLASS = 'max-h-[min(72vh,760px)] overflow-y-auto';
 
+function formatValidationMessage(payload: {
+    message?: string;
+    errors?: Record<string, string | string[]>;
+}): string {
+    if (payload.errors) {
+        const lines = Object.values(payload.errors).flatMap((messages) =>
+            Array.isArray(messages) ? messages : [String(messages)],
+        );
+        if (lines.length > 0) {
+            return lines.join('\n');
+        }
+    }
+
+    return typeof payload.message === 'string' ? payload.message : '';
+}
+
 const EMPTY_FORM = {
     plan: '',
     other_problems: '',
@@ -300,12 +316,8 @@ export default function AnesthesiaReferralSection({
                 body: JSON.stringify(form),
             });
             const payload = await response.json();
-            if (!response.ok || !payload.success) {
-                setFormError(
-                    typeof payload.message === 'string'
-                        ? payload.message
-                        : t('global.request_failed'),
-                );
+            if (!response.ok || payload.success === false) {
+                setFormError(formatValidationMessage(payload) || t('global.request_failed'));
                 return;
             }
             closeCreate();
@@ -481,7 +493,7 @@ export default function AnesthesiaReferralSection({
                                     {formError && (
                                         <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
                                             <i className="bx bx-error-circle mt-0.5 text-lg" />
-                                            <span>{formError}</span>
+                                            <span className="whitespace-pre-line">{formError}</span>
                                         </div>
                                     )}
 

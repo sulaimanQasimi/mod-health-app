@@ -84,14 +84,23 @@ class AnesthesiaController extends Controller
 
         $hospitalization->loadMissing(['patient:id,name', 'appointment:id,doctor_id']);
 
-        $validated = $request->validate($this->anesthesiaReferralService->validationRules());
+        if (! $hospitalization->appointment_id) {
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.not_available'),
+            ], 422);
+        }
+
+        $this->anesthesiaReferralService->normalizeReferralInput($request);
+
+        $validated = $request->validate($this->anesthesiaReferralService->formValidationRules());
         $validated['hospitalization_id'] = $hospitalization->id;
         $validated['patient_id'] = $hospitalization->patient_id;
         $validated['appointment_id'] = $hospitalization->appointment_id;
         $validated['branch_id'] = $hospitalization->branch_id ?? $request->user()->branch_id;
         $validated['doctor_id'] = AnesthesiaReferralService::resolveDoctorId(
             $hospitalization->appointment?->doctor_id,
-            isset($validated['doctor_id']) ? (int) $validated['doctor_id'] : null,
+            null,
             $request->user(),
         );
 

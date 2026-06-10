@@ -9,6 +9,7 @@ use App\Models\Doctor;
 use App\Models\Hospitalization;
 use App\Models\User;
 use HanifHefaz\Dcter\Dcter;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AnesthesiaReferralService
@@ -39,18 +40,27 @@ class AnesthesiaReferralService
         });
     }
 
+    public function normalizeReferralInput(Request $request): void
+    {
+        $request->merge([
+            'operation_surgion_id' => $request->filled('operation_surgion_id')
+                ? $request->input('operation_surgion_id')
+                : null,
+            'anesthesia_type' => $request->filled('anesthesia_type')
+                ? $request->input('anesthesia_type')
+                : null,
+        ]);
+    }
+
     /**
+     * Rules for fields submitted by the referral form (React modal / API).
+     *
      * @return array<string, string>
      */
-    public function validationRules(): array
+    public function formValidationRules(): array
     {
         return [
-            'patient_id' => 'required|exists:patients,id',
-            'doctor_id' => 'required',
-            'branch_id' => 'required|exists:branches,id',
-            'appointment_id' => 'required|exists:appointments,id',
             'operation_type_id' => 'required|exists:operation_types,id',
-            'hospitalization_id' => 'nullable|exists:hospitalizations,id',
             'date' => 'required',
             'time' => 'required',
             'plan' => 'required|string',
@@ -61,6 +71,23 @@ class AnesthesiaReferralService
             'anesthesia_type' => 'nullable|in:local,spinal,general',
             'operation_assistants_id' => 'nullable|array',
             'operation_surgion_id' => 'nullable|exists:doctors,id',
+        ];
+    }
+
+    /**
+     * Full rules including context ids (legacy Blade forms with hidden inputs).
+     *
+     * @return array<string, string>
+     */
+    public function validationRules(): array
+    {
+        return [
+            'patient_id' => 'required|exists:patients,id',
+            'doctor_id' => 'required',
+            'branch_id' => 'required|exists:branches,id',
+            'appointment_id' => 'required|exists:appointments,id',
+            'hospitalization_id' => 'nullable|exists:hospitalizations,id',
+            ...$this->formValidationRules(),
         ];
     }
 

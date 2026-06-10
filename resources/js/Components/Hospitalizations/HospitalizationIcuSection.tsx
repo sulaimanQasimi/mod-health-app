@@ -33,9 +33,15 @@ interface HospitalizationIcuSectionProps {
     isDischarged?: boolean;
 }
 
+interface DepartmentOption {
+    id: number;
+    name: string;
+}
+
 interface RoomOption {
     id: number;
     name: string;
+    department_id: number | null;
 }
 
 interface BedOption {
@@ -83,10 +89,12 @@ export default function HospitalizationIcuSection({
     const [patientName, setPatientName] = useState<string | null>(null);
     const [currentRoomName, setCurrentRoomName] = useState<string | null>(null);
     const [currentBedNumber, setCurrentBedNumber] = useState<string | number | null>(null);
+    const [departments, setDepartments] = useState<DepartmentOption[]>([]);
     const [rooms, setRooms] = useState<RoomOption[]>([]);
     const [beds, setBeds] = useState<BedOption[]>([]);
     const [form, setForm] = useState({
         description: '',
+        department_id: '',
         room_id: '',
         bed_id: '',
     });
@@ -120,8 +128,17 @@ export default function HospitalizationIcuSection({
                 setPatientName(payload.data.patient_name ?? null);
                 setCurrentRoomName(payload.data.current_room_name ?? null);
                 setCurrentBedNumber(payload.data.current_bed_number ?? null);
+                setDepartments(payload.data.departments ?? []);
                 setRooms(payload.data.rooms ?? []);
                 setBeds(payload.data.beds ?? []);
+                setForm((prev) => ({
+                    ...prev,
+                    department_id: payload.data.default_department_id
+                        ? String(payload.data.default_department_id)
+                        : '',
+                    room_id: '',
+                    bed_id: '',
+                }));
             }
         } finally {
             setMetaLoading(false);
@@ -132,9 +149,30 @@ export default function HospitalizationIcuSection({
         loadData();
     }, [loadData]);
 
+    const departmentOptions = useMemo(
+        () =>
+            departments.map((department) => ({
+                value: String(department.id),
+                label: department.name,
+            })),
+        [departments],
+    );
+
+    const filteredRooms = useMemo(() => {
+        if (!form.department_id) {
+            return [];
+        }
+
+        const departmentId = Number(form.department_id);
+
+        return rooms.filter(
+            (room) => room.department_id === null || room.department_id === departmentId,
+        );
+    }, [rooms, form.department_id]);
+
     const roomOptions = useMemo(
-        () => rooms.map((room) => ({ value: String(room.id), label: room.name })),
-        [rooms],
+        () => filteredRooms.map((room) => ({ value: String(room.id), label: room.name })),
+        [filteredRooms],
     );
 
     const bedOptions = useMemo(
@@ -150,7 +188,7 @@ export default function HospitalizationIcuSection({
 
     const openCreate = async () => {
         setFormError(null);
-        setForm({ description: '', room_id: '', bed_id: '' });
+        setForm({ description: '', department_id: '', room_id: '', bed_id: '' });
         setCreateOpen(true);
         await loadMeta();
     };
@@ -158,12 +196,12 @@ export default function HospitalizationIcuSection({
     const closeCreate = () => {
         setCreateOpen(false);
         setFormError(null);
-        setForm({ description: '', room_id: '', bed_id: '' });
+        setForm({ description: '', department_id: '', room_id: '', bed_id: '' });
     };
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
-        if (!form.room_id || !form.bed_id || !form.description.trim()) {
+        if (!form.department_id || !form.room_id || !form.bed_id || !form.description.trim()) {
             setFormError(t('global.request_failed'));
             return;
         }
@@ -347,10 +385,31 @@ export default function HospitalizationIcuSection({
                                     room or bed. The patient is placed in the selected ICU room and bed.
                                 </p>
 
+                                <div>
+                                    <Label htmlFor="icu-referral-department">{t('global.department')}</Label>
+                                    <SearchableSelect
+                                        id="icu-referral-department"
+                                        className="mt-2"
+                                        value={form.department_id}
+                                        onChange={(value) =>
+                                            setForm((prev) => ({
+                                                ...prev,
+                                                department_id: value,
+                                                room_id: '',
+                                                bed_id: '',
+                                            }))
+                                        }
+                                        options={departmentOptions}
+                                        placeholder={t('global.select')}
+                                        required
+                                    />
+                                </div>
+
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <div>
-                                        <Label>{t('global.room')}</Label>
+                                        <Label htmlFor="icu-referral-room">{t('global.rooms')}</Label>
                                         <SearchableSelect
+                                            id="icu-referral-room"
                                             className="mt-2"
                                             value={form.room_id}
                                             onChange={(value) =>
@@ -361,20 +420,22 @@ export default function HospitalizationIcuSection({
                                                 }))
                                             }
                                             options={roomOptions}
-                                            placeholder={t('global.select_room_first')}
+                                            placeholder={t('global.select')}
                                             required
+                                            disabled={!form.department_id}
                                         />
                                     </div>
                                     <div>
-                                        <Label>{t('global.bed')}</Label>
+                                        <Label htmlFor="icu-referral-bed">{t('global.beds')}</Label>
                                         <SearchableSelect
+                                            id="icu-referral-bed"
                                             className="mt-2"
                                             value={form.bed_id}
                                             onChange={(value) =>
                                                 setForm((prev) => ({ ...prev, bed_id: value }))
                                             }
                                             options={bedOptions}
-                                            placeholder={t('global.select_room_first')}
+                                            placeholder={t('global.select')}
                                             required
                                             disabled={!form.room_id}
                                         />

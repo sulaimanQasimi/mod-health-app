@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\AppointmentSections\Concerns\AuthorizesAppointmentAccess;
 use App\Models\Appointment;
 use App\Models\Bed;
+use App\Models\Department;
 use App\Models\ICU;
 use App\Models\Room;
 use App\Services\IcuReferralService;
@@ -58,6 +59,8 @@ class IcuController extends Controller
             'success' => true,
             'data' => [
                 'patient_name' => $appointment->patient?->name,
+                'default_department_id' => $appointment->department_id,
+                'departments' => $this->departments($branchId),
                 'rooms' => $this->roomsWithAvailableBeds($branchId),
                 'beds' => $this->availableBeds($branchId),
             ],
@@ -116,14 +119,32 @@ class IcuController extends Controller
     /**
      * @return list<array{id: int, name: string}>
      */
+    private function departments(?int $branchId): array
+    {
+        return Department::query()
+            ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Department $department) => ['id' => $department->id, 'name' => $department->name])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<array{id: int, name: string, department_id: int|null}>
+     */
     private function roomsWithAvailableBeds(?int $branchId): array
     {
         return Room::query()
             ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
             ->whereHas('beds', fn ($query) => $query->where('is_occupied', false))
             ->orderBy('name')
-            ->get(['id', 'name'])
-            ->map(fn (Room $room) => ['id' => $room->id, 'name' => $room->name])
+            ->get(['id', 'name', 'department_id'])
+            ->map(fn (Room $room) => [
+                'id' => $room->id,
+                'name' => $room->name,
+                'department_id' => $room->department_id,
+            ])
             ->values()
             ->all();
     }

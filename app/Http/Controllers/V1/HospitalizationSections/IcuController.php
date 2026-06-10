@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\HospitalizationSections;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bed;
+use App\Models\Department;
 use App\Models\Hospitalization;
 use App\Models\ICU;
 use App\Models\Room;
@@ -69,6 +70,8 @@ class IcuController extends Controller
                 'patient_name' => $hospitalization->patient?->name,
                 'current_room_name' => $hospitalization->room?->name,
                 'current_bed_number' => $hospitalization->bed?->number,
+                'default_department_id' => $hospitalization->department_id,
+                'departments' => $this->departments($branchId),
                 'rooms' => $this->roomsWithAvailableBeds($branchId),
                 'beds' => $this->availableBeds($branchId),
             ],
@@ -153,14 +156,32 @@ class IcuController extends Controller
     /**
      * @return list<array{id: int, name: string}>
      */
+    private function departments(?int $branchId): array
+    {
+        return Department::query()
+            ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Department $department) => ['id' => $department->id, 'name' => $department->name])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<array{id: int, name: string, department_id: int|null}>
+     */
     private function roomsWithAvailableBeds(?int $branchId): array
     {
         return Room::query()
             ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
             ->whereHas('beds', fn ($query) => $query->where('is_occupied', false))
             ->orderBy('name')
-            ->get(['id', 'name'])
-            ->map(fn (Room $room) => ['id' => $room->id, 'name' => $room->name])
+            ->get(['id', 'name', 'department_id'])
+            ->map(fn (Room $room) => [
+                'id' => $room->id,
+                'name' => $room->name,
+                'department_id' => $room->department_id,
+            ])
             ->values()
             ->all();
     }

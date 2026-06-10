@@ -102,4 +102,5 @@ export interface IcuShowPermissions {
     delete: boolean;
     approve: boolean;
     reject: boolean;
+    discharge: boolean;
 }

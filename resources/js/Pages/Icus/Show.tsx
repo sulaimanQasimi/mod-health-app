@@ -3,9 +3,14 @@ import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Tex
 import { FormEvent, useState } from 'react';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
+import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
+import IcuDailyProgressSection from '../../Components/Icus/IcuDailyProgressSection';
+import IcuDischargeModal from '../../Components/Icus/IcuDischargeModal';
+import IcuProcedureSection from '../../Components/Icus/IcuProcedureSection';
 import IcuSummary from '../../Components/Icus/IcuSummary';
 import {
     ICU_APPROVE_BTN_CLASS,
+    ICU_DISCHARGE_BTN_CLASS,
     ICU_PENDING_PANEL_CLASS,
     ICU_PRINT_BTN_CLASS,
     ICU_REJECT_BTN_CLASS,
@@ -19,7 +24,13 @@ import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 interface ShowProps {
     icu: IcuDetail;
     permissions: IcuShowPermissions;
-    sectionPermissions: { prescription: boolean; lab: boolean };
+    sectionPermissions: {
+        prescription: boolean;
+        lab: boolean;
+        visits: boolean;
+        procedures: boolean;
+        daily_progress: boolean;
+    };
     urls: IcuListUrls & {
         update: string;
         destroy: string;
@@ -27,6 +38,7 @@ interface ShowProps {
         appointment: string | null;
         print_death_card: string;
         print_move_card: string;
+        discharge_meta: string;
     };
 }
 
@@ -35,6 +47,7 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
     const [processing, setProcessing] = useState(false);
     const [approveOpen, setApproveOpen] = useState(false);
     const [rejectOpen, setRejectOpen] = useState(false);
+    const [dischargeOpen, setDischargeOpen] = useState(false);
     const [entranceNote, setEntranceNote] = useState('');
     const [rejectReason, setRejectReason] = useState('');
 
@@ -120,6 +133,16 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
                                     {t('global.reject')}
                                 </button>
                             )}
+                            {permissions.discharge && (
+                                <button
+                                    type="button"
+                                    className={ICU_DISCHARGE_BTN_CLASS}
+                                    onClick={() => setDischargeOpen(true)}
+                                >
+                                    <i className="bx bx-log-out text-lg" />
+                                    {t('global.discharge')}
+                                </button>
+                            )}
                             {icu.discharge_status === 'died' && (
                                 <a
                                     href={urls.print_death_card}
@@ -190,12 +213,33 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
                     </div>
                 )}
 
-                {hasAppointment && icu.status === 'approved' && (
+                {icu.status === 'approved' && (
                     <div className="space-y-4">
-                        {sectionPermissions.prescription && icu.appointment_id && (
+                        {sectionPermissions.visits && (
+                            <HospitalizationVisitSection
+                                icuId={icu.id}
+                                isDischarged={icu.is_discharged}
+                                iconClassName="text-rose-500"
+                            />
+                        )}
+                        {sectionPermissions.procedures && (
+                            <IcuProcedureSection
+                                icuId={icu.id}
+                                isDischarged={icu.is_discharged}
+                                iconClassName="text-violet-500"
+                            />
+                        )}
+                        {sectionPermissions.daily_progress && (
+                            <IcuDailyProgressSection
+                                icuId={icu.id}
+                                isDischarged={icu.is_discharged}
+                                iconClassName="text-sky-500"
+                            />
+                        )}
+                        {hasAppointment && sectionPermissions.prescription && icu.appointment_id && (
                             <PrescriptionSection appointmentId={icu.appointment_id} />
                         )}
-                        {sectionPermissions.lab && icu.appointment_id && (
+                        {hasAppointment && sectionPermissions.lab && icu.appointment_id && (
                             <LabTestSection appointmentId={icu.appointment_id} />
                         )}
                     </div>
@@ -293,6 +337,15 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
                     </form>
                 </div>
             </Modal>
+
+            <IcuDischargeModal
+                open={dischargeOpen}
+                updateUrl={urls.update}
+                metaUrl={urls.discharge_meta}
+                processing={processing}
+                onClose={() => setDischargeOpen(false)}
+                onProcessingChange={setProcessing}
+            />
         </DashboardLayout>
     );
 }

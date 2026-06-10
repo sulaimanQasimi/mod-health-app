@@ -52,6 +52,9 @@ use App\Http\Controllers\V1\HospitalizationSections\NutritionCareController as H
 use App\Http\Controllers\V1\HospitalizationSections\VitalSignController as HospitalizationVitalSignController;
 use App\Http\Controllers\V1\HospitalizationSections\VisitController as HospitalizationVisitController;
 use App\Http\Controllers\V1\ICUController;
+use App\Http\Controllers\V1\ICUSections\DailyProgressController as IcuDailyProgressController;
+use App\Http\Controllers\V1\ICUSections\ProcedureController as IcuProcedureController;
+use App\Http\Controllers\V1\ICUSections\VisitController as IcuVisitController;
 use App\Http\Controllers\V1\IncomeController;
 use App\Http\Controllers\V1\LabTypeController;
 use App\Http\Controllers\V1\LaboratoryController;
@@ -121,6 +124,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/doctor', [AppointmentController::class, 'doctor'])->name('doctor');
         Route::get('/completed', [AppointmentController::class, 'completed'])->name('completed');
         Route::get('/report', [AppointmentController::class, 'report'])->name('report');
+        Route::put('/{appointment}/complete', [AppointmentController::class, 'complete'])->name('complete');
         Route::get('/{appointment}', [AppointmentController::class, 'show'])->name('show');
         Route::prefix('{appointment}')->name('sections.')->group(function () {
             Route::get('blood-bank', [AppointmentBloodBankController::class, 'index'])->name('blood-bank.index');
@@ -487,6 +491,25 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/approved', [ICUController::class, 'approved'])->name('approved');
         Route::get('/rejected', [ICUController::class, 'rejected'])->name('rejected');
         Route::get('/report', [ICUController::class, 'report'])->name('report');
+        Route::get('/{icu}/discharge/meta', [ICUController::class, 'dischargeMeta'])->name('discharge.meta');
+        Route::get('/{icu}/procedures/meta', [IcuProcedureController::class, 'meta'])->name('procedures.meta');
+        Route::get('/{icu}/procedures/{icuProcedure}', [IcuProcedureController::class, 'show'])->name('procedures.show');
+        Route::get('/{icu}/procedures', [IcuProcedureController::class, 'index'])->name('procedures.index');
+        Route::post('/{icu}/procedures', [IcuProcedureController::class, 'store'])->name('procedures.store');
+        Route::match(['put', 'post'], '/{icu}/procedures/{icuProcedure}', [IcuProcedureController::class, 'update'])->name('procedures.update');
+        Route::delete('/{icu}/procedures/{icuProcedure}', [IcuProcedureController::class, 'destroy'])->name('procedures.destroy');
+        Route::get('/{icu}/daily-progress/meta', [IcuDailyProgressController::class, 'meta'])->name('daily-progress.meta');
+        Route::get('/{icu}/daily-progress/{dailyIcuProgress}', [IcuDailyProgressController::class, 'show'])->name('daily-progress.show');
+        Route::get('/{icu}/daily-progress', [IcuDailyProgressController::class, 'index'])->name('daily-progress.index');
+        Route::post('/{icu}/daily-progress', [IcuDailyProgressController::class, 'store'])->name('daily-progress.store');
+        Route::match(['put', 'post'], '/{icu}/daily-progress/{dailyIcuProgress}', [IcuDailyProgressController::class, 'update'])->name('daily-progress.update');
+        Route::delete('/{icu}/daily-progress/{dailyIcuProgress}', [IcuDailyProgressController::class, 'destroy'])->name('daily-progress.destroy');
+        Route::get('/{icu}/visits/meta', [IcuVisitController::class, 'meta'])->name('visits.meta');
+        Route::get('/{icu}/visits/{visit}', [IcuVisitController::class, 'show'])->name('visits.show');
+        Route::get('/{icu}/visits', [IcuVisitController::class, 'index'])->name('visits.index');
+        Route::post('/{icu}/visits', [IcuVisitController::class, 'store'])->name('visits.store');
+        Route::match(['put', 'post'], '/{icu}/visits/{visit}', [IcuVisitController::class, 'update'])->name('visits.update');
+        Route::delete('/{icu}/visits/{visit}', [IcuVisitController::class, 'destroy'])->name('visits.destroy');
         Route::get('/{icu}', [ICUController::class, 'show'])->name('show');
         Route::put('/{icu}', [ICUController::class, 'update'])->name('update');
         Route::delete('/{icu}', [ICUController::class, 'destroy'])->name('destroy');

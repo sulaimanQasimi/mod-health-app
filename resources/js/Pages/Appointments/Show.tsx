@@ -1,5 +1,6 @@
-import { Head, Link } from '@inertiajs/react';
-import { Badge, Button, Card } from 'flowbite-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea } from 'flowbite-react';
+import { FormEvent, useState } from 'react';
 import {
     AdviceSection,
     AnesthesiaSection,
@@ -37,7 +38,8 @@ interface ShowAppointmentHeader {
     date: string | null;
     time: string | null;
     is_completed: boolean;
-    processed_by: boolean;
+    is_processed: boolean;
+    processed_by_id: number | null;
 }
 
 interface PatientHistoryDiagnosis {
@@ -53,6 +55,7 @@ interface ShowAppointmentProps {
     };
     permissions: {
         updateStatus: boolean;
+        complete: boolean;
         edit: boolean;
         printToken: boolean;
     };
@@ -65,7 +68,7 @@ interface ShowAppointmentProps {
         index: string;
         edit: string;
         printToken: string;
-        changeStatus: string;
+        complete: string;
         legacyShow: string;
     };
 }
@@ -79,6 +82,22 @@ export default function ShowAppointment({
 }: ShowAppointmentProps) {
     const { t } = useTranslation();
     const id = appointment.id;
+    const [completeOpen, setCompleteOpen] = useState(false);
+    const [statusRemark, setStatusRemark] = useState('');
+    const [processing, setProcessing] = useState(false);
+
+    const handleComplete = (event: FormEvent) => {
+        event.preventDefault();
+        setProcessing(true);
+        router.put(
+            urls.complete,
+            { status_remark: statusRemark },
+            {
+                preserveScroll: true,
+                onFinish: () => setProcessing(false),
+            }
+        );
+    };
 
     return (
         <DashboardLayout>
@@ -98,12 +117,24 @@ export default function ShowAppointment({
                             {appointment.is_completed ? (
                                 <Badge color="success">{t('global.appointment_completed')}</Badge>
                             ) : (
-                                permissions.printToken && (
-                                    <Button size="sm" color="success" as="a" href={urls.printToken} target="_blank">
-                                        <i className="bx bx-printer me-2" />
-                                        {t('global.token')}
-                                    </Button>
-                                )
+                                <>
+                                    {permissions.complete && (
+                                        <Button
+                                            size="sm"
+                                            color="info"
+                                            onClick={() => setCompleteOpen(true)}
+                                        >
+                                            <i className="bx bx-check-shield me-2" />
+                                            {t('global.complete_appointment')}
+                                        </Button>
+                                    )}
+                                    {permissions.printToken && (
+                                        <Button size="sm" color="success" as="a" href={urls.printToken} target="_blank">
+                                            <i className="bx bx-printer me-2" />
+                                            {t('global.token')}
+                                        </Button>
+                                    )}
+                                </>
                             )}
                             {permissions.edit && (
                                 <Button size="sm" color="light" as={Link} href={urls.edit}>
@@ -209,6 +240,37 @@ export default function ShowAppointment({
                     <IcuVisitsSection appointmentId={id} />
                 </div>
             </div>
+
+            <Modal show={completeOpen} onClose={() => !processing && setCompleteOpen(false)} size="md">
+                <form onSubmit={handleComplete}>
+                    <ModalHeader>{t('global.make_appointment_completed')}</ModalHeader>
+                    <ModalBody>
+                        <div>
+                            <Label htmlFor="appointment-status-remark">{t('global.status_remark')}</Label>
+                            <Textarea
+                                id="appointment-status-remark"
+                                rows={4}
+                                value={statusRemark}
+                                onChange={(e) => setStatusRemark(e.target.value)}
+                            />
+                        </div>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            type="button"
+                            color="light"
+                            disabled={processing}
+                            onClick={() => setCompleteOpen(false)}
+                        >
+                            {t('global.cancel')}
+                        </Button>
+                        <Button type="submit" color="success" disabled={processing}>
+                            {processing && <Spinner size="sm" className="me-2" />}
+                            {t('global.save')}
+                        </Button>
+                    </ModalFooter>
+                </form>
+            </Modal>
         </DashboardLayout>
     );
 }

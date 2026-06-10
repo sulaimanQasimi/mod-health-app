@@ -162,7 +162,8 @@ class AppointmentController extends Controller
                 'date' => $appointment->date ? verta($appointment->date)->format('Y-m-d') : null,
                 'time' => $appointment->time,
                 'is_completed' => (bool) $appointment->is_completed,
-                'processed_by' => (bool) $appointment->processed_by,
+                'is_processed' => (bool) $appointment->processed_by,
+                'processed_by_id' => $appointment->processed_by,
             ],
             'patientHistory' => [
                 'primary' => $previousDiagnoses->where('type', 0)->values()->map(fn ($d) => [
@@ -176,6 +177,7 @@ class AppointmentController extends Controller
             ],
             'permissions' => [
                 'updateStatus' => $request->user()->can('updateStatus', $appointment),
+                'complete' => $request->user()->can('complete', $appointment),
                 'edit' => $request->user()->can('update', $appointment),
                 'printToken' => ! $appointment->is_completed,
             ],
@@ -190,10 +192,28 @@ class AppointmentController extends Controller
                 'index' => route('react.appointments.index'),
                 'edit' => route('react.appointments.edit', $appointment),
                 'printToken' => url("/appointments/{$appointment->id}/printToken"),
-                'changeStatus' => route('appointments.changeStatus', $appointment),
+                'complete' => route('react.appointments.complete', $appointment),
                 'legacyShow' => url("/appointments/show/{$appointment->id}"),
             ],
         ]);
+    }
+
+    public function complete(Request $request, Appointment $appointment): RedirectResponse
+    {
+        $this->authorize('complete', $appointment);
+
+        $validated = $request->validate([
+            'status_remark' => 'nullable|string',
+        ]);
+
+        $appointment->update([
+            'is_completed' => 1,
+            'status_remark' => $validated['status_remark'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('react.appointments.completed')
+            ->with('success', localize('global.appointment_updated_successfully.'));
     }
 
     public function edit(Request $request, Appointment $appointment): Response

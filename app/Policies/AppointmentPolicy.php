@@ -57,6 +57,17 @@ class AppointmentPolicy
             );
     }
 
+    public function complete(User $user, Appointment $appointment): bool
+    {
+        return $this->belongsToUserBranch($user, $appointment)
+            && ! (bool) $appointment->is_completed
+            && (int) $appointment->processed_by === (int) $user->id
+            && (
+                $user->hasRole(['super_admin', 'admin'])
+                || $user->hasPermissionTo('update-appointment-status')
+            );
+    }
+
     public function update(User $user, Appointment $appointment): bool
     {
         return $this->belongsToUserBranch($user, $appointment)

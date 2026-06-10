@@ -1,3 +1,4 @@
+import AnesthesiaReferralSection from '../../Anesthesias/AnesthesiaReferralSection';
 import { useTranslation } from '../../../hooks/useTranslation';
 import SimpleTableSection, { SectionActionButton } from './SimpleTableSection';
 import AppointmentSectionAccordion, { SectionLoadingState } from './AppointmentSectionAccordion';
@@ -149,45 +150,10 @@ export function HospitalizationVisitsSection({ appointmentId }: SectionProps) {
 }
 
 export function AnesthesiaSection({ appointmentId }: SectionProps) {
-    const { t } = useTranslation();
     return (
-        <SimpleTableSection
-            appointmentId={appointmentId}
-            sectionPath="anesthesia"
+        <AnesthesiaReferralSection
+            baseUrl={`/react/appointments/${appointmentId}/anesthesia`}
             accordionId={`anesthesia-${appointmentId}`}
-            icon="bx-plus-medical"
-            iconClassName="text-rose-500"
-            title={t('global.refere_to_anasthesia')}
-            badgeColor="failure"
-            emptyMessage={t('global.not_referred_to_anesthesia')}
-            columns={[
-                { key: 'operation_type', header: t('global.operation_type') },
-                { key: 'patient_name', header: t('global.patient_name'), muted: true },
-                { key: 'status', header: t('global.status'), muted: true },
-                { key: 'date', header: t('global.date'), muted: true },
-            ]}
-            rowActions={(item, ctx) => (
-                <>
-                    {item.urls?.show && (
-                        <SectionActionButton icon="bx-show" title={t('global.view')} href={item.urls.show as string} colorClass="text-violet-600 hover:bg-violet-50 dark:text-violet-400 dark:hover:bg-violet-900/30" />
-                    )}
-                    {item.urls?.edit && (
-                        <SectionActionButton icon="bx-edit" title={t('global.edit')} href={item.urls.edit as string} colorClass="text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30" />
-                    )}
-                    {ctx.permissions.delete && item.id && (
-                        <SectionActionButton
-                            icon="bx-trash"
-                            title={t('global.delete')}
-                            onClick={() => {
-                                if (window.confirm(t('global.confirm_delete'))) {
-                                    ctx.destroy(`/${item.id}`);
-                                }
-                            }}
-                            colorClass="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
-                        />
-                    )}
-                </>
-            )}
         />
     );
 }

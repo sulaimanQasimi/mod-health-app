@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendNewAnesthesiaNotification;
 use App\Jobs\SendNewOperationNotification;
+use App\Services\AnesthesiaReferralService;
 use App\Models\Anesthesia;
 use App\Models\Doctor;
 use App\Models\OperationType;
@@ -20,6 +20,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Mpdf\Mpdf;
 class AnesthesiaController extends Controller
 {
+    public function __construct(
+        private readonly AnesthesiaReferralService $anesthesiaReferralService,
+    ) {}
     /**
      * Display a listing of the resource.
      */
@@ -225,51 +228,10 @@ class AnesthesiaController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the input
-        $data = $request->validate([
-            'patient_id' => 'required',
-            'doctor_id' => 'required',
-            'branch_id' => 'required',
-            'appointment_id' => 'required',
-            'operation_type_id' => 'required',
-            'hospitalization_id' => 'nullable',
-            'date' => 'required',
-            'time' => 'required',
-            'plan' => 'required',
-            'position_on_bed' => 'required',
-            'planned_duration' => 'required',
-            'estimated_blood_waste' => 'required',
-            'other_problems' => 'required',
-            'status' => 'nullable',
-            'anesthesia_type' => 'nullable',
-            'operation_status' => 'nullable',
-            'anesthesia_log_reply' => 'nullable',
-            'is_operation_done' => 'nullable',
-            'operation_assistants_id' => 'nullable',
-            'operation_surgion_id' => 'nullable',
-            'operation_anesthesia_log_id' => 'nullable',
-            'operation_anesthesist_id' => 'nullable',
-            'operation_scrub_nurse_id' => 'nullable',
-            'operation_circulation_nurse_id' => 'nullable',
-            'anesthesia_plan' => 'nullable',
-            'operation_expense_remarks' => 'nullable',
-            'room_id' => 'nullable',
-            'bed_id' => 'nullable',
-            'is_reserved' => 'nullable',
-            'reserve_reason' => 'nullable',
-            'patient_status' => 'nullable',
-        ]);
+        $data = $request->validate($this->anesthesiaReferralService->validationRules());
 
-        $data['operation_assistants_id'] = json_encode($data['operation_assistants_id']);
-        $data['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($data['date']));
+        $this->anesthesiaReferralService->create($data, $request->user());
 
-        // Create a new appointment
-        $anesthesia = Anesthesia::create($data);
-
-        SendNewAnesthesiaNotification::dispatch($anesthesia->created_by, $anesthesia->id);
-
-
-        // Redirect to the appointments index page with a success message
         return redirect()->back()->with('success', localize('global.anesthesia_created_successfully.'));
     }
 

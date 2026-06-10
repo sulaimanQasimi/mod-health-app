@@ -209,6 +209,10 @@ class HospitalizationController extends Controller
                 'nurse_notes' => $user->can('viewAny', NurseNote::class),
                 'nutrition_cares' => $user->can('viewAny', NutritionCare::class),
                 'icu' => $user->can('refer-to-icu') || $user->can('edit-icus') || $user->can('delete-icus'),
+                'anesthesia' => $user->can('refer-to-anesthesia')
+                    || $user->can('edit-anesthesias')
+                    || $user->can('delete-anesthesias')
+                    || $user->can('show-anesthesias-menu'),
             ],
             'urls' => [
                 'index' => route('react.hospitalizations.index'),

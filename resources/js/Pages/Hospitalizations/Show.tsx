@@ -8,6 +8,7 @@ import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import HospitalizationSummary from '../../Components/Hospitalizations/HospitalizationSummary';
 import HospitalizationDiabetesChartSection from '../../Components/Hospitalizations/HospitalizationDiabetesChartSection';
 import HospitalizationNurseNoteSection from '../../Components/Hospitalizations/HospitalizationNurseNoteSection';
+import HospitalizationAnesthesiaSection from '../../Components/Hospitalizations/HospitalizationAnesthesiaSection';
 import HospitalizationIcuSection from '../../Components/Hospitalizations/HospitalizationIcuSection';
 import HospitalizationNutritionCareSection from '../../Components/Hospitalizations/HospitalizationNutritionCareSection';
 import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
@@ -44,6 +45,7 @@ interface ShowProps {
         nurse_notes: boolean;
         nutrition_cares: boolean;
         icu: boolean;
+        anesthesia: boolean;
     };
     urls: {
         index: string;
@@ -284,6 +286,13 @@ export default function HospitalizationsShow({
 
                 {sectionPermissions.icu && (
                     <HospitalizationIcuSection
+                        hospitalizationId={hospitalization.id}
+                        isDischarged={hospitalization.is_discharged}
+                    />
+                )}
+
+                {sectionPermissions.anesthesia && (
+                    <HospitalizationAnesthesiaSection
                         hospitalizationId={hospitalization.id}
                         isDischarged={hospitalization.is_discharged}
                     />

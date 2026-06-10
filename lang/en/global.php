@@ -3944,6 +3944,7 @@ return [
     'current_information' => 'Current information',
     'current_room' => 'Current room',
     'current_bed' => 'Current bed',
+    'anesthesia_clears_hospitalization_bed' => 'The current ward room and bed will be freed on this hospitalization when the anesthesia referral is saved.',
     'select_room' => 'Select room',
     'select_bed' => 'Select bed',
     'changing_room_bed_note' => 'Changing room and bed will automatically free the current bed and occupy the new one.',

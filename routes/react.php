@@ -46,6 +46,7 @@ use App\Http\Controllers\V1\FoodTypeController;
 use App\Http\Controllers\V1\HemodialysisSessionController;
 use App\Http\Controllers\V1\HospitalizationController;
 use App\Http\Controllers\V1\HospitalizationSections\DiabetesChartController as HospitalizationDiabetesChartController;
+use App\Http\Controllers\V1\HospitalizationSections\AnesthesiaController as HospitalizationAnesthesiaController;
 use App\Http\Controllers\V1\HospitalizationSections\IcuController as HospitalizationIcuController;
 use App\Http\Controllers\V1\HospitalizationSections\NurseNoteController as HospitalizationNurseNoteController;
 use App\Http\Controllers\V1\HospitalizationSections\NutritionCareController as HospitalizationNutritionCareController;
@@ -167,7 +168,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('hospitalization', [AppointmentHospitalizationController::class, 'store'])->name('hospitalization.store');
             Route::delete('hospitalization/{hospitalization}', [AppointmentHospitalizationController::class, 'destroy'])->name('hospitalization.destroy');
             Route::get('hospitalization-visits', [HospitalizationVisitsController::class, 'index'])->name('hospitalization-visits.index');
+            Route::get('anesthesia/meta', [AppointmentAnesthesiaController::class, 'meta'])->name('anesthesia.meta');
             Route::get('anesthesia', [AppointmentAnesthesiaController::class, 'index'])->name('anesthesia.index');
+            Route::post('anesthesia', [AppointmentAnesthesiaController::class, 'store'])->name('anesthesia.store');
             Route::delete('anesthesia/{anesthesia}', [AppointmentAnesthesiaController::class, 'destroy'])->name('anesthesia.destroy');
             Route::get('operations', [AppointmentOperationController::class, 'index'])->name('operations.index');
             Route::get('icu/meta', [AppointmentIcuController::class, 'meta'])->name('icu.meta');
@@ -459,6 +462,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{hospitalization}/icu', [HospitalizationIcuController::class, 'index'])->name('icu.index');
         Route::post('/{hospitalization}/icu', [HospitalizationIcuController::class, 'store'])->name('icu.store');
         Route::delete('/{hospitalization}/icu/{icu}', [HospitalizationIcuController::class, 'destroy'])->name('icu.destroy');
+        Route::get('/{hospitalization}/anesthesia/meta', [HospitalizationAnesthesiaController::class, 'meta'])->name('anesthesia.meta');
+        Route::get('/{hospitalization}/anesthesia', [HospitalizationAnesthesiaController::class, 'index'])->name('anesthesia.index');
+        Route::post('/{hospitalization}/anesthesia', [HospitalizationAnesthesiaController::class, 'store'])->name('anesthesia.store');
+        Route::delete('/{hospitalization}/anesthesia/{anesthesia}', [HospitalizationAnesthesiaController::class, 'destroy'])->name('anesthesia.destroy');
         Route::get('/{hospitalization}/visits/meta', [HospitalizationVisitController::class, 'meta'])->name('visits.meta');
         Route::get('/{hospitalization}/visits/{visit}', [HospitalizationVisitController::class, 'show'])->name('visits.show');
         Route::get('/{hospitalization}/visits', [HospitalizationVisitController::class, 'index'])->name('visits.index');

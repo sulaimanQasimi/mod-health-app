@@ -133,7 +133,7 @@ export default function IcuListPage({
                     }
                     footer={<SettingsPagination links={icus.links} />}
                 >
-                    <div className={`relative px-5 py-4 ${processing ? 'pointer-events-none opacity-60' : ''}`}>
+                    <div className={`relative ${processing ? 'pointer-events-none opacity-60' : ''}`}>
                         {processing && (
                             <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 dark:bg-gray-900/40">
                                 <Spinner size="lg" color="failure" />

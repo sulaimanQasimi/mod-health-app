@@ -1,0 +1,1 @@
+import{j as t}from"./app-CALySday.js";import{u as n}from"./useTranslation-tAncGnab.js";function s(...r){return r.filter(Boolean).join(" ")}function i({className:r=""}){const{direction:o}=n();return t.jsx("i",{className:s("bx bx-arrow-back",o==="rtl"&&"rotate-180",r)})}export{i as B};

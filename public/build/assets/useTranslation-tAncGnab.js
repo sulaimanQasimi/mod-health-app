@@ -1,0 +1,1 @@
+import{u as a}from"./app-CALySday.js";function e(n,o){if(!o.startsWith("global."))return o;const s=o.replace(/^global\./,"").split(".");let t=n;for(const r of s)if(t&&typeof t=="object"&&r in t)t=t[r];else return o;return typeof t=="string"?t:o}function i(){const{translations:n,locale:o,direction:s}=a().props;return{t:r=>e(n,r),locale:o,direction:s}}export{i as u};

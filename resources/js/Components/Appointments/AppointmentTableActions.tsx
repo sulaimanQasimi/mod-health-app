@@ -41,7 +41,7 @@ interface AppointmentActionGroupProps {
 
 export function AppointmentActionGroup({ children }: AppointmentActionGroupProps) {
     return (
-        <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-1.5 rounded-xl border border-gray-200/90 bg-gradient-to-b from-gray-50 to-white p-1.5 shadow-sm dark:border-gray-700 dark:from-gray-800/70 dark:to-gray-900/40">
+        <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-1">
             {children}
         </div>
     );

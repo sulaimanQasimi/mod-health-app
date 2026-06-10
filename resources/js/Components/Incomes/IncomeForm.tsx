@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { Button, Label, Spinner, Textarea, TextInput } from 'flowbite-react';
 import { FormEvent } from 'react';
+import PersianDateInput from '../ui/PersianDateInput';
 import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem } from '../../types/settings';
@@ -107,10 +108,10 @@ export default function IncomeForm({ urls, formData }: IncomeFormProps) {
                 </div>
                 <div>
                     <Label htmlFor="purchase_date">{t('global.purchase_date')}</Label>
-                    <TextInput
+                    <PersianDateInput
                         id="purchase_date"
                         value={data.purchase_date}
-                        onChange={(event) => setData('purchase_date', event.target.value)}
+                        onChange={(value) => setData('purchase_date', value)}
                     />
                     {errors.purchase_date && <p className="mt-1 text-sm text-red-600">{errors.purchase_date}</p>}
                 </div>

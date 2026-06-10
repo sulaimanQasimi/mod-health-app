@@ -487,6 +487,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/approved', [ICUController::class, 'approved'])->name('approved');
         Route::get('/rejected', [ICUController::class, 'rejected'])->name('rejected');
         Route::get('/report', [ICUController::class, 'report'])->name('report');
+        Route::get('/{icu}', [ICUController::class, 'show'])->name('show');
+        Route::put('/{icu}', [ICUController::class, 'update'])->name('update');
+        Route::delete('/{icu}', [ICUController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('pacus')->name('pacus.')->group(function () {

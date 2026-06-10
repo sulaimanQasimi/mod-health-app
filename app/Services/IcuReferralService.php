@@ -185,7 +185,8 @@ class IcuReferralService
                 'delete' => request()->user()?->can('delete-icus') ?? false,
             ],
             'urls' => [
-                'edit' => route('icus.edit', $icu->id),
+                'show' => route('react.icus.show', $icu),
+                'edit' => route('react.icus.show', $icu),
             ],
         ];
     }

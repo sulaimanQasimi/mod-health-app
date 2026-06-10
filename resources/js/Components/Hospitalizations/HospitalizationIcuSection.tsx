@@ -321,7 +321,7 @@ export default function HospitalizationIcuSection({
                                                     <SectionActionButton
                                                         icon="bx-edit"
                                                         title={t('global.edit')}
-                                                        href={item.urls.edit}
+                                                        href={item.urls.show ?? item.urls.edit}
                                                         colorClass="text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30"
                                                     />
                                                 )}

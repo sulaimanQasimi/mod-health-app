@@ -488,6 +488,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/approved', [ICUController::class, 'approved'])->name('approved');
         Route::get('/rejected', [ICUController::class, 'rejected'])->name('rejected');
         Route::get('/report', [ICUController::class, 'report'])->name('report');
+        Route::get('/{icu}/discharge/meta', [ICUController::class, 'dischargeMeta'])->name('discharge.meta');
         Route::get('/{icu}/visits/meta', [IcuVisitController::class, 'meta'])->name('visits.meta');
         Route::get('/{icu}/visits/{visit}', [IcuVisitController::class, 'show'])->name('visits.show');
         Route::get('/{icu}/visits', [IcuVisitController::class, 'index'])->name('visits.index');

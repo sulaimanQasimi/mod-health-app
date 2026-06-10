@@ -168,6 +168,79 @@ class IcuReferralService
     /**
      * @return array<string, mixed>
      */
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function applyDischarge(ICU $icu, array $data): void
+    {
+        DB::transaction(function () use ($icu, $data) {
+            $dischargeStatus = $data['discharge_status'] ?? null;
+            if (! in_array($dischargeStatus, ['recovered', 'died', 'moved'], true)) {
+                return;
+            }
+
+            $placement = self::placementHospitalization($icu);
+            $source = $icu->hospitalization_id
+                ? Hospitalization::query()->find($icu->hospitalization_id)
+                : null;
+
+            $readmitTarget = ($source && $placement && (int) $source->id !== (int) $placement->id)
+                ? $source
+                : ($source ?? $placement);
+
+            if ($placement?->bed_id) {
+                Bed::query()->whereKey($placement->bed_id)->update(['is_occupied' => false]);
+            }
+
+            if ($placement && $readmitTarget && (int) $placement->id !== (int) $readmitTarget->id) {
+                $placement->update([
+                    'is_discharged' => 1,
+                    'room_id' => null,
+                    'bed_id' => null,
+                ]);
+            }
+
+            if ($dischargeStatus === 'died') {
+                $readmitTarget?->update(['is_discharged' => 1]);
+                if ($placement && (! $readmitTarget || (int) $placement->id !== (int) $readmitTarget->id)) {
+                    $placement->update(['is_discharged' => 1]);
+                }
+
+                return;
+            }
+
+            $newRoomId = $dischargeStatus === 'recovered'
+                ? ($data['recovered_room_id'] ?? null)
+                : ($data['transfer_room_id'] ?? null);
+            $newBedId = $dischargeStatus === 'recovered'
+                ? ($data['recovered_bed_id'] ?? null)
+                : ($data['transfer_bed_id'] ?? null);
+
+            if ($readmitTarget && $newRoomId && $newBedId) {
+                if ($readmitTarget->bed_id) {
+                    Bed::query()->whereKey($readmitTarget->bed_id)->update(['is_occupied' => false]);
+                }
+
+                $readmitTarget->update([
+                    'room_id' => $newRoomId,
+                    'bed_id' => $newBedId,
+                    'is_discharged' => 0,
+                ]);
+
+                Bed::query()->whereKey($newBedId)->update(['is_occupied' => true]);
+            }
+
+            if ($dischargeStatus === 'moved' && ! empty($data['move_department_id'])) {
+                $readmitTarget?->loadMissing('appointment');
+                if ($readmitTarget?->appointment) {
+                    $readmitTarget->appointment->update([
+                        'department_id' => $data['move_department_id'],
+                    ]);
+                }
+            }
+        });
+    }
+
     public static function formatListItem(ICU $icu): array
     {
         $placement = self::placementHospitalization($icu);

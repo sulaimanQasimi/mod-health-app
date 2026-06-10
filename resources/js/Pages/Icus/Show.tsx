@@ -4,9 +4,11 @@ import { FormEvent, useState } from 'react';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
+import IcuDischargeModal from '../../Components/Icus/IcuDischargeModal';
 import IcuSummary from '../../Components/Icus/IcuSummary';
 import {
     ICU_APPROVE_BTN_CLASS,
+    ICU_DISCHARGE_BTN_CLASS,
     ICU_PENDING_PANEL_CLASS,
     ICU_PRINT_BTN_CLASS,
     ICU_REJECT_BTN_CLASS,
@@ -28,6 +30,7 @@ interface ShowProps {
         appointment: string | null;
         print_death_card: string;
         print_move_card: string;
+        discharge_meta: string;
     };
 }
 
@@ -36,6 +39,7 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
     const [processing, setProcessing] = useState(false);
     const [approveOpen, setApproveOpen] = useState(false);
     const [rejectOpen, setRejectOpen] = useState(false);
+    const [dischargeOpen, setDischargeOpen] = useState(false);
     const [entranceNote, setEntranceNote] = useState('');
     const [rejectReason, setRejectReason] = useState('');
 
@@ -119,6 +123,16 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
                                 >
                                     <i className="bx bx-x text-lg" />
                                     {t('global.reject')}
+                                </button>
+                            )}
+                            {permissions.discharge && (
+                                <button
+                                    type="button"
+                                    className={ICU_DISCHARGE_BTN_CLASS}
+                                    onClick={() => setDischargeOpen(true)}
+                                >
+                                    <i className="bx bx-log-out text-lg" />
+                                    {t('global.discharge')}
                                 </button>
                             )}
                             {icu.discharge_status === 'died' && (
@@ -301,6 +315,15 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
                     </form>
                 </div>
             </Modal>
+
+            <IcuDischargeModal
+                open={dischargeOpen}
+                updateUrl={urls.update}
+                metaUrl={urls.discharge_meta}
+                processing={processing}
+                onClose={() => setDischargeOpen(false)}
+                onProcessingChange={setProcessing}
+            />
         </DashboardLayout>
     );
 }

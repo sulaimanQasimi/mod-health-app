@@ -6,8 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\ManagesIcuListing;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\Bed;
+use App\Models\Department;
 use App\Models\Hospitalization;
 use App\Models\ICU;
+use App\Models\Room;
+use App\Services\IcuReferralService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +22,10 @@ class ICUController extends Controller
 {
     use ManagesIcuListing;
     use PaginatesInertiaIndex;
+
+    public function __construct(
+        private readonly IcuReferralService $icuReferralService,
+    ) {}
 
     public function new(Request $request): Response
     {
@@ -137,6 +145,9 @@ class ICUController extends Controller
                 'delete' => $user->can('delete-icus'),
                 'approve' => $icu->status === 'new' && $user->can('edit-icus'),
                 'reject' => $icu->status === 'new' && $user->can('edit-icus'),
+                'discharge' => $icu->status === 'approved'
+                    && ! (bool) $icu->is_discharged
+                    && $user->can('edit-icus'),
             ],
             'sectionPermissions' => [
                 'prescription' => $user->can('show-prescriptions-menu') && (bool) $icu->appointment_id,
@@ -152,7 +163,34 @@ class ICUController extends Controller
                     : null,
                 'print_death_card' => route('icus.print-death-card', $icu),
                 'print_move_card' => route('icus.print-move-card', $icu),
+                'discharge_meta' => route('react.icus.discharge.meta', $icu),
                 ...$this->icuListUrls(),
+            ],
+        ]);
+    }
+
+    public function dischargeMeta(ICU $icu): JsonResponse
+    {
+        $this->authorizeIcuMenu();
+        abort_unless(request()->user()->can('edit-icus'), 403);
+        abort_unless($icu->status === 'approved' && ! (bool) $icu->is_discharged, 403);
+
+        $icu->loadMissing('appointment:id,department_id');
+        $branchId = $icu->branch_id ?? request()->user()->branch_id;
+        $placement = IcuReferralService::placementHospitalization($icu);
+        if ($placement) {
+            $placement->loadMissing(['room:id,name', 'bed:id,number']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'current_room_name' => $placement?->room?->name,
+                'current_bed_number' => $placement?->bed?->number,
+                'default_department_id' => $icu->appointment?->department_id,
+                'departments' => $this->dischargeDepartments($branchId),
+                'rooms' => $this->dischargeRooms($branchId),
+                'beds' => $this->dischargeBeds($branchId),
             ],
         ]);
     }
@@ -183,50 +221,19 @@ class ICUController extends Controller
             'description' => 'nullable',
         ]);
 
+        if ($request->filled('discharge_status')) {
+            $data['is_discharged'] = 1;
+            $data['discharged_at'] = $data['discharged_at'] ?? now();
+            if ($request->discharge_status === 'moved' && empty($data['transfer_date'])) {
+                $data['transfer_date'] = now()->toDateString();
+            }
+        }
+
         $icu->update($data);
 
-        $isAnyDischarge = $icu->is_discharged || in_array($icu->discharge_status, ['recovered', 'died', 'moved'], true);
-        if (! $isAnyDischarge) {
-            return redirect()->back()->with('success', localize('global.icu_updated_successfully.'));
-        }
-
-        $hospitalization = $icu->hospitalization_id && $icu->hospitalization
-            ? $icu->hospitalization
-            : Hospitalization::where('i_c_u_id', $icu->id)->where('is_discharged', 0)->latest()->first();
-
-        if (! $hospitalization) {
-            return redirect()->back()->with('success', localize('global.icu_updated_successfully.'));
-        }
-
-        if ($icu->discharge_status === 'moved' && $request->filled('move_department_id')) {
-            $hospitalization->loadMissing('appointment');
-            if ($hospitalization->appointment) {
-                $hospitalization->appointment->update([
-                    'department_id' => $request->move_department_id,
-                ]);
-            }
-        }
-
-        if ($icu->discharge_status === 'died') {
-            if ($hospitalization->bed_id) {
-                Bed::where('id', $hospitalization->bed_id)->update(['is_occupied' => 0]);
-            }
-            $hospitalization->update(['is_discharged' => 1]);
-        } else {
-            $newRoomId = $icu->discharge_status === 'recovered'
-                ? $request->recovered_room_id
-                : $request->transfer_room_id;
-            $newBedId = $icu->discharge_status === 'recovered'
-                ? $request->recovered_bed_id
-                : $request->transfer_bed_id;
-
-            if ($hospitalization->bed_id) {
-                Bed::where('id', $hospitalization->bed_id)->update(['is_occupied' => 0]);
-            }
-            if ($newRoomId && $newBedId) {
-                $hospitalization->update(['room_id' => $newRoomId, 'bed_id' => $newBedId]);
-                Bed::where('id', $newBedId)->update(['is_occupied' => 1]);
-            }
+        if ($request->filled('discharge_status')
+            && in_array($request->discharge_status, ['recovered', 'died', 'moved'], true)) {
+            $this->icuReferralService->applyDischarge($icu->fresh(), $data);
         }
 
         return redirect()->back()->with('success', localize('global.icu_updated_successfully.'));
@@ -391,5 +398,57 @@ class ICUController extends Controller
             'rejected' => route('react.icus.rejected'),
             default => route('react.icus.new'),
         };
+    }
+
+    /**
+     * @return list<array{id: int, name: string}>
+     */
+    private function dischargeDepartments(?int $branchId): array
+    {
+        return Department::query()
+            ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Department $department) => ['id' => $department->id, 'name' => $department->name])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<array{id: int, name: string, department_id: int|null}>
+     */
+    private function dischargeRooms(?int $branchId): array
+    {
+        return Room::query()
+            ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
+            ->whereHas('beds', fn ($query) => $query->where('is_occupied', false))
+            ->orderBy('name')
+            ->get(['id', 'name', 'department_id'])
+            ->map(fn (Room $room) => [
+                'id' => $room->id,
+                'name' => $room->name,
+                'department_id' => $room->department_id,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<array{id: int, number: string|int, room_id: int}>
+     */
+    private function dischargeBeds(?int $branchId): array
+    {
+        return Bed::query()
+            ->where('is_occupied', false)
+            ->when($branchId, fn ($query) => $query->whereHas('room', fn ($room) => $room->where('branch_id', $branchId)))
+            ->orderBy('number')
+            ->get(['id', 'number', 'room_id'])
+            ->map(fn (Bed $bed) => [
+                'id' => $bed->id,
+                'number' => $bed->number,
+                'room_id' => $bed->room_id,
+            ])
+            ->values()
+            ->all();
     }
 }

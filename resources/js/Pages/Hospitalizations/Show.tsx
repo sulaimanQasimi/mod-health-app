@@ -7,6 +7,7 @@ import PhysiotherapySection from '../../Components/Appointments/Sections/Physiot
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import HospitalizationSummary from '../../Components/Hospitalizations/HospitalizationSummary';
 import HospitalizationDiabetesChartSection from '../../Components/Hospitalizations/HospitalizationDiabetesChartSection';
+import HospitalizationNurseNoteSection from '../../Components/Hospitalizations/HospitalizationNurseNoteSection';
 import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
 import HospitalizationVitalSignSection from '../../Components/Hospitalizations/HospitalizationVitalSignSection';
 import {
@@ -38,6 +39,7 @@ interface ShowProps {
         vital_signs: boolean;
         visits: boolean;
         diabetes_charts: boolean;
+        nurse_notes: boolean;
     };
     urls: {
         index: string;
@@ -243,6 +245,13 @@ export default function HospitalizationsShow({
                     />
                 )}
 
+                {sectionPermissions.nurse_notes && (
+                    <HospitalizationNurseNoteSection
+                        hospitalizationId={hospitalization.id}
+                        isDischarged={hospitalization.is_discharged}
+                    />
+                )}
+
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 px-1 pt-1">
                         <i className="bx bx-clinic text-lg text-emerald-600 dark:text-emerald-400" />
@@ -260,29 +269,6 @@ export default function HospitalizationsShow({
                         <ClinicalDataTable
                             headers={[t('global.blood_group'), t('global.date')]}
                             rows={hospitalization.blood_banks.map((row) => [row.group, row.created_at])}
-                            emptyMessage={t('global.no_records_found')}
-                        />
-                    </UnderReviewSectionPanel>
-
-                    <UnderReviewSectionPanel
-                        id="hospitalization-nurse-notes"
-                        icon="bx-note"
-                        title={t('global.nurse_notes')}
-                        count={hospitalization.nurse_notes.length}
-                    >
-                        <ClinicalDataTable
-                            headers={[
-                                t('global.date'),
-                                t('global.morning'),
-                                t('global.evening'),
-                                t('global.nurse'),
-                            ]}
-                            rows={hospitalization.nurse_notes.map((row) => [
-                                row.date,
-                                row.note_am,
-                                row.note_pm,
-                                row.nurse_name,
-                            ])}
                             emptyMessage={t('global.no_records_found')}
                         />
                     </UnderReviewSectionPanel>

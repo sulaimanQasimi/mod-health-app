@@ -98,7 +98,6 @@ export interface HospitalizationDetail {
     room_name: string | null;
     bed_number: string | number | null;
     blood_banks: HospitalizationBloodBank[];
-    nurse_notes: HospitalizationClinicalRow[];
     medication_records: HospitalizationClinicalRow[];
     vital_signs: HospitalizationClinicalRow[];
     nutrition_cares: HospitalizationClinicalRow[];

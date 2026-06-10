@@ -182,15 +182,6 @@ class HospitalizationController extends Controller
             'anesthesias:id,hospitalization_id,created_at',
         ]);
 
-        $nurseNotes = NurseNote::query()
-            ->where('morphable_type', Hospitalization::class)
-            ->where('morphable_id', $hospitalization->id)
-            ->with(['nurse:id,first_name,last_name'])
-            ->orderByDesc('date')
-            ->orderByDesc('created_at')
-            ->limit(50)
-            ->get();
-
         $medicationRecords = MedicationAdministrationRecord::query()
             ->where('morphable_type', Hospitalization::class)
             ->where('morphable_id', $hospitalization->id)
@@ -203,7 +194,7 @@ class HospitalizationController extends Controller
         $user = $request->user();
 
         return Inertia::render('Hospitalizations/Show', [
-            'hospitalization' => $this->transformDetail($hospitalization, $nurseNotes, $medicationRecords),
+            'hospitalization' => $this->transformDetail($hospitalization, $medicationRecords),
             'permissions' => [
                 'edit' => $user->can('edit-hospitalizations'),
                 'discharge' => ! (bool) $hospitalization->is_discharged && $user->can('edit-hospitalizations'),
@@ -216,6 +207,7 @@ class HospitalizationController extends Controller
                 'vital_signs' => $user->can('viewAny', VitalSign::class),
                 'visits' => $user->can('show-hospitalizations-menu'),
                 'diabetes_charts' => $user->can('viewAny', DiabetesChart::class),
+                'nurse_notes' => $user->can('viewAny', NurseNote::class),
             ],
             'urls' => [
                 'index' => route('react.hospitalizations.index'),
@@ -755,13 +747,11 @@ class HospitalizationController extends Controller
 
     /**
      * @param  \Illuminate\Support\Collection<int, DiabetesChart>  $diabetesCharts
-     * @param  \Illuminate\Support\Collection<int, NurseNote>  $nurseNotes
      * @param  \Illuminate\Support\Collection<int, MedicationAdministrationRecord>  $medicationRecords
      * @return array<string, mixed>
      */
     private function transformDetail(
         Hospitalization $hospitalization,
-        $nurseNotes,
         $medicationRecords,
     ): array {
         return [
@@ -791,15 +781,6 @@ class HospitalizationController extends Controller
                 'id' => $item->id,
                 'group' => $item->group,
                 'created_at' => $this->formatDate($item->created_at),
-            ])->values()->all(),
-            'nurse_notes' => $nurseNotes->map(fn (NurseNote $note) => [
-                'id' => $note->id,
-                'date' => $note->date,
-                'note_am' => $note->note_am,
-                'note_pm' => $note->note_pm,
-                'nurse_name' => $note->nurse
-                    ? trim($note->nurse->first_name.' '.$note->nurse->last_name)
-                    : null,
             ])->values()->all(),
             'medication_records' => $medicationRecords->map(fn (MedicationAdministrationRecord $record) => [
                 'id' => $record->id,

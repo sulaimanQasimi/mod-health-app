@@ -10,7 +10,7 @@ import {
     HospitalizationCheckupSection,
     HospitalizationSection,
     HospitalizationVisitsSection,
-    IcuSection,
+    IcuReferralSection,
     IcuVisitsSection,
     LabTestSection,
     NephrologySection,
@@ -59,6 +59,7 @@ interface ShowAppointmentProps {
     sectionPermissions: {
         underReview: boolean;
         hospitalization: boolean;
+        icu: boolean;
     };
     urls: {
         index: string;
@@ -194,7 +195,7 @@ export default function ShowAppointment({
                     <HospitalizationVisitsSection appointmentId={id} />
                     <AnesthesiaSection appointmentId={id} />
                     <OperationSection appointmentId={id} />
-                    <IcuSection appointmentId={id} />
+                    {sectionPermissions.icu && <IcuReferralSection appointmentId={id} />}
                     <IcuVisitsSection appointmentId={id} />
                 </div>
             </div>

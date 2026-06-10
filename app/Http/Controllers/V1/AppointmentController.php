@@ -182,6 +182,9 @@ class AppointmentController extends Controller
             'sectionPermissions' => [
                 'underReview' => $request->user()->can('show-under-review-menu'),
                 'hospitalization' => $request->user()->can('show-hospitalizations-menu'),
+                'icu' => $request->user()->can('refer-to-icu')
+                    || $request->user()->can('edit-icus')
+                    || $request->user()->can('delete-icus'),
             ],
             'urls' => [
                 'index' => route('react.appointments.index'),

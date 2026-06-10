@@ -8,6 +8,7 @@ import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import HospitalizationSummary from '../../Components/Hospitalizations/HospitalizationSummary';
 import HospitalizationDiabetesChartSection from '../../Components/Hospitalizations/HospitalizationDiabetesChartSection';
 import HospitalizationNurseNoteSection from '../../Components/Hospitalizations/HospitalizationNurseNoteSection';
+import HospitalizationIcuSection from '../../Components/Hospitalizations/HospitalizationIcuSection';
 import HospitalizationNutritionCareSection from '../../Components/Hospitalizations/HospitalizationNutritionCareSection';
 import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
 import HospitalizationVitalSignSection from '../../Components/Hospitalizations/HospitalizationVitalSignSection';
@@ -42,6 +43,7 @@ interface ShowProps {
         diabetes_charts: boolean;
         nurse_notes: boolean;
         nutrition_cares: boolean;
+        icu: boolean;
     };
     urls: {
         index: string;
@@ -261,6 +263,13 @@ export default function HospitalizationsShow({
                     />
                 )}
 
+                {sectionPermissions.icu && (
+                    <HospitalizationIcuSection
+                        hospitalizationId={hospitalization.id}
+                        isDischarged={hospitalization.is_discharged}
+                    />
+                )}
+
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 px-1 pt-1">
                         <i className="bx bx-clinic text-lg text-emerald-600 dark:text-emerald-400" />
@@ -302,7 +311,6 @@ export default function HospitalizationsShow({
                     {(hospitalization.nursing_assessments_count > 0 ||
                         hospitalization.advices_count > 0 ||
                         hospitalization.complaints_count > 0 ||
-                        hospitalization.icu_count > 0 ||
                         hospitalization.anesthesia_count > 0) && (
                         <UnderReviewSectionPanel
                             id="hospitalization-related"
@@ -312,7 +320,6 @@ export default function HospitalizationsShow({
                                 hospitalization.nursing_assessments_count +
                                 hospitalization.advices_count +
                                 hospitalization.complaints_count +
-                                hospitalization.icu_count +
                                 hospitalization.anesthesia_count
                             }
                         >
@@ -335,11 +342,6 @@ export default function HospitalizationsShow({
                                     <p>
                                         {t('global.add_complaint')}:{' '}
                                         <span className="font-medium">{hospitalization.complaints_count}</span>
-                                    </p>
-                                )}
-                                {hospitalization.icu_count > 0 && (
-                                    <p>
-                                        ICU: <span className="font-medium">{hospitalization.icu_count}</span>
                                     </p>
                                 )}
                                 {hospitalization.anesthesia_count > 0 && (

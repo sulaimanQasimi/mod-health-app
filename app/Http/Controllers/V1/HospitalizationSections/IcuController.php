@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\V1\AppointmentSections;
+namespace App\Http\Controllers\V1\HospitalizationSections;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\V1\AppointmentSections\Concerns\AuthorizesAppointmentAccess;
-use App\Models\Appointment;
 use App\Models\Bed;
+use App\Models\Hospitalization;
 use App\Models\ICU;
 use App\Models\Room;
 use App\Services\IcuReferralService;
@@ -15,22 +14,30 @@ use Illuminate\Validation\ValidationException;
 
 class IcuController extends Controller
 {
-    use AuthorizesAppointmentAccess;
-
     public function __construct(
         private readonly IcuReferralService $icuReferralService,
     ) {}
 
-    public function index(Appointment $appointment): JsonResponse
+    public function index(Hospitalization $hospitalization): JsonResponse
     {
-        $this->authorizeAppointmentView($appointment);
-        $user = request()->user();
+        $this->ensureAccessible($hospitalization);
 
+        $user = request()->user();
         if (! $this->canView($user)) {
-            return $this->sectionIndexResponse([], $appointment, ['view' => false, 'create' => false]);
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'items' => [],
+                    'count' => 0,
+                    'permissions' => [
+                        'view' => false,
+                        'create' => false,
+                    ],
+                ],
+            ]);
         }
 
-        $items = $appointment->icu()
+        $items = $hospitalization->icu()
             ->with(['patient:id,name'])
             ->latest()
             ->get()
@@ -38,36 +45,43 @@ class IcuController extends Controller
             ->values()
             ->all();
 
-        return $this->sectionIndexResponse($items, $appointment, [
-            'view' => true,
-            'create' => ! $appointment->is_completed && $user->can('refer-to-icu'),
-            'edit' => $user->can('edit-icus'),
-            'delete' => $user->can('delete-icus'),
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'items' => $items,
+                'count' => count($items),
+                'permissions' => $this->permissions($user, $hospitalization),
+            ],
         ]);
     }
 
-    public function meta(Appointment $appointment): JsonResponse
+    public function meta(Hospitalization $hospitalization): JsonResponse
     {
-        $this->authorizeAppointmentView($appointment);
-        abort_unless(! $appointment->is_completed && request()->user()->can('refer-to-icu'), 403);
+        $this->ensureAccessible($hospitalization);
+        abort_unless($this->canCreate(request()->user(), $hospitalization), 403);
 
-        $appointment->loadMissing('patient:id,name');
-        $branchId = $appointment->branch_id ?? request()->user()->branch_id;
+        $hospitalization->loadMissing(['patient:id,name', 'room:id,name', 'bed:id,number']);
+        $branchId = $hospitalization->branch_id ?? request()->user()->branch_id;
 
         return response()->json([
             'success' => true,
             'data' => [
-                'patient_name' => $appointment->patient?->name,
+                'patient_name' => $hospitalization->patient?->name,
+                'current_room_name' => $hospitalization->room?->name,
+                'current_bed_number' => $hospitalization->bed?->number,
                 'rooms' => $this->roomsWithAvailableBeds($branchId),
                 'beds' => $this->availableBeds($branchId),
             ],
         ]);
     }
 
-    public function store(Request $request, Appointment $appointment): JsonResponse
+    public function store(Request $request, Hospitalization $hospitalization): JsonResponse
     {
-        $this->authorizeAppointmentView($appointment);
-        abort_unless(! $appointment->is_completed && $request->user()->can('refer-to-icu'), 403);
+        $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
+        abort_unless($this->canCreate($request->user(), $hospitalization), 403);
+
+        $hospitalization->loadMissing(['patient:id,name', 'appointment:id,doctor_id']);
 
         $validated = $request->validate([
             'description' => 'required|string|max:2000',
@@ -78,10 +92,11 @@ class IcuController extends Controller
         try {
             $this->icuReferralService->create([
                 'description' => $validated['description'],
-                'patient_id' => $appointment->patient_id,
-                'appointment_id' => $appointment->id,
-                'doctor_id' => $appointment->doctor_id ?? $request->user()->doctor?->id,
-                'branch_id' => $appointment->branch_id ?? $request->user()->branch_id,
+                'patient_id' => $hospitalization->patient_id,
+                'appointment_id' => $hospitalization->appointment_id,
+                'hospitalization_id' => $hospitalization->id,
+                'doctor_id' => $hospitalization->appointment?->doctor_id ?? $request->user()->doctor?->id,
+                'branch_id' => $hospitalization->branch_id ?? $request->user()->branch_id,
                 'room_id' => $validated['room_id'],
                 'bed_id' => $validated['bed_id'],
             ], $request->user());
@@ -96,14 +111,20 @@ class IcuController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function destroy(Appointment $appointment, ICU $icu): JsonResponse
+    public function destroy(Hospitalization $hospitalization, ICU $icu): JsonResponse
     {
-        $this->authorizeAppointmentView($appointment);
+        $this->ensureAccessible($hospitalization);
         abort_unless(request()->user()->can('delete-icus'), 403);
-        abort_unless((int) $icu->appointment_id === (int) $appointment->id, 404);
+        abort_unless((int) $icu->hospitalization_id === (int) $hospitalization->id, 404);
+
         $icu->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    private function ensureAccessible(Hospitalization $hospitalization): void
+    {
+        abort_unless($hospitalization->userCanView(request()->user()), 404);
     }
 
     private function canView($user): bool
@@ -111,6 +132,22 @@ class IcuController extends Controller
         return ($user?->can('refer-to-icu') ?? false)
             || ($user?->can('edit-icus') ?? false)
             || ($user?->can('delete-icus') ?? false);
+    }
+
+    private function canCreate($user, Hospitalization $hospitalization): bool
+    {
+        return ! (bool) $hospitalization->is_discharged && ($user?->can('refer-to-icu') ?? false);
+    }
+
+    /**
+     * @return array{view: bool, create: bool}
+     */
+    private function permissions($user, Hospitalization $hospitalization): array
+    {
+        return [
+            'view' => $this->canView($user),
+            'create' => $this->canCreate($user, $hospitalization),
+        ];
     }
 
     /**

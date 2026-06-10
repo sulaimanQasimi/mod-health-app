@@ -9,6 +9,7 @@ export { default as PrescriptionSection } from './PrescriptionSection';
 export { default as ProstheticsSection } from './ProstheticsSection';
 export { default as UnderReviewSection } from './UnderReviewSection';
 export { default as HospitalizationSection } from './HospitalizationSection';
+export { default as IcuReferralSection } from './IcuReferralSection';
 export {
     AnesthesiaSection,
     ConsultationSection,

@@ -1,4 +1,4 @@
-import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
+import { Alert, Button, Spinner, TextInput } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DepotFormData } from '../../types/depot';
@@ -125,29 +125,36 @@ export default function DepotRequestItemsEditor({
                 </Alert>
             )}
 
-            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="min-w-[7rem]">{t('global.type')}</TableHead>
-                            <TableHead className="min-w-[12rem]">{t('global.name')}</TableHead>
-                            <TableHead className="min-w-[6rem]">{t('global.quantity')}</TableHead>
-                            <TableHead className="min-w-[8rem]">{t('global.unit')}</TableHead>
-                            <TableHead className="min-w-[8rem]">{t('global.batch_number')}</TableHead>
-                            <TableHead className="w-12" />
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {items.map((line, index) => {
-                            const kind = kinds[index] ?? 'medicine';
-                            const medicineError = errors[`items.${index}.medicine_id`];
-                            const toolError = errors[`items.${index}.tool_id`];
-                            const quantityError = errors[`items.${index}.quantity`];
+            <Table className="min-w-[880px]">
+                <TableHead>
+                    <TableRow variant="header">
+                        <TableHeader className="w-10">#</TableHeader>
+                        <TableHeader className="min-w-[9rem]">{t('global.type')}</TableHeader>
+                        <TableHeader className="min-w-[14rem]">{t('global.name')}</TableHeader>
+                        <TableHeader align="center" className="min-w-[6rem]">
+                            {t('global.quantity')}
+                        </TableHeader>
+                        <TableHeader className="min-w-[8rem]">{t('global.unit')}</TableHeader>
+                        <TableHeader className="min-w-[8rem]">{t('global.batch_number')}</TableHeader>
+                        <TableHeader align="center" className="w-14">
+                            <span className="sr-only">{t('global.actions')}</span>
+                        </TableHeader>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {items.map((line, index) => {
+                        const kind = kinds[index] ?? 'medicine';
+                        const medicineError = errors[`items.${index}.medicine_id`];
+                        const toolError = errors[`items.${index}.tool_id`];
+                        const quantityError = errors[`items.${index}.quantity`];
 
-                            return (
-                                <TableRow key={index}>
-                                    <TableCell>
-                                        <div className="inline-flex rounded-lg border border-gray-200 p-0.5 dark:border-gray-600">
+                        return (
+                            <TableRow key={index}>
+                                <TableCell muted className="align-top">
+                                    {index + 1}
+                                </TableCell>
+                                <TableCell className="align-top">
+                                    <div className="inline-flex rounded-lg border border-gray-200 p-0.5 dark:border-gray-600">
                                             <button
                                                 type="button"
                                                 onClick={() => switchKind(index, 'medicine')}
@@ -171,9 +178,9 @@ export default function DepotRequestItemsEditor({
                                                 {t('global.depot.tool')}
                                             </button>
                                         </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        {kind === 'medicine' ? (
+                                </TableCell>
+                                <TableCell className="min-w-[14rem] align-top">
+                                    {kind === 'medicine' ? (
                                             <SearchableSelect
                                                 value={line.medicine_id}
                                                 onChange={(value) => updateLine(index, { medicine_id: value, tool_id: '' })}
@@ -210,21 +217,22 @@ export default function DepotRequestItemsEditor({
                                                     kind={kind}
                                                 />
                                             </div>
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        <TextInput
-                                            type="number"
-                                            min={1}
-                                            value={line.quantity}
-                                            onChange={(event) => updateLine(index, { quantity: event.target.value })}
-                                        />
-                                        {quantityError && (
-                                            <p className="mt-1 text-xs text-red-600">{quantityError}</p>
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        <SearchableSelect
+                                    )}
+                                </TableCell>
+                                <TableCell align="center" className="align-top">
+                                    <TextInput
+                                        type="number"
+                                        min={1}
+                                        className="w-24"
+                                        value={line.quantity}
+                                        onChange={(event) => updateLine(index, { quantity: event.target.value })}
+                                    />
+                                    {quantityError && (
+                                        <p className="mt-1 text-xs text-red-600">{quantityError}</p>
+                                    )}
+                                </TableCell>
+                                <TableCell className="align-top">
+                                    <SearchableSelect
                                             value={line.unit_id}
                                             onChange={(value) => updateLine(index, { unit_id: value })}
                                             options={[
@@ -234,32 +242,31 @@ export default function DepotRequestItemsEditor({
                                                     label: unit.name,
                                                 })),
                                             ]}
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <TextInput
-                                            value={line.batch_number}
-                                            onChange={(event) => updateLine(index, { batch_number: event.target.value })}
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button
-                                            type="button"
-                                            color="light"
-                                            size="xs"
-                                            disabled={items.length <= 1}
-                                            onClick={() => removeLine(index)}
-                                            aria-label={t('global.delete')}
-                                        >
-                                            <i className="bx bx-trash text-red-500" />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </div>
+                                    />
+                                </TableCell>
+                                <TableCell className="align-top">
+                                    <TextInput
+                                        value={line.batch_number}
+                                        onChange={(event) => updateLine(index, { batch_number: event.target.value })}
+                                    />
+                                </TableCell>
+                                <TableCell align="center" className="align-top">
+                                    <Button
+                                        type="button"
+                                        color="light"
+                                        size="xs"
+                                        disabled={items.length <= 1}
+                                        onClick={() => removeLine(index)}
+                                        aria-label={t('global.delete')}
+                                    >
+                                        <i className="bx bx-trash text-red-500" />
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
         </div>
     );
 }

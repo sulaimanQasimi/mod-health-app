@@ -168,6 +168,9 @@ export function AnesthesiaSection({ appointmentId }: SectionProps) {
             ]}
             rowActions={(item, ctx) => (
                 <>
+                    {item.urls?.show && (
+                        <SectionActionButton icon="bx-show" title={t('global.view')} href={item.urls.show as string} colorClass="text-violet-600 hover:bg-violet-50 dark:text-violet-400 dark:hover:bg-violet-900/30" />
+                    )}
                     {item.urls?.edit && (
                         <SectionActionButton icon="bx-edit" title={t('global.edit')} href={item.urls.edit as string} colorClass="text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30" />
                     )}

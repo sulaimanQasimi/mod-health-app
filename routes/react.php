@@ -550,6 +550,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/approved', [AnesthesiaController::class, 'approved'])->name('approved');
         Route::get('/rejected', [AnesthesiaController::class, 'rejected'])->name('rejected');
         Route::get('/report', [AnesthesiaController::class, 'report'])->name('report');
+        Route::get('/{anesthesia}/edit', [AnesthesiaController::class, 'edit'])->name('edit');
+        Route::put('/{anesthesia}/details', [AnesthesiaController::class, 'updateDetails'])->name('update-details');
+        Route::get('/{anesthesia}', [AnesthesiaController::class, 'show'])->name('show');
+        Route::put('/{anesthesia}', [AnesthesiaController::class, 'update'])->name('update');
+        Route::delete('/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('operations')->name('operations.')->group(function () {

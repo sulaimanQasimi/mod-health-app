@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import DepotNavTabs from '../../../Components/Depots/DepotNavTabs';
-import { depotStatusBadgeColor } from '../../../Components/Depots/depotUi';
+import { depotRequestStatusLabel, depotStatusBadgeColor } from '../../../Components/Depots/depotUi';
 import SettingsEmptyState from '../../../Components/Settings/SettingsEmptyState';
 import SettingsFilterActions from '../../../Components/Settings/SettingsFilterActions';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
@@ -258,7 +258,9 @@ export default function IndexDepotRequests({
                                         </TableCell>
                                         <TableCell align="center">{item.total_quantity.toLocaleString()}</TableCell>
                                         <TableCell>
-                                            <Badge color={depotStatusBadgeColor(item.status)}>{item.status}</Badge>
+                                            <Badge color={depotStatusBadgeColor(item.status)}>
+                                                {depotRequestStatusLabel(item.status, t)}
+                                            </Badge>
                                         </TableCell>
                                         <TableCell muted>{item.created_at ?? '—'}</TableCell>
                                         <TableActionsCell>

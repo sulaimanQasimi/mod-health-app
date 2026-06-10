@@ -12,7 +12,11 @@ import {
 import { useState } from 'react';
 import DepotNavTabs from '../../../Components/Depots/DepotNavTabs';
 import DepotRequestWorkflowStepper from '../../../Components/Depots/DepotRequestWorkflowStepper';
-import { DEPOT_SUCCESS_BTN_CLASS, depotStatusBadgeColor } from '../../../Components/Depots/depotUi';
+import {
+    DEPOT_SUCCESS_BTN_CLASS,
+    depotRequestStatusLabel,
+    depotStatusBadgeColor,
+} from '../../../Components/Depots/depotUi';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../Components/ui/Table';
@@ -105,7 +109,7 @@ export default function ShowDepotRequest({
 
                     <div className="mb-4 flex flex-wrap items-center gap-2">
                         <Badge color={depotStatusBadgeColor(depotRequest.status)} className="text-sm">
-                            {depotRequest.status}
+                            {depotRequestStatusLabel(depotRequest.status, t)}
                         </Badge>
                         <span className="text-sm text-gray-500">{depotRequest.items_summary}</span>
                     </div>
@@ -288,7 +292,7 @@ export default function ShowDepotRequest({
                                             )}
                                             <i className="bx bx-right-arrow-alt text-gray-400" />
                                             <Badge color={depotStatusBadgeColor(log.to_status)}>
-                                                {log.to_status}
+                                                {depotRequestStatusLabel(log.to_status, t)}
                                             </Badge>
                                         </div>
                                         {log.notes && (

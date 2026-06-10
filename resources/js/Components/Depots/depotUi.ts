@@ -21,3 +21,10 @@ export function depotTypeLabel(type: string, t: (key: string) => string): string
     if (translated !== key) return translated;
     return type.replace(/_/g, ' ');
 }
+
+export function depotRequestStatusLabel(status: string, t: (key: string) => string): string {
+    const key = `global.depot.request_status_${status}`;
+    const translated = t(key);
+    if (translated !== key) return translated;
+    return status.replace(/_/g, ' ');
+}

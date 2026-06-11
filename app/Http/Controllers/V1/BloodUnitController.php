@@ -6,10 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\ManagesBloodBankListing;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\BloodUnit;
+use App\Models\BloodUnitTest;
 use App\Services\BloodBankStockService;
+use App\Services\BloodUnitManagementService;
 use App\Services\BloodUnitReceiveService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -79,7 +83,7 @@ class BloodUnitController extends Controller
                         'expires_at' => $unit->expires_at ? verta($unit->expires_at)->format('Y-m-d') : null,
                         'created_at' => $unit->created_at ? verta($unit->created_at)->format('Y-m-d') : null,
                         'urls' => [
-                            'show' => route('blood_banks.inventory.show', $unit),
+                            'show' => route('react.blood-banks.inventory.show', $unit),
                         ],
                     ];
                 })->values()->all(),
@@ -152,6 +156,163 @@ class BloodUnitController extends Controller
             ->with('success', localize('global.blood_unit_received_success'));
     }
 
+    public function show(Request $request, BloodUnit $bloodUnit): Response
+    {
+        $this->authorizeBloodBankMenu();
+        $this->ensureBranchBloodUnit($bloodUnit);
+
+        $bloodUnit->load([
+            'branch:id,name',
+            'stockMovements.user:id,name',
+            'test.testedBy:id,name',
+            'tests.testedBy:id,name',
+            'donation.donor.department:id,name',
+            'donation.donor.patient:id,name,last_name',
+            'donation.samples',
+        ]);
+
+        $user = $request->user();
+
+        return Inertia::render('BloodBanks/InventoryShow', [
+            'unit' => $this->transformBloodUnitShow($bloodUnit),
+            'filterOptions' => [
+                'bloodGroups' => ['A', 'B', 'AB', 'O'],
+                'testResults' => BloodUnitTest::RESULT_VALUES,
+            ],
+            'permissions' => [
+                'manage' => $user->can('receive-blood-units') || $user->can('manage-blood-inventory'),
+                'canQuarantine' => in_array($bloodUnit->status, ['available', 'quarantine'], true),
+                'canDiscard' => in_array($bloodUnit->status, ['available', 'quarantine'], true),
+                'canReleaseAfterTests' => ($bloodUnit->test?->overall_status ?? 'pending') === 'passed'
+                    && $bloodUnit->status === 'quarantine',
+            ],
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
+            'urls' => [
+                'back' => route('react.blood-banks.inventory'),
+                'saveTests' => route('react.blood-banks.inventory.tests.save', $bloodUnit),
+                'approveAfterTests' => route('react.blood-banks.inventory.tests.approve', $bloodUnit),
+                'quarantine' => route('react.blood-banks.inventory.quarantine', $bloodUnit),
+                'releaseQuarantine' => route('react.blood-banks.inventory.release-quarantine', $bloodUnit),
+                'discard' => route('react.blood-banks.inventory.discard', $bloodUnit),
+                ...$this->bloodBankListUrls(),
+            ],
+        ]);
+    }
+
+    public function saveTests(Request $request, BloodUnit $bloodUnit): RedirectResponse
+    {
+        $this->authorizeBloodBankMenu();
+        $this->ensureBranchBloodUnit($bloodUnit);
+        $this->authorizeReceiveBloodUnits();
+
+        $validated = $request->validate([
+            'abo_result' => ['nullable', 'string', Rule::in(['A', 'B', 'AB', 'O'])],
+            'rh_result' => ['nullable', 'string', Rule::in(['+', '-'])],
+            'dct_result' => ['required', Rule::in(BloodUnitTest::RESULT_VALUES)],
+            'ict_result' => ['required', Rule::in(BloodUnitTest::RESULT_VALUES)],
+            'hbs_result' => ['required', Rule::in(BloodUnitTest::RESULT_VALUES)],
+            'hcv_result' => ['required', Rule::in(BloodUnitTest::RESULT_VALUES)],
+            'hiv_result' => ['required', Rule::in(BloodUnitTest::RESULT_VALUES)],
+            'vdrl_result' => ['required', Rule::in(BloodUnitTest::RESULT_VALUES)],
+            'remarks' => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        app(BloodUnitManagementService::class)->saveTests($bloodUnit, $validated, (int) $request->user()->id);
+
+        return redirect()
+            ->route('react.blood-banks.inventory.show', $bloodUnit)
+            ->with('success', localize('global.blood_unit_tests_saved'));
+    }
+
+    public function approveAfterTests(BloodUnit $bloodUnit): RedirectResponse
+    {
+        $this->authorizeBloodBankMenu();
+        $this->ensureBranchBloodUnit($bloodUnit);
+        $this->authorizeReceiveBloodUnits();
+
+        try {
+            app(BloodUnitManagementService::class)->approveAfterTests($bloodUnit);
+        } catch (ValidationException $e) {
+            return redirect()
+                ->route('react.blood-banks.inventory.show', $bloodUnit)
+                ->with('error', collect($e->errors())->flatten()->first());
+        } catch (\Throwable $e) {
+            return redirect()
+                ->route('react.blood-banks.inventory.show', $bloodUnit)
+                ->with('error', $e->getMessage());
+        }
+
+        return redirect()
+            ->route('react.blood-banks.inventory.show', $bloodUnit)
+            ->with('success', localize('global.blood_unit_released_after_tests'));
+    }
+
+    public function discard(Request $request, BloodUnit $bloodUnit): RedirectResponse
+    {
+        $this->authorizeBloodBankMenu();
+        $this->ensureBranchBloodUnit($bloodUnit);
+        $this->authorizeReceiveBloodUnits();
+
+        $request->validate(['reason' => 'nullable|string|max:2000']);
+
+        try {
+            app(BloodUnitManagementService::class)->discard($bloodUnit, $request->input('reason'));
+        } catch (\Throwable $e) {
+            return redirect()
+                ->route('react.blood-banks.inventory.show', $bloodUnit)
+                ->with('error', $e->getMessage());
+        }
+
+        return redirect()
+            ->route('react.blood-banks.inventory')
+            ->with('success', localize('global.blood_unit_discarded_success'));
+    }
+
+    public function quarantine(Request $request, BloodUnit $bloodUnit): RedirectResponse
+    {
+        $this->authorizeBloodBankMenu();
+        $this->ensureBranchBloodUnit($bloodUnit);
+        $this->authorizeReceiveBloodUnits();
+
+        $request->validate(['reason' => 'nullable|string|max:2000']);
+
+        try {
+            app(BloodUnitManagementService::class)->setQuarantine($bloodUnit, true, $request->input('reason'));
+        } catch (\Throwable $e) {
+            return redirect()
+                ->route('react.blood-banks.inventory.show', $bloodUnit)
+                ->with('error', $e->getMessage());
+        }
+
+        return redirect()
+            ->route('react.blood-banks.inventory.show', $bloodUnit)
+            ->with('success', localize('global.blood_unit_quarantine_set'));
+    }
+
+    public function releaseQuarantine(Request $request, BloodUnit $bloodUnit): RedirectResponse
+    {
+        $this->authorizeBloodBankMenu();
+        $this->ensureBranchBloodUnit($bloodUnit);
+        $this->authorizeReceiveBloodUnits();
+
+        $request->validate(['reason' => 'nullable|string|max:2000']);
+
+        try {
+            app(BloodUnitManagementService::class)->setQuarantine($bloodUnit, false, $request->input('reason'));
+        } catch (\Throwable $e) {
+            return redirect()
+                ->route('react.blood-banks.inventory.show', $bloodUnit)
+                ->with('error', $e->getMessage());
+        }
+
+        return redirect()
+            ->route('react.blood-banks.inventory.show', $bloodUnit)
+            ->with('success', localize('global.blood_unit_quarantine_released'));
+    }
+
     protected function authorizeReceiveBloodUnits(): void
     {
         $user = request()->user();
@@ -159,5 +320,94 @@ class BloodUnitController extends Controller
             $user?->can('receive-blood-units') || $user?->can('manage-blood-inventory'),
             403,
         );
+    }
+
+    protected function ensureBranchBloodUnit(BloodUnit $unit): void
+    {
+        if ((int) $unit->branch_id !== (int) request()->user()?->branch_id) {
+            abort(404);
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformBloodUnitShow(BloodUnit $bloodUnit): array
+    {
+        $formatDt = fn ($dt) => $dt ? verta($dt)->format('Y-m-d H:i') : null;
+        $expiresAt = $bloodUnit->expires_at;
+        $isExpired = $expiresAt?->isPast() ?? false;
+        $isExpiringSoon = $expiresAt
+            && $expiresAt->isFuture()
+            && $expiresAt->lte(now()->addDays(7))
+            && in_array($bloodUnit->status, ['available', 'quarantine'], true);
+        $daysUntilExpiry = $expiresAt && ! $isExpired
+            ? (int) now()->diffInDays($expiresAt, absolute: false)
+            : null;
+
+        return [
+            'id' => $bloodUnit->id,
+            'bag_number' => $bloodUnit->bag_number,
+            'blood_group' => $bloodUnit->blood_group,
+            'rh' => $bloodUnit->rh,
+            'component_type' => $bloodUnit->component_type,
+            'status' => $bloodUnit->status,
+            'volume_ml' => $bloodUnit->volume_ml,
+            'collected_at' => $formatDt($bloodUnit->collected_at),
+            'expires_at' => $formatDt($bloodUnit->expires_at),
+            'is_expired' => $isExpired,
+            'is_expiring_soon' => (bool) $isExpiringSoon,
+            'days_until_expiry' => $daysUntilExpiry,
+            'branch_name' => $bloodUnit->branch?->name,
+            'screening_status' => $bloodUnit->test?->overall_status ?? 'pending',
+            'test' => $bloodUnit->test ? $this->transformBloodUnitTest($bloodUnit->test) : null,
+            'tests' => $bloodUnit->tests->map(fn ($test) => $this->transformBloodUnitTest($test))->values()->all(),
+            'donation' => $bloodUnit->donation ? [
+                'donor_name' => $bloodUnit->donation->donor?->name,
+                'department_name' => $bloodUnit->donation->donor?->department?->name,
+                'patient' => $bloodUnit->donation->donor?->patient ? [
+                    'id' => $bloodUnit->donation->donor->patient->id,
+                    'name' => trim($bloodUnit->donation->donor->patient->name.' '.($bloodUnit->donation->donor->patient->last_name ?? '')),
+                    'urls' => [
+                        'show' => route('react.patients.show', $bloodUnit->donation->donor->patient),
+                    ],
+                ] : null,
+                'phlebotomy_at' => $formatDt($bloodUnit->donation->phlebotomy_at),
+                'samples_count' => $bloodUnit->donation->samples?->count() ?? 0,
+            ] : null,
+            'stock_movements' => $bloodUnit->stockMovements
+                ->sortByDesc('created_at')
+                ->values()
+                ->map(fn ($movement) => [
+                    'id' => $movement->id,
+                    'movement_type' => $movement->movement_type,
+                    'user_name' => $movement->user?->name,
+                    'notes' => $movement->notes,
+                    'created_at' => $formatDt($movement->created_at),
+                ])
+                ->all(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformBloodUnitTest(BloodUnitTest $test): array
+    {
+        return [
+            'id' => $test->id,
+            'abo_result' => $test->abo_result,
+            'rh_result' => $test->rh_result,
+            'dct_result' => $test->dct_result,
+            'ict_result' => $test->ict_result,
+            'hbs_result' => $test->hbs_result,
+            'hcv_result' => $test->hcv_result,
+            'hiv_result' => $test->hiv_result,
+            'vdrl_result' => $test->vdrl_result,
+            'overall_status' => $test->overall_status,
+            'remarks' => $test->remarks,
+            'tested_at' => $test->tested_at ? verta($test->tested_at)->format('Y-m-d H:i') : null,
+            'tested_by_name' => $test->testedBy?->name,
+        ];
     }
 }

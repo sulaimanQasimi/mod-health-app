@@ -117,16 +117,7 @@ class BloodUnitController extends Controller
             'remarks' => ['nullable', 'string', 'max:5000'],
         ]);
 
-        $overall = $this->computeOverallTestStatus($validated);
-
-        BloodUnitTest::updateOrCreate(
-            ['blood_unit_id' => $bloodUnit->id],
-            array_merge($validated, [
-                'overall_status' => $overall,
-                'tested_at' => now(),
-                'tested_by' => auth()->id(),
-            ])
-        );
+        app(\App\Services\BloodUnitManagementService::class)->saveTests($bloodUnit, $validated, (int) $request->user()->id);
 
         return redirect()
             ->back()
@@ -142,38 +133,15 @@ class BloodUnitController extends Controller
             abort(403);
         }
 
-        $bloodUnit->load('test');
-        if (! $bloodUnit->test || $bloodUnit->test->overall_status !== 'passed') {
-            return redirect()->back()->with('error', localize('global.blood_unit_tests_must_pass_before_release'));
-        }
-
-        // If unit is in quarantine, release it to available
-        if ($bloodUnit->status === 'quarantine') {
-            try {
-                app(BloodBankStockService::class)->setQuarantine($bloodUnit, false, localize('global.blood_release_after_tests'));
-            } catch (\Throwable $e) {
-                return redirect()->back()->with('error', $e->getMessage());
-            }
+        try {
+            app(\App\Services\BloodUnitManagementService::class)->approveAfterTests($bloodUnit);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->with('error', collect($e->errors())->flatten()->first());
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
 
         return redirect()->back()->with('success', localize('global.blood_unit_released_after_tests'));
-    }
-
-    protected function computeOverallTestStatus(array $validated): string
-    {
-        $keys = ['dct_result', 'ict_result', 'hbs_result', 'hcv_result', 'hiv_result', 'vdrl_result'];
-
-        foreach ($keys as $k) {
-            if (($validated[$k] ?? 'pending') === 'positive') {
-                return 'failed';
-            }
-            if (($validated[$k] ?? 'pending') === 'inconclusive' || ($validated[$k] ?? 'pending') === 'pending') {
-                return 'pending';
-            }
-        }
-
-        // All are negative
-        return 'passed';
     }
 
     public function discard(Request $request, BloodUnit $bloodUnit)
@@ -190,7 +158,7 @@ class BloodUnitController extends Controller
         ]);
 
         try {
-            app(BloodBankStockService::class)->discardUnit($bloodUnit, $request->input('reason'));
+            app(\App\Services\BloodUnitManagementService::class)->discard($bloodUnit, $request->input('reason'));
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -212,7 +180,7 @@ class BloodUnitController extends Controller
         $request->validate(['reason' => 'nullable|string|max:2000']);
 
         try {
-            app(BloodBankStockService::class)->setQuarantine($bloodUnit, true, $request->input('reason'));
+            app(\App\Services\BloodUnitManagementService::class)->setQuarantine($bloodUnit, true, $request->input('reason'));
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -232,7 +200,7 @@ class BloodUnitController extends Controller
         $request->validate(['reason' => 'nullable|string|max:2000']);
 
         try {
-            app(BloodBankStockService::class)->setQuarantine($bloodUnit, false, $request->input('reason'));
+            app(\App\Services\BloodUnitManagementService::class)->setQuarantine($bloodUnit, false, $request->input('reason'));
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

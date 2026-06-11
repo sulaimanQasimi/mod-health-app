@@ -233,3 +233,73 @@ export interface BloodUnitReceiveForm {
     expires_time: string;
     notes: string;
 }
+
+export interface BloodUnitTestRecord {
+    id: number;
+    abo_result: string | null;
+    rh_result: string | null;
+    dct_result: string | null;
+    ict_result: string | null;
+    hbs_result: string | null;
+    hcv_result: string | null;
+    hiv_result: string | null;
+    vdrl_result: string | null;
+    overall_status: string;
+    remarks: string | null;
+    tested_at: string | null;
+    tested_by_name: string | null;
+}
+
+export interface BloodUnitStockMovement {
+    id: number;
+    movement_type: string;
+    user_name: string | null;
+    notes: string | null;
+    created_at: string | null;
+}
+
+export interface BloodUnitDetail {
+    id: number;
+    bag_number: string | null;
+    blood_group: string | null;
+    rh: string | null;
+    component_type: string | null;
+    status: string;
+    volume_ml: number | null;
+    collected_at: string | null;
+    expires_at: string | null;
+    is_expired: boolean;
+    is_expiring_soon: boolean;
+    days_until_expiry: number | null;
+    branch_name: string | null;
+    screening_status: string;
+    test: BloodUnitTestRecord | null;
+    tests: BloodUnitTestRecord[];
+    donation: {
+        donor_name: string | null;
+        department_name: string | null;
+        patient: { id: number; name: string; urls: { show: string } } | null;
+        phlebotomy_at: string | null;
+        samples_count: number;
+    } | null;
+    stock_movements: BloodUnitStockMovement[];
+}
+
+export interface BloodUnitTestForm {
+    abo_result: string;
+    rh_result: string;
+    dct_result: string;
+    ict_result: string;
+    hbs_result: string;
+    hcv_result: string;
+    hiv_result: string;
+    vdrl_result: string;
+    remarks: string;
+}
+
+export interface BloodUnitShowPermissions {
+    manage: boolean;
+    canQuarantine: boolean;
+    canDiscard: boolean;
+    canReleaseAfterTests: boolean;
+}

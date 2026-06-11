@@ -377,6 +377,14 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('permission:receive-blood-units|manage-blood-inventory')
             ->name('inventory.store');
         Route::get('/inventory', [BloodUnitController::class, 'index'])->name('inventory');
+        Route::middleware('permission:receive-blood-units|manage-blood-inventory')->group(function () {
+            Route::get('/inventory/{bloodUnit}', [BloodUnitController::class, 'show'])->name('inventory.show');
+            Route::post('/inventory/{bloodUnit}/tests', [BloodUnitController::class, 'saveTests'])->name('inventory.tests.save');
+            Route::post('/inventory/{bloodUnit}/approve-after-tests', [BloodUnitController::class, 'approveAfterTests'])->name('inventory.tests.approve');
+            Route::post('/inventory/{bloodUnit}/discard', [BloodUnitController::class, 'discard'])->name('inventory.discard');
+            Route::post('/inventory/{bloodUnit}/quarantine', [BloodUnitController::class, 'quarantine'])->name('inventory.quarantine');
+            Route::post('/inventory/{bloodUnit}/release-quarantine', [BloodUnitController::class, 'releaseQuarantine'])->name('inventory.release-quarantine');
+        });
         Route::get('/movements', [BloodBankController::class, 'movements'])->name('movements');
         Route::get('/branch-transfers', [BloodBranchTransferController::class, 'index'])->name('branch-transfers.index');
         Route::get('/report', [BloodBankController::class, 'report'])->name('report');

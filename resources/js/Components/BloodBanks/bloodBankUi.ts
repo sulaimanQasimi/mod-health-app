@@ -87,3 +87,62 @@ export const BLOOD_MOVEMENT_TYPES = ['received', 'issued', 'adjusted', 'discarde
 
 export const BLOOD_BANK_PRIMARY_BTN_CLASS =
     'inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500/40 disabled:cursor-not-allowed disabled:opacity-60';
+
+export const BLOOD_UNIT_TEST_RESULT_OPTIONS = ['pending', 'negative', 'positive', 'inconclusive'] as const;
+
+export function screeningStatusBadgeColor(
+    status: string,
+): 'success' | 'failure' | 'warning' | 'gray' {
+    switch (status) {
+        case 'passed':
+            return 'success';
+        case 'failed':
+            return 'failure';
+        case 'pending':
+            return 'warning';
+        default:
+            return 'gray';
+    }
+}
+
+export function testResultBadgeColor(
+    result: string | null,
+): 'success' | 'failure' | 'warning' | 'gray' | 'info' {
+    switch (result) {
+        case 'negative':
+            return 'success';
+        case 'positive':
+            return 'failure';
+        case 'pending':
+            return 'warning';
+        case 'inconclusive':
+            return 'info';
+        default:
+            return 'gray';
+    }
+}
+
+export function movementTypeBadgeColor(
+    type: string,
+): 'success' | 'failure' | 'warning' | 'info' | 'purple' | 'gray' {
+    switch (type) {
+        case 'received':
+            return 'success';
+        case 'issued':
+            return 'purple';
+        case 'discarded':
+            return 'failure';
+        case 'transferred':
+            return 'info';
+        case 'adjusted':
+            return 'warning';
+        default:
+            return 'gray';
+    }
+}
+
+export const BLOOD_UNIT_CARD_CLASS =
+    'overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900';
+
+export const BLOOD_UNIT_HERO_AVATAR_CLASS =
+    'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl font-bold text-white shadow-inner backdrop-blur-sm';

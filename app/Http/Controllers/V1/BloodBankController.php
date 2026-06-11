@@ -532,7 +532,7 @@ class BloodBankController extends Controller
             'component_type' => $unit->component_type,
             'expires_at' => $unit->expires_at ? verta($unit->expires_at)->format('Y-m-d') : null,
             'urls' => [
-                'show' => route('blood_banks.inventory.show', $unit),
+                'show' => route('react.blood-banks.inventory.show', $unit),
             ],
         ];
     }

@@ -205,3 +205,29 @@ export interface BloodReportFilterOptions {
     bloodGroups: string[];
     statuses: string[];
 }
+
+export interface BloodUnitReceiveForm {
+    donor_record_department: boolean;
+    department_id: string;
+    donor_name: string;
+    donor_father_name: string;
+    donor_age: string;
+    donor_gender: string;
+    donor_phone: string;
+    donor_national_id: string;
+    donor_blood_pressure: string;
+    donor_type: string;
+    donor_military_department: string;
+    donor_comorbidities: string;
+    donor_receiver: string;
+    phlebotomy_at: string;
+    blood_group: string;
+    rh: string;
+    component_type: string;
+    bag_number: string;
+    volume_ml: string;
+    collected_at: string;
+    expires_date: string;
+    expires_time: string;
+    notes: string;
+}

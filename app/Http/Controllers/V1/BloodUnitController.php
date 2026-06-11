@@ -7,6 +7,8 @@ use App\Http\Controllers\V1\Concerns\ManagesBloodBankListing;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\BloodUnit;
 use App\Services\BloodBankStockService;
+use App\Services\BloodUnitReceiveService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -107,11 +109,55 @@ class BloodUnitController extends Controller
                 'bloodComponentTypes' => $this->bloodComponentTypes(),
                 'statuses' => ['available', 'reserved', 'issued', 'quarantine', 'discarded', 'expired'],
             ],
+            'permissions' => [
+                'canCreate' => $request->user()->can('receive-blood-units')
+                    || $request->user()->can('manage-blood-inventory'),
+            ],
             'urls' => [
                 'current' => route('react.blood-banks.inventory'),
-                'legacyAdd' => url('/blood_banks/inventory'),
+                'create' => route('react.blood-banks.inventory.create'),
                 ...$this->bloodBankListUrls(),
             ],
         ]);
+    }
+
+    public function create(Request $request): Response
+    {
+        $this->authorizeBloodBankMenu();
+        $this->authorizeReceiveBloodUnits();
+
+        return Inertia::render('BloodBanks/InventoryCreate', [
+            'departments' => $this->bloodRequestFilterOptions()['departments'],
+            'filterOptions' => [
+                'bloodGroups' => ['A', 'B', 'AB', 'O'],
+                'bloodComponentTypes' => $this->bloodComponentTypes(),
+            ],
+            'urls' => [
+                'back' => route('react.blood-banks.inventory'),
+                'store' => route('react.blood-banks.inventory.store'),
+                ...$this->bloodBankListUrls(),
+            ],
+        ]);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $this->authorizeBloodBankMenu();
+        $this->authorizeReceiveBloodUnits();
+
+        app(BloodUnitReceiveService::class)->receive($request);
+
+        return redirect()
+            ->route('react.blood-banks.inventory')
+            ->with('success', localize('global.blood_unit_received_success'));
+    }
+
+    protected function authorizeReceiveBloodUnits(): void
+    {
+        $user = request()->user();
+        abort_unless(
+            $user?->can('receive-blood-units') || $user?->can('manage-blood-inventory'),
+            403,
+        );
     }
 }

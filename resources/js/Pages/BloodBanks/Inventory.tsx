@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Label, Select, Spinner, TextInput } from 'flowbite-react';
 import { useCallback, useEffect, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
@@ -37,7 +37,8 @@ interface InventoryProps {
     expiredArchivedCount: number;
     filters: BloodInventoryFilters;
     filterOptions: BloodInventoryFilterOptions;
-    urls: BloodBankListUrls & { current: string; legacyAdd: string };
+    permissions: { canCreate: boolean };
+    urls: BloodBankListUrls & { current: string; create: string };
 }
 
 const EMPTY_FILTERS: BloodInventoryFilters = {
@@ -67,6 +68,7 @@ export default function BloodBanksInventory({
     expiredArchivedCount,
     filters: serverFilters,
     filterOptions,
+    permissions,
     urls,
 }: InventoryProps) {
     const { t } = useTranslation();
@@ -106,15 +108,17 @@ export default function BloodBanksInventory({
                     backHref={urls.dashboard}
                     backLabel={t('global.back')}
                     action={
-                        <SettingsPageActions>
-                            <a
-                                href={urls.legacyAdd}
-                                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700"
-                            >
-                                <i className="bx bx-plus" />
-                                {t('global.add')}
-                            </a>
-                        </SettingsPageActions>
+                        permissions.canCreate ? (
+                            <SettingsPageActions>
+                                <Link
+                                    href={urls.create}
+                                    className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700"
+                                >
+                                    <i className="bx bx-plus" />
+                                    {t('global.add_blood_manually')}
+                                </Link>
+                            </SettingsPageActions>
+                        ) : undefined
                     }
                 />
 

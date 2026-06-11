@@ -370,6 +370,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/approved', [BloodBankController::class, 'approved'])->name('approved');
         Route::get('/delivered', [BloodBankController::class, 'delivered'])->name('delivered');
         Route::get('/rejected', [BloodBankController::class, 'rejected'])->name('rejected');
+        Route::get('/inventory/create', [BloodUnitController::class, 'create'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('inventory.create');
+        Route::post('/inventory', [BloodUnitController::class, 'store'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('inventory.store');
         Route::get('/inventory', [BloodUnitController::class, 'index'])->name('inventory');
         Route::get('/movements', [BloodBankController::class, 'movements'])->name('movements');
         Route::get('/branch-transfers', [BloodBranchTransferController::class, 'index'])->name('branch-transfers.index');

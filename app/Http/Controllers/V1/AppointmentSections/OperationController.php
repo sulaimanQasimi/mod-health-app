@@ -26,6 +26,9 @@ class OperationController extends Controller
                 'patient_name' => $item->patient?->name,
                 'status' => $item->status,
                 'date' => $item->date,
+                'urls' => [
+                    'show' => route('react.operations.show', $item),
+                ],
             ])
             ->values()
             ->all();

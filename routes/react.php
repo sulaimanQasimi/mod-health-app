@@ -571,6 +571,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reserved', [OperationController::class, 'reserved'])->name('reserved');
         Route::get('/completed', [OperationController::class, 'completed'])->name('completed');
         Route::get('/report', [OperationController::class, 'report'])->name('report');
+        Route::get('/{operation}', [OperationController::class, 'show'])->name('show');
+        Route::put('/{operation}', [OperationController::class, 'update'])->name('update');
+        Route::put('/{operation}/complete', [OperationController::class, 'complete'])->name('complete');
+        Route::put('/{operation}/reserve', [OperationController::class, 'reserve'])->name('reserve');
+        Route::post('/{operation}/unreserve', [OperationController::class, 'unreserve'])->name('unreserve');
     });
 
     Route::prefix('users')->name('users.')->group(function () {

@@ -22,7 +22,7 @@ import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../Components/ui/Table';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { DepotNavUrls, DepotRequestDetail } from '../../../types/depot';
-import { SETTINGS_WIDE_FORM_WIDTH } from '../../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 interface RequestActionPermissions {
     edit: boolean;
@@ -94,7 +94,7 @@ export default function ShowDepotRequest({
     return (
         <DashboardLayout>
             <Head title={depotRequest.request_number ?? t('global.depot.requests')} />
-            <div className={`mx-auto ${SETTINGS_WIDE_FORM_WIDTH} space-y-4`}>
+            <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
                 <DepotNavTabs active="requests" urls={navUrls} />
 
                 <Card className="shadow-sm">

@@ -12,7 +12,7 @@ import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { DepotFormData, DepotNavUrls } from '../../../types/depot';
-import { SETTINGS_WIDE_FORM_WIDTH } from '../../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 export default function CreateDepotRequest({
     defaults,
@@ -49,7 +49,7 @@ export default function CreateDepotRequest({
     return (
         <DashboardLayout>
             <Head title={t('global.depot.new_request')} />
-            <div className={`mx-auto ${SETTINGS_WIDE_FORM_WIDTH} space-y-4`}>
+            <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
                 <DepotNavTabs active="requests" urls={navUrls} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader

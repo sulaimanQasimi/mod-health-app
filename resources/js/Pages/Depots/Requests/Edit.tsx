@@ -9,7 +9,7 @@ import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { DepotFormData, DepotNavUrls, DepotRequestDetail } from '../../../types/depot';
-import { SETTINGS_WIDE_FORM_WIDTH } from '../../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 function toFormItems(items: DepotRequestDetail['items']): DepotRequestLineItem[] {
     return items.map((item) => ({
@@ -49,7 +49,7 @@ export default function EditDepotRequest({
     return (
         <DashboardLayout>
             <Head title={depotRequest.request_number ?? t('global.edit')} />
-            <div className={`mx-auto ${SETTINGS_WIDE_FORM_WIDTH} space-y-4`}>
+            <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
                 <DepotNavTabs active="requests" urls={navUrls} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader

@@ -125,9 +125,9 @@ function TestFormField({
     children: ReactNode;
 }) {
     return (
-        <div className="rounded-xl border border-gray-100 bg-white p-3 dark:border-gray-800 dark:bg-gray-900/40">
-            <Label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                {icon && <i className={`bx ${icon} text-sm text-rose-500`} />}
+        <div>
+            <Label className="mb-2 flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
+                {icon && <i className={`bx ${icon} text-base text-rose-500`} />}
                 {label}
             </Label>
             {children}
@@ -135,6 +135,8 @@ function TestFormField({
         </div>
     );
 }
+
+const PANEL_BODY_CLASS = 'p-5';
 
 const SCREENING_TEST_FIELDS = [
     { field: 'dct_result', labelKey: 'global.dct', icon: 'bx-test-tube' },
@@ -248,6 +250,7 @@ export default function BloodBanksInventoryShow({
                     <div className={`space-y-5 ${hasSidebar ? 'xl:col-span-2' : ''}`}>
                         <IcuPanel
                             variant="table"
+                            contentClassName={PANEL_BODY_CLASS}
                             title={t('global.unit_information')}
                             icon="bx-box"
                             iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
@@ -295,6 +298,7 @@ export default function BloodBanksInventoryShow({
 
                         <IcuPanel
                             variant="table"
+                            contentClassName={PANEL_BODY_CLASS}
                             title={t('global.blood_unit_screening_results')}
                             icon="bx-test-tube"
                             iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
@@ -359,6 +363,7 @@ export default function BloodBanksInventoryShow({
 
                         <IcuPanel
                             variant="table"
+                            contentClassName={PANEL_BODY_CLASS}
                             title={t('global.donor_and_sample')}
                             icon="bx-user"
                             iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
@@ -395,6 +400,7 @@ export default function BloodBanksInventoryShow({
                             {showActionsPanel && (
                                 <IcuPanel
                                     variant="table"
+                                    contentClassName={PANEL_BODY_CLASS}
                                     title={t('global.actions')}
                                     icon="bx-cog"
                                     iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
@@ -465,50 +471,44 @@ export default function BloodBanksInventoryShow({
 
                             <IcuPanel
                                 variant="table"
+                                contentClassName={PANEL_BODY_CLASS}
                                 title={t('global.screening_and_tests')}
                                 icon="bx-flask"
                                 iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
                             >
-                                <form onSubmit={saveTests} className="space-y-4">
-                                    <div className="rounded-xl border border-rose-100 bg-rose-50/40 p-3 dark:border-rose-900/30 dark:bg-rose-950/20">
-                                        <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-rose-700 dark:text-rose-300">
-                                            <i className="bx bx-droplet" />
-                                            {t('global.blood_group')}
-                                        </p>
-                                        <div className="space-y-3">
-                                            <TestFormField label={t('global.abo_result')} icon="bx-droplet">
-                                                <BloodFormSegmented
-                                                    value={data.abo_result}
-                                                    onChange={(value) => setData('abo_result', value)}
-                                                    columns={4}
-                                                    allowEmpty
-                                                    options={filterOptions.bloodGroups.map((group) => ({
-                                                        value: group,
-                                                        label: group,
-                                                        icon: 'bx-droplet',
-                                                    }))}
-                                                />
-                                            </TestFormField>
-                                            <TestFormField label={t('global.rh_result')} icon="bx-plus-medical">
-                                                <BloodFormSegmented
-                                                    value={data.rh_result}
-                                                    onChange={(value) => setData('rh_result', value)}
-                                                    allowEmpty
-                                                    options={[
-                                                        { value: '+', label: 'Rh+', icon: 'bx-plus-medical' },
-                                                        { value: '-', label: 'Rh−', icon: 'bx-minus' },
-                                                    ]}
-                                                />
-                                            </TestFormField>
-                                        </div>
+                                <form onSubmit={saveTests} className="space-y-5">
+                                    <div className="space-y-4">
+                                        <TestFormField label={t('global.abo_result')} icon="bx-droplet">
+                                            <BloodFormSegmented
+                                                value={data.abo_result}
+                                                onChange={(value) => setData('abo_result', value)}
+                                                columns={4}
+                                                allowEmpty
+                                                options={filterOptions.bloodGroups.map((group) => ({
+                                                    value: group,
+                                                    label: group,
+                                                    icon: 'bx-droplet',
+                                                }))}
+                                            />
+                                        </TestFormField>
+                                        <TestFormField label={t('global.rh_result')} icon="bx-plus-medical">
+                                            <BloodFormSegmented
+                                                value={data.rh_result}
+                                                onChange={(value) => setData('rh_result', value)}
+                                                allowEmpty
+                                                options={[
+                                                    { value: '+', label: 'Rh+', icon: 'bx-plus-medical' },
+                                                    { value: '-', label: 'Rh−', icon: 'bx-minus' },
+                                                ]}
+                                            />
+                                        </TestFormField>
                                     </div>
 
-                                    <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-3 dark:border-gray-800 dark:bg-gray-800/30">
-                                        <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">
-                                            <i className="bx bx-test-tube" />
+                                    <div className="border-t border-gray-100 pt-5 dark:border-gray-800">
+                                        <p className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
                                             {t('global.blood_unit_screening_results')}
                                         </p>
-                                        <div className="grid gap-3 sm:grid-cols-2">
+                                        <div className="grid gap-4 sm:grid-cols-2">
                                             {SCREENING_TEST_FIELDS.map(({ field, labelKey, icon }) => (
                                                 <TestFormField
                                                     key={field}
@@ -526,18 +526,16 @@ export default function BloodBanksInventoryShow({
                                         </div>
                                     </div>
 
-                                    <div className="rounded-xl border border-gray-100 bg-white p-3 dark:border-gray-800 dark:bg-gray-900/40">
-                                        <Label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                            <i className="bx bx-note text-sm text-rose-500" />
-                                            {t('global.remarks')}
-                                        </Label>
-                                        <Textarea
-                                            rows={2}
-                                            value={data.remarks}
-                                            onChange={(e) => setData('remarks', e.target.value)}
-                                            className="rounded-xl"
-                                            placeholder={t('global.remarks')}
-                                        />
+                                    <div className="border-t border-gray-100 pt-5 dark:border-gray-800">
+                                        <TestFormField label={t('global.remarks')} icon="bx-note">
+                                            <Textarea
+                                                rows={2}
+                                                value={data.remarks}
+                                                onChange={(e) => setData('remarks', e.target.value)}
+                                                className="rounded-xl"
+                                                placeholder={t('global.remarks')}
+                                            />
+                                        </TestFormField>
                                     </div>
 
                                     <button type="submit" className={`${BLOOD_BANK_PRIMARY_BTN_CLASS} w-full`} disabled={savingTests}>
@@ -574,6 +572,7 @@ export default function BloodBanksInventoryShow({
 
                 <IcuPanel
                     variant="table"
+                    contentClassName={PANEL_BODY_CLASS}
                     title={t('global.stock_movement_history')}
                     icon="bx-list-ul"
                     iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}

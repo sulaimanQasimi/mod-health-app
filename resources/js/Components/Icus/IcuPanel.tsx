@@ -9,6 +9,7 @@ interface IcuPanelProps {
     action?: ReactNode;
     variant?: 'filter' | 'table';
     footer?: ReactNode;
+    contentClassName?: string;
     children: ReactNode;
 }
 
@@ -20,9 +21,11 @@ export default function IcuPanel({
     action,
     variant = 'table',
     footer,
+    contentClassName,
     children,
 }: IcuPanelProps) {
     const isTable = variant === 'table';
+    const bodyClassName = contentClassName ?? (isTable ? '' : '');
 
     return (
         <section className={`${ICU_CARD_CLASS} ${isTable ? '' : 'p-5'}`}>
@@ -49,7 +52,11 @@ export default function IcuPanel({
                 {action}
             </div>
 
-            {isTable ? children : <div>{children}</div>}
+            {isTable ? (
+                bodyClassName ? <div className={bodyClassName}>{children}</div> : children
+            ) : (
+                <div>{children}</div>
+            )}
 
             {footer && (
                 <div className="border-t border-gray-100 px-5 py-4 dark:border-gray-800">{footer}</div>

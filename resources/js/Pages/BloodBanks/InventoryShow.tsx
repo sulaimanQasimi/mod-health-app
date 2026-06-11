@@ -1,14 +1,15 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Alert, Badge, Button, Label, Spinner, Textarea, TextInput } from 'flowbite-react';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, ReactNode, useEffect, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
+import BloodFormSegmented from '../../Components/BloodBanks/BloodFormSegmented';
+import BloodTestResultSegmented from '../../Components/BloodBanks/BloodTestResultSegmented';
 import BloodUnitDetailTile from '../../Components/BloodBanks/BloodUnitDetailTile';
 import BloodUnitSummary from '../../Components/BloodBanks/BloodUnitSummary';
 import BloodUnitTestResultBadge from '../../Components/BloodBanks/BloodUnitTestResultBadge';
 import {
     BLOOD_BANK_PANEL_ICON_CLASS,
     BLOOD_BANK_PRIMARY_BTN_CLASS,
-    BLOOD_UNIT_TEST_RESULT_OPTIONS,
     bloodGroupLabel,
     bloodRhLabel,
     bloodUnitStatusBadgeColor,
@@ -18,7 +19,6 @@ import {
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import IcuPanel from '../../Components/Icus/IcuPanel';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
-import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
     Table,
     TableBody,
@@ -113,6 +113,38 @@ function ActionField({
     );
 }
 
+function TestFormField({
+    label,
+    icon,
+    error,
+    children,
+}: {
+    label: string;
+    icon?: string;
+    error?: string;
+    children: ReactNode;
+}) {
+    return (
+        <div className="rounded-xl border border-gray-100 bg-white p-3 dark:border-gray-800 dark:bg-gray-900/40">
+            <Label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                {icon && <i className={`bx ${icon} text-sm text-rose-500`} />}
+                {label}
+            </Label>
+            {children}
+            {error && <p className="mt-1.5 text-xs text-red-600">{error}</p>}
+        </div>
+    );
+}
+
+const SCREENING_TEST_FIELDS = [
+    { field: 'dct_result', labelKey: 'global.dct', icon: 'bx-test-tube' },
+    { field: 'ict_result', labelKey: 'global.ict', icon: 'bx-test-tube' },
+    { field: 'hbs_result', labelKey: 'global.hbs', icon: 'bx-virus' },
+    { field: 'hcv_result', labelKey: 'global.hcv', icon: 'bx-virus' },
+    { field: 'hiv_result', labelKey: 'global.hiv', icon: 'bx-virus' },
+    { field: 'vdrl_result', labelKey: 'global.vdrl', icon: 'bx-virus' },
+] as const;
+
 export default function BloodBanksInventoryShow({
     unit,
     filterOptions,
@@ -147,10 +179,7 @@ export default function BloodBanksInventoryShow({
         post(urls.saveTests, { preserveScroll: true });
     };
 
-    const testResultOptions = (filterOptions.testResults ?? [...BLOOD_UNIT_TEST_RESULT_OPTIONS]).map((value) => ({
-        value,
-        label: value,
-    }));
+    const testResultOptions = filterOptions.testResults;
 
     const hasSidebar = permissions.manage;
     const showActionsPanel = permissions.manage && permissions.canQuarantine;
@@ -440,62 +469,74 @@ export default function BloodBanksInventoryShow({
                                 icon="bx-flask"
                                 iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
                             >
-                                <form onSubmit={saveTests} className="space-y-3">
-                                    <div className="grid gap-3 sm:grid-cols-2">
-                                        <div>
-                                            <Label className="mb-1 block text-xs">{t('global.abo_result')}</Label>
-                                            <SearchableSelect
-                                                value={data.abo_result}
-                                                onChange={(value) => setData('abo_result', value)}
-                                                options={filterOptions.bloodGroups.map((g) => ({ value: g, label: g }))}
-                                                placeholder={t('global.select')}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="mb-1 block text-xs">{t('global.rh_result')}</Label>
-                                            <SearchableSelect
-                                                value={data.rh_result}
-                                                onChange={(value) => setData('rh_result', value)}
-                                                options={[
-                                                    { value: '+', label: '+' },
-                                                    { value: '-', label: '-' },
-                                                ]}
-                                                placeholder={t('global.select')}
-                                            />
+                                <form onSubmit={saveTests} className="space-y-4">
+                                    <div className="rounded-xl border border-rose-100 bg-rose-50/40 p-3 dark:border-rose-900/30 dark:bg-rose-950/20">
+                                        <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-rose-700 dark:text-rose-300">
+                                            <i className="bx bx-droplet" />
+                                            {t('global.blood_group')}
+                                        </p>
+                                        <div className="space-y-3">
+                                            <TestFormField label={t('global.abo_result')} icon="bx-droplet">
+                                                <BloodFormSegmented
+                                                    value={data.abo_result}
+                                                    onChange={(value) => setData('abo_result', value)}
+                                                    columns={4}
+                                                    allowEmpty
+                                                    options={filterOptions.bloodGroups.map((group) => ({
+                                                        value: group,
+                                                        label: group,
+                                                        icon: 'bx-droplet',
+                                                    }))}
+                                                />
+                                            </TestFormField>
+                                            <TestFormField label={t('global.rh_result')} icon="bx-plus-medical">
+                                                <BloodFormSegmented
+                                                    value={data.rh_result}
+                                                    onChange={(value) => setData('rh_result', value)}
+                                                    allowEmpty
+                                                    options={[
+                                                        { value: '+', label: 'Rh+', icon: 'bx-plus-medical' },
+                                                        { value: '-', label: 'Rh−', icon: 'bx-minus' },
+                                                    ]}
+                                                />
+                                            </TestFormField>
                                         </div>
                                     </div>
 
-                                    {(
-                                        [
-                                            ['dct_result', 'global.dct'],
-                                            ['ict_result', 'global.ict'],
-                                            ['hbs_result', 'global.hbs'],
-                                            ['hcv_result', 'global.hcv'],
-                                            ['hiv_result', 'global.hiv'],
-                                            ['vdrl_result', 'global.vdrl'],
-                                        ] as const
-                                    ).map(([field, labelKey]) => (
-                                        <div key={field}>
-                                            <Label className="mb-1 block text-xs">{t(labelKey)}</Label>
-                                            <SearchableSelect
-                                                value={data[field]}
-                                                onChange={(value) => setData(field, value)}
-                                                options={testResultOptions}
-                                                required
-                                            />
-                                            {errors[field] && (
-                                                <p className="mt-1 text-xs text-red-600">{errors[field]}</p>
-                                            )}
+                                    <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-3 dark:border-gray-800 dark:bg-gray-800/30">
+                                        <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">
+                                            <i className="bx bx-test-tube" />
+                                            {t('global.blood_unit_screening_results')}
+                                        </p>
+                                        <div className="grid gap-3 sm:grid-cols-2">
+                                            {SCREENING_TEST_FIELDS.map(({ field, labelKey, icon }) => (
+                                                <TestFormField
+                                                    key={field}
+                                                    label={t(labelKey)}
+                                                    icon={icon}
+                                                    error={errors[field]}
+                                                >
+                                                    <BloodTestResultSegmented
+                                                        value={data[field]}
+                                                        onChange={(value) => setData(field, value)}
+                                                        options={testResultOptions}
+                                                    />
+                                                </TestFormField>
+                                            ))}
                                         </div>
-                                    ))}
+                                    </div>
 
-                                    <div>
-                                        <Label className="mb-1 block text-xs">{t('global.remarks')}</Label>
+                                    <div className="rounded-xl border border-gray-100 bg-white p-3 dark:border-gray-800 dark:bg-gray-900/40">
+                                        <Label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                            <i className="bx bx-note text-sm text-rose-500" />
+                                            {t('global.remarks')}
+                                        </Label>
                                         <Textarea
                                             rows={2}
                                             value={data.remarks}
                                             onChange={(e) => setData('remarks', e.target.value)}
                                             className="rounded-xl"
+                                            placeholder={t('global.remarks')}
                                         />
                                     </div>
 

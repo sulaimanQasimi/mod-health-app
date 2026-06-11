@@ -7,6 +7,7 @@ use App\Models\BloodDonor;
 use App\Models\BloodSample;
 use App\Models\Patient;
 use Carbon\Carbon;
+use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -26,6 +27,12 @@ class BloodUnitReceiveService
             $request->merge(['department_id' => null]);
         }
 
+        foreach (['donor_age', 'volume_ml', 'donor_gender', 'donor_phone', 'donor_national_id'] as $key) {
+            if ($request->input($key) === '') {
+                $request->merge([$key => null]);
+            }
+        }
+
         $validated = $request->validate([
             'blood_group' => 'required|string|in:A,B,AB,O',
             'rh' => 'required|string|in:+,-',
@@ -33,7 +40,7 @@ class BloodUnitReceiveService
             'bag_number' => 'required|string|max:255|unique:blood_units,bag_number',
             'volume_ml' => 'nullable|integer|min:1',
             'collected_at' => 'nullable|date',
-            'expires_date' => 'required|date',
+            'expires_date' => 'required|string',
             'expires_time' => 'nullable|date_format:H:i',
             'notes' => 'nullable|string|max:2000',
             'donor_name' => 'nullable|string|max:255',
@@ -61,7 +68,8 @@ class BloodUnitReceiveService
         if ($time === '' || $time === null) {
             $time = '23:59';
         }
-        $expiresAt = Carbon::parse($validated['expires_date'].' '.$time.':00', config('app.timezone'));
+        $expiresDay = $this->parseIncomingDate($validated['expires_date'])->format('Y-m-d');
+        $expiresAt = Carbon::parse($expiresDay.' '.$time.':00', config('app.timezone'));
 
         if ($expiresAt->lte(now())) {
             throw ValidationException::withMessages([
@@ -196,5 +204,14 @@ class BloodUnitReceiveService
             $payload = array_merge($validated, ['donation_id' => $donationId]);
             app(BloodBankStockService::class)->receiveUnit($payload);
         });
+    }
+
+    private function parseIncomingDate(string $value): Carbon
+    {
+        try {
+            return Carbon::instance(Verta::parse($value)->datetime());
+        } catch (\Throwable) {
+            return Carbon::parse($value, config('app.timezone'));
+        }
     }
 }

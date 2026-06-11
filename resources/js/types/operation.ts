@@ -127,6 +127,17 @@ export interface OperationDetail {
     operation_assistants_names: string[];
 }
 
+export interface OperationLinkedHospitalization {
+    id: number;
+    reason: string;
+    remarks: string;
+    department_id: string;
+    room_id: string;
+    bed_id: string;
+    is_active: boolean;
+}
+
 export interface OperationShowPermissions {
     prescription: boolean;
+    hospitalize: boolean;
 }

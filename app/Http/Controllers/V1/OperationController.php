@@ -5,13 +5,16 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\ManagesOperationListing;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
+use App\Jobs\SendNewHospitalizationNotification;
 use App\Models\Anesthesia;
 use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Doctor;
+use App\Models\Hospitalization;
 use App\Models\Nurse;
 use App\Models\OperationType;
+use App\Models\Room;
 use HanifHefaz\Dcter\Dcter;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\RedirectResponse;
@@ -93,14 +96,20 @@ class OperationController extends Controller
             'appointment.department:id,name',
         ]);
 
-        $branchId = $this->operationBranchId();
         $user = $request->user();
+        $linkedHospitalization = $this->resolveOperationHospitalization($operation);
 
         return Inertia::render('Operations/Show', [
             'operation' => $this->transformDetail($operation),
+            'hospitalization' => $linkedHospitalization
+                ? $this->transformOperationHospitalization($linkedHospitalization)
+                : null,
             'nurses' => $this->nurseOptions(),
             'permissions' => [
                 'prescription' => $user->can('show-prescriptions-menu') && (bool) $operation->appointment_id,
+                'hospitalize' => (bool) $operation->appointment_id
+                    && $user->can('show-hospitalizations-menu')
+                    && $user->can('patient-hospitalization'),
             ],
             'urls' => [
                 'update' => route('react.operations.update', $operation),
@@ -110,6 +119,9 @@ class OperationController extends Controller
                 'back' => $this->backUrlForOperation($operation),
                 'appointment' => $operation->appointment_id
                     ? route('react.appointments.show', $operation->appointment_id)
+                    : null,
+                'hospitalizationMeta' => $operation->appointment_id
+                    ? route('react.appointments.sections.hospitalization.meta', $operation->appointment_id)
                     : null,
                 ...$this->operationListUrls(),
             ],
@@ -173,19 +185,35 @@ class OperationController extends Controller
         $data = $request->validate([
             'operation_remark' => 'nullable|string',
             'operation_result' => 'required|in:0,1',
+            'hospitalize' => 'nullable|boolean',
+            'reason' => 'required_if:hospitalize,1|string',
+            'remarks' => 'required_if:hospitalize,1|string',
+            'department_id' => 'required_if:hospitalize,1|exists:departments,id',
+            'room_id' => 'required_if:hospitalize,1|exists:rooms,id',
+            'bed_id' => 'required_if:hospitalize,1|exists:beds,id',
         ]);
 
-        $data['is_operation_done'] = 1;
-        $data['room_id'] = $operation->room_id;
-        $data['bed_id'] = $operation->bed_id;
+        DB::transaction(function () use ($request, $operation, $data) {
+            $operationData = [
+                'operation_remark' => $data['operation_remark'] ?? null,
+                'operation_result' => $data['operation_result'],
+                'is_operation_done' => 1,
+                'room_id' => $operation->room_id,
+                'bed_id' => $operation->bed_id,
+            ];
 
-        if ($operation->bed_id) {
-            Bed::query()
-                ->whereKey($operation->bed_id)
-                ->update(['is_occupied' => false]);
-        }
+            if ($operation->bed_id) {
+                Bed::query()
+                    ->whereKey($operation->bed_id)
+                    ->update(['is_occupied' => false]);
+            }
 
-        $operation->update($data);
+            $operation->update($operationData);
+
+            if ($request->boolean('hospitalize')) {
+                $this->syncOperationHospitalization($operation, $data, $request->user());
+            }
+        });
 
         return redirect()
             ->back()
@@ -463,5 +491,112 @@ class OperationController extends Controller
         if ($branchId) {
             abort_unless((int) $operation->branch_id === $branchId, 404);
         }
+    }
+
+    private function resolveOperationHospitalization(Anesthesia $operation): ?Hospitalization
+    {
+        if ($operation->hospitalization_id) {
+            $linked = Hospitalization::query()->find($operation->hospitalization_id);
+            if ($linked) {
+                return $linked;
+            }
+        }
+
+        if (! $operation->appointment_id) {
+            return null;
+        }
+
+        return Hospitalization::query()
+            ->where('appointment_id', $operation->appointment_id)
+            ->where(function ($query) {
+                $query->where('is_discharged', 0)->orWhereNull('is_discharged');
+            })
+            ->latest('id')
+            ->first();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformOperationHospitalization(Hospitalization $hospitalization): array
+    {
+        return [
+            'id' => $hospitalization->id,
+            'reason' => $hospitalization->reason ?? '',
+            'remarks' => $hospitalization->remarks ?? '',
+            'department_id' => (string) ($hospitalization->department_id ?? ''),
+            'room_id' => (string) ($hospitalization->room_id ?? ''),
+            'bed_id' => (string) ($hospitalization->bed_id ?? ''),
+            'is_active' => ! (bool) $hospitalization->is_discharged,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function syncOperationHospitalization(Anesthesia $operation, array $data, $user): void
+    {
+        abort_unless($operation->appointment_id, 422);
+
+        $room = Room::query()->findOrFail($data['room_id']);
+        abort_unless(
+            $room->department_id === null || (int) $room->department_id === (int) $data['department_id'],
+            422
+        );
+
+        $bed = Bed::query()->findOrFail($data['bed_id']);
+        abort_unless((int) $bed->room_id === (int) $data['room_id'], 422);
+
+        $existing = $this->resolveOperationHospitalization($operation);
+
+        if ($existing) {
+            if ((int) $bed->id !== (int) $existing->bed_id) {
+                abort_if((bool) $bed->is_occupied, 422);
+                $this->releaseHospitalizationBed($existing->bed_id);
+                $bed->update(['is_occupied' => true]);
+            }
+
+            $existing->update([
+                'reason' => $data['reason'],
+                'remarks' => $data['remarks'],
+                'room_id' => $data['room_id'],
+                'bed_id' => $data['bed_id'],
+                'department_id' => $data['department_id'],
+                'is_discharged' => 0,
+            ]);
+
+            $operation->update(['hospitalization_id' => $existing->id]);
+
+            return;
+        }
+
+        abort_if((bool) $bed->is_occupied, 422);
+        $bed->update(['is_occupied' => true]);
+
+        $hospitalization = Hospitalization::create([
+            'reason' => $data['reason'],
+            'remarks' => $data['remarks'],
+            'room_id' => $data['room_id'],
+            'bed_id' => $data['bed_id'],
+            'patient_id' => $operation->patient_id,
+            'appointment_id' => $operation->appointment_id,
+            'branch_id' => $operation->branch_id ?? $user->branch_id,
+            'department_id' => $data['department_id'],
+            'is_discharged' => 0,
+            'food_type_id' => json_encode([]),
+        ]);
+
+        $operation->update(['hospitalization_id' => $hospitalization->id]);
+
+        SendNewHospitalizationNotification::dispatch($hospitalization->created_by, $hospitalization->id);
+    }
+
+    private function releaseHospitalizationBed(?int $bedId): void
+    {
+        if (! $bedId) {
+            return;
+        }
+
+        Bed::query()->whereKey($bedId)->update(['is_occupied' => false]);
     }
 }

@@ -2,6 +2,11 @@ import { Head, router } from '@inertiajs/react';
 import { Button, Checkbox, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea, TextInput } from 'flowbite-react';
 import { FormEvent, useMemo, useState } from 'react';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
+import HospitalizationFormModal from '../../Components/Hospitalizations/HospitalizationFormModal';
+import {
+    EMPTY_HOSPITALIZATION_FORM,
+    HospitalizationFormValues,
+} from '../../Components/Hospitalizations/hospitalizationFormTypes';
 import OperationSummary from '../../Components/Operations/OperationSummary';
 import {
     OPERATION_APPROVE_BTN_CLASS,
@@ -17,6 +22,7 @@ import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
     OperationDetail,
+    OperationLinkedHospitalization,
     OperationListUrls,
     OperationNurseOption,
     OperationShowPermissions,
@@ -25,6 +31,7 @@ import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface ShowProps {
     operation: OperationDetail;
+    hospitalization: OperationLinkedHospitalization | null;
     nurses: OperationNurseOption[];
     permissions: OperationShowPermissions;
     urls: OperationListUrls & {
@@ -34,10 +41,31 @@ interface ShowProps {
         unreserve: string;
         back: string;
         appointment: string | null;
+        hospitalizationMeta: string | null;
     };
 }
 
-export default function OperationsShow({ operation, nurses, permissions, urls }: ShowProps) {
+function buildHospitalizationForm(linked: OperationLinkedHospitalization | null): HospitalizationFormValues {
+    if (!linked) {
+        return { ...EMPTY_HOSPITALIZATION_FORM };
+    }
+
+    return {
+        reason: linked.reason,
+        remarks: linked.remarks,
+        department_id: linked.department_id,
+        room_id: linked.room_id,
+        bed_id: linked.bed_id,
+    };
+}
+
+export default function OperationsShow({
+    operation,
+    hospitalization,
+    nurses,
+    permissions,
+    urls,
+}: ShowProps) {
     const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
     const [approveOpen, setApproveOpen] = useState(false);
@@ -54,8 +82,11 @@ export default function OperationsShow({ operation, nurses, permissions, urls }:
     const [operationResult, setOperationResult] = useState('1');
     const [operationRemark, setOperationRemark] = useState(operation.operation_remark ?? '');
     const [reserveReason, setReserveReason] = useState('');
+    const [hospitalizePatient, setHospitalizePatient] = useState(false);
+    const [hospitalizationOpen, setHospitalizationOpen] = useState(false);
 
     const patientLabel = operationPatientLabel(operation);
+    const isUpdatingHospitalization = Boolean(hospitalization?.id);
     const canApprove = !operation.is_operation_approved && !operation.is_operation_done && !operation.is_reserved;
     const canComplete = operation.is_operation_approved && !operation.is_operation_done && !operation.is_reserved;
     const canReserve = !operation.is_operation_done && !operation.is_reserved;
@@ -67,7 +98,7 @@ export default function OperationsShow({ operation, nurses, permissions, urls }:
         [nurses],
     );
 
-    const put = (url: string, data: Record<string, string | number>, onSuccess?: () => void) => {
+    const put = (url: string, data: Record<string, string | number | boolean>, onSuccess?: () => void) => {
         setProcessing(true);
         router.put(url, data, {
             preserveScroll: true,
@@ -100,16 +131,48 @@ export default function OperationsShow({ operation, nurses, permissions, urls }:
         );
     };
 
+    const submitComplete = (hospitalizationData?: HospitalizationFormValues) => {
+        const payload: Record<string, string | number | boolean> = {
+            operation_result: operationResult,
+            operation_remark: operationRemark,
+        };
+
+        if (hospitalizePatient && hospitalizationData) {
+            payload.hospitalize = true;
+            payload.reason = hospitalizationData.reason;
+            payload.remarks = hospitalizationData.remarks;
+            payload.department_id = hospitalizationData.department_id;
+            payload.room_id = hospitalizationData.room_id;
+            payload.bed_id = hospitalizationData.bed_id;
+        }
+
+        put(urls.complete, payload, () => {
+            setCompleteOpen(false);
+            setHospitalizationOpen(false);
+            setHospitalizePatient(false);
+        });
+    };
+
     const handleComplete = (event: FormEvent) => {
         event.preventDefault();
-        put(
-            urls.complete,
-            {
-                operation_result: operationResult,
-                operation_remark: operationRemark,
-            },
-            () => setCompleteOpen(false),
-        );
+
+        if (hospitalizePatient && permissions.hospitalize) {
+            setHospitalizationOpen(true);
+            return;
+        }
+
+        submitComplete();
+    };
+
+    const handleHospitalizationSubmit = async (form: HospitalizationFormValues) => {
+        submitComplete(form);
+    };
+
+    const openComplete = () => {
+        setOperationResult('1');
+        setOperationRemark(operation.operation_remark ?? '');
+        setHospitalizePatient(false);
+        setCompleteOpen(true);
     };
 
     const handleReserve = (event: FormEvent) => {
@@ -151,7 +214,7 @@ export default function OperationsShow({ operation, nurses, permissions, urls }:
                                 </button>
                             )}
                             {canComplete && (
-                                <button type="button" className={OPERATION_COMPLETE_BTN_CLASS} onClick={() => setCompleteOpen(true)}>
+                                <button type="button" className={OPERATION_COMPLETE_BTN_CLASS} onClick={openComplete}>
                                     <i className="bx bx-check-double text-lg" />
                                     {t('global.complete_operation')}
                                 </button>
@@ -319,6 +382,25 @@ export default function OperationsShow({ operation, nurses, permissions, urls }:
                                     onChange={(e) => setOperationRemark(e.target.value)}
                                 />
                             </div>
+
+                            {permissions.hospitalize && urls.hospitalizationMeta && (
+                                <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/40 p-4 dark:border-emerald-900/40 dark:bg-emerald-950/20">
+                                    <label className="flex items-center gap-2">
+                                        <Checkbox
+                                            checked={hospitalizePatient}
+                                            onChange={(e) => setHospitalizePatient(e.target.checked)}
+                                        />
+                                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                            {t('global.hospitalize_patient')}
+                                        </span>
+                                    </label>
+                                    {isUpdatingHospitalization && (
+                                        <p className="mt-2 text-xs text-emerald-700 dark:text-emerald-300">
+                                            {t('global.existing_hospitalization_will_be_updated')}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                         </ModalBody>
                         <ModalFooter>
                             <Button type="button" color="light" onClick={() => setCompleteOpen(false)} disabled={processing}>
@@ -332,6 +414,18 @@ export default function OperationsShow({ operation, nurses, permissions, urls }:
                     </form>
                 </div>
             </Modal>
+
+            {urls.hospitalizationMeta && (
+                <HospitalizationFormModal
+                    show={hospitalizationOpen}
+                    onClose={() => !processing && setHospitalizationOpen(false)}
+                    onSubmit={handleHospitalizationSubmit}
+                    submitting={processing}
+                    metaUrl={urls.hospitalizationMeta}
+                    title={t('global.hospitalize_patient')}
+                    initialValues={buildHospitalizationForm(hospitalization)}
+                />
+            )}
 
             <Modal show={reserveOpen} onClose={() => !processing && setReserveOpen(false)} size="md">
                 <div className="overflow-hidden rounded-lg">

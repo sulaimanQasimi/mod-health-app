@@ -3,6 +3,7 @@ import { Badge, Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Texta
 import { FormEvent, useState } from 'react';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
+import HospitalizationOperationSection from '../../Components/Hospitalizations/HospitalizationOperationSection';
 import PhysiotherapySection from '../../Components/Appointments/Sections/PhysiotherapySection';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import HospitalizationSummary from '../../Components/Hospitalizations/HospitalizationSummary';
@@ -46,6 +47,7 @@ interface ShowProps {
         nutrition_cares: boolean;
         icu: boolean;
         anesthesia: boolean;
+        operations: boolean;
     };
     urls: {
         index: string;
@@ -293,6 +295,13 @@ export default function HospitalizationsShow({
 
                 {sectionPermissions.anesthesia && (
                     <HospitalizationAnesthesiaSection
+                        hospitalizationId={hospitalization.id}
+                        isDischarged={hospitalization.is_discharged}
+                    />
+                )}
+
+                {sectionPermissions.operations && (
+                    <HospitalizationOperationSection
                         hospitalizationId={hospitalization.id}
                         isDischarged={hospitalization.is_discharged}
                     />

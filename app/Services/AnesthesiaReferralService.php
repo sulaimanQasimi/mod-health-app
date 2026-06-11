@@ -113,6 +113,34 @@ class AnesthesiaReferralService
             ->first();
     }
 
+    public function clearBedForReferral(Anesthesia $anesthesia): void
+    {
+        $hospitalization = $this->resolveAnesthesiaHospitalization($anesthesia);
+
+        if ($hospitalization) {
+            $this->clearHospitalizationBed($hospitalization);
+        }
+    }
+
+    private function resolveAnesthesiaHospitalization(Anesthesia $anesthesia): ?Hospitalization
+    {
+        if ($anesthesia->hospitalization_id) {
+            return Hospitalization::query()->find($anesthesia->hospitalization_id);
+        }
+
+        if (! $anesthesia->appointment_id) {
+            return null;
+        }
+
+        return Hospitalization::query()
+            ->where('appointment_id', $anesthesia->appointment_id)
+            ->where(function ($query) {
+                $query->where('is_discharged', 0)->orWhereNull('is_discharged');
+            })
+            ->latest('id')
+            ->first();
+    }
+
     private function clearHospitalizationBed(Hospitalization $hospitalization): void
     {
         if ($hospitalization->bed_id) {

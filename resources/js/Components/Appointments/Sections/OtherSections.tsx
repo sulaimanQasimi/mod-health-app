@@ -158,28 +158,6 @@ export function AnesthesiaSection({ appointmentId }: SectionProps) {
     );
 }
 
-export function OperationSection({ appointmentId }: SectionProps) {
-    const { t } = useTranslation();
-    return (
-        <SimpleTableSection
-            appointmentId={appointmentId}
-            sectionPath="operations"
-            accordionId={`operations-${appointmentId}`}
-            icon="bx-cut"
-            iconClassName="text-amber-500"
-            title={t('global.operations')}
-            badgeColor="warning"
-            emptyMessage={t('global.not_referred_to_operation')}
-            columns={[
-                { key: 'operation_type', header: t('global.operation_type') },
-                { key: 'patient_name', header: t('global.patient_name'), muted: true },
-                { key: 'status', header: t('global.status'), muted: true },
-                { key: 'date', header: t('global.date'), muted: true },
-            ]}
-        />
-    );
-}
-
 export function IcuSection({ appointmentId }: SectionProps) {
     const { t } = useTranslation();
     return (

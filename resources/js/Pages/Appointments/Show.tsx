@@ -64,6 +64,7 @@ interface ShowAppointmentProps {
         hospitalization: boolean;
         icu: boolean;
         anesthesia: boolean;
+        operations: boolean;
     };
     urls: {
         index: string;
@@ -236,7 +237,7 @@ export default function ShowAppointment({
                     <RelatedVisitsSection appointmentId={id} />
                     <HospitalizationVisitsSection appointmentId={id} />
                     {sectionPermissions.anesthesia && <AnesthesiaSection appointmentId={id} />}
-                    <OperationSection appointmentId={id} />
+                    {sectionPermissions.operations && <OperationSection appointmentId={id} />}
                     {sectionPermissions.icu && <IcuReferralSection appointmentId={id} />}
                     <IcuVisitsSection appointmentId={id} />
                 </div>

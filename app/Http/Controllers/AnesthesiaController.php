@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendNewOperationNotification;
 use App\Services\AnesthesiaReferralService;
+use App\Services\OperationReferralService;
 use App\Models\Anesthesia;
 use App\Models\Doctor;
 use App\Models\OperationType;
@@ -22,6 +22,7 @@ class AnesthesiaController extends Controller
 {
     public function __construct(
         private readonly AnesthesiaReferralService $anesthesiaReferralService,
+        private readonly OperationReferralService $operationReferralService,
     ) {}
     /**
      * Display a listing of the resource.
@@ -295,9 +296,7 @@ class AnesthesiaController extends Controller
         abort_unless($anesthesia->status === 'approved', 422);
         abort_if($anesthesia->is_referred_to_operation, 422);
 
-        $anesthesia->update(['is_referred_to_operation' => true]);
-
-        SendNewOperationNotification::dispatch($anesthesia->created_by, $anesthesia->id);
+        $this->operationReferralService->refer($anesthesia);
 
         return redirect()
             ->route('anesthesias.show', $anesthesia)

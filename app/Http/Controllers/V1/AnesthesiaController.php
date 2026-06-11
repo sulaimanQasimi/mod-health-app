@@ -5,8 +5,9 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\ManagesAnesthesiaListing;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
-use App\Jobs\SendNewOperationNotification;
 use App\Models\Anesthesia;
+use App\Services\AnesthesiaReferralService;
+use App\Services\OperationReferralService;
 use App\Models\Department;
 use App\Models\Doctor;
 use App\Models\Nurse;
@@ -23,6 +24,11 @@ class AnesthesiaController extends Controller
 {
     use ManagesAnesthesiaListing;
     use PaginatesInertiaIndex;
+
+    public function __construct(
+        private readonly AnesthesiaReferralService $anesthesiaReferralService,
+        private readonly OperationReferralService $operationReferralService,
+    ) {}
 
     public function new(Request $request): Response
     {
@@ -211,9 +217,7 @@ class AnesthesiaController extends Controller
         abort_unless($anesthesia->status === 'approved', 422);
         abort_if($anesthesia->is_referred_to_operation, 422);
 
-        $anesthesia->update(['is_referred_to_operation' => true]);
-
-        SendNewOperationNotification::dispatch($anesthesia->created_by, $anesthesia->id);
+        $this->operationReferralService->refer($anesthesia);
 
         return redirect()
             ->route('react.anesthesias.show', $anesthesia)

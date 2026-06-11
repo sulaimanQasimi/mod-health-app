@@ -191,6 +191,7 @@ class AppointmentController extends Controller
                     || $request->user()->can('edit-anesthesias')
                     || $request->user()->can('delete-anesthesias')
                     || $request->user()->can('show-anesthesias-menu'),
+                'operations' => $request->user()->can('show-operations-menu'),
             ],
             'urls' => [
                 'index' => route('react.appointments.index'),

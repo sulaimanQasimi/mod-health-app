@@ -213,6 +213,7 @@ class HospitalizationController extends Controller
                     || $user->can('edit-anesthesias')
                     || $user->can('delete-anesthesias')
                     || $user->can('show-anesthesias-menu'),
+                'operations' => $user->can('show-operations-menu'),
             ],
             'urls' => [
                 'index' => route('react.hospitalizations.index'),

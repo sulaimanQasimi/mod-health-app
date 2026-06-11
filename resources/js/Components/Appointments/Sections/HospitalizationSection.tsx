@@ -1,16 +1,7 @@
-import {
-    Button,
-    Label,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader,
-    Spinner,
-    Textarea,
-} from 'flowbite-react';
-import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { usePage } from '@inertiajs/react';
-import SearchableSelect from '../../ui/SearchableSelect';
+import HospitalizationFormModal from '../../Hospitalizations/HospitalizationFormModal';
+import { HospitalizationFormValues } from '../../Hospitalizations/hospitalizationFormTypes';
 import {
     Table,
     TableBody,
@@ -42,24 +33,6 @@ interface HospitalizationListItem {
     urls?: { show?: string; edit?: string };
 }
 
-interface DepartmentOption {
-    id: number;
-    name: string;
-}
-
-interface RoomOption {
-    id: number;
-    name: string;
-    department_id: number | null;
-}
-
-interface BedOption {
-    id: number;
-    number: string | number;
-    room_id: number;
-    is_occupied: boolean;
-}
-
 interface HospitalizationSectionData {
     items: HospitalizationListItem[];
     count: number;
@@ -68,10 +41,6 @@ interface HospitalizationSectionData {
         create?: boolean;
         edit?: boolean;
         delete?: boolean;
-    };
-    meta?: {
-        patient_id?: number;
-        branch_id?: number;
     };
 }
 
@@ -84,16 +53,6 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
     const [submitting, setSubmitting] = useState(false);
     const [data, setData] = useState<HospitalizationSectionData | null>(null);
     const [createOpen, setCreateOpen] = useState(false);
-    const [departments, setDepartments] = useState<DepartmentOption[]>([]);
-    const [rooms, setRooms] = useState<RoomOption[]>([]);
-    const [beds, setBeds] = useState<BedOption[]>([]);
-    const [form, setForm] = useState({
-        reason: '',
-        remarks: '',
-        department_id: '',
-        room_id: '',
-        bed_id: '',
-    });
 
     const loadData = useCallback(async () => {
         setLoading(true);
@@ -110,84 +69,11 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
         }
     }, [baseUrl]);
 
-    const loadMeta = useCallback(async () => {
-        const response = await fetch(`${baseUrl}/meta`, {
-            headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-        });
-        const payload = await response.json();
-        if (payload.success) {
-            setDepartments(payload.data.departments ?? []);
-            setRooms(payload.data.rooms ?? []);
-            setBeds(payload.data.beds ?? []);
-            const defaultDepartmentId = payload.data.default_department_id
-                ? String(payload.data.default_department_id)
-                : '';
-            setForm((prev) => ({
-                ...prev,
-                department_id: defaultDepartmentId,
-                room_id: '',
-                bed_id: '',
-            }));
-        }
-    }, [baseUrl]);
-
     useEffect(() => {
         loadData();
     }, [loadData]);
 
-    useEffect(() => {
-        if (createOpen) {
-            loadMeta();
-        }
-    }, [createOpen, loadMeta]);
-
-    const filteredRooms = useMemo(() => {
-        if (!form.department_id) {
-            return [];
-        }
-
-        const departmentId = Number(form.department_id);
-
-        return rooms.filter(
-            (room) => room.department_id === null || room.department_id === departmentId
-        );
-    }, [rooms, form.department_id]);
-
-    const filteredBeds = useMemo(
-        () => beds.filter((bed) => String(bed.room_id) === form.room_id || String(bed.id) === form.bed_id),
-        [beds, form.room_id, form.bed_id]
-    );
-
-    const departmentOptions = useMemo(
-        () =>
-            departments.map((department) => ({
-                value: String(department.id),
-                label: department.name,
-            })),
-        [departments]
-    );
-
-    const roomOptions = useMemo(
-        () =>
-            filteredRooms.map((room) => ({
-                value: String(room.id),
-                label: room.name,
-            })),
-        [filteredRooms]
-    );
-
-    const bedOptions = useMemo(
-        () =>
-            filteredBeds.map((bed) => ({
-                value: String(bed.id),
-                label: `${bed.number}${bed.is_occupied ? ` (${t('global.occupied')})` : ''}`,
-                disabled: bed.is_occupied,
-            })),
-        [filteredBeds, t]
-    );
-
-    const handleCreate = async (event: FormEvent) => {
-        event.preventDefault();
+    const handleCreate = async (form: HospitalizationFormValues) => {
         setSubmitting(true);
         try {
             const response = await fetch(baseUrl, {
@@ -205,7 +91,6 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
                 return;
             }
             setCreateOpen(false);
-            setForm({ reason: '', remarks: '', department_id: '', room_id: '', bed_id: '' });
             await loadData();
         } finally {
             setSubmitting(false);
@@ -320,88 +205,13 @@ export default function HospitalizationSection({ appointmentId }: Hospitalizatio
                 )}
             </AppointmentSectionAccordion>
 
-            <Modal show={createOpen} onClose={() => setCreateOpen(false)} size="lg">
-                <form onSubmit={handleCreate}>
-                    <ModalHeader>{t('global.hospitalize_patient')}</ModalHeader>
-                    <ModalBody className="space-y-4">
-                        <div>
-                            <Label htmlFor="hospitalization-reason">{t('global.reason')}</Label>
-                            <Textarea
-                                id="hospitalization-reason"
-                                rows={3}
-                                required
-                                value={form.reason}
-                                onChange={(e) => setForm((prev) => ({ ...prev, reason: e.target.value }))}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="hospitalization-remarks">{t('global.remarks')}</Label>
-                            <Textarea
-                                id="hospitalization-remarks"
-                                rows={3}
-                                required
-                                value={form.remarks}
-                                onChange={(e) => setForm((prev) => ({ ...prev, remarks: e.target.value }))}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="hospitalization-department">{t('global.department')}</Label>
-                            <SearchableSelect
-                                id="hospitalization-department"
-                                required
-                                value={form.department_id}
-                                onChange={(value) =>
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        department_id: value,
-                                        room_id: '',
-                                        bed_id: '',
-                                    }))
-                                }
-                                options={departmentOptions}
-                                placeholder={t('global.select')}
-                            />
-                        </div>
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <div>
-                                <Label htmlFor="hospitalization-room">{t('global.rooms')}</Label>
-                                <SearchableSelect
-                                    id="hospitalization-room"
-                                    required
-                                    value={form.room_id}
-                                    onChange={(value) =>
-                                        setForm((prev) => ({ ...prev, room_id: value, bed_id: '' }))
-                                    }
-                                    options={roomOptions}
-                                    placeholder={t('global.select')}
-                                    disabled={!form.department_id}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="hospitalization-bed">{t('global.beds')}</Label>
-                                <SearchableSelect
-                                    id="hospitalization-bed"
-                                    required
-                                    value={form.bed_id}
-                                    onChange={(value) => setForm((prev) => ({ ...prev, bed_id: value }))}
-                                    options={bedOptions}
-                                    placeholder={t('global.select')}
-                                    disabled={!form.room_id}
-                                />
-                            </div>
-                        </div>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button type="button" color="light" onClick={() => setCreateOpen(false)}>
-                            {t('global.cancel')}
-                        </Button>
-                        <Button type="submit" color="success" disabled={submitting}>
-                            {submitting ? <Spinner size="sm" className="me-2" /> : null}
-                            {t('global.save')}
-                        </Button>
-                    </ModalFooter>
-                </form>
-            </Modal>
+            <HospitalizationFormModal
+                show={createOpen}
+                onClose={() => setCreateOpen(false)}
+                onSubmit={handleCreate}
+                submitting={submitting}
+                metaUrl={`${baseUrl}/meta`}
+            />
         </>
     );
 }

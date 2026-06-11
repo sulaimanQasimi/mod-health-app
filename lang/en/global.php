@@ -1333,6 +1333,7 @@ return [
     'no_previous_consultations' => 'No Previous Consultations',
     'no_previous_hospitalizations' => 'No Previous Hospitalizations',
     'hospitalize_patient' => 'Hospitalize Patient',
+    'existing_hospitalization_will_be_updated' => 'An existing hospitalization record will be updated.',
     'add_prescription' => 'Add Prescription',
     'create_room' => 'Create Room',
     'bed_number' => 'Bed Number',

@@ -678,6 +678,7 @@ return [
     'no_previous_consultations' => 'مریض به کدام مشوره معرفی نشده است!',
     'no_previous_hospitalizations' => 'مریض بستر نیست!',
     'hospitalize_patient' => 'بستر نمودن مریض',
+    'existing_hospitalization_will_be_updated' => 'ریکارد موجود بستری به‌روزرسانی می‌شود.',
     'add_prescription' => 'اضافه نمودن نسخه',
     'create_room' => 'اضافه نمودن اطاق',
     'bed_number' => 'نمبر بستر',

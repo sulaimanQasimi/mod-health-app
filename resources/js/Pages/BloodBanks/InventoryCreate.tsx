@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Alert, Button, Select, Spinner, Textarea, TextInput } from 'flowbite-react';
+import { Alert, Button, Spinner, Textarea, TextInput } from 'flowbite-react';
 import { FormEvent, ReactNode } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
 import BloodFormSegmented from '../../Components/BloodBanks/BloodFormSegmented';
@@ -442,17 +442,16 @@ export default function BloodBanksInventoryCreate({ departments, filterOptions, 
                                     required
                                     error={errors.component_type}
                                 >
-                                    <Select
+                                    <SearchableSelect
                                         value={data.component_type}
-                                        onChange={(e) => setData('component_type', e.target.value)}
+                                        onChange={(value) => setData('component_type', value)}
+                                        options={filterOptions.bloodComponentTypes.map((type) => ({
+                                            value: type,
+                                            label: type,
+                                        }))}
+                                        placeholder={t('global.select')}
                                         required
-                                    >
-                                        {filterOptions.bloodComponentTypes.map((type) => (
-                                            <option key={type} value={type}>
-                                                {type}
-                                            </option>
-                                        ))}
-                                    </Select>
+                                    />
                                 </FormField>
 
                                 <FormField

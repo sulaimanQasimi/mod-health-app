@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Badge, Button, Label, Select, Spinner, TextInput } from 'flowbite-react';
+import { Badge, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { useCallback, useEffect, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
 import { BLOOD_BANK_PANEL_ICON_CLASS, BLOOD_MOVEMENT_TYPES } from '../../Components/BloodBanks/bloodBankUi';
@@ -8,6 +8,7 @@ import IcuPanel from '../../Components/Icus/IcuPanel';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
+import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
     Table,
     TableBody,
@@ -95,18 +96,16 @@ export default function BloodBanksMovements({ movements, filters: serverFilters,
                 >
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         <div>
-                            <Label>{t('global.movement_type')}</Label>
-                            <Select
+                            <Label className="mb-2 block">{t('global.movement_type')}</Label>
+                            <SearchableSelect
                                 value={filters.movement_type}
-                                onChange={(e) => setFilters({ ...filters, movement_type: e.target.value })}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                {BLOOD_MOVEMENT_TYPES.map((type) => (
-                                    <option key={type} value={type}>
-                                        {type}
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, movement_type: value })}
+                                options={BLOOD_MOVEMENT_TYPES.map((type) => ({
+                                    value: type,
+                                    label: type,
+                                }))}
+                                placeholder={t('global.all')}
+                            />
                         </div>
                         <div>
                             <Label>{t('global.bag_number')}</Label>

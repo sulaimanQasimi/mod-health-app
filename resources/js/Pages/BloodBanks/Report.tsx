@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Badge, Button, Label, Select, Spinner, TextInput } from 'flowbite-react';
+import { Badge, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
 import { BLOOD_BANK_PANEL_ICON_CLASS, bloodGroupLabel, bloodRhLabel, bloodStatusBadgeColor } from '../../Components/BloodBanks/bloodBankUi';
@@ -7,6 +7,7 @@ import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import IcuPanel from '../../Components/Icus/IcuPanel';
 import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
+import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
     Table,
     TableBody,
@@ -120,57 +121,52 @@ export default function BloodBanksReport({ items, filters, filterOptions, urls }
                                 />
                             </div>
                             <div>
-                                <Label>{t('global.status')}</Label>
-                                <Select
+                                <Label className="mb-2 block">{t('global.status')}</Label>
+                                <SearchableSelect
                                     value={form.status}
-                                    onChange={(e) => setForm({ ...form, status: e.target.value })}
-                                >
-                                    <option value="">{t('global.all')}</option>
-                                    {filterOptions.statuses.map((status) => (
-                                        <option key={status} value={status}>
-                                            {status}
-                                        </option>
-                                    ))}
-                                </Select>
+                                    onChange={(value) => setForm({ ...form, status: value })}
+                                    options={filterOptions.statuses.map((status) => ({
+                                        value: status,
+                                        label: status,
+                                    }))}
+                                    placeholder={t('global.all')}
+                                />
                             </div>
                             <div>
-                                <Label>{t('global.blood_group')}</Label>
-                                <Select
+                                <Label className="mb-2 block">{t('global.blood_group')}</Label>
+                                <SearchableSelect
                                     value={form.group}
-                                    onChange={(e) => setForm({ ...form, group: e.target.value })}
-                                >
-                                    <option value="">{t('global.all')}</option>
-                                    {filterOptions.bloodGroups.map((group) => (
-                                        <option key={group} value={group}>
-                                            {group}
-                                        </option>
-                                    ))}
-                                </Select>
+                                    onChange={(value) => setForm({ ...form, group: value })}
+                                    options={filterOptions.bloodGroups.map((group) => ({
+                                        value: group,
+                                        label: group,
+                                    }))}
+                                    placeholder={t('global.all')}
+                                />
                             </div>
                             <div>
-                                <Label>{t('global.rh')}</Label>
-                                <Select
+                                <Label className="mb-2 block">{t('global.rh')}</Label>
+                                <SearchableSelect
                                     value={form.rh}
-                                    onChange={(e) => setForm({ ...form, rh: e.target.value })}
-                                >
-                                    <option value="">{t('global.all')}</option>
-                                    <option value="+">Rh+</option>
-                                    <option value="-">Rh−</option>
-                                </Select>
+                                    onChange={(value) => setForm({ ...form, rh: value })}
+                                    options={[
+                                        { value: '+', label: 'Rh+' },
+                                        { value: '-', label: 'Rh−' },
+                                    ]}
+                                    placeholder={t('global.all')}
+                                />
                             </div>
                             <div>
-                                <Label>{t('global.requested_department')}</Label>
-                                <Select
+                                <Label className="mb-2 block">{t('global.requested_department')}</Label>
+                                <SearchableSelect
                                     value={form.department_id}
-                                    onChange={(e) => setForm({ ...form, department_id: e.target.value })}
-                                >
-                                    <option value="">{t('global.all')}</option>
-                                    {filterOptions.departments.map((dept) => (
-                                        <option key={dept.id} value={dept.id}>
-                                            {dept.name}
-                                        </option>
-                                    ))}
-                                </Select>
+                                    onChange={(value) => setForm({ ...form, department_id: value })}
+                                    options={filterOptions.departments.map((dept) => ({
+                                        value: String(dept.id),
+                                        label: dept.name,
+                                    }))}
+                                    placeholder={t('global.all')}
+                                />
                             </div>
                             <div>
                                 <Label>{t('global.date_from')}</Label>

@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Label, Select, Spinner, TextInput } from 'flowbite-react';
+import { Badge, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { useCallback, useEffect, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
 import {
@@ -12,6 +12,7 @@ import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import IcuPanel from '../../Components/Icus/IcuPanel';
 import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
+import SearchableSelect from '../../Components/ui/SearchableSelect';
 import TableActionButton from '../../Components/ui/TableActionButton';
 import {
     Table,
@@ -145,80 +146,77 @@ export default function BloodBanksInventory({
                             />
                         </div>
                         <div>
-                            <Label>{t('global.status')}</Label>
-                            <Select
+                            <Label className="mb-2 block">{t('global.status')}</Label>
+                            <SearchableSelect
                                 value={filters.status}
-                                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                {filterOptions.statuses.map((status) => (
-                                    <option key={status} value={status}>
-                                        {status}
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, status: value })}
+                                options={filterOptions.statuses.map((status) => ({
+                                    value: status,
+                                    label: status,
+                                }))}
+                                placeholder={t('global.all')}
+                            />
                         </div>
                         <div>
-                            <Label>{t('global.blood_group')}</Label>
-                            <Select
+                            <Label className="mb-2 block">{t('global.blood_group')}</Label>
+                            <SearchableSelect
                                 value={filters.blood_group}
-                                onChange={(e) => setFilters({ ...filters, blood_group: e.target.value })}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                {filterOptions.bloodGroups.map((group) => (
-                                    <option key={group} value={group}>
-                                        {group}
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, blood_group: value })}
+                                options={filterOptions.bloodGroups.map((group) => ({
+                                    value: group,
+                                    label: group,
+                                }))}
+                                placeholder={t('global.all')}
+                            />
                         </div>
                         <div>
-                            <Label>{t('global.rh')}</Label>
-                            <Select
+                            <Label className="mb-2 block">{t('global.rh')}</Label>
+                            <SearchableSelect
                                 value={filters.rh}
-                                onChange={(e) => setFilters({ ...filters, rh: e.target.value })}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                <option value="+">Rh+</option>
-                                <option value="-">Rh−</option>
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, rh: value })}
+                                options={[
+                                    { value: '+', label: 'Rh+' },
+                                    { value: '-', label: 'Rh−' },
+                                ]}
+                                placeholder={t('global.all')}
+                            />
                         </div>
                         <div>
-                            <Label>{t('global.blood_type')}</Label>
-                            <Select
+                            <Label className="mb-2 block">{t('global.blood_type')}</Label>
+                            <SearchableSelect
                                 value={filters.component_type}
-                                onChange={(e) => setFilters({ ...filters, component_type: e.target.value })}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                {filterOptions.bloodComponentTypes.map((type) => (
-                                    <option key={type} value={type}>
-                                        {type}
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, component_type: value })}
+                                options={filterOptions.bloodComponentTypes.map((type) => ({
+                                    value: type,
+                                    label: type,
+                                }))}
+                                placeholder={t('global.all')}
+                            />
                         </div>
                         <div>
-                            <Label>{t('global.expiring_blood_units')}</Label>
-                            <Select
+                            <Label className="mb-2 block">{t('global.expiring_blood_units')}</Label>
+                            <SearchableSelect
                                 value={filters.expires_within}
-                                onChange={(e) => setFilters({ ...filters, expires_within: e.target.value })}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                <option value="3">3 {t('global.days')}</option>
-                                <option value="7">7 {t('global.days')}</option>
-                                <option value="14">14 {t('global.days')}</option>
-                                <option value="30">30 {t('global.days')}</option>
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, expires_within: value })}
+                                options={[
+                                    { value: '3', label: `3 ${t('global.days')}` },
+                                    { value: '7', label: `7 ${t('global.days')}` },
+                                    { value: '14', label: `14 ${t('global.days')}` },
+                                    { value: '30', label: `30 ${t('global.days')}` },
+                                ]}
+                                placeholder={t('global.all')}
+                            />
                         </div>
                         <div>
-                            <Label>{t('global.sort')}</Label>
-                            <Select
+                            <Label className="mb-2 block">{t('global.sort')}</Label>
+                            <SearchableSelect
                                 value={filters.sort}
-                                onChange={(e) => setFilters({ ...filters, sort: e.target.value })}
-                            >
-                                <option value="created_at">{t('global.date')}</option>
-                                <option value="expires_at">{t('global.expires_at')}</option>
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, sort: value })}
+                                options={[
+                                    { value: 'created_at', label: t('global.date') },
+                                    { value: 'expires_at', label: t('global.expires_at') },
+                                ]}
+                            />
                         </div>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">

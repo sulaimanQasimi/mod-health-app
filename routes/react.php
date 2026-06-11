@@ -25,6 +25,7 @@ use App\Http\Controllers\V1\AppointmentController;
 use App\Http\Controllers\V1\BackupController;
 use App\Http\Controllers\V1\BedController;
 use App\Http\Controllers\V1\BloodBankController;
+use App\Http\Controllers\V1\BloodUnitController;
 use App\Http\Controllers\V1\BloodBranchTransferController;
 use App\Http\Controllers\V1\BranchController;
 use App\Http\Controllers\V1\CategoryController;
@@ -369,10 +370,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/approved', [BloodBankController::class, 'approved'])->name('approved');
         Route::get('/delivered', [BloodBankController::class, 'delivered'])->name('delivered');
         Route::get('/rejected', [BloodBankController::class, 'rejected'])->name('rejected');
-        Route::get('/inventory', [BloodBankController::class, 'inventory'])->name('inventory');
+        Route::get('/inventory', [BloodUnitController::class, 'index'])->name('inventory');
         Route::get('/movements', [BloodBankController::class, 'movements'])->name('movements');
         Route::get('/branch-transfers', [BloodBranchTransferController::class, 'index'])->name('branch-transfers.index');
         Route::get('/report', [BloodBankController::class, 'report'])->name('report');
+        Route::get('/nurses-by-department/{department}', [BloodBankController::class, 'nursesByDepartment'])->name('nurses-by-department');
+        Route::get('/{bloodBank}', [BloodBankController::class, 'show'])->name('show');
+        Route::post('/{bloodBank}/approve', [BloodBankController::class, 'approve'])->name('approve');
+        Route::put('/{bloodBank}/reject', [BloodBankController::class, 'reject'])->name('reject');
+        Route::post('/{bloodBank}/deliver', [BloodBankController::class, 'deliver'])->name('deliver');
     });
 
     Route::prefix('prosthetics')->name('prosthetics.')->middleware('permission:show-prosthetics-menu')->group(function () {

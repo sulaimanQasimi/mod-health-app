@@ -220,13 +220,15 @@ export interface BloodUnitReceiveForm {
     donor_military_department: string;
     donor_comorbidities: string;
     donor_receiver: string;
-    phlebotomy_at: string;
+    phlebotomy_date: string;
+    phlebotomy_time: string;
     blood_group: string;
     rh: string;
     component_type: string;
     bag_number: string;
     volume_ml: string;
-    collected_at: string;
+    collected_date: string;
+    collected_time: string;
     expires_date: string;
     expires_time: string;
     notes: string;

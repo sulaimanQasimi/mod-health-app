@@ -6,8 +6,7 @@ use App\Models\BloodDonation;
 use App\Models\BloodDonor;
 use App\Models\BloodSample;
 use App\Models\Patient;
-use Carbon\Carbon;
-use Hekmatinasser\Verta\Verta;
+use App\Support\PersianDateParser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -19,6 +18,12 @@ class BloodUnitReceiveService
     {
         if ($request->input('expires_time') === '') {
             $request->merge(['expires_time' => null]);
+        }
+        if ($request->input('collected_time') === '') {
+            $request->merge(['collected_time' => null]);
+        }
+        if ($request->input('phlebotomy_time') === '') {
+            $request->merge(['phlebotomy_time' => null]);
         }
         if ($request->input('patient_id') === '' || $request->input('patient_id') === null) {
             $request->merge(['patient_id' => null]);
@@ -33,12 +38,20 @@ class BloodUnitReceiveService
             }
         }
 
+        foreach (['collected_date', 'phlebotomy_date'] as $key) {
+            if ($request->input($key) === '') {
+                $request->merge([$key => null]);
+            }
+        }
+
         $validated = $request->validate([
             'blood_group' => 'required|string|in:A,B,AB,O',
             'rh' => 'required|string|in:+,-',
             'component_type' => 'required|string|in:Fresh,RBC,PRBC,Platelets,Plasma,Whole Blood',
             'bag_number' => 'required|string|max:255|unique:blood_units,bag_number',
             'volume_ml' => 'nullable|integer|min:1',
+            'collected_date' => 'nullable|string',
+            'collected_time' => 'nullable|date_format:H:i',
             'collected_at' => 'nullable|date',
             'expires_date' => 'required|string',
             'expires_time' => 'nullable|date_format:H:i',
@@ -54,6 +67,8 @@ class BloodUnitReceiveService
             'donor_military_department' => 'nullable|string|max:255|required_if:donor_type,military',
             'donor_phone' => 'nullable|string|max:50',
             'donor_national_id' => 'nullable|string|max:50',
+            'phlebotomy_date' => 'nullable|string',
+            'phlebotomy_time' => 'nullable|date_format:H:i',
             'phlebotomy_at' => 'nullable|date',
             'patient_id' => 'nullable|integer|exists:patients,id',
             'department_id' => 'nullable|integer|exists:departments,id',
@@ -61,24 +76,54 @@ class BloodUnitReceiveService
         ], [
             'expires_date.required' => localize('global.expires_date_required'),
             'expires_time.date_format' => localize('global.expires_time_invalid'),
+            'collected_time.date_format' => localize('global.expires_time_invalid'),
+            'phlebotomy_time.date_format' => localize('global.expires_time_invalid'),
             'donor_military_department.required_if' => localize('global.military_department_required_for_military_donor'),
         ]);
 
-        $time = $validated['expires_time'] ?? '23:59';
-        if ($time === '' || $time === null) {
-            $time = '23:59';
-        }
-        $expiresDay = $this->parseIncomingDate($validated['expires_date'])->format('Y-m-d');
-        $expiresAt = Carbon::parse($expiresDay.' '.$time.':00', config('app.timezone'));
+        $expiresAt = PersianDateParser::parseDateTime(
+            $validated['expires_date'],
+            $validated['expires_time'] ?? null,
+            '23:59',
+            'expires_date',
+            'expires_time',
+        );
 
-        if ($expiresAt->lte(now())) {
+        if ($expiresAt === null || $expiresAt->lte(now())) {
             throw ValidationException::withMessages([
                 'expires_date' => localize('global.expires_at_must_be_future'),
             ]);
         }
 
+        $collectedAt = PersianDateParser::parseDateTimeOrLegacy(
+            $validated['collected_date'] ?? null,
+            $validated['collected_time'] ?? null,
+            $validated['collected_at'] ?? null,
+            '00:00',
+            'collected_date',
+            'collected_time',
+        );
+
+        $phlebotomyAt = PersianDateParser::parseDateTimeOrLegacy(
+            $validated['phlebotomy_date'] ?? null,
+            $validated['phlebotomy_time'] ?? null,
+            $validated['phlebotomy_at'] ?? null,
+            '00:00',
+            'phlebotomy_date',
+            'phlebotomy_time',
+        );
+
         $validated['expires_at'] = $expiresAt;
-        unset($validated['expires_date'], $validated['expires_time']);
+        $validated['collected_at'] = $collectedAt;
+        unset(
+            $validated['expires_date'],
+            $validated['expires_time'],
+            $validated['collected_date'],
+            $validated['collected_time'],
+            $validated['phlebotomy_date'],
+            $validated['phlebotomy_time'],
+            $validated['phlebotomy_at'],
+        );
 
         $validated['branch_id'] = $request->user()->branch_id;
 
@@ -93,7 +138,6 @@ class BloodUnitReceiveService
         $donorMilitaryDepartment = $validated['donor_military_department'] ?? null;
         $donorPhone = $validated['donor_phone'] ?? null;
         $donorNationalId = $validated['donor_national_id'] ?? null;
-        $phlebotomyAt = $validated['phlebotomy_at'] ?? null;
         $patientId = isset($validated['patient_id']) ? (int) $validated['patient_id'] : null;
         $recordDepartment = $request->boolean('donor_record_department');
         $departmentId = null;
@@ -113,7 +157,6 @@ class BloodUnitReceiveService
             $validated['donor_military_department'],
             $validated['donor_phone'],
             $validated['donor_national_id'],
-            $validated['phlebotomy_at'],
             $validated['patient_id'],
             $validated['department_id'],
             $validated['donor_record_department'],
@@ -133,7 +176,7 @@ class BloodUnitReceiveService
 
         $departmentIdForDonor = $patientId ? null : $departmentId;
 
-        DB::transaction(function () use ($validated, $donorName, $donorFatherName, $donorAge, $donorGender, $donorBloodPressure, $donorComorbidities, $donorType, $donorReceiver, $donorMilitaryDepartment, $donorPhone, $donorNationalId, $phlebotomyAt, $patientId, $departmentIdForDonor) {
+        DB::transaction(function () use ($validated, $donorName, $donorFatherName, $donorAge, $donorGender, $donorBloodPressure, $donorComorbidities, $donorType, $donorReceiver, $donorMilitaryDepartment, $donorPhone, $donorNationalId, $phlebotomyAt, $collectedAt, $patientId, $departmentIdForDonor) {
             $donationId = null;
 
             if ($donorName !== '' || $patientId) {
@@ -179,10 +222,8 @@ class BloodUnitReceiveService
                 }
 
                 $phlebotomy = $phlebotomyAt
-                    ? Carbon::parse($phlebotomyAt, config('app.timezone'))
-                    : ($validated['collected_at']
-                        ? Carbon::parse($validated['collected_at'], config('app.timezone'))
-                        : now());
+                    ?? $collectedAt
+                    ?? now();
 
                 $donation = BloodDonation::create([
                     'branch_id' => $validated['branch_id'],
@@ -204,14 +245,5 @@ class BloodUnitReceiveService
             $payload = array_merge($validated, ['donation_id' => $donationId]);
             app(BloodBankStockService::class)->receiveUnit($payload);
         });
-    }
-
-    private function parseIncomingDate(string $value): Carbon
-    {
-        try {
-            return Carbon::instance(Verta::parse($value)->datetime());
-        } catch (\Throwable) {
-            return Carbon::parse($value, config('app.timezone'));
-        }
     }
 }

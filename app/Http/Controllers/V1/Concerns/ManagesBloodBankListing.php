@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1\Concerns;
 
 use App\Models\BloodBank;
 use App\Models\Department;
-use Hekmatinasser\Verta\Verta;
+use App\Support\PersianDateParser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -62,21 +62,8 @@ trait ManagesBloodBankListing
             $query->where('type', $request->type);
         }
 
-        if ($request->filled('from')) {
-            try {
-                $query->whereDate('created_at', '>=', Verta::parse($request->from)->datetime());
-            } catch (\Throwable) {
-                $query->whereDate('created_at', '>=', $request->from);
-            }
-        }
-
-        if ($request->filled('to')) {
-            try {
-                $query->whereDate('created_at', '<=', Verta::parse($request->to)->datetime());
-            } catch (\Throwable) {
-                $query->whereDate('created_at', '<=', $request->to);
-            }
-        }
+        $this->applyPersianDateFromFilter($query, 'created_at', $request->input('from'));
+        $this->applyPersianDateToFilter($query, 'created_at', $request->input('to'));
 
         $query->orderByDesc('created_at');
     }
@@ -165,6 +152,36 @@ trait ManagesBloodBankListing
     {
         if ((int) $bloodBank->branch_id !== (int) request()->user()?->branch_id) {
             abort(404);
+        }
+    }
+
+    /**
+     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     */
+    protected function applyPersianDateFromFilter(Builder $query, string $column, ?string $from): void
+    {
+        if ($from === null || $from === '') {
+            return;
+        }
+
+        $parsed = PersianDateParser::queryDate($from);
+        if ($parsed !== null) {
+            $query->whereDate($column, '>=', $parsed);
+        }
+    }
+
+    /**
+     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     */
+    protected function applyPersianDateToFilter(Builder $query, string $column, ?string $to): void
+    {
+        if ($to === null || $to === '') {
+            return;
+        }
+
+        $parsed = PersianDateParser::queryDate($to);
+        if ($parsed !== null) {
+            $query->whereDate($column, '<=', $parsed);
         }
     }
 }

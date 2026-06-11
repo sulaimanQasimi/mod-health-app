@@ -12,6 +12,8 @@ use App\Models\BloodUnit;
 use App\Models\Department;
 use App\Models\Nurse;
 use App\Services\BloodBankStockService;
+use App\Support\PersianDateParser;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -147,13 +149,8 @@ class BloodBankController extends Controller
             $query->where('movement_type', $request->movement_type);
         }
 
-        if ($request->filled('from')) {
-            $query->whereDate('created_at', '>=', $request->from);
-        }
-
-        if ($request->filled('to')) {
-            $query->whereDate('created_at', '<=', $request->to);
-        }
+        $this->applyPersianDateFromFilter($query, 'created_at', $request->input('from'));
+        $this->applyPersianDateToFilter($query, 'created_at', $request->input('to'));
 
         if ($request->filled('bag_number')) {
             $query->whereHas('bloodUnit', fn ($q) => $q->where('bag_number', 'like', '%'.$request->bag_number.'%'));
@@ -500,7 +497,14 @@ class BloodBankController extends Controller
         }
 
         if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('bb.created_at', [$request->from, $request->to]);
+            $from = PersianDateParser::queryDate($request->from);
+            $to = PersianDateParser::queryDate($request->to);
+            if ($from !== null && $to !== null) {
+                $query->whereBetween('bb.created_at', [
+                    Carbon::instance($from)->startOfDay(),
+                    Carbon::instance($to)->endOfDay(),
+                ]);
+            }
         }
 
         return $query->orderByDesc('bb.id')->get()->map(fn ($item) => [

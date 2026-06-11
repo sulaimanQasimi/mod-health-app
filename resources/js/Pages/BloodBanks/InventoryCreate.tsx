@@ -9,7 +9,7 @@ import { FormField, GridDivider, IconTextInput } from '../../Components/Patients
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
-import PersianDateInput from '../../Components/ui/PersianDateInput';
+import PersianDateTimeField from '../../Components/ui/PersianDateTimeField';
 import { useTranslation } from '../../hooks/useTranslation';
 import { BloodBankListUrls, BloodUnitReceiveForm } from '../../types/bloodBank';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
@@ -37,13 +37,15 @@ const EMPTY_FORM: BloodUnitReceiveForm = {
     donor_military_department: '',
     donor_comorbidities: '',
     donor_receiver: '',
-    phlebotomy_at: '',
+    phlebotomy_date: '',
+    phlebotomy_time: '',
     blood_group: 'A',
     rh: '+',
     component_type: 'Fresh',
     bag_number: '',
     volume_ml: '',
-    collected_at: '',
+    collected_date: '',
+    collected_time: '',
     expires_date: '',
     expires_time: '23:59',
     notes: '',
@@ -349,13 +351,15 @@ export default function BloodBanksInventoryCreate({ departments, filterOptions, 
                                             label={t('global.phlebotomy_at')}
                                             icon="bx-time"
                                             hint={t('global.phlebotomy_at_hint')}
-                                            error={errors.phlebotomy_at}
+                                            error={errors.phlebotomy_date ?? errors.phlebotomy_time}
                                             className="md:col-span-2"
                                         >
-                                            <TextInput
-                                                type="datetime-local"
-                                                value={data.phlebotomy_at}
-                                                onChange={(e) => setData('phlebotomy_at', e.target.value)}
+                                            <PersianDateTimeField
+                                                dateValue={data.phlebotomy_date}
+                                                timeValue={data.phlebotomy_time}
+                                                onDateChange={(value) => setData('phlebotomy_date', value)}
+                                                onTimeChange={(value) => setData('phlebotomy_time', value)}
+                                                timeHint={t('global.optional')}
                                             />
                                         </FormField>
 
@@ -480,37 +484,35 @@ export default function BloodBanksInventoryCreate({ departments, filterOptions, 
                                     />
                                 </FormField>
 
-                                <FormField label={t('global.collected_at')} icon="bx-calendar" error={errors.collected_at}>
-                                    <TextInput
-                                        type="datetime-local"
-                                        value={data.collected_at}
-                                        onChange={(e) => setData('collected_at', e.target.value)}
+                                <FormField
+                                    label={t('global.collected_at')}
+                                    icon="bx-calendar"
+                                    error={errors.collected_date ?? errors.collected_time}
+                                    className="md:col-span-2"
+                                >
+                                    <PersianDateTimeField
+                                        dateValue={data.collected_date}
+                                        timeValue={data.collected_time}
+                                        onDateChange={(value) => setData('collected_date', value)}
+                                        onTimeChange={(value) => setData('collected_time', value)}
+                                        timeHint={t('global.optional')}
                                     />
                                 </FormField>
 
                                 <FormField
-                                    label={t('global.expires_date')}
+                                    label={t('global.expires_at')}
                                     icon="bx-calendar-exclamation"
                                     required
-                                    error={errors.expires_date}
+                                    error={errors.expires_date ?? errors.expires_time}
+                                    className="md:col-span-2"
                                 >
-                                    <PersianDateInput
-                                        value={data.expires_date}
-                                        onChange={(value) => setData('expires_date', value)}
-                                        required
-                                    />
-                                </FormField>
-
-                                <FormField
-                                    label={t('global.expires_time')}
-                                    icon="bx-time-five"
-                                    hint={t('global.expires_time_default_hint')}
-                                    error={errors.expires_time}
-                                >
-                                    <TextInput
-                                        type="time"
-                                        value={data.expires_time}
-                                        onChange={(e) => setData('expires_time', e.target.value)}
+                                    <PersianDateTimeField
+                                        dateValue={data.expires_date}
+                                        timeValue={data.expires_time}
+                                        onDateChange={(value) => setData('expires_date', value)}
+                                        onTimeChange={(value) => setData('expires_time', value)}
+                                        dateRequired
+                                        timeHint={t('global.expires_time_default_hint')}
                                     />
                                 </FormField>
 

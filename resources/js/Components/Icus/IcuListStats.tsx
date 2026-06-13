@@ -1,3 +1,4 @@
+import StatCard from '../ui/StatCard';
 import { useTranslation } from '../../hooks/useTranslation';
 import { IcuListVariant } from '../../types/icu';
 import { PaginationMeta } from '../../types/settings';
@@ -8,50 +9,81 @@ interface IcuListStatsProps {
     meta: PaginationMeta;
 }
 
+interface StatCardStyle {
+    iconClass: string;
+    iconBgClass: string;
+    borderClass: string;
+    valueClass: string;
+}
+
+const variantStatStyles: Record<IcuListVariant, StatCardStyle> = {
+    new: {
+        iconClass: 'bx bx-time-five',
+        iconBgClass: 'bg-sky-600',
+        borderClass: 'border-sky-200 dark:border-sky-800',
+        valueClass: 'text-sky-700 dark:text-sky-300',
+    },
+    approved: {
+        iconClass: 'bx bx-pulse',
+        iconBgClass: 'bg-emerald-600',
+        borderClass: 'border-emerald-200 dark:border-emerald-800',
+        valueClass: 'text-emerald-700 dark:text-emerald-300',
+    },
+    rejected: {
+        iconClass: 'bx bx-block',
+        iconBgClass: 'bg-rose-600',
+        borderClass: 'border-rose-200 dark:border-rose-800',
+        valueClass: 'text-rose-700 dark:text-rose-300',
+    },
+};
+
+const perPageStatStyle: StatCardStyle = {
+    iconClass: 'bx bx-list-ul',
+    iconBgClass: 'bg-violet-600',
+    borderClass: 'border-violet-200 dark:border-violet-800',
+    valueClass: 'text-violet-700 dark:text-violet-300',
+};
+
+const pageStatStyle: StatCardStyle = {
+    iconClass: 'bx bx-book-open',
+    iconBgClass: 'bg-amber-500',
+    borderClass: 'border-amber-200 dark:border-amber-800',
+    valueClass: 'text-amber-700 dark:text-amber-300',
+};
+
 export default function IcuListStats({ variant, meta }: IcuListStatsProps) {
     const { t } = useTranslation();
     const config = ICU_LIST_VARIANT_CONFIG[variant];
+    const resultsStyle = variantStatStyles[variant];
 
     const stats = [
         {
-            label: t('global.results'),
+            title: t('global.results'),
             value: String(meta.total ?? 0),
-            icon: config.statIcon,
-            gradient: config.statGradient,
+            subtitle: t(config.subtitleKey),
+            ...resultsStyle,
         },
         {
-            label: t('global.per_page'),
+            title: t('global.per_page'),
             value: String(meta.per_page ?? 15),
-            icon: 'bx-list-ul',
-            gradient: 'from-violet-500 to-purple-600',
+            subtitle: '',
+            ...perPageStatStyle,
         },
         {
-            label: t('global.page'),
+            title: t('global.page'),
             value: `${meta.current_page ?? 1} / ${meta.last_page ?? 1}`,
-            icon: 'bx-book-open',
-            gradient: 'from-amber-500 to-orange-500',
+            subtitle:
+                meta.from != null && meta.to != null
+                    ? `${meta.from}–${meta.to} ${t('global.showing')}`
+                    : '',
+            ...pageStatStyle,
         },
     ];
 
     return (
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-3">
             {stats.map((stat) => (
-                <div
-                    key={stat.label}
-                    className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900"
-                >
-                    <div
-                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient} text-white shadow-md`}
-                    >
-                        <i className={`bx ${stat.icon} text-xl`} />
-                    </div>
-                    <div className="min-w-0">
-                        <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            {stat.label}
-                        </p>
-                        <p className="text-lg font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                    </div>
-                </div>
+                <StatCard key={stat.title} {...stat} />
             ))}
         </div>
     );

@@ -550,6 +550,7 @@ return [
     'loading_prescription_section' => 'در حال بارگذاری بخش نسخه ها',
     'print_type' => 'نوععیت چاپ',
     'per_page' => 'در هر صفحه',
+    'page' => 'صفحه',
     'loading_lab_section' => 'در حال بارگذاری بخش لابراتوار ها',
     'sort_by' => 'مرتب سازی بر اساس',
     'sort_order' => 'ترتیب مرتب سازی',

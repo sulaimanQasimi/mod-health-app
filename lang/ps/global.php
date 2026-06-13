@@ -549,6 +549,7 @@ return [
 'loading_prescription_section' => 'د نسخو برخه بارېږي',
 'print_type' => 'د چاپ ډول',
 'per_page' => 'په هره پاڼه کې',
+'page' => 'پاڼه',
 'loading_lab_section' => 'د لابراتوار برخه بارېږي',
 'sort_by' => 'ترتیبول پر بنسټ',
 'sort_order' => 'د ترتیب ډول',

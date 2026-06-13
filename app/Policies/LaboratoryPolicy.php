@@ -28,7 +28,8 @@ class LaboratoryPolicy
     public function view(User $user, PatientTestRegistration $registration): bool
     {
         return (int) $registration->branch_id === (int) $user->branch_id
-            && $this->viewAny($user);
+            && $this->viewAny($user)
+            && $registration->belongsToUserDepartment($user);
     }
 
     public function accept(User $user, PatientTestRegistration $registration): bool

@@ -71,7 +71,7 @@ class LabTypeController extends Controller
     public function show(Request $request, LabType $labType): Response
     {
         $this->authorizeLabTypeAccess($request);
-        $this->ensureLabTypeBranch($labType);
+        $this->ensureLabTypeAccess($labType);
 
         $labType->load(['category:id,name', 'department:id,name'])->loadCount('directLabTestParameters', 'patientTestRegistrations');
 
@@ -123,7 +123,7 @@ class LabTypeController extends Controller
     public function edit(Request $request, LabType $labType): Response
     {
         $this->authorizeLabTypeManage($request);
-        $this->ensureLabTypeBranch($labType);
+        $this->ensureLabTypeAccess($labType);
 
         return Inertia::render('LabTypes/Edit', [
             'labType' => [
@@ -140,7 +140,7 @@ class LabTypeController extends Controller
     public function update(Request $request, LabType $labType): RedirectResponse
     {
         $this->authorizeLabTypeManage($request);
-        $this->ensureLabTypeBranch($labType);
+        $this->ensureLabTypeAccess($labType);
 
         $labType->update($this->validateLabType($request, $labType));
 
@@ -152,7 +152,7 @@ class LabTypeController extends Controller
     public function destroy(Request $request, LabType $labType): RedirectResponse
     {
         $this->authorizeLabTypeManage($request);
-        $this->ensureLabTypeBranch($labType);
+        $this->ensureLabTypeAccess($labType);
 
         if ($labType->patientTestRegistrations()->exists()) {
             return redirect()
@@ -169,13 +169,7 @@ class LabTypeController extends Controller
 
     private function scopedQuery(Request $request)
     {
-        $query = LabType::query();
-
-        if ($branchId = $this->branchId($request)) {
-            $query->where('branch_id', $branchId);
-        }
-
-        return $query;
+        return LabType::query()->forLaboratoryUser($request->user());
     }
 
     private function branchId(Request $request): ?int
@@ -185,10 +179,19 @@ class LabTypeController extends Controller
         return $branchId ? (int) $branchId : null;
     }
 
-    private function ensureLabTypeBranch(LabType $labType): void
+    private function ensureLabTypeAccess(LabType $labType): void
     {
-        $branchId = auth()->user()?->branch_id;
-        if ($branchId && (int) $labType->branch_id !== (int) $branchId) {
+        $user = auth()->user();
+        if (! $user) {
+            abort(404);
+        }
+
+        $accessible = LabType::query()
+            ->whereKey($labType->id)
+            ->forLaboratoryUser($user)
+            ->exists();
+
+        if (! $accessible) {
             abort(404);
         }
     }
@@ -217,13 +220,24 @@ class LabTypeController extends Controller
     private function buildFormData(Request $request): array
     {
         $branchId = $this->branchId($request);
+        $user = $request->user();
+
+        $departmentsQuery = Department::query()
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->orderBy('name');
+
+        if (! LabType::userBypassesDepartmentScope($user)) {
+            $departmentId = $user?->laboratoryDepartmentId();
+            if ($departmentId) {
+                $departmentsQuery->where('id', $departmentId);
+            } else {
+                $departmentsQuery->whereRaw('0 = 1');
+            }
+        }
 
         return [
             'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
-            'departments' => Department::query()
-                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
-                ->orderBy('name')
-                ->get(['id', 'name']),
+            'departments' => $departmentsQuery->get(['id', 'name']),
         ];
     }
 
@@ -233,13 +247,24 @@ class LabTypeController extends Controller
     private function filterOptions(Request $request): array
     {
         $branchId = $this->branchId($request);
+        $user = $request->user();
+
+        $departmentsQuery = Department::query()
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->orderBy('name');
+
+        if (! LabType::userBypassesDepartmentScope($user)) {
+            $departmentId = $user?->laboratoryDepartmentId();
+            if ($departmentId) {
+                $departmentsQuery->where('id', $departmentId);
+            } else {
+                $departmentsQuery->whereRaw('0 = 1');
+            }
+        }
 
         return [
             'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
-            'departments' => Department::query()
-                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
-                ->orderBy('name')
-                ->get(['id', 'name']),
+            'departments' => $departmentsQuery->get(['id', 'name']),
         ];
     }
 
@@ -277,7 +302,7 @@ class LabTypeController extends Controller
             ],
             'category_id' => 'required|exists:categories,id',
             'department_id' => [
-                'nullable',
+                'required',
                 Rule::exists('departments', 'id')->where(fn ($query) => $query->where('branch_id', $branchId)),
             ],
         ]);

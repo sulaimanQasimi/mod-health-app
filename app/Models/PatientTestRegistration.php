@@ -303,4 +303,59 @@ class PatientTestRegistration extends Model
             $q->whereIn('clinic_type', [$viewerClinicType, 'both']);
         });
     }
+
+    /**
+     * Laboratory processing: branch + lab type department only (no clinic-type filter).
+     *
+     * @param  Builder<PatientTestRegistration>  $query
+     * @return Builder<PatientTestRegistration>
+     */
+    public function scopeForDepartmentProcessing(Builder $query, User $user): Builder
+    {
+        $query->where('patient_test_registrations.branch_id', $user->branch_id);
+
+        if (LabType::userBypassesDepartmentScope($user)) {
+            return $query;
+        }
+
+        $departmentId = $user->laboratoryDepartmentId();
+        if (! $departmentId) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query
+            ->join('lab_types', function ($join) use ($user, $departmentId) {
+                $join->on('patient_test_registrations.lab_type_id', '=', 'lab_types.id')
+                    ->where('lab_types.department_id', $departmentId)
+                    ->where('lab_types.branch_id', $user->branch_id)
+                    ->whereNull('lab_types.deleted_at');
+            })
+            ->select('patient_test_registrations.*');
+    }
+
+    /**
+     * @param  Builder<PatientTestRegistration>  $query
+     * @return Builder<PatientTestRegistration>
+     */
+    public function scopeForLaboratoryUser(Builder $query, User $user): Builder
+    {
+        return $query->forDepartmentProcessing($user)
+            ->visibleToClinicType($user->clinic_type);
+    }
+
+    public function belongsToUserDepartment(User $user): bool
+    {
+        if (LabType::userBypassesDepartmentScope($user)) {
+            return true;
+        }
+
+        $departmentId = $user->laboratoryDepartmentId();
+        if (! $departmentId) {
+            return false;
+        }
+
+        $this->loadMissing('labType');
+
+        return (int) $this->labType?->department_id === $departmentId;
+    }
 }

@@ -56,12 +56,13 @@ export default function LabTypeForm({ mode, urls, formData, labType }: LabTypeFo
                 {errors.category_id && <p className="mt-1 text-sm text-red-600">{errors.category_id}</p>}
             </div>
             <div>
-                <Label htmlFor="department_id">{t('global.department')}</Label>
+                <Label htmlFor="department_id">{t('global.department')} *</Label>
                 <SearchableSelect
                     value={data.department_id}
                     onChange={(value) => setData('department_id', value)}
                     options={formData.departments.map((d) => ({ value: String(d.id), label: d.name }))}
                     placeholder={t('global.select')}
+                    required
                 />
                 {errors.department_id && <p className="mt-1 text-sm text-red-600">{errors.department_id}</p>}
             </div>

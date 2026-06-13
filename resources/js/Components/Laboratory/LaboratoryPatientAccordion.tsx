@@ -140,6 +140,7 @@ export default function LaboratoryPatientAccordion({
                                             <TableRow>
                                                 <TableHead>{t('global.reference_number')}</TableHead>
                                                 <TableHead>{t('global.test_type')}</TableHead>
+                                                <TableHead>{t('global.department')}</TableHead>
                                                 <TableHead>{t('global.status')}</TableHead>
                                                 <TableHead>{t('global.priority')}</TableHead>
                                                 <TableHead>{t('global.doctor')}</TableHead>
@@ -164,6 +165,9 @@ export default function LaboratoryPatientAccordion({
                                                                 {registration.category_name}
                                                             </div>
                                                         )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {registration.department_name ?? '—'}
                                                     </TableCell>
                                                     <TableCell>
                                                         <LaboratoryStatusBadge status={registration.status} />

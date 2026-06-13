@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Badge, Button, Card, Label, Select, TextInput } from 'flowbite-react';
+import { Badge, Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import AppointmentPagination from '../../../Components/Appointments/AppointmentPagination';
 import LaboratoryPageHeader from '../../../Components/Laboratory/LaboratoryPageHeader';
@@ -7,7 +7,14 @@ import LaboratoryPriorityBadge from '../../../Components/Laboratory/LaboratoryPr
 import LaboratoryStatsCards from '../../../Components/Laboratory/LaboratoryStatsCards';
 import LaboratoryStatusBadge from '../../../Components/Laboratory/LaboratoryStatusBadge';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
+import {
+    perPageFilterOptions,
+    priorityFilterOptions,
+    selectOptionsWithAll,
+    statusFilterOptions,
+} from '../../../utils/laboratoryFilterOptions';
 import {
     LaboratoryGroupedCategory,
     LaboratoryGroupedFilters,
@@ -116,43 +123,34 @@ export default function Grouped({ groups, stats, filters: serverFilters, filterO
                             />
                         </div>
                         <div>
-                            <Label>{t('global.status')}</Label>
-                            <Select
+                            <Label htmlFor="grouped-status">{t('global.status')}</Label>
+                            <SearchableSelect
+                                id="grouped-status"
                                 value={filters.status}
-                                onChange={(e) => updateFilter('status', e.target.value)}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                <option value="pending">{t('global.pending')}</option>
-                                <option value="in_progress">{t('global.in_progress')}</option>
-                                <option value="completed">{t('global.completed')}</option>
-                                <option value="cancelled">{t('global.cancelled')}</option>
-                            </Select>
+                                onChange={(value) => updateFilter('status', value)}
+                                placeholder={t('global.all')}
+                                options={statusFilterOptions(t)}
+                            />
                         </div>
                         <div>
-                            <Label>{t('global.priority')}</Label>
-                            <Select
+                            <Label htmlFor="grouped-priority">{t('global.priority')}</Label>
+                            <SearchableSelect
+                                id="grouped-priority"
                                 value={filters.priority}
-                                onChange={(e) => updateFilter('priority', e.target.value)}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                <option value="normal">{t('global.normal')}</option>
-                                <option value="urgent">{t('global.urgent')}</option>
-                                <option value="stat">{t('global.stat')}</option>
-                            </Select>
+                                onChange={(value) => updateFilter('priority', value)}
+                                placeholder={t('global.all')}
+                                options={priorityFilterOptions(t)}
+                            />
                         </div>
                         <div>
-                            <Label>{t('global.doctor')}</Label>
-                            <Select
+                            <Label htmlFor="grouped-doctor">{t('global.doctor')}</Label>
+                            <SearchableSelect
+                                id="grouped-doctor"
                                 value={filters.doctor}
-                                onChange={(e) => updateFilter('doctor', e.target.value)}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                {filterOptions.doctors.map((doctor) => (
-                                    <option key={doctor.id} value={doctor.id}>
-                                        {doctor.name}
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => updateFilter('doctor', value)}
+                                placeholder={t('global.all')}
+                                options={selectOptionsWithAll(t, filterOptions.doctors)}
+                            />
                         </div>
                         <div>
                             <Label>{t('global.date_from')}</Label>
@@ -169,16 +167,13 @@ export default function Grouped({ groups, stats, filters: serverFilters, filterO
                             />
                         </div>
                         <div>
-                            <Label>{t('global.per_page')}</Label>
-                            <Select
+                            <Label htmlFor="grouped-per-page">{t('global.per_page')}</Label>
+                            <SearchableSelect
+                                id="grouped-per-page"
                                 value={filters.per_page}
-                                onChange={(e) => updateFilter('per_page', e.target.value)}
-                            >
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                            </Select>
+                                onChange={(value) => updateFilter('per_page', value)}
+                                options={perPageFilterOptions(['10', '15', '25', '50'])}
+                            />
                         </div>
                     </div>
 

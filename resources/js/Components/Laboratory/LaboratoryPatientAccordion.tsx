@@ -191,6 +191,7 @@ export default function LaboratoryPatientAccordion({
                                                     <TableActionsCell>
                                                         <LaboratoryRegistrationActions
                                                             registration={registration}
+                                                            listMode={listMode}
                                                         />
                                                     </TableActionsCell>
                                                 </TableRow>

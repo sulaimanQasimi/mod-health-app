@@ -1,7 +1,9 @@
-import { Button, Card, Label, Select, TextInput } from 'flowbite-react';
+import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent } from 'react';
+import SearchableSelect from '../ui/SearchableSelect';
 import { LaboratoryPendingFilters as Filters } from '../../types/laboratory';
 import { useTranslation } from '../../hooks/useTranslation';
+import { perPageFilterOptions, priorityFilterOptions } from '../../utils/laboratoryFilterOptions';
 
 interface LaboratoryPendingFiltersProps {
     filters: Filters;
@@ -51,16 +53,13 @@ export default function LaboratoryPendingFilters({
                     </div>
                     <div>
                         <Label htmlFor="pending-priority">{t('global.priority')}</Label>
-                        <Select
+                        <SearchableSelect
                             id="pending-priority"
                             value={filters.priority}
-                            onChange={(e) => onChange('priority', e.target.value)}
-                        >
-                            <option value="">{t('global.all')}</option>
-                            <option value="normal">{t('global.normal')}</option>
-                            <option value="urgent">{t('global.urgent')}</option>
-                            <option value="stat">{t('global.stat')}</option>
-                        </Select>
+                            onChange={(value) => onChange('priority', value)}
+                            placeholder={t('global.all')}
+                            options={priorityFilterOptions(t)}
+                        />
                     </div>
                     <div>
                         <Label htmlFor="pending-date-from">{t('global.date_from')}</Label>
@@ -82,16 +81,12 @@ export default function LaboratoryPendingFilters({
                     </div>
                     <div>
                         <Label htmlFor="pending-per-page">{t('global.per_page')}</Label>
-                        <Select
+                        <SearchableSelect
                             id="pending-per-page"
                             value={filters.per_page}
-                            onChange={(e) => onChange('per_page', e.target.value)}
-                        >
-                            <option value="15">15</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </Select>
+                            onChange={(value) => onChange('per_page', value)}
+                            options={perPageFilterOptions(['15', '25', '50', '100'])}
+                        />
                     </div>
                 </div>
 

@@ -8,6 +8,7 @@ use App\Models\BloodCrossmatch;
 use App\Models\BloodPatientSample;
 use App\Models\BloodUnit;
 use App\Services\BloodCrossmatchService;
+use App\Support\PersianDateParser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,15 +32,28 @@ trait ManagesBloodBankWorkflow
 
         $validated = $request->validate([
             'sample_id' => 'nullable|string|max:100',
-            'collected_at' => 'nullable|date',
+            'collected_date' => 'nullable|string|max:32',
+            'collected_time' => 'nullable|date_format:H:i',
+            'collected_at' => 'nullable|string|max:64',
             'notes' => 'nullable|string|max:2000',
+        ], [
+            'collected_time.date_format' => localize('global.expires_time_invalid'),
         ]);
+
+        $collectedAt = PersianDateParser::parseDateTimeOrLegacy(
+            $validated['collected_date'] ?? null,
+            $validated['collected_time'] ?? null,
+            $validated['collected_at'] ?? null,
+            '00:00',
+            'collected_date',
+            'collected_time',
+        );
 
         BloodPatientSample::create([
             'blood_bank_id' => $bloodBank->id,
             'patient_id' => $bloodBank->patient_id,
             'sample_id' => $validated['sample_id'] ?? null,
-            'collected_at' => $validated['collected_at'] ?? now(),
+            'collected_at' => $collectedAt ?? now(),
             'collected_by' => $request->user()->id,
             'notes' => $validated['notes'] ?? null,
         ]);

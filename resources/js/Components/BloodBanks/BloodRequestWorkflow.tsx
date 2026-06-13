@@ -11,6 +11,7 @@ import {
     screeningStatusBadgeColor,
 } from './bloodBankUi';
 import SearchableSelect from '../ui/SearchableSelect';
+import PersianDateTimeField from '../ui/PersianDateTimeField';
 import {
     Table,
     TableBody,
@@ -119,7 +120,7 @@ export default function BloodRequestWorkflow({
     const [bloodCheckForm, setBloodCheckForm] = useState(workflowData.bloodCheckForm);
     const [verifyLabTyping, setVerifyLabTyping] = useState(false);
 
-    const [sampleForm, setSampleForm] = useState({ sample_id: '', collected_at: '', notes: '' });
+    const [sampleForm, setSampleForm] = useState({ sample_id: '', collected_date: '', collected_time: '', notes: '' });
 
     const [receiverDepartmentId, setReceiverDepartmentId] = useState(
         workflowData.deliveryDefaults.receiver_department_id
@@ -207,7 +208,8 @@ export default function BloodRequestWorkflow({
         event.preventDefault();
         post(urls.storeSample, {
             sample_id: sampleForm.sample_id || null,
-            collected_at: sampleForm.collected_at || null,
+            collected_date: sampleForm.collected_date || null,
+            collected_time: sampleForm.collected_time || null,
             notes: sampleForm.notes || null,
         });
     };
@@ -360,16 +362,17 @@ export default function BloodRequestWorkflow({
                                 className="rounded-lg"
                             />
                         </div>
-                        <div className="sm:col-span-3">
+                        <div className="sm:col-span-4">
                             <Label className="mb-1 block text-xs">{t('global.collected_at')}</Label>
-                            <TextInput
-                                type="datetime-local"
-                                value={sampleForm.collected_at}
-                                onChange={(e) => setSampleForm((f) => ({ ...f, collected_at: e.target.value }))}
-                                className="rounded-lg"
+                            <PersianDateTimeField
+                                dateValue={sampleForm.collected_date}
+                                timeValue={sampleForm.collected_time}
+                                onDateChange={(value) => setSampleForm((f) => ({ ...f, collected_date: value }))}
+                                onTimeChange={(value) => setSampleForm((f) => ({ ...f, collected_time: value }))}
+                                timeHint={t('global.optional')}
                             />
                         </div>
-                        <div className="sm:col-span-4">
+                        <div className="sm:col-span-3">
                             <Label className="mb-1 block text-xs">{t('global.notes')}</Label>
                             <TextInput
                                 value={sampleForm.notes}

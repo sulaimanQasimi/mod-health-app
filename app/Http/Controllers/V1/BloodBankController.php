@@ -680,7 +680,7 @@ class BloodBankController extends Controller
             'patient_samples' => $bloodBank->patientSamples->map(fn ($sample) => [
                 'id' => $sample->id,
                 'sample_id' => $sample->sample_id,
-                'collected_at' => $sample->collected_at?->format('Y-m-d H:i'),
+                'collected_at' => $sample->collected_at ? verta($sample->collected_at)->format('Y-m-d H:i') : null,
                 'collected_by_name' => $sample->collectedBy?->name,
                 'notes' => $sample->notes,
             ])->values()->all(),

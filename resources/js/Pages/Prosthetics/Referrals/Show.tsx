@@ -1,7 +1,9 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Card } from 'flowbite-react';
+import { Badge, Button, Label, TextInput } from 'flowbite-react';
 import { useState } from 'react';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import IcuPanel from '../../../Components/Icus/IcuPanel';
+import { prostheticReferralStatusLabel } from '../../../Components/ProstheticsReferrals/prostheticsReferralUi';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { ProstheticReferralDetail } from '../../../types/prosthetics';
@@ -19,10 +21,24 @@ interface ShowProps {
     };
 }
 
+const PANEL_ICON_CLASS = 'text-indigo-600 dark:text-indigo-400';
+const PANEL_BODY_CLASS = 'p-5';
+
+function DetailTile({ label, value }: { label: string; value?: string | null }) {
+    return (
+        <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
+            <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
+            <p className="mt-0.5 font-medium text-gray-900 dark:text-white">{value || '—'}</p>
+        </div>
+    );
+}
+
 export default function ProstheticsReferralsShow({ referral, urls }: ShowProps) {
     const { t } = useTranslation();
     const [rejectNotes, setRejectNotes] = useState('');
     const [processing, setProcessing] = useState(false);
+
+    const statusLabel = prostheticReferralStatusLabel(referral.status, t);
 
     const postAction = (url: string, data: Record<string, string> = {}) => {
         setProcessing(true);
@@ -35,10 +51,10 @@ export default function ProstheticsReferralsShow({ referral, urls }: ShowProps) 
         <DashboardLayout>
             <Head title={referral.referral_number} />
 
-            <div className={`mx-auto space-y-6 ${SETTINGS_INDEX_WIDTH.simple}`}>
+            <div className={`mx-auto w-full min-w-0 space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <SettingsPageHeader
                     title={referral.referral_number}
-                    subtitle={`${referral.patient?.name ?? '—'} — ${t('global.status')}: ${referral.status}`}
+                    subtitle={`${referral.patient?.name ?? '—'} · ${t('global.status')}: ${statusLabel}`}
                     icon="bx-transfer"
                     accent="from-indigo-500 to-blue-600"
                     backHref={urls.index}
@@ -54,7 +70,7 @@ export default function ProstheticsReferralsShow({ referral, urls }: ShowProps) 
                                     size="sm"
                                     disabled={processing}
                                     onClick={() => {
-                                        if (window.confirm(t('global.prosthetics_convert_confirm') || 'Create case from this referral?')) {
+                                        if (window.confirm(t('global.are_you_sure'))) {
                                             postAction(urls.convert);
                                         }
                                     }}
@@ -70,60 +86,94 @@ export default function ProstheticsReferralsShow({ referral, urls }: ShowProps) 
                     }
                 />
 
-                <Card>
-                    <div className="mb-4 flex flex-wrap gap-2">
-                        <Badge color="info">{referral.status}</Badge>
-                        {referral.urgency && <Badge color="gray">{referral.urgency}</Badge>}
+                <IcuPanel
+                    variant="table"
+                    contentClassName={PANEL_BODY_CLASS}
+                    title={t('global.prosthetics_referral')}
+                    icon="bx-transfer"
+                    iconClassName={PANEL_ICON_CLASS}
+                    action={
+                        <div className="flex flex-wrap gap-2">
+                            <Badge color="info">{statusLabel}</Badge>
+                            {referral.urgency && <Badge color="gray">{referral.urgency}</Badge>}
+                        </div>
+                    }
+                >
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <DetailTile label={t('global.date')} value={referral.referral_date} />
+                        <DetailTile label={t('global.patient_name')} value={referral.patient?.name} />
+                        <DetailTile label={t('global.nid')} value={referral.patient?.nid} />
+                        <DetailTile label={t('global.phone')} value={referral.patient?.phone} />
+                        <DetailTile label={t('global.requested_department')} value={referral.referring_facility} />
+                        <DetailTile label={t('global.doctor')} value={referral.referring_doctor} />
+                        <DetailTile
+                            label={t('global.prosthetics_service_type')}
+                            value={referral.requested_service_type}
+                        />
+                        {referral.converted_case && (
+                            <DetailTile
+                                label={t('global.prosthetics_case')}
+                                value={referral.converted_case.case_number}
+                            />
+                        )}
                     </div>
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {[
-                            [t('global.date'), referral.referral_date],
-                            [t('global.patient_name'), referral.patient?.name],
-                            [t('global.nid'), referral.patient?.nid],
-                            [t('global.phone'), referral.patient?.phone],
-                            [t('global.requested_department'), referral.referring_facility],
-                            [t('global.doctor'), referral.referring_doctor],
-                            [t('global.prosthetics_service_type'), referral.requested_service_type],
-                        ].map(([label, value]) => (
-                            <div
-                                key={String(label)}
-                                className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40"
-                            >
-                                <p className="text-xs text-gray-500">{label}</p>
-                                <p className="font-medium">{value || '—'}</p>
-                            </div>
-                        ))}
-                    </div>
-                </Card>
+                </IcuPanel>
 
-                <Card className="space-y-3 text-sm">
-                    <p><strong>{t('global.reason')}:</strong> {referral.reason || '—'}</p>
-                    <p><strong>{t('global.diagnose')}:</strong> {referral.diagnosis_summary || '—'}</p>
-                    <p><strong>{t('global.notes')}:</strong> {referral.notes || '—'}</p>
-                    {referral.converted_case && (
-                        <p>
-                            <strong>{t('global.prosthetics_case')}:</strong>{' '}
-                            <code>{referral.converted_case.case_number}</code>
-                        </p>
-                    )}
-                </Card>
+                <IcuPanel
+                    variant="table"
+                    contentClassName={PANEL_BODY_CLASS}
+                    title={t('global.details')}
+                    icon="bx-detail"
+                    iconClassName={PANEL_ICON_CLASS}
+                >
+                    <div className="grid gap-4 lg:grid-cols-3">
+                        <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
+                            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                {t('global.reason')}
+                            </p>
+                            <p className="text-gray-900 dark:text-white">{referral.reason || '—'}</p>
+                        </div>
+                        <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
+                            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                {t('global.diagnose')}
+                            </p>
+                            <p className="text-gray-900 dark:text-white">{referral.diagnosis_summary || '—'}</p>
+                        </div>
+                        <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
+                            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                {t('global.notes')}
+                            </p>
+                            <p className="text-gray-900 dark:text-white">{referral.notes || '—'}</p>
+                        </div>
+                    </div>
+                </IcuPanel>
 
                 {canAcceptReject && (
-                    <Card>
-                        <h3 className="mb-3 text-sm font-semibold">{t('global.actions')}</h3>
-                        <div className="flex flex-wrap items-start gap-2">
-                            <Button color="green" size="sm" disabled={processing} onClick={() => postAction(urls.accept)}>
+                    <IcuPanel
+                        variant="table"
+                        contentClassName={PANEL_BODY_CLASS}
+                        title={t('global.actions')}
+                        icon="bx-cog"
+                        iconClassName={PANEL_ICON_CLASS}
+                    >
+                        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
+                            <Button color="success" size="sm" disabled={processing} onClick={() => postAction(urls.accept)}>
                                 {t('global.yes')}
                             </Button>
-                            <input
-                                type="text"
-                                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700"
-                                placeholder={t('global.reject_reason')}
-                                value={rejectNotes}
-                                onChange={(e) => setRejectNotes(e.target.value)}
-                            />
+                            <div className="min-w-[220px] flex-1">
+                                <Label htmlFor="reject-notes" className="mb-1 text-xs">
+                                    {t('global.reject_reason')}
+                                </Label>
+                                <TextInput
+                                    id="reject-notes"
+                                    sizing="sm"
+                                    placeholder={t('global.reject_reason')}
+                                    value={rejectNotes}
+                                    onChange={(e) => setRejectNotes(e.target.value)}
+                                />
+                            </div>
                             <Button
-                                color="red"
+                                color="failure"
                                 outline
                                 size="sm"
                                 disabled={processing}
@@ -132,7 +182,7 @@ export default function ProstheticsReferralsShow({ referral, urls }: ShowProps) 
                                 {t('global.reject_request')}
                             </Button>
                         </div>
-                    </Card>
+                    </IcuPanel>
                 )}
             </div>
         </DashboardLayout>

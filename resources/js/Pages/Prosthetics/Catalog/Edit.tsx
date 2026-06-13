@@ -1,10 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, Card, Checkbox, Label, TextInput } from 'flowbite-react';
+import { Button, Checkbox, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
+import IcuPanel from '../../../Components/Icus/IcuPanel';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { SETTINGS_FORM_WIDTH } from '../../../utils/settingsUi';
+import { SETTINGS_WIDE_FORM_WIDTH } from '../../../utils/settingsUi';
 
 interface EditProps {
     item: {
@@ -51,36 +52,54 @@ export default function ProstheticsCatalogEdit({ item, urls }: EditProps) {
         <DashboardLayout>
             <Head title={item.item_code} />
 
-            <div className={`mx-auto space-y-6 ${SETTINGS_FORM_WIDTH}`}>
+            <div className={`mx-auto space-y-6 ${SETTINGS_WIDE_FORM_WIDTH}`}>
                 <SettingsPageHeader
-                    title={item.item_code}
+                    title={t('global.prosthetics_catalog_edit')}
+                    subtitle={item.name}
                     icon="bx-edit"
                     accent="from-amber-500 to-orange-600"
                     backHref={urls.index}
                     backLabel={t('global.back')}
                 />
 
-                <Card>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <Label htmlFor="item_code" value={`${t('global.code')} *`} />
-                            <TextInput
-                                id="item_code"
-                                required
-                                value={form.item_code}
-                                onChange={(e) => setForm((prev) => ({ ...prev, item_code: e.target.value }))}
-                            />
+                <form id="catalog-edit-form" onSubmit={handleSubmit}>
+                    <IcuPanel
+                        title={item.item_code}
+                        icon="bx-package"
+                        variant="filter"
+                        contentClassName="space-y-4"
+                        footer={
+                            <div className="flex flex-wrap gap-2">
+                                <Button type="submit" color="blue" disabled={processing}>
+                                    {t('global.save')}
+                                </Button>
+                                <Button as={Link} href={urls.index} color="light">
+                                    {t('global.back')}
+                                </Button>
+                            </div>
+                        }
+                    >
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            <div>
+                                <Label htmlFor="item_code" value={`${t('global.code')} *`} />
+                                <TextInput
+                                    id="item_code"
+                                    required
+                                    value={form.item_code}
+                                    onChange={(e) => setForm((prev) => ({ ...prev, item_code: e.target.value }))}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="name" value={`${t('global.name')} *`} />
+                                <TextInput
+                                    id="name"
+                                    required
+                                    value={form.name}
+                                    onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <Label htmlFor="name" value={`${t('global.name')} *`} />
-                            <TextInput
-                                id="name"
-                                required
-                                value={form.name}
-                                onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-                            />
-                        </div>
-                        <div className="grid gap-4 md:grid-cols-2">
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             <div>
                                 <Label htmlFor="category" value={t('global.category')} />
                                 <TextInput
@@ -98,7 +117,7 @@ export default function ProstheticsCatalogEdit({ item, urls }: EditProps) {
                                 />
                             </div>
                         </div>
-                        <div className="grid gap-4 md:grid-cols-2">
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             <div>
                                 <Label htmlFor="standard_cost" value={t('global.cost')} />
                                 <TextInput
@@ -139,16 +158,8 @@ export default function ProstheticsCatalogEdit({ item, urls }: EditProps) {
                                 <Label htmlFor="is_active" value={t('global.active')} />
                             </div>
                         </div>
-                        <div className="flex gap-2">
-                            <Button type="submit" color="blue" disabled={processing}>
-                                {t('global.save')}
-                            </Button>
-                            <Button as={Link} href={urls.index} color="light">
-                                {t('global.back')}
-                            </Button>
-                        </div>
-                    </form>
-                </Card>
+                    </IcuPanel>
+                </form>
             </div>
         </DashboardLayout>
     );

@@ -393,6 +393,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{bloodBank}/approve', [BloodBankController::class, 'approve'])->name('approve');
         Route::put('/{bloodBank}/reject', [BloodBankController::class, 'reject'])->name('reject');
         Route::post('/{bloodBank}/deliver', [BloodBankController::class, 'deliver'])->name('deliver');
+        Route::middleware('permission:receive-blood-units|manage-blood-inventory')->group(function () {
+            Route::post('/{bloodBank}/blood-check', [BloodBankController::class, 'storeBloodCheck'])->name('blood-check.store');
+            Route::post('/{bloodBank}/crossmatch/samples', [BloodBankController::class, 'storePatientSample'])->name('crossmatch.samples.store');
+            Route::post('/{bloodBank}/crossmatch/units/{bloodUnit}', [BloodBankController::class, 'saveCrossmatch'])->name('crossmatch.save');
+            Route::post('/{bloodBank}/crossmatch/{crossmatch}/override', [BloodBankController::class, 'overrideCrossmatch'])->name('crossmatch.override');
+            Route::post('/{bloodBank}/crossmatch/{crossmatch}/reserve', [BloodBankController::class, 'reserveCrossmatchUnit'])->name('crossmatch.reserve');
+            Route::post('/{bloodBank}/crossmatch/units/{bloodUnit}/unreserve', [BloodBankController::class, 'unreserveCrossmatchUnit'])->name('crossmatch.unreserve');
+        });
     });
 
     Route::prefix('prosthetics')->name('prosthetics.')->middleware('permission:show-prosthetics-menu')->group(function () {

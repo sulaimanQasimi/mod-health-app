@@ -141,6 +141,29 @@ export function movementTypeBadgeColor(
     }
 }
 
+export function crossmatchStatusBadgeColor(
+    status: string,
+): 'success' | 'failure' | 'warning' | 'info' | 'gray' {
+    switch (status) {
+        case 'compatible':
+        case 'overridden':
+            return 'success';
+        case 'incompatible':
+            return 'failure';
+        case 'pending':
+            return 'warning';
+        default:
+            return 'gray';
+    }
+}
+
+export const BLOOD_REQUEST_STAT_GRADIENTS = {
+    requested: 'from-rose-500 to-red-600',
+    reserved: 'from-sky-500 to-blue-600',
+    issued: 'from-emerald-500 to-teal-600',
+    remaining: 'from-amber-500 to-orange-600',
+} as const;
+
 export const BLOOD_UNIT_CARD_CLASS =
     'overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900';
 

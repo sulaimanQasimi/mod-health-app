@@ -518,6 +518,13 @@ class BloodBankController extends Controller
             ])
         );
 
+        $bloodBank->update([
+            'group' => $validated['abo_group'],
+            'rh' => $validated['rh'],
+            'type' => $validated['component_type'],
+            'quantity' => (int) $validated['quantity'],
+        ]);
+
         return back()->with('success', localize('global.blood_check_saved'));
     }
 

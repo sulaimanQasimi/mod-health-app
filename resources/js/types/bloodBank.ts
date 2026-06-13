@@ -89,6 +89,11 @@ export interface BloodRequestDetail {
         steps: { number: number; done: boolean; current: boolean }[];
     };
     blood_check: {
+        abo_group: string | null;
+        rh: string | null;
+        component_type: string | null;
+        quantity: number | null;
+        notes: string | null;
         patient_typed_group: string | null;
         patient_typed_rh: string | null;
         verified_at: string | null;
@@ -115,8 +120,92 @@ export interface BloodRequestDetail {
     issued_units: {
         id: number;
         bag_number: string | null;
+        expires_at: string | null;
         issued_at: string | null;
+        urls?: { show: string };
     }[];
+}
+
+export interface BloodRequestWorkflowAvailableUnit {
+    id: number;
+    bag_number: string | null;
+    blood_group: string | null;
+    rh: string | null;
+    component_type: string | null;
+    expires_at: string | null;
+    auto_abo_rh_compatible: boolean;
+    is_reserved: boolean;
+    crossmatch: {
+        id: number;
+        major_result: string | null;
+        minor_result: string | null;
+        status: string;
+        auto_reason: string | null;
+        patient_sample_id: number | null;
+        urls: {
+            reserve: string;
+            override: string;
+        };
+    } | null;
+    urls: {
+        saveCrossmatch: string;
+        unreserve: string;
+        inventoryShow: string;
+    };
+}
+
+export interface BloodRequestWorkflowInventoryUnit {
+    id: number;
+    bag_number: string | null;
+    blood_group: string | null;
+    rh: string | null;
+    component_type: string | null;
+    expires_at: string | null;
+    screening_status: string;
+    crossmatch_status: string | null;
+    urls: { show: string };
+}
+
+export interface BloodRequestWorkflowData {
+    availableUnits: BloodRequestWorkflowAvailableUnit[];
+    inventoryPreviewUnits: BloodRequestWorkflowInventoryUnit[];
+    hasCrossmatchFlow: boolean;
+    deliverableUnitIds: number[];
+    crossmatchResultValues: string[];
+    bloodComponentTypes: string[];
+    bloodCheckForm: {
+        abo_group: string;
+        rh: string;
+        component_type: string;
+        quantity: number;
+        patient_typed_group: string;
+        patient_typed_rh: string;
+        notes: string;
+    };
+    deliveryDefaults: {
+        receiver_department_id: number | null;
+        receiver_nurse_id: number | null;
+    };
+}
+
+export interface BloodRequestShowPermissions {
+    approve: boolean;
+    reject: boolean;
+    deliver: boolean;
+    manageCrossmatch: boolean;
+    manageInventory: boolean;
+}
+
+export interface BloodRequestShowUrls extends BloodBankListUrls {
+    back: string;
+    approve: string;
+    reject: string;
+    deliver: string;
+    bloodCheck: string;
+    storeSample: string;
+    inventory: string;
+    legacyInventoryShow: string;
+    nursesByDepartment: string;
 }
 
 export interface BloodUnitListItem {

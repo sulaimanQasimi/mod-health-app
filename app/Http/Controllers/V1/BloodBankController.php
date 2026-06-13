@@ -4,9 +4,12 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\ManagesBloodBankListing;
+use App\Http\Controllers\V1\Concerns\ManagesBloodBankWorkflow;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\BloodBank;
 use App\Models\BloodBranchTransfer;
+use App\Models\BloodCheckRecord;
+use App\Models\BloodCrossmatch;
 use App\Models\BloodStockMovement;
 use App\Models\BloodUnit;
 use App\Models\Department;
@@ -24,6 +27,7 @@ use Inertia\Response;
 class BloodBankController extends Controller
 {
     use ManagesBloodBankListing;
+    use ManagesBloodBankWorkflow;
     use PaginatesInertiaIndex;
 
     public function dashboard(Request $request): Response
@@ -279,6 +283,43 @@ class BloodBankController extends Controller
         $workflow = $this->buildWorkflowState($bloodBank, $remainingQty, $reservedCompatibleQty);
 
         $user = $request->user();
+        $bloodCheck = $bloodBank->bloodCheck();
+        $crossmatchesByUnit = $bloodBank->crossmatches->keyBy('blood_unit_id');
+
+        $availableUnits = collect();
+        $inventoryPreviewUnits = collect();
+
+        if ($bloodBank->status === 'approved') {
+            $availableUnits = BloodUnit::where('branch_id', $bloodBank->branch_id)
+                ->where('component_type', $bloodBank->type)
+                ->whereIn('status', ['available', 'reserved'])
+                ->where('expires_at', '>', now())
+                ->whereHas('test', fn ($q) => $q->where('overall_status', 'passed'))
+                ->with('test')
+                ->orderBy('expires_at')
+                ->get();
+
+            $inventoryPreviewUnits = BloodUnit::query()
+                ->where('branch_id', $bloodBank->branch_id)
+                ->where('component_type', $bloodBank->type)
+                ->where('status', 'available')
+                ->where('expires_at', '>', now())
+                ->whereHas('test', fn ($q) => $q->where('overall_status', 'passed'))
+                ->with('test')
+                ->orderBy('expires_at')
+                ->limit(12)
+                ->get();
+        }
+
+        $hasCrossmatchFlow = $bloodBank->crossmatches->isNotEmpty();
+        $deliverableUnitIds = $bloodBank->crossmatches
+            ->filter(fn ($cx) => in_array($cx->status, ['compatible', 'overridden'], true))
+            ->filter(fn ($cx) => in_array($cx->blood_unit_id, $reservedUnitIds, true))
+            ->pluck('blood_unit_id')
+            ->values()
+            ->all();
+
+        $bcr = $bloodBank->bloodCheckRecord;
 
         return Inertia::render('BloodBanks/Show', [
             'bloodRequest' => $this->transformBloodRequestDetail(
@@ -291,18 +332,59 @@ class BloodBankController extends Controller
                 $workflow,
                 $reservedUnitIds,
             ),
+            'workflowData' => [
+                'availableUnits' => $availableUnits
+                    ->map(fn (BloodUnit $unit) => $this->transformWorkflowAvailableUnit(
+                        $bloodBank,
+                        $unit,
+                        $bloodCheck,
+                        $crossmatchesByUnit,
+                        $reservedUnitIds,
+                    ))
+                    ->values()
+                    ->all(),
+                'inventoryPreviewUnits' => $inventoryPreviewUnits
+                    ->map(fn (BloodUnit $unit) => $this->transformWorkflowInventoryPreviewUnit(
+                        $unit,
+                        $crossmatchesByUnit,
+                    ))
+                    ->values()
+                    ->all(),
+                'hasCrossmatchFlow' => $hasCrossmatchFlow,
+                'deliverableUnitIds' => $deliverableUnitIds,
+                'crossmatchResultValues' => BloodCrossmatch::RESULT_VALUES,
+                'bloodComponentTypes' => BloodCheckRecord::COMPONENT_TYPES,
+                'bloodCheckForm' => [
+                    'abo_group' => $bcr?->abo_group ?? $bloodBank->group ?? 'O',
+                    'rh' => $bcr?->rh ?? $bloodBank->rh ?? '+',
+                    'component_type' => $bcr?->component_type ?? $bloodBank->type ?? 'RBC',
+                    'quantity' => $bcr && (int) $bcr->quantity >= 1
+                        ? BloodBank::normalizeRawQuantityToUnits((int) $bcr->quantity)
+                        : $requestedQty,
+                    'patient_typed_group' => $bcr?->patient_typed_group ?? '',
+                    'patient_typed_rh' => $bcr?->patient_typed_rh ?? '',
+                    'notes' => $bcr?->notes ?? '',
+                ],
+                'deliveryDefaults' => [
+                    'receiver_department_id' => $bloodBank->receiver_department_id,
+                    'receiver_nurse_id' => $bloodBank->receiver_nurse_id,
+                ],
+            ],
             'receiverDepartments' => $this->bloodRequestFilterOptions()['departments'],
             'permissions' => [
                 'approve' => $bloodBank->status === 'new',
                 'reject' => $bloodBank->status !== 'delivered' && $bloodBank->status !== 'rejected',
                 'deliver' => $bloodBank->status === 'approved',
                 'manageCrossmatch' => $user->can('receive-blood-units') || $user->can('manage-blood-inventory'),
+                'manageInventory' => $user->can('manage-blood-inventory'),
             ],
             'urls' => [
                 'back' => $this->backUrlForBloodRequest($bloodBank),
                 'approve' => route('react.blood-banks.approve', $bloodBank),
                 'reject' => route('react.blood-banks.reject', $bloodBank),
                 'deliver' => route('react.blood-banks.deliver', $bloodBank),
+                'bloodCheck' => route('react.blood-banks.blood-check.store', $bloodBank),
+                'storeSample' => route('react.blood-banks.crossmatch.samples.store', $bloodBank),
                 'inventory' => route('react.blood-banks.inventory', [
                     'status' => 'available',
                     'blood_group' => $bloodBank->group,
@@ -312,6 +394,10 @@ class BloodBankController extends Controller
                 'legacyInventoryShow' => url('/blood_banks/inventory'),
                 'nursesByDepartment' => route('react.blood-banks.nurses-by-department', ['department' => '__DEPARTMENT__']),
                 ...$this->bloodBankListUrls(),
+            ],
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
             ],
         ]);
     }
@@ -581,6 +667,11 @@ class BloodBankController extends Controller
             'order_quantity_display' => $orderParts,
             'workflow' => $workflow,
             'blood_check' => $bloodBank->bloodCheckRecord ? [
+                'abo_group' => $bloodBank->bloodCheckRecord->abo_group,
+                'rh' => $bloodBank->bloodCheckRecord->rh,
+                'component_type' => $bloodBank->bloodCheckRecord->component_type,
+                'quantity' => $bloodBank->bloodCheckRecord->quantity,
+                'notes' => $bloodBank->bloodCheckRecord->notes,
                 'patient_typed_group' => $bloodBank->bloodCheckRecord->patient_typed_group,
                 'patient_typed_rh' => $bloodBank->bloodCheckRecord->patient_typed_rh,
                 'verified_at' => $bloodBank->bloodCheckRecord->verified_at?->format('Y-m-d H:i'),
@@ -609,12 +700,82 @@ class BloodBankController extends Controller
                 ->map(fn ($u) => [
                     'id' => $u->id,
                     'bag_number' => $u->bag_number,
+                    'expires_at' => $u->expires_at ? verta($u->expires_at)->format('Y-m-d H:i') : null,
                     'issued_at' => $u->pivot->issued_at
                         ? verta($u->pivot->issued_at)->format('Y-m-d H:i')
                         : null,
+                    'urls' => [
+                        'show' => route('react.blood-banks.inventory.show', $u),
+                    ],
                 ])
                 ->values()
                 ->all(),
+        ];
+    }
+
+    /**
+     * @param  list<int>  $reservedUnitIds
+     * @return array<string, mixed>
+     */
+    private function transformWorkflowAvailableUnit(
+        BloodBank $bloodBank,
+        BloodUnit $unit,
+        \App\Blood\BloodCheck $bloodCheck,
+        \Illuminate\Support\Collection $crossmatchesByUnit,
+        array $reservedUnitIds,
+    ): array {
+        $cx = $crossmatchesByUnit->get($unit->id);
+
+        return [
+            'id' => $unit->id,
+            'bag_number' => $unit->bag_number,
+            'blood_group' => $unit->blood_group,
+            'rh' => $unit->rh,
+            'component_type' => $unit->component_type,
+            'expires_at' => $unit->expires_at ? verta($unit->expires_at)->format('Y-m-d H:i') : null,
+            'auto_abo_rh_compatible' => $bloodCheck->isAboRhAutoCompatibleWithBloodUnit($unit),
+            'is_reserved' => in_array($unit->id, $reservedUnitIds, true),
+            'crossmatch' => $cx ? [
+                'id' => $cx->id,
+                'major_result' => $cx->major_result,
+                'minor_result' => $cx->minor_result,
+                'status' => $cx->status,
+                'auto_reason' => $cx->auto_reason,
+                'patient_sample_id' => $cx->patient_sample_id,
+                'urls' => [
+                    'reserve' => route('react.blood-banks.crossmatch.reserve', [$bloodBank, $cx]),
+                    'override' => route('react.blood-banks.crossmatch.override', [$bloodBank, $cx]),
+                ],
+            ] : null,
+            'urls' => [
+                'saveCrossmatch' => route('react.blood-banks.crossmatch.save', [$bloodBank, $unit]),
+                'unreserve' => route('react.blood-banks.crossmatch.unreserve', [$bloodBank, $unit]),
+                'inventoryShow' => route('react.blood-banks.inventory.show', $unit),
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformWorkflowInventoryPreviewUnit(
+        BloodUnit $unit,
+        \Illuminate\Support\Collection $crossmatchesByUnit,
+    ): array {
+        $cx = $crossmatchesByUnit->get($unit->id);
+
+        return [
+            'id' => $unit->id,
+            'bag_number' => $unit->bag_number,
+            'blood_group' => $unit->blood_group,
+            'rh' => $unit->rh,
+            'component_type' => $unit->component_type,
+            'expires_at' => $unit->expires_at ? verta($unit->expires_at)->format('Y-m-d H:i') : null,
+            'screening_status' => $unit->test?->overall_status ?? 'pending',
+            'crossmatch_status' => $cx?->status,
+            'urls' => [
+                'show' => route('react.blood-banks.inventory.show', $unit),
+            ],
         ];
     }
 

@@ -1,0 +1,1 @@
+import{j as t}from"./app-BIWnVwTD.js";import{u as n}from"./useTranslation-BbK3oneu.js";function s(...r){return r.filter(Boolean).join(" ")}function i({className:r=""}){const{direction:o}=n();return t.jsx("i",{className:s("bx bx-arrow-back",o==="rtl"&&"rotate-180",r)})}export{i as B};

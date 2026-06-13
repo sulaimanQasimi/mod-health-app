@@ -12,6 +12,7 @@ import HospitalizationDiabetesChartSection from '../../Components/Hospitalizatio
 import HospitalizationNurseNoteSection from '../../Components/Hospitalizations/HospitalizationNurseNoteSection';
 import HospitalizationAnesthesiaSection from '../../Components/Hospitalizations/HospitalizationAnesthesiaSection';
 import HospitalizationIcuSection from '../../Components/Hospitalizations/HospitalizationIcuSection';
+import HospitalizationPacuSection from '../../Components/Hospitalizations/HospitalizationPacuSection';
 import HospitalizationNutritionCareSection from '../../Components/Hospitalizations/HospitalizationNutritionCareSection';
 import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
 import HospitalizationVitalSignSection from '../../Components/Hospitalizations/HospitalizationVitalSignSection';
@@ -48,6 +49,7 @@ interface ShowProps {
         nurse_notes: boolean;
         nutrition_cares: boolean;
         icu: boolean;
+        pacu: boolean;
         anesthesia: boolean;
         operations: boolean;
     };
@@ -293,6 +295,13 @@ export default function HospitalizationsShow({
 
                 {sectionPermissions.icu && (
                     <HospitalizationIcuSection
+                        hospitalizationId={hospitalization.id}
+                        isDischarged={hospitalization.is_discharged}
+                    />
+                )}
+
+                {sectionPermissions.pacu && (
+                    <HospitalizationPacuSection
                         hospitalizationId={hospitalization.id}
                         isDischarged={hospitalization.is_discharged}
                     />

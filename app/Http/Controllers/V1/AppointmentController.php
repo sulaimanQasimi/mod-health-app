@@ -188,6 +188,8 @@ class AppointmentController extends Controller
                 'icu' => $request->user()->can('refer-to-icu')
                     || $request->user()->can('edit-icus')
                     || $request->user()->can('delete-icus'),
+                'pacu' => $request->user()->can('refer-to-pacu')
+                    || $request->user()->can('show-pacu-menu'),
                 'anesthesia' => $request->user()->can('refer-to-anesthesia')
                     || $request->user()->can('edit-anesthesias')
                     || $request->user()->can('delete-anesthesias')

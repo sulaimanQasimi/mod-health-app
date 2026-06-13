@@ -483,6 +483,15 @@ class PermissionSeeder extends Seeder
         );
 
         Permission::updateOrCreate(
+            ['name' => 'refer-to-pacu'],
+            [
+                'name_dr' => 'معرفی مریض به PACU',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
             ['name' => 'show-add-icu-procedures-menu'],
             [
                 'name_dr' => 'نمایش مینو پروسیجر های ICU ',

@@ -5,7 +5,6 @@ import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
 import BloodFormSegmented from '../../Components/BloodBanks/BloodFormSegmented';
 import BloodTestResultSegmented from '../../Components/BloodBanks/BloodTestResultSegmented';
 import BloodUnitDetailTile from '../../Components/BloodBanks/BloodUnitDetailTile';
-import BloodUnitSummary from '../../Components/BloodBanks/BloodUnitSummary';
 import BloodUnitTestResultBadge from '../../Components/BloodBanks/BloodUnitTestResultBadge';
 import {
     BLOOD_BANK_PANEL_ICON_CLASS,
@@ -260,8 +259,6 @@ export default function BloodBanksInventoryShow({
                         </div>
                     </Alert>
                 )}
-
-                <BloodUnitSummary unit={displayUnit} />
 
                 <div className={`grid gap-5 ${hasSidebar ? 'xl:grid-cols-3' : ''}`}>
                     <div className={`space-y-5 ${hasSidebar ? 'xl:col-span-2' : ''}`}>

@@ -159,6 +159,3 @@ export function crossmatchStatusBadgeColor(
 
 export const BLOOD_UNIT_CARD_CLASS =
     'overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900';
-
-export const BLOOD_UNIT_HERO_AVATAR_CLASS =
-    'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl font-bold text-white shadow-inner backdrop-blur-sm';

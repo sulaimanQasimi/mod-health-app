@@ -22,8 +22,8 @@ interface BloodBankSectionProps {
 
 interface BloodBankItem {
     id: number;
-    group: string;
-    rh: string;
+    group: string | null;
+    rh: string | null;
     type: string;
     quantity: number;
     status: string;
@@ -36,8 +36,8 @@ const BLOOD_GROUPS = ['A', 'B', 'AB', 'O'] as const;
 const BLOOD_COMPONENT_TYPES = ['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'Whole Blood'] as const;
 
 const EMPTY_FORM = {
-    group: 'A',
-    rh: '+',
+    group: '',
+    rh: '',
     type: 'Fresh',
     quantity: '1',
 };
@@ -55,7 +55,12 @@ export default function BloodBankSection({ appointmentId, embedded = false }: Bl
         event.preventDefault();
         setSubmitting(true);
         try {
-            await post({ ...form, quantity: Number(form.quantity) });
+            await post({
+                group: form.group || null,
+                rh: form.rh || null,
+                type: form.type,
+                quantity: Number(form.quantity),
+            });
             setOpen(false);
             resetForm();
             await reload();
@@ -110,8 +115,8 @@ export default function BloodBankSection({ appointmentId, embedded = false }: Bl
                                 {data.items.map((item, index) => (
                                     <TableRow key={item.id}>
                                         <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{item.group}</TableCell>
-                                        <TableCell>{item.rh}</TableCell>
+                                        <TableCell>{item.group ?? '—'}</TableCell>
+                                        <TableCell>{item.rh ?? '—'}</TableCell>
                                         <TableCell>{item.type}</TableCell>
                                         <TableCell>{item.quantity}</TableCell>
                                         <TableCell>
@@ -161,11 +166,15 @@ export default function BloodBankSection({ appointmentId, embedded = false }: Bl
                 <form onSubmit={handleSubmit}>
                     <ModalBody className="space-y-4">
                         <div>
-                            <Label className="mb-2 block">{t('global.blood_group')}</Label>
+                            <Label className="mb-2 block">
+                                {t('global.blood_group')}
+                                <span className="ms-1 text-xs font-normal text-gray-400">({t('global.optional')})</span>
+                            </Label>
                             <BloodFormSegmented
                                 value={form.group}
                                 onChange={(value) => setForm((prev) => ({ ...prev, group: value }))}
                                 columns={4}
+                                allowEmpty
                                 options={BLOOD_GROUPS.map((group) => ({
                                     value: group,
                                     label: group,
@@ -174,10 +183,14 @@ export default function BloodBankSection({ appointmentId, embedded = false }: Bl
                             />
                         </div>
                         <div>
-                            <Label className="mb-2 block">{t('global.blood_rh')}</Label>
+                            <Label className="mb-2 block">
+                                {t('global.blood_rh')}
+                                <span className="ms-1 text-xs font-normal text-gray-400">({t('global.optional')})</span>
+                            </Label>
                             <BloodFormSegmented
                                 value={form.rh}
                                 onChange={(value) => setForm((prev) => ({ ...prev, rh: value }))}
+                                allowEmpty
                                 options={[
                                     { value: '+', label: 'Rh+', icon: 'bx-plus-medical' },
                                     { value: '-', label: 'Rh−', icon: 'bx-minus' },

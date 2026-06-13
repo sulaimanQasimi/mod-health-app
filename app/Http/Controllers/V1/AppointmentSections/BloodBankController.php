@@ -52,14 +52,17 @@ class BloodBankController extends Controller
         abort_if($appointment->is_completed, 403);
 
         $validated = $request->validate([
-            'group' => ['required', 'string', Rule::in(['A', 'B', 'AB', 'O'])],
-            'rh' => ['required', 'string', Rule::in(['+', '-'])],
+            'group' => ['nullable', 'string', Rule::in(['A', 'B', 'AB', 'O'])],
+            'rh' => ['nullable', 'string', Rule::in(['+', '-'])],
             'type' => ['required', 'string', Rule::in(['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'Whole Blood'])],
             'quantity' => ['required', 'integer', 'min:1'],
         ]);
 
         $bloodBank = BloodBank::create([
-            ...$validated,
+            'group' => $validated['group'] ?? null,
+            'rh' => $validated['rh'] ?? null,
+            'type' => $validated['type'],
+            'quantity' => $validated['quantity'],
             'branch_id' => $appointment->branch_id,
             'appointment_id' => $appointment->id,
             'patient_id' => $appointment->patient_id,

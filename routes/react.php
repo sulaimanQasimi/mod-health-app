@@ -50,6 +50,7 @@ use App\Http\Controllers\V1\HospitalizationSections\DiabetesChartController as H
 use App\Http\Controllers\V1\HospitalizationSections\AnesthesiaController as HospitalizationAnesthesiaController;
 use App\Http\Controllers\V1\HospitalizationSections\IcuController as HospitalizationIcuController;
 use App\Http\Controllers\V1\HospitalizationSections\PacuController as HospitalizationPacuController;
+use App\Http\Controllers\V1\HospitalizationSections\UnderReviewController as HospitalizationUnderReviewController;
 use App\Http\Controllers\V1\HospitalizationSections\OperationController as HospitalizationOperationController;
 use App\Http\Controllers\V1\HospitalizationSections\NurseNoteController as HospitalizationNurseNoteController;
 use App\Http\Controllers\V1\HospitalizationSections\NutritionCareController as HospitalizationNutritionCareController;
@@ -502,6 +503,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{hospitalization}/pacus', [HospitalizationPacuController::class, 'index'])->name('pacus.index');
         Route::post('/{hospitalization}/pacus', [HospitalizationPacuController::class, 'store'])->name('pacus.store');
         Route::delete('/{hospitalization}/pacus/{pacu}', [HospitalizationPacuController::class, 'destroy'])->name('pacus.destroy');
+        Route::get('/{hospitalization}/under-review/meta', [HospitalizationUnderReviewController::class, 'meta'])->name('under-review.meta');
+        Route::get('/{hospitalization}/under-review', [HospitalizationUnderReviewController::class, 'index'])->name('under-review.index');
+        Route::post('/{hospitalization}/under-review', [HospitalizationUnderReviewController::class, 'store'])->name('under-review.store');
+        Route::delete('/{hospitalization}/under-review/{underReview}', [HospitalizationUnderReviewController::class, 'destroy'])->name('under-review.destroy');
         Route::get('/{hospitalization}/anesthesia/meta', [HospitalizationAnesthesiaController::class, 'meta'])->name('anesthesia.meta');
         Route::get('/{hospitalization}/anesthesia', [HospitalizationAnesthesiaController::class, 'index'])->name('anesthesia.index');
         Route::post('/{hospitalization}/anesthesia', [HospitalizationAnesthesiaController::class, 'store'])->name('anesthesia.store');

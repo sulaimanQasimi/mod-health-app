@@ -3,7 +3,12 @@ import { FormEvent } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { UnderReviewFilters as Filters } from '../../types/underReview';
 
-export const EMPTY_UNDER_REVIEW_FILTERS: Filters = { q: '' };
+export const EMPTY_UNDER_REVIEW_FILTERS = {
+    patient_name: '',
+    id_card: '',
+    father_name: '',
+    room_id: '',
+};
 
 interface UnderReviewFiltersProps {
     filters: Filters;

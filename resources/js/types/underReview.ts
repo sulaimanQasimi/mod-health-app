@@ -18,7 +18,14 @@ export interface PaginatedUnderReviews {
 }
 
 export interface UnderReviewFilters {
-    q: string;
+    patient_name: string;
+    id_card: string;
+    father_name: string;
+    room_id: string;
+}
+
+export interface UnderReviewFilterOptions {
+    rooms: Array<{ id: number; name: string }>;
 }
 
 export interface UnderReviewVisit {

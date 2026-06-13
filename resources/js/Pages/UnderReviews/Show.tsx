@@ -149,18 +149,6 @@ export default function UnderReviewsShow({
                                     {t('global.discharge_patient')}
                                 </Button>
                             )}
-                            {permissions.edit && (
-                                <Button size="sm" color="light" as={Link} href={urls.edit}>
-                                    <i className="bx bx-edit me-2" />
-                                    {t('global.edit')}
-                                </Button>
-                            )}
-                            {urls.appointment && (
-                                <Button size="sm" color="light" as={Link} href={urls.appointment}>
-                                    <i className="bx bx-calendar me-2" />
-                                    {t('global.appointment')}
-                                </Button>
-                            )}
                             <Button size="sm" color="light" as={Link} href={urls.index}>
                                 <BackArrowIcon className="me-2" />
                                 {t('global.back')}

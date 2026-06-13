@@ -48,6 +48,25 @@ class UnderReviewController extends Controller
             ])
             ->orderByDesc('created_at');
 
+        if ($request->filled('patient_name')) {
+            $search = $request->patient_name;
+            $query->whereHas('patient', fn ($p) => $p->where('name', 'like', '%'.$search.'%'));
+        }
+
+        if ($request->filled('id_card')) {
+            $search = $request->id_card;
+            $query->whereHas('patient', fn ($p) => $p->where('id_card', 'like', '%'.$search.'%'));
+        }
+
+        if ($request->filled('father_name')) {
+            $search = $request->father_name;
+            $query->whereHas('patient', fn ($p) => $p->where('father_name', 'like', '%'.$search.'%'));
+        }
+
+        if ($request->filled('room_id')) {
+            $query->where('room_id', $request->room_id);
+        }
+
         if ($request->filled('q')) {
             $search = $request->q;
             $query->where(function ($w) use ($search) {
@@ -58,6 +77,8 @@ class UnderReviewController extends Controller
                 });
             });
         }
+
+        $branchId = $this->branchId();
 
         $paginator = $this->paginateQuery($query, $request, 25, [10, 15, 25, 50, 100]);
         $items = $this->paginationPayload($paginator, fn (UnderReview $item) => [
@@ -75,7 +96,18 @@ class UnderReviewController extends Controller
 
         return Inertia::render('UnderReviews/Index', [
             'underReviews' => $items,
-            'filters' => ['q' => (string) $request->input('q', '')],
+            'filters' => [
+                'patient_name' => (string) $request->input('patient_name', ''),
+                'id_card' => (string) $request->input('id_card', ''),
+                'father_name' => (string) $request->input('father_name', ''),
+                'room_id' => (string) $request->input('room_id', ''),
+            ],
+            'filterOptions' => [
+                'rooms' => Room::query()
+                    ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                    ->orderBy('name')
+                    ->get(['id', 'name']),
+            ],
             'urls' => [
                 'current' => route('react.under-reviews.index'),
                 'show' => url('/react/under-reviews'),

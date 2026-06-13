@@ -6,6 +6,7 @@ import BloodBankSection from '../../Components/Appointments/Sections/BloodBankSe
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import HospitalizationOperationSection from '../../Components/Hospitalizations/HospitalizationOperationSection';
 import PhysiotherapySection from '../../Components/Appointments/Sections/PhysiotherapySection';
+import UnderReviewSection from '../../Components/Appointments/Sections/UnderReviewSection';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import HospitalizationSummary from '../../Components/Hospitalizations/HospitalizationSummary';
 import HospitalizationDiabetesChartSection from '../../Components/Hospitalizations/HospitalizationDiabetesChartSection';
@@ -50,6 +51,7 @@ interface ShowProps {
         nutrition_cares: boolean;
         icu: boolean;
         pacu: boolean;
+        underReview: boolean;
         anesthesia: boolean;
         operations: boolean;
     };
@@ -250,6 +252,16 @@ export default function HospitalizationsShow({
                         )}
                         {sectionPermissions.physiotherapy && (
                             <PhysiotherapySection appointmentId={hospitalization.appointment_id!} />
+                        )}
+                        {sectionPermissions.underReview && (
+                            <UnderReviewSection
+                                appointmentId={hospitalization.appointment_id!}
+                                baseUrl={`/react/hospitalizations/${hospitalization.id}/under-review`}
+                                isDischarged={hospitalization.is_discharged}
+                                onReferralSuccess={() =>
+                                    router.reload({ preserveScroll: true })
+                                }
+                            />
                         )}
                     </div>
                 )}

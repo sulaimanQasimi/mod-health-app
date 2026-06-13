@@ -29,6 +29,9 @@ import { SectionActionButton } from './SimpleTableSection';
 
 interface UnderReviewSectionProps {
     appointmentId: number;
+    baseUrl?: string;
+    isDischarged?: boolean;
+    onReferralSuccess?: () => void;
 }
 
 interface UnderReviewListItem {
@@ -71,10 +74,15 @@ interface UnderReviewSectionData {
 const SELECT_CLASS =
     'block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-slate-400 focus:ring-1 focus:ring-slate-400 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
 
-export default function UnderReviewSection({ appointmentId }: UnderReviewSectionProps) {
+export default function UnderReviewSection({
+    appointmentId,
+    baseUrl: baseUrlProp,
+    isDischarged = false,
+    onReferralSuccess,
+}: UnderReviewSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/under-review`;
+    const baseUrl = baseUrlProp ?? `/react/appointments/${appointmentId}/under-review`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -151,6 +159,7 @@ export default function UnderReviewSection({ appointmentId }: UnderReviewSection
             setCreateOpen(false);
             setForm({ reason: '', remarks: '', room_id: '', bed_id: '' });
             await loadData();
+            onReferralSuccess?.();
         } finally {
             setSubmitting(false);
         }
@@ -197,7 +206,10 @@ export default function UnderReviewSection({ appointmentId }: UnderReviewSection
                     <SectionLoadingState />
                 ) : (
                     <>
-                        <AccordionButton onClick={() => setCreateOpen(true)} permission={data?.permissions.create}>
+                        <AccordionButton
+                            onClick={() => setCreateOpen(true)}
+                            permission={!isDischarged && data?.permissions.create}
+                        >
                             {t('global.add')}
                         </AccordionButton>
 

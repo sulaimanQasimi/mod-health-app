@@ -6,6 +6,7 @@ import {
     AppointmentIconLink,
 } from '../../Components/Appointments/AppointmentTableActions';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
     Table,
     TableBody,
@@ -15,19 +16,26 @@ import {
     TableRow,
 } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
+import { PaginationLink } from '../../types/appointment';
 import {
     PaginatedUnderReviews,
+    UnderReviewFilterOptions,
     UnderReviewFilters as Filters,
 } from '../../types/underReview';
-import { PaginationLink } from '../../types/appointment';
 
 interface IndexProps {
     underReviews: PaginatedUnderReviews;
     filters: Filters;
+    filterOptions: UnderReviewFilterOptions;
     urls: { current: string; show: string };
 }
 
-const EMPTY_FILTERS: Filters = { q: '' };
+const EMPTY_FILTERS: Filters = {
+    patient_name: '',
+    id_card: '',
+    father_name: '',
+    room_id: '',
+};
 
 function cleanFilters(filters: Filters): Record<string, string> {
     return Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== ''));
@@ -41,7 +49,12 @@ function decodePaginationLabel(label: string): string {
         .trim();
 }
 
-export default function UnderReviewsIndex({ underReviews, filters: serverFilters, urls }: IndexProps) {
+export default function UnderReviewsIndex({
+    underReviews,
+    filters: serverFilters,
+    filterOptions,
+    urls,
+}: IndexProps) {
     const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
@@ -60,6 +73,16 @@ export default function UnderReviewsIndex({ underReviews, filters: serverFilters
         },
         [urls.current]
     );
+
+    const updateFilter = (field: keyof Filters, value: string) => {
+        setFilters((current) => ({ ...current, [field]: value }));
+    };
+
+    const handleSelectChange = (field: keyof Filters, value: string) => {
+        const nextFilters = { ...filters, [field]: value };
+        setFilters(nextFilters);
+        applyFilters(nextFilters);
+    };
 
     const handleFilterSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -163,17 +186,53 @@ export default function UnderReviewsIndex({ underReviews, filters: serverFilters
                             {t('global.filters')}
                         </h2>
                         <form onSubmit={handleFilterSubmit}>
-                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                <div className="sm:col-span-2 lg:col-span-1">
-                                    <Label htmlFor="under-review-q">{t('global.search')}</Label>
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                <div>
+                                    <Label htmlFor="filter-patient-name">{t('global.patient_name')}</Label>
                                     <TextInput
-                                        id="under-review-q"
-                                        value={filters.q}
+                                        id="filter-patient-name"
+                                        value={filters.patient_name}
                                         placeholder={t('global.search_by_patient_name')}
                                         onChange={(event) =>
-                                            setFilters((current) => ({ ...current, q: event.target.value }))
+                                            updateFilter('patient_name', event.target.value)
                                         }
                                     />
+                                </div>
+                                <div>
+                                    <Label htmlFor="filter-id-card">{t('global.id_card')}</Label>
+                                    <TextInput
+                                        id="filter-id-card"
+                                        value={filters.id_card}
+                                        placeholder={t('global.search_by_card')}
+                                        onChange={(event) => updateFilter('id_card', event.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="filter-father-name">{t('global.father_name')}</Label>
+                                    <TextInput
+                                        id="filter-father-name"
+                                        value={filters.father_name}
+                                        placeholder={t('global.father_name')}
+                                        onChange={(event) =>
+                                            updateFilter('father_name', event.target.value)
+                                        }
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="filter-room">{t('global.room')}</Label>
+                                    <SearchableSelect
+                                        id="filter-room"
+                                        value={filters.room_id}
+                                        onChange={(value) => handleSelectChange('room_id', value)}
+                                        placeholder={t('global.all')}
+                                    >
+                                        <option value="">{t('global.all')}</option>
+                                        {filterOptions.rooms.map((room) => (
+                                            <option key={room.id} value={room.id}>
+                                                {room.name}
+                                            </option>
+                                        ))}
+                                    </SearchableSelect>
                                 </div>
                             </div>
                             <div className="mt-4 flex flex-wrap justify-end gap-2">

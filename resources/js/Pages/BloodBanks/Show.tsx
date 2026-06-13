@@ -1,12 +1,12 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Alert, Badge, Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea } from 'flowbite-react';
-import { FormEvent, ReactNode, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
 import BloodRequestWorkflow from '../../Components/BloodBanks/BloodRequestWorkflow';
 import BloodUnitDetailTile from '../../Components/BloodBanks/BloodUnitDetailTile';
 import {
     BLOOD_BANK_PANEL_ICON_CLASS,
-    BLOOD_REQUEST_STAT_GRADIENTS,
+    BLOOD_BANK_PRIMARY_BTN_CLASS,
     bloodGroupLabel,
     bloodRhLabel,
     bloodStatusBadgeColor,
@@ -22,6 +22,7 @@ import {
     TableHeader,
     TableRow,
 } from '../../Components/ui/Table';
+import StatCard from '../../Components/ui/StatCard';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
     BloodRequestDetail,
@@ -45,57 +46,6 @@ interface ShowProps {
 }
 
 const PANEL_BODY_CLASS = 'p-5';
-
-const ACTION_BTN_BASE =
-    'inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60';
-
-const ACTION_BTN_VARIANTS = {
-    success: `${ACTION_BTN_BASE} bg-gradient-to-b from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 focus:ring-emerald-400/40`,
-    danger: `${ACTION_BTN_BASE} bg-gradient-to-b from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-red-400/40`,
-} as const;
-
-function ActionButton({
-    variant,
-    disabled,
-    onClick,
-    icon,
-    children,
-}: {
-    variant: keyof typeof ACTION_BTN_VARIANTS;
-    disabled?: boolean;
-    onClick?: () => void;
-    icon: string;
-    children: ReactNode;
-}) {
-    return (
-        <button type="button" className={ACTION_BTN_VARIANTS[variant]} disabled={disabled} onClick={onClick}>
-            {disabled ? <Spinner size="sm" /> : <i className={`bx ${icon}`} />}
-            {children}
-        </button>
-    );
-}
-
-function StatCard({
-    label,
-    value,
-    gradient,
-    icon,
-}: {
-    label: string;
-    value: string | number;
-    gradient: string;
-    icon: string;
-}) {
-    return (
-        <div className={`overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} p-4 text-white shadow-sm`}>
-            <div className="flex items-start justify-between gap-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-white/85">{label}</p>
-                <i className={`bx ${icon} text-2xl text-white/35`} />
-            </div>
-            <p className="mt-2 text-3xl font-bold">{value}</p>
-        </div>
-    );
-}
 
 function formatOrderQuantity(bloodRequest: BloodRequestDetail): string {
     const display = bloodRequest.order_quantity_display;
@@ -164,6 +114,74 @@ export default function BloodBanksShow({
         put(urls.reject, { reject_reason: rejectReason }, () => setRejectOpen(false));
     };
 
+    const pendingActionsFooter =
+        hasPendingActions && !isApproved ? (
+            <div className="flex flex-col gap-3 sm:flex-row">
+                {permissions.approve && (
+                    <Button
+                        type="button"
+                        className={`${BLOOD_BANK_PRIMARY_BTN_CLASS} sm:flex-1`}
+                        disabled={processing}
+                        onClick={handleApprove}
+                    >
+                        {processing ? <Spinner size="sm" /> : <i className="bx bx-check" />}
+                        {t('global.approve')}
+                    </Button>
+                )}
+                {permissions.reject && (
+                    <Button
+                        type="button"
+                        color="failure"
+                        className="sm:flex-1"
+                        disabled={processing}
+                        onClick={() => setRejectOpen(true)}
+                    >
+                        <i className="bx bx-x" />
+                        {t('global.reject')}
+                    </Button>
+                )}
+            </div>
+        ) : undefined;
+
+    const statCards = [
+        {
+            title: t('global.requested_quantity'),
+            value: formatOrderQuantity(bloodRequest),
+            subtitle: t('global.blood_request_details'),
+            iconClass: 'bx bx-droplet',
+            iconBgClass: 'bg-rose-600',
+            borderClass: 'border-rose-200 dark:border-rose-800',
+            valueClass: 'text-rose-700 dark:text-rose-300',
+        },
+        {
+            title: t('global.crossmatch_reserved_compatible_summary'),
+            value: bloodRequest.reserved_compatible_qty,
+            subtitle: t('global.crossmatch_workflow'),
+            iconClass: 'bx bx-test-tube',
+            iconBgClass: 'bg-sky-600',
+            borderClass: 'border-sky-200 dark:border-sky-800',
+            valueClass: 'text-sky-700 dark:text-sky-300',
+        },
+        {
+            title: t('global.issued_blood_units'),
+            value: bloodRequest.issued_qty,
+            subtitle: t('global.delivered'),
+            iconClass: 'bx bx-package',
+            iconBgClass: 'bg-emerald-600',
+            borderClass: 'border-emerald-200 dark:border-emerald-800',
+            valueClass: 'text-emerald-700 dark:text-emerald-300',
+        },
+        {
+            title: t('global.remaining_quantity'),
+            value: bloodRequest.remaining_qty,
+            subtitle: t('global.quantity'),
+            iconClass: 'bx bx-time-five',
+            iconBgClass: 'bg-amber-500',
+            borderClass: 'border-amber-200 dark:border-amber-800',
+            valueClass: 'text-amber-700 dark:text-amber-300',
+        },
+    ];
+
     return (
         <DashboardLayout>
             <Head title={`${t('global.blood_request_details')} — #${bloodRequest.id}`} />
@@ -229,75 +247,54 @@ export default function BloodBanksShow({
                 )}
 
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    <StatCard
-                        label={t('global.requested_quantity')}
-                        value={formatOrderQuantity(bloodRequest)}
-                        gradient={BLOOD_REQUEST_STAT_GRADIENTS.requested}
-                        icon="bx-droplet"
-                    />
-                    <StatCard
-                        label={t('global.crossmatch_reserved_compatible_summary')}
-                        value={bloodRequest.reserved_compatible_qty}
-                        gradient={BLOOD_REQUEST_STAT_GRADIENTS.reserved}
-                        icon="bx-test-tube"
-                    />
-                    <StatCard
-                        label={t('global.issued_blood_units')}
-                        value={bloodRequest.issued_qty}
-                        gradient={BLOOD_REQUEST_STAT_GRADIENTS.issued}
-                        icon="bx-package"
-                    />
-                    <StatCard
-                        label={t('global.remaining_quantity')}
-                        value={bloodRequest.remaining_qty}
-                        gradient={BLOOD_REQUEST_STAT_GRADIENTS.remaining}
-                        icon="bx-time-five"
-                    />
+                    {statCards.map((card) => (
+                        <StatCard key={card.title} {...card} />
+                    ))}
                 </div>
 
-                <div className={`grid gap-5 ${hasPendingActions && !isApproved ? 'xl:grid-cols-3' : ''}`}>
-                    <div className={`space-y-5 ${hasPendingActions && !isApproved ? 'xl:col-span-2' : ''}`}>
-                        {isApproved ? (
-                            <BloodRequestWorkflow
-                                bloodRequest={bloodRequest}
-                                workflowData={workflowData}
-                                permissions={permissions}
-                                urls={urls}
-                                receiverDepartments={receiverDepartments}
-                            />
-                        ) : (
-                            <IcuPanel
-                                variant="table"
-                                contentClassName={PANEL_BODY_CLASS}
-                                title={t('global.blood_request_details')}
-                                icon="bx-info-circle"
-                                iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
-                                action={
-                                    <Badge color={bloodStatusBadgeColor(bloodRequest.status)} className="font-normal capitalize">
-                                        {bloodRequest.status}
-                                    </Badge>
-                                }
-                            >
-                                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                    <BloodUnitDetailTile icon="bx-user" label={t('global.patient_name')} value={bloodRequest.patient.name ?? '—'} />
-                                    <BloodUnitDetailTile icon="bx-id-card" label={t('global.card_number')} value={bloodRequest.patient.id_card ?? '—'} />
-                                    <BloodUnitDetailTile icon="bx-phone" label={t('global.phone')} value={bloodRequest.patient.phone ?? '—'} />
-                                    <BloodUnitDetailTile icon="bx-buildings" label={t('global.requested_department')} value={bloodRequest.department_name ?? '—'} />
-                                    <BloodUnitDetailTile icon="bx-droplet" label={t('global.blood_group')} value={bloodGroupLabel(bloodRequest.group)} />
-                                    <BloodUnitDetailTile icon="bx-plus-medical" label={t('global.rh')} value={bloodRhLabel(bloodRequest.rh)} />
-                                    <BloodUnitDetailTile icon="bx-cylinder" label={t('global.blood_type')} value={bloodRequest.type ?? '—'} />
-                                    <BloodUnitDetailTile icon="bx-hash" label={t('global.quantity')} value={formatOrderQuantity(bloodRequest)} />
-                                    <BloodUnitDetailTile icon="bx-calendar" label={t('global.date')}>
-                                        <span dir="ltr">{bloodRequest.created_at ?? '—'}</span>
-                                    </BloodUnitDetailTile>
-                                    {bloodRequest.created_by_name && (
-                                        <BloodUnitDetailTile icon="bx-user-check" label={t('global.created_by')} value={bloodRequest.created_by_name} />
-                                    )}
-                                </div>
-                            </IcuPanel>
-                        )}
+                <div className="space-y-5">
+                    {isApproved ? (
+                        <BloodRequestWorkflow
+                            bloodRequest={bloodRequest}
+                            workflowData={workflowData}
+                            permissions={permissions}
+                            urls={urls}
+                            receiverDepartments={receiverDepartments}
+                        />
+                    ) : (
+                        <IcuPanel
+                            variant="table"
+                            contentClassName={PANEL_BODY_CLASS}
+                            title={t('global.blood_request_details')}
+                            icon="bx-info-circle"
+                            iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
+                            action={
+                                <Badge color={bloodStatusBadgeColor(bloodRequest.status)} className="font-normal capitalize">
+                                    {bloodRequest.status}
+                                </Badge>
+                            }
+                            footer={pendingActionsFooter}
+                        >
+                            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                <BloodUnitDetailTile icon="bx-user" label={t('global.patient_name')} value={bloodRequest.patient.name ?? '—'} />
+                                <BloodUnitDetailTile icon="bx-id-card" label={t('global.card_number')} value={bloodRequest.patient.id_card ?? '—'} />
+                                <BloodUnitDetailTile icon="bx-phone" label={t('global.phone')} value={bloodRequest.patient.phone ?? '—'} />
+                                <BloodUnitDetailTile icon="bx-buildings" label={t('global.requested_department')} value={bloodRequest.department_name ?? '—'} />
+                                <BloodUnitDetailTile icon="bx-droplet" label={t('global.blood_group')} value={bloodGroupLabel(bloodRequest.group)} />
+                                <BloodUnitDetailTile icon="bx-plus-medical" label={t('global.rh')} value={bloodRhLabel(bloodRequest.rh)} />
+                                <BloodUnitDetailTile icon="bx-cylinder" label={t('global.blood_type')} value={bloodRequest.type ?? '—'} />
+                                <BloodUnitDetailTile icon="bx-hash" label={t('global.quantity')} value={formatOrderQuantity(bloodRequest)} />
+                                <BloodUnitDetailTile icon="bx-calendar" label={t('global.date')}>
+                                    <span dir="ltr">{bloodRequest.created_at ?? '—'}</span>
+                                </BloodUnitDetailTile>
+                                {bloodRequest.created_by_name && (
+                                    <BloodUnitDetailTile icon="bx-user-check" label={t('global.created_by')} value={bloodRequest.created_by_name} />
+                                )}
+                            </div>
+                        </IcuPanel>
+                    )}
 
-                        {isDelivered && (bloodRequest.receiver_department_name || bloodRequest.receiver_nurse_name) && (
+                    {isDelivered && (bloodRequest.receiver_department_name || bloodRequest.receiver_nurse_name) && (
                             <IcuPanel
                                 variant="table"
                                 contentClassName={PANEL_BODY_CLASS}
@@ -360,32 +357,6 @@ export default function BloodBanksShow({
                                 </Table>
                             </IcuPanel>
                         )}
-                    </div>
-
-                    {hasPendingActions && !isApproved && (
-                        <div className="space-y-5 xl:sticky xl:top-4 xl:self-start">
-                            <IcuPanel
-                                variant="table"
-                                contentClassName={PANEL_BODY_CLASS}
-                                title={t('global.actions')}
-                                icon="bx-cog"
-                                iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
-                            >
-                                <div className="space-y-3">
-                                    {permissions.approve && (
-                                        <ActionButton variant="success" icon="bx-check" disabled={processing} onClick={handleApprove}>
-                                            {t('global.approve')}
-                                        </ActionButton>
-                                    )}
-                                    {permissions.reject && (
-                                        <ActionButton variant="danger" icon="bx-x" disabled={processing} onClick={() => setRejectOpen(true)}>
-                                            {t('global.reject')}
-                                        </ActionButton>
-                                    )}
-                                </div>
-                            </IcuPanel>
-                        </div>
-                    )}
                 </div>
             </div>
 

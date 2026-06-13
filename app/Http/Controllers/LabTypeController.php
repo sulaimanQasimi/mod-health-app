@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Department;
 use App\Models\LabType;
 use App\Models\LabTestParameter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 
 /**
  * LabTypeController
@@ -30,7 +32,11 @@ class LabTypeController extends Controller
     public function index(Request $request)
     {
         // Build query with only necessary relationships
-        $query = LabType::with(['category']);
+        $query = LabType::with(['category', 'department']);
+
+        if ($branchId = $request->user()?->branch_id) {
+            $query->where('branch_id', $branchId);
+        }
         
         // Status filter - show deleted items if requested
         if ($request->filled('status')) {
@@ -58,6 +64,10 @@ class LabTypeController extends Controller
         // Category filter
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
         }
         
         // Order by name for consistent results
@@ -100,13 +110,27 @@ class LabTypeController extends Controller
      */
     public function store(Request $request)
     {
+        $branchId = $request->user()?->branch_id;
+        if (! $branchId) {
+            abort(422, 'Branch ID is required. Please contact administrator.');
+        }
+
         $data = $request->validate([
-            'name' => 'required|unique:lab_types,name',
+            'name' => [
+                'required',
+                Rule::unique('lab_types', 'name')->where(fn ($query) => $query->where('branch_id', $branchId)),
+            ],
             'category_id' => 'required|exists:categories,id',
+            'department_id' => [
+                'nullable',
+                Rule::exists('departments', 'id')->where(fn ($query) => $query->where('branch_id', $branchId)),
+            ],
         ]);
 
+        $data['branch_id'] = $branchId;
+
         $labType = LabType::create($data);
-        $labType->load(['category']);
+        $labType->load(['category', 'department']);
 
         // Clear categories cache when new lab type is created
         Cache::forget('lab_types_categories');
@@ -154,10 +178,26 @@ class LabTypeController extends Controller
      */
     public function update(Request $request, LabType $labType)
     {
+        $branchId = $request->user()?->branch_id ?? $labType->branch_id;
+        if ($request->user()?->branch_id && (int) $labType->branch_id !== (int) $request->user()->branch_id) {
+            abort(404);
+        }
+
         $data = $request->validate([
-            'name' => 'required|unique:lab_types,name,' . $labType->id,
+            'name' => [
+                'required',
+                Rule::unique('lab_types', 'name')
+                    ->where(fn ($query) => $query->where('branch_id', $branchId))
+                    ->ignore($labType->id),
+            ],
             'category_id' => 'required|exists:categories,id',
+            'department_id' => [
+                'nullable',
+                Rule::exists('departments', 'id')->where(fn ($query) => $query->where('branch_id', $branchId)),
+            ],
         ]);
+
+        $data['branch_id'] = $branchId;
 
         $labType->update($data);
         
@@ -258,11 +298,18 @@ class LabTypeController extends Controller
     /**
      * Get lab types for select dropdown (API)
      */
-    public function getLabTypesForSelect()
+    public function getLabTypesForSelect(Request $request)
     {
         try {
-            $labTypes = Cache::remember('lab_types_select', 300, function () {
-                return LabType::select('id', 'name')->orderBy('name')->get();
+            $branchId = $request->user()?->branch_id;
+            $cacheKey = $branchId ? "lab_types_select_branch_{$branchId}" : 'lab_types_select';
+
+            $labTypes = Cache::remember($cacheKey, 300, function () use ($branchId) {
+                return LabType::query()
+                    ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
+                    ->select('id', 'name')
+                    ->orderBy('name')
+                    ->get();
             });
             
             return response()->json([

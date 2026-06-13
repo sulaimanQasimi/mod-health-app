@@ -549,7 +549,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::get('/lab-types', [LabTypeController::class, 'index'])->name('lab-types.index');
+    Route::prefix('lab-types')->name('lab-types.')->group(function () {
+        Route::get('/', [LabTypeController::class, 'index'])->name('index');
+        Route::get('/create', [LabTypeController::class, 'create'])->name('create');
+        Route::post('/', [LabTypeController::class, 'store'])->name('store');
+        Route::get('/{labType}', [LabTypeController::class, 'show'])->name('show');
+        Route::get('/{labType}/edit', [LabTypeController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{labType}', [LabTypeController::class, 'update'])->name('update');
+        Route::delete('/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+    });
 
     Route::prefix('icus')->name('icus.')->group(function () {
         Route::get('/new', [ICUController::class, 'new'])->name('new');

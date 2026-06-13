@@ -1,6 +1,6 @@
 import { Link, router } from '@inertiajs/react';
 import { Alert, Badge, Button, Checkbox, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea, TextInput } from 'flowbite-react';
-import { FormEvent, ReactNode, useEffect, useState } from 'react';
+import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 import BloodFormSegmented from './BloodFormSegmented';
 import BloodCrossmatchResultSegmented from './BloodCrossmatchResultSegmented';
 import BloodUnitDetailTile from './BloodUnitDetailTile';
@@ -34,6 +34,10 @@ import {
 const STEP_CARD_BASE = 'overflow-hidden rounded-2xl border bg-white shadow-sm transition dark:bg-gray-900';
 const STEP_CARD_CURRENT = 'border-rose-500 shadow-md ring-1 ring-rose-200 dark:border-rose-700 dark:ring-rose-900/50';
 const STEP_CARD_DEFAULT = 'border-gray-200 dark:border-gray-700';
+
+function effectiveUnitVolumeMl(volumeMl: number | null | undefined, defaultMl: number): number {
+    return volumeMl != null && volumeMl > 0 ? volumeMl : defaultMl;
+}
 
 function WorkflowFormField({
     label,
@@ -156,6 +160,16 @@ export default function BloodRequestWorkflow({
     });
 
     const [overrideReasons, setOverrideReasons] = useState<Record<number, string>>({});
+    const [markComplete, setMarkComplete] = useState(false);
+
+    const defaultUnitVolumeMl = workflowData.defaultUnitVolumeMl;
+    const selectedVolumeMl = useMemo(
+        () =>
+            workflowData.availableUnits
+                .filter((unit) => selectedUnitIds.includes(unit.id))
+                .reduce((sum, unit) => sum + effectiveUnitVolumeMl(unit.volume_ml, defaultUnitVolumeMl), 0),
+        [workflowData.availableUnits, selectedUnitIds, defaultUnitVolumeMl],
+    );
 
     const currentStep = bloodRequest.workflow.current_step;
     const stepStatus = (step: number): 'done' | 'current' | 'pending' => {
@@ -230,29 +244,50 @@ export default function BloodRequestWorkflow({
 
     const handleDeliver = (event: FormEvent) => {
         event.preventDefault();
+        if (selectedVolumeMl > bloodRequest.remaining_volume_ml) {
+            return;
+        }
         post(urls.deliver, {
             receiver_department_id: receiverDepartmentId,
             receiver_nurse_id: receiverNurseId,
             unit_ids: selectedUnitIds,
+            mark_complete: markComplete ? 1 : 0,
         });
     };
 
-    const toggleUnit = (unitId: number, disabled: boolean) => {
+    const toggleUnit = (unitId: number, disabled: boolean, unitVolumeMl: number) => {
         if (disabled) return;
-        setSelectedUnitIds((prev) =>
-            prev.includes(unitId) ? prev.filter((id) => id !== unitId) : [...prev, unitId],
-        );
+        setSelectedUnitIds((prev) => {
+            if (prev.includes(unitId)) {
+                return prev.filter((id) => id !== unitId);
+            }
+            const nextVolume =
+                prev.reduce((sum, id) => {
+                    const unit = workflowData.availableUnits.find((u) => u.id === id);
+                    return sum + effectiveUnitVolumeMl(unit?.volume_ml, defaultUnitVolumeMl);
+                }, 0) + unitVolumeMl;
+            if (nextVolume > bloodRequest.remaining_volume_ml) {
+                return prev;
+            }
+            return [...prev, unitId];
+        });
     };
 
     const deliveryReadiness = () => {
-        if (bloodRequest.remaining_qty === 0) {
+        if (bloodRequest.remaining_volume_ml === 0) {
             return { color: 'success' as const, text: t('global.ready') };
         }
-        if (bloodRequest.reserved_compatible_qty >= bloodRequest.remaining_qty) {
+        if (bloodRequest.reserved_compatible_volume_ml >= bloodRequest.remaining_volume_ml) {
             return { color: 'success' as const, text: t('global.ready_for_partial_or_full_delivery') };
         }
         return { color: 'failure' as const, text: t('global.not_ready_need_more_reserved_compatible_units') };
     };
+
+    const deliveryVolumeExceeded = selectedVolumeMl > bloodRequest.remaining_volume_ml;
+    const canSubmitDelivery =
+        Boolean(receiverDepartmentId && receiverNurseId) &&
+        !deliveryVolumeExceeded &&
+        (markComplete || selectedUnitIds.length > 0 || bloodRequest.remaining_volume_ml > 0);
 
     const readiness = deliveryReadiness();
 
@@ -442,16 +477,24 @@ export default function BloodRequestWorkflow({
             >
                 <Alert color="info" className="mb-4 rounded-xl">
                     <p className="font-semibold">{t('global.crossmatch_reserve_progress_title')}</p>
-                    {bloodRequest.remaining_qty < 1 ? (
+                    {bloodRequest.remaining_volume_ml < 1 ? (
                         <p className="mt-1 text-sm text-emerald-700 dark:text-emerald-300">
                             {t('global.crossmatch_no_units_left_to_reserve')}
                         </p>
                     ) : (
-                        <p className="mt-1 text-sm" dir="ltr">
-                            <strong>{bloodRequest.reserved_compatible_qty}</strong> /{' '}
-                            <strong>{bloodRequest.remaining_qty}</strong>
-                            <span className="ms-1 text-gray-500">({t('global.crossmatch_reserved_vs_remaining_caption')})</span>
-                        </p>
+                        <div className="mt-1 space-y-1 text-sm" dir="ltr">
+                            <p>
+                                <strong>{bloodRequest.reserved_compatible_volume_ml}</strong> /{' '}
+                                <strong>{bloodRequest.remaining_volume_ml}</strong>
+                                <span className="ms-1 text-gray-500">ml ({t('global.crossmatch_reserved_vs_remaining_ml_caption')})</span>
+                            </p>
+                            {!bloodRequest.uses_volume_ml_tracking && (
+                                <p className="text-xs text-gray-500">
+                                    {bloodRequest.reserved_compatible_qty} / {bloodRequest.remaining_qty}{' '}
+                                    {t('global.crossmatch_reserved_vs_remaining_caption')}
+                                </p>
+                            )}
+                        </div>
                     )}
                 </Alert>
 
@@ -575,6 +618,25 @@ export default function BloodRequestWorkflow({
                         <h4 className="text-sm font-bold text-gray-900 dark:text-white">{t('global.blood_bank_delivery_select_units')}</h4>
                         <p className="mt-1 text-xs text-gray-500">{t('global.blood_bank_delivery_receiver_hint')}</p>
 
+                        <Alert color="info" className="mt-4 rounded-xl">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                                {t('global.delivery_volume_progress_caption')}
+                            </p>
+                            <p className="mt-1 text-sm font-semibold" dir="ltr">
+                                {bloodRequest.issued_volume_ml} / {bloodRequest.ordered_volume_ml} / {bloodRequest.remaining_volume_ml} ml
+                            </p>
+                            <p className="mt-1 text-xs text-gray-500">
+                                {t('global.issued_volume_ml_summary')}: {bloodRequest.issued_volume_ml} ml ·{' '}
+                                {t('global.remaining_volume_ml_summary')}: {bloodRequest.remaining_volume_ml} ml
+                                {selectedUnitIds.length > 0 && (
+                                    <>
+                                        {' '}
+                                        · {t('global.selected_delivery_volume_ml')}: {selectedVolumeMl} ml
+                                    </>
+                                )}
+                            </p>
+                        </Alert>
+
                         <div className="mt-4 grid gap-4 sm:grid-cols-2">
                             <div>
                                 <Label className="mb-2 block text-xs">{t('global.blood_bank_receiver_department')}</Label>
@@ -616,29 +678,40 @@ export default function BloodRequestWorkflow({
                                             <TableHeader>{t('global.blood_group')}</TableHeader>
                                             <TableHeader>{t('global.blood_rh')}</TableHeader>
                                             <TableHeader>{t('global.component_type')}</TableHeader>
+                                            <TableHeader>{t('global.volume_ml')}</TableHeader>
                                             <TableHeader>{t('global.expires_at')}</TableHeader>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {workflowData.availableUnits.map((unit) => {
+                                            const unitMl = effectiveUnitVolumeMl(unit.volume_ml, defaultUnitVolumeMl);
                                             const disabled =
                                                 workflowData.hasCrossmatchFlow &&
                                                 !workflowData.deliverableUnitIds.includes(unit.id);
                                             const checked = selectedUnitIds.includes(unit.id);
+                                            const wouldExceed =
+                                                !checked &&
+                                                selectedVolumeMl + unitMl > bloodRequest.remaining_volume_ml;
 
                                             return (
-                                                <TableRow key={unit.id} className={disabled ? 'opacity-50' : undefined}>
+                                                <TableRow
+                                                    key={unit.id}
+                                                    className={disabled || wouldExceed ? 'opacity-50' : undefined}
+                                                >
                                                     <TableCell className="text-center">
                                                         <Checkbox
                                                             checked={checked}
-                                                            disabled={disabled}
-                                                            onChange={() => toggleUnit(unit.id, disabled)}
+                                                            disabled={disabled || wouldExceed}
+                                                            onChange={() => toggleUnit(unit.id, disabled || wouldExceed, unitMl)}
                                                         />
                                                     </TableCell>
                                                     <TableCell>{unit.bag_number ?? '—'}</TableCell>
                                                     <TableCell muted>{unit.blood_group ?? '—'}</TableCell>
                                                     <TableCell muted>{unit.rh ?? '—'}</TableCell>
                                                     <TableCell muted>{unit.component_type ?? '—'}</TableCell>
+                                                    <TableCell muted dir="ltr">
+                                                        {unitMl} ml
+                                                    </TableCell>
                                                     <TableCell muted dir="ltr">
                                                         {unit.expires_at ?? '—'}
                                                     </TableCell>
@@ -654,10 +727,36 @@ export default function BloodRequestWorkflow({
                             </Alert>
                         )}
 
+                        {deliveryVolumeExceeded && (
+                            <Alert color="failure" className="mt-4 rounded-xl">
+                                <span className="text-sm">{t('global.blood_delivery_volume_exceeds_remaining')}</span>
+                            </Alert>
+                        )}
+
+                        {bloodRequest.remaining_volume_ml > 0 && (
+                            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50/60 p-3 dark:border-amber-900/40 dark:bg-amber-950/20">
+                                <Label className="flex cursor-pointer items-start gap-2">
+                                    <Checkbox
+                                        checked={markComplete}
+                                        onChange={(e) => setMarkComplete(e.target.checked)}
+                                        className="mt-0.5"
+                                    />
+                                    <span>
+                                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                                            {t('global.complete_request_with_remaining_volume')}
+                                        </span>
+                                        <span className="mt-0.5 block text-xs text-gray-500">
+                                            {t('global.complete_request_with_remaining_volume_hint')}
+                                        </span>
+                                    </span>
+                                </Label>
+                            </div>
+                        )}
+
                         <button
                             type="submit"
                             className={`${BLOOD_BANK_PRIMARY_BTN_CLASS} mt-4 bg-gradient-to-b from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700`}
-                            disabled={processing || !receiverDepartmentId || !receiverNurseId}
+                            disabled={processing || !canSubmitDelivery}
                         >
                             {processing ? <Spinner size="sm" /> : <i className="bx bxs-check-circle" />}
                             {t('global.complete')}

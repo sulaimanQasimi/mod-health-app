@@ -278,7 +278,11 @@ class BloodBankController extends Controller
         $unitIds = is_array($unitIds) ? array_values(array_filter(array_map('intval', $unitIds))) : [];
 
         try {
-            app(BloodBankStockService::class)->deliverRequest($bloodBank, count($unitIds) > 0 ? $unitIds : null);
+            app(BloodBankStockService::class)->deliverRequest(
+                $bloodBank,
+                count($unitIds) > 0 ? $unitIds : null,
+                $request->boolean('mark_complete'),
+            );
         } catch (\Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
@@ -415,6 +419,11 @@ class BloodBankController extends Controller
             ->count();
         $remainingQty = max(0, $requestedQty - $issuedQty);
 
+        $orderedVolumeMl = $bloodBank->orderedVolumeMl();
+        $issuedVolumeMl = $bloodBank->issuedVolumeMl();
+        $remainingVolumeMl = $bloodBank->remainingVolumeMl();
+        $reservedCompatibleVolumeMl = $bloodBank->reservedCompatibleVolumeMl($reservedUnitIds->all());
+
         $receiverDepartments = $this->departmentsForCurrentBranch();
 
         return view('pages.blood_banks.show', compact(
@@ -428,6 +437,10 @@ class BloodBankController extends Controller
             'reservedCompatibleQty',
             'issuedQty',
             'remainingQty',
+            'orderedVolumeMl',
+            'issuedVolumeMl',
+            'remainingVolumeMl',
+            'reservedCompatibleVolumeMl',
             'quantityInferredFromVolumeMl',
             'receiverDepartments'
         ));

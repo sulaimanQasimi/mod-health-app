@@ -191,6 +191,92 @@ class BloodBank extends Model
         return ['mode' => 'units', 'units' => $raw];
     }
 
+    public function defaultUnitVolumeMl(): int
+    {
+        return max(1, (int) config('blood_bank.ml_per_bag_for_qty_inference', 450));
+    }
+
+    public function effectiveUnitVolumeMl(?BloodUnit $unit): int
+    {
+        if ($unit !== null && $unit->volume_ml !== null && (int) $unit->volume_ml > 0) {
+            return (int) $unit->volume_ml;
+        }
+
+        return $this->defaultUnitVolumeMl();
+    }
+
+    /**
+     * Total ordered volume in ml (raw ml orders, or unit count × default bag volume).
+     */
+    public function orderedVolumeMl(): int
+    {
+        $parts = $this->orderQuantityDisplayParts();
+        if ($parts['mode'] === 'volume_ml') {
+            return (int) $parts['ml'];
+        }
+
+        if ($parts['mode'] === 'units') {
+            return (int) $parts['units'] * $this->defaultUnitVolumeMl();
+        }
+
+        $raw = $this->bloodCheckRecord && (int) $this->bloodCheckRecord->quantity >= 1
+            ? (int) $this->bloodCheckRecord->quantity
+            : 0;
+
+        if ($raw < 1) {
+            return 0;
+        }
+
+        $threshold = (int) config('blood_bank.max_unit_order_before_volume_assumption', 100);
+        if ($raw > $threshold) {
+            return $raw;
+        }
+
+        return self::normalizeRawQuantityToUnits($raw) * $this->defaultUnitVolumeMl();
+    }
+
+    public function usesVolumeMlTracking(): bool
+    {
+        return $this->orderQuantityDisplayParts()['mode'] === 'volume_ml';
+    }
+
+    /**
+     * Sum of issued unit volumes (requires bloodUnits relation).
+     */
+    public function issuedVolumeMl(): int
+    {
+        return (int) $this->bloodUnits
+            ->filter(fn ($u) => ! is_null($u->pivot?->issued_at))
+            ->sum(fn ($u) => $this->effectiveUnitVolumeMl($u));
+    }
+
+    public function remainingVolumeMl(): int
+    {
+        return max(0, $this->orderedVolumeMl() - $this->issuedVolumeMl());
+    }
+
+    /**
+     * Sum of reserved + compatible unit volumes (requires bloodUnits + crossmatches).
+     *
+     * @param  list<int>|null  $reservedUnitIds
+     */
+    public function reservedCompatibleVolumeMl(?array $reservedUnitIds = null): int
+    {
+        $reservedIds = $reservedUnitIds ?? $this->bloodUnits
+            ->filter(fn ($u) => ! is_null($u->pivot?->reserved_at))
+            ->pluck('id')
+            ->all();
+
+        $compatibleIds = $this->crossmatches
+            ->filter(fn ($cx) => in_array($cx->status, ['compatible', 'overridden'], true))
+            ->pluck('blood_unit_id')
+            ->all();
+
+        return (int) $this->bloodUnits
+            ->filter(fn ($u) => in_array($u->id, $reservedIds, true) && in_array($u->id, $compatibleIds, true))
+            ->sum(fn ($u) => $this->effectiveUnitVolumeMl($u));
+    }
+
     public function approve()
     {
         $this->status = 'approved';

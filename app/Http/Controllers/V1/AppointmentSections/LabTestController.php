@@ -23,10 +23,7 @@ class LabTestController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'lab_types' => LabType::query()
-                    ->with(['category:id,name', 'directLabTestParameters:id,lab_type_id'])
-                    ->orderBy('name')
-                    ->get()
+                'lab_types' => $this->labTypesForBranch((int) $appointment->branch_id)
                     ->map(fn (LabType $labType) => [
                         'id' => $labType->id,
                         'name' => $labType->name,
@@ -167,8 +164,7 @@ class LabTestController extends Controller
             'notes' => 'nullable|string|max:1000',
         ]);
 
-        $labTypes = LabType::query()
-            ->with('directLabTestParameters')
+        $labTypes = $this->labTypesForBranch((int) $appointment->branch_id)
             ->whereIn('id', $validated['lab_type_ids'])
             ->get()
             ->keyBy('id');
@@ -240,5 +236,16 @@ class LabTestController extends Controller
             DB::rollBack();
             throw $exception;
         }
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<LabType>
+     */
+    private function labTypesForBranch(int $branchId)
+    {
+        return LabType::query()
+            ->with(['category:id,name', 'directLabTestParameters:id,lab_type_id'])
+            ->where('branch_id', $branchId)
+            ->orderBy('name');
     }
 }

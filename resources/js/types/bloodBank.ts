@@ -78,6 +78,11 @@ export interface BloodRequestDetail {
     reserved_compatible_qty: number;
     issued_qty: number;
     remaining_qty: number;
+    ordered_volume_ml: number;
+    issued_volume_ml: number;
+    remaining_volume_ml: number;
+    reserved_compatible_volume_ml: number;
+    uses_volume_ml_tracking: boolean;
     quantity_inferred_from_volume_ml: boolean;
     order_quantity_display: {
         mode: 'empty' | 'units' | 'volume_ml';
@@ -120,6 +125,7 @@ export interface BloodRequestDetail {
     issued_units: {
         id: number;
         bag_number: string | null;
+        volume_ml: number | null;
         expires_at: string | null;
         issued_at: string | null;
         urls?: { show: string };
@@ -190,6 +196,7 @@ export interface BloodRequestWorkflowData {
         receiver_department_id: number | null;
         receiver_nurse_id: number | null;
     };
+    defaultUnitVolumeMl: number;
 }
 
 export interface BloodRequestShowPermissions {

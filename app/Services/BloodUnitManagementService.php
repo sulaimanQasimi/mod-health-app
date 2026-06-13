@@ -23,6 +23,20 @@ class BloodUnitManagementService
                 'tested_by' => $userId,
             ]),
         );
+
+        $unitUpdates = [];
+
+        if (! empty($validated['abo_result'])) {
+            $unitUpdates['blood_group'] = $validated['abo_result'];
+        }
+
+        if (! empty($validated['rh_result'])) {
+            $unitUpdates['rh'] = $validated['rh_result'];
+        }
+
+        if ($unitUpdates !== []) {
+            $unit->update($unitUpdates);
+        }
     }
 
     public function approveAfterTests(BloodUnit $unit): void

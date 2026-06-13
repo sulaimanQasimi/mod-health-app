@@ -1,6 +1,6 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Alert, Badge, Button, Label, Spinner, Textarea, TextInput } from 'flowbite-react';
-import { FormEvent, ReactNode, useEffect, useState } from 'react';
+import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
 import BloodFormSegmented from '../../Components/BloodBanks/BloodFormSegmented';
 import BloodTestResultSegmented from '../../Components/BloodBanks/BloodTestResultSegmented';
@@ -59,10 +59,13 @@ interface InventoryShowProps {
     };
 }
 
-function buildTestForm(test: BloodUnitTestRecord | null): BloodUnitTestForm {
+function buildTestForm(
+    test: BloodUnitTestRecord | null,
+    unit: Pick<BloodUnitDetail, 'blood_group' | 'rh'>,
+): BloodUnitTestForm {
     return {
-        abo_result: test?.abo_result ?? '',
-        rh_result: test?.rh_result ?? '',
+        abo_result: test?.abo_result ?? unit.blood_group ?? '',
+        rh_result: test?.rh_result ?? unit.rh ?? '',
         dct_result: test?.dct_result ?? 'pending',
         ict_result: test?.ict_result ?? 'pending',
         hbs_result: test?.hbs_result ?? 'pending',
@@ -88,28 +91,33 @@ function ScreeningBadge({ status, t }: { status: string; t: (key: string) => str
     );
 }
 
-function ActionField({
-    label,
-    value,
-    onChange,
-    placeholder,
+const ACTION_BTN_BASE =
+    'inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60';
+
+const ACTION_BTN_VARIANTS = {
+    warning: `${ACTION_BTN_BASE} bg-gradient-to-b from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 focus:ring-amber-400/40`,
+    success: `${ACTION_BTN_BASE} bg-gradient-to-b from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 focus:ring-emerald-400/40`,
+    danger: `${ACTION_BTN_BASE} border border-red-200 bg-white text-red-700 hover:bg-red-50 focus:ring-red-400/30 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300 dark:hover:bg-red-950/40`,
+} as const;
+
+function ActionSubmitButton({
+    variant,
+    disabled,
+    onClick,
+    icon,
+    children,
 }: {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
+    variant: keyof typeof ACTION_BTN_VARIANTS;
+    disabled?: boolean;
+    onClick?: () => void;
+    icon: string;
+    children: ReactNode;
 }) {
     return (
-        <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-gray-600 dark:text-gray-400">{label}</Label>
-            <TextInput
-                sizing="sm"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                placeholder={placeholder}
-                className="rounded-xl"
-            />
-        </div>
+        <button type="button" className={ACTION_BTN_VARIANTS[variant]} disabled={disabled} onClick={onClick}>
+            {disabled ? <Spinner size="sm" /> : <i className={`bx ${icon}`} />}
+            {children}
+        </button>
     );
 }
 
@@ -161,12 +169,21 @@ export default function BloodBanksInventoryShow({
     const [discardReason, setDiscardReason] = useState('');
 
     const { data, setData, post, processing: savingTests, errors } = useForm<BloodUnitTestForm>(
-        buildTestForm(unit.test),
+        buildTestForm(unit.test, unit),
     );
 
     useEffect(() => {
-        setData(buildTestForm(unit.test));
-    }, [unit.id, unit.test]);
+        setData(buildTestForm(unit.test, unit));
+    }, [unit.id, unit.test, unit.blood_group, unit.rh]);
+
+    const displayUnit = useMemo<BloodUnitDetail>(
+        () => ({
+            ...unit,
+            blood_group: data.abo_result || unit.blood_group,
+            rh: data.rh_result || unit.rh,
+        }),
+        [unit, data.abo_result, data.rh_result],
+    );
 
     const postAction = (url: string, payload: Record<string, string> = {}) => {
         setProcessing(true);
@@ -244,7 +261,7 @@ export default function BloodBanksInventoryShow({
                     </Alert>
                 )}
 
-                <BloodUnitSummary unit={unit} />
+                <BloodUnitSummary unit={displayUnit} />
 
                 <div className={`grid gap-5 ${hasSidebar ? 'xl:grid-cols-3' : ''}`}>
                     <div className={`space-y-5 ${hasSidebar ? 'xl:col-span-2' : ''}`}>
@@ -261,8 +278,8 @@ export default function BloodBanksInventoryShow({
                             }
                         >
                             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                <BloodUnitDetailTile icon="bx-droplet" label={t('global.blood_group')} value={bloodGroupLabel(unit.blood_group)} />
-                                <BloodUnitDetailTile icon="bx-plus-medical" label={t('global.rh')} value={bloodRhLabel(unit.rh)} />
+                                <BloodUnitDetailTile icon="bx-droplet" label={t('global.blood_group')} value={bloodGroupLabel(displayUnit.blood_group)} />
+                                <BloodUnitDetailTile icon="bx-plus-medical" label={t('global.rh')} value={bloodRhLabel(displayUnit.rh)} />
                                 <BloodUnitDetailTile icon="bx-category" label={t('global.component_type')} value={unit.component_type ?? '—'} />
                                 <BloodUnitDetailTile icon="bx-check-shield" label={t('global.status')}>
                                     <Badge color={bloodUnitStatusBadgeColor(unit.status)} className="w-fit font-normal capitalize">
@@ -310,53 +327,65 @@ export default function BloodBanksInventoryShow({
                                 </p>
                             ) : (
                                 <div className="space-y-6">
-                                    {unit.tests.map((test, index) => (
-                                        <div
-                                            key={test.id}
-                                            className={index > 0 ? 'border-t border-gray-200 pt-6 dark:border-gray-700' : ''}
-                                        >
-                                            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                                                <BloodUnitDetailTile label={t('global.abo_result')} value={test.abo_result ?? '—'} />
-                                                <BloodUnitDetailTile label={t('global.rh_result')} value={test.rh_result ?? '—'} />
-                                                <BloodUnitDetailTile label={t('global.dct')}>
-                                                    <BloodUnitTestResultBadge result={test.dct_result} />
-                                                </BloodUnitDetailTile>
-                                                <BloodUnitDetailTile label={t('global.ict')}>
-                                                    <BloodUnitTestResultBadge result={test.ict_result} />
-                                                </BloodUnitDetailTile>
-                                                <BloodUnitDetailTile label={t('global.hbs')}>
-                                                    <BloodUnitTestResultBadge result={test.hbs_result} />
-                                                </BloodUnitDetailTile>
-                                                <BloodUnitDetailTile label={t('global.hcv')}>
-                                                    <BloodUnitTestResultBadge result={test.hcv_result} />
-                                                </BloodUnitDetailTile>
-                                                <BloodUnitDetailTile label={t('global.hiv')}>
-                                                    <BloodUnitTestResultBadge result={test.hiv_result} />
-                                                </BloodUnitDetailTile>
-                                                <BloodUnitDetailTile label={t('global.vdrl')}>
-                                                    <BloodUnitTestResultBadge result={test.vdrl_result} />
-                                                </BloodUnitDetailTile>
-                                                <BloodUnitDetailTile label={t('global.status')}>
-                                                    <ScreeningBadge status={test.overall_status} t={t} />
-                                                </BloodUnitDetailTile>
-                                                {test.remarks && (
-                                                    <div className="sm:col-span-2 lg:col-span-3">
-                                                        <BloodUnitDetailTile label={t('global.remarks')} value={test.remarks} />
-                                                    </div>
-                                                )}
-                                                {test.tested_at && (
-                                                    <div className="col-span-full">
-                                                        <BloodUnitDetailTile label={t('global.last_tested_at')}>
-                                                            <span dir="ltr">
-                                                                {test.tested_at}
-                                                                {test.tested_by_name ? ` — ${test.tested_by_name}` : ''}
-                                                            </span>
-                                                        </BloodUnitDetailTile>
-                                                    </div>
-                                                )}
+                                    {unit.tests.map((test, index) => {
+                                        const isCurrentTest = test.id === unit.test?.id;
+                                        const aboDisplay =
+                                            permissions.manage && isCurrentTest
+                                                ? data.abo_result || test.abo_result
+                                                : test.abo_result;
+                                        const rhDisplay =
+                                            permissions.manage && isCurrentTest
+                                                ? data.rh_result || test.rh_result
+                                                : test.rh_result;
+
+                                        return (
+                                            <div
+                                                key={test.id}
+                                                className={index > 0 ? 'border-t border-gray-200 pt-6 dark:border-gray-700' : ''}
+                                            >
+                                                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                                                    <BloodUnitDetailTile label={t('global.abo_result')} value={aboDisplay ?? '—'} />
+                                                    <BloodUnitDetailTile label={t('global.rh_result')} value={rhDisplay ?? '—'} />
+                                                    <BloodUnitDetailTile label={t('global.dct')}>
+                                                        <BloodUnitTestResultBadge result={test.dct_result} />
+                                                    </BloodUnitDetailTile>
+                                                    <BloodUnitDetailTile label={t('global.ict')}>
+                                                        <BloodUnitTestResultBadge result={test.ict_result} />
+                                                    </BloodUnitDetailTile>
+                                                    <BloodUnitDetailTile label={t('global.hbs')}>
+                                                        <BloodUnitTestResultBadge result={test.hbs_result} />
+                                                    </BloodUnitDetailTile>
+                                                    <BloodUnitDetailTile label={t('global.hcv')}>
+                                                        <BloodUnitTestResultBadge result={test.hcv_result} />
+                                                    </BloodUnitDetailTile>
+                                                    <BloodUnitDetailTile label={t('global.hiv')}>
+                                                        <BloodUnitTestResultBadge result={test.hiv_result} />
+                                                    </BloodUnitDetailTile>
+                                                    <BloodUnitDetailTile label={t('global.vdrl')}>
+                                                        <BloodUnitTestResultBadge result={test.vdrl_result} />
+                                                    </BloodUnitDetailTile>
+                                                    <BloodUnitDetailTile label={t('global.status')}>
+                                                        <ScreeningBadge status={test.overall_status} t={t} />
+                                                    </BloodUnitDetailTile>
+                                                    {test.remarks && (
+                                                        <div className="sm:col-span-2 lg:col-span-3">
+                                                            <BloodUnitDetailTile label={t('global.remarks')} value={test.remarks} />
+                                                        </div>
+                                                    )}
+                                                    {test.tested_at && (
+                                                        <div className="col-span-full">
+                                                            <BloodUnitDetailTile label={t('global.last_tested_at')}>
+                                                                <span dir="ltr">
+                                                                    {test.tested_at}
+                                                                    {test.tested_by_name ? ` — ${test.tested_by_name}` : ''}
+                                                                </span>
+                                                            </BloodUnitDetailTile>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </IcuPanel>
@@ -405,64 +434,88 @@ export default function BloodBanksInventoryShow({
                                     icon="bx-cog"
                                     iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
                                 >
-                                    <div className="space-y-4">
+                                    <div className="space-y-5">
                                         {unit.status === 'available' && (
-                                            <div className="space-y-2">
-                                                <ActionField
-                                                    label={t('global.reason')}
-                                                    value={quarantineReason}
-                                                    onChange={setQuarantineReason}
-                                                />
-                                                <Button
-                                                    color="warning"
-                                                    className="w-full rounded-xl"
+                                            <div className="space-y-4">
+                                                <p className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                                                    <i className="bx bx-lock-alt text-lg text-amber-500" />
+                                                    {t('global.blood_quarantine_action')}
+                                                </p>
+                                                <TestFormField label={t('global.reason')} icon="bx-edit">
+                                                    <TextInput
+                                                        value={quarantineReason}
+                                                        onChange={(e) => setQuarantineReason(e.target.value)}
+                                                        className="rounded-xl"
+                                                        placeholder={t('global.reason')}
+                                                    />
+                                                </TestFormField>
+                                                <ActionSubmitButton
+                                                    variant="warning"
+                                                    icon="bx-lock-alt"
                                                     disabled={processing}
                                                     onClick={() => postAction(urls.quarantine, { reason: quarantineReason })}
                                                 >
-                                                    <i className="bx bx-lock-alt me-1.5" />
                                                     {t('global.blood_quarantine_action')}
-                                                </Button>
+                                                </ActionSubmitButton>
                                             </div>
                                         )}
+
                                         {unit.status === 'quarantine' && (
-                                            <div className="space-y-2">
-                                                <ActionField
-                                                    label={t('global.reason')}
-                                                    value={releaseReason}
-                                                    onChange={setReleaseReason}
-                                                />
-                                                <Button
-                                                    color="success"
-                                                    outline
-                                                    className="w-full rounded-xl"
+                                            <div className="space-y-4">
+                                                <p className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                                                    <i className="bx bx-lock-open text-lg text-emerald-500" />
+                                                    {t('global.blood_release_quarantine')}
+                                                </p>
+                                                <TestFormField label={t('global.reason')} icon="bx-edit">
+                                                    <TextInput
+                                                        value={releaseReason}
+                                                        onChange={(e) => setReleaseReason(e.target.value)}
+                                                        className="rounded-xl"
+                                                        placeholder={t('global.reason')}
+                                                    />
+                                                </TestFormField>
+                                                <ActionSubmitButton
+                                                    variant="success"
+                                                    icon="bx-lock-open"
                                                     disabled={processing}
                                                     onClick={() => postAction(urls.releaseQuarantine, { reason: releaseReason })}
                                                 >
-                                                    <i className="bx bx-lock-open me-1.5" />
                                                     {t('global.blood_release_quarantine')}
-                                                </Button>
+                                                </ActionSubmitButton>
                                             </div>
                                         )}
+
                                         {permissions.canDiscard && (
-                                            <div className="space-y-2 border-t border-gray-200 pt-4 dark:border-gray-700">
-                                                <ActionField
-                                                    label={t('global.discard_reason')}
-                                                    value={discardReason}
-                                                    onChange={setDiscardReason}
-                                                />
-                                                <Button
-                                                    color="failure"
-                                                    outline
-                                                    className="w-full rounded-xl"
+                                            <div
+                                                className={`space-y-4 ${
+                                                    unit.status === 'available' || unit.status === 'quarantine'
+                                                        ? 'border-t border-gray-100 pt-5 dark:border-gray-800'
+                                                        : ''
+                                                }`}
+                                            >
+                                                <p className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                                                    <i className="bx bx-trash text-lg text-red-500" />
+                                                    {t('global.discard_unit')}
+                                                </p>
+                                                <TestFormField label={t('global.discard_reason')} icon="bx-note">
+                                                    <TextInput
+                                                        value={discardReason}
+                                                        onChange={(e) => setDiscardReason(e.target.value)}
+                                                        className="rounded-xl"
+                                                        placeholder={t('global.discard_reason')}
+                                                    />
+                                                </TestFormField>
+                                                <ActionSubmitButton
+                                                    variant="danger"
+                                                    icon="bx-trash"
                                                     disabled={processing}
                                                     onClick={() => {
                                                         if (!window.confirm(t('global.are_you_sure'))) return;
                                                         postAction(urls.discard, { reason: discardReason });
                                                     }}
                                                 >
-                                                    <i className="bx bx-trash me-1.5" />
                                                     {t('global.discard_unit')}
-                                                </Button>
+                                                </ActionSubmitButton>
                                             </div>
                                         )}
                                     </div>

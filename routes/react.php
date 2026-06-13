@@ -593,6 +593,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [PACUController::class, 'index'])->name('index');
         Route::get('/completed', [PACUController::class, 'completed'])->name('completed');
         Route::get('/report', [PACUController::class, 'report'])->name('report');
+        Route::post('/{pacu}/complete', [PACUController::class, 'complete'])->name('complete');
+        Route::post('/{pacu}/visits', [PACUController::class, 'storeVisit'])->name('visits.store');
+        Route::get('/{pacu}', [PACUController::class, 'show'])->name('show');
     });
 
     Route::prefix('anesthesias')->name('anesthesias.')->group(function () {

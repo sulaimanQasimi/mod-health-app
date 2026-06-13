@@ -1,10 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, Card, Label, TextInput } from 'flowbite-react';
+import { Alert, Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import LabTypeForm from '../../Components/LabTypes/LabTypeForm';
+import LabCategoriesModal, { LabCategoryItem } from '../../Components/LabTypes/LabCategoriesModal';
 import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
 import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
@@ -28,18 +28,25 @@ export default function IndexLabTypes({
     labTypes,
     filters: serverFilters,
     filterOptions,
+    categories,
     permissions,
     urls,
+    categoryUrls,
+    flash,
 }: {
     labTypes: PaginatedResult<LabTypeItem>;
     filters: { search: string; category_id: string; department_id: string; per_page: string };
     filterOptions: { categories: OptionItem[]; departments: OptionItem[] };
+    categories: LabCategoryItem[];
     permissions: SettingsPermissions & { view?: boolean };
     urls: { index: string; create: string; show: string; edit: string; destroy: string };
+    categoryUrls: { store: string; update: string; destroy: string };
+    flash?: { success?: string | null; error?: string | null };
 }) {
     const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
+    const [categoriesOpen, setCategoriesOpen] = useState(false);
 
     useEffect(() => setFilters(serverFilters), [serverFilters]);
 
@@ -74,14 +81,34 @@ export default function IndexLabTypes({
                         accent="from-violet-500 to-purple-600"
                         backLabel={t('global.back')}
                         action={
-                            permissions.create ? (
-                                <Button color="blue" as={Link} href={urls.create}>
-                                    <i className="bx bx-plus me-2 text-lg" />
-                                    {t('global.add_lab_type')}
-                                </Button>
-                            ) : undefined
+                            <SettingsPageActions>
+                                {permissions.create && (
+                                    <Button color="light" onClick={() => setCategoriesOpen(true)}>
+                                        <i className="bx bx-category me-2 text-lg" />
+                                        {t('global.categories')}
+                                    </Button>
+                                )}
+                                {permissions.create && (
+                                    <Button color="blue" as={Link} href={urls.create}>
+                                        <i className="bx bx-plus me-2 text-lg" />
+                                        {t('global.add_lab_type')}
+                                    </Button>
+                                )}
+                            </SettingsPageActions>
                         }
                     />
+
+                    {flash?.success && (
+                        <Alert color="success" className="mb-4">
+                            {flash.success}
+                        </Alert>
+                    )}
+                    {flash?.error && (
+                        <Alert color="failure" className="mb-4">
+                            {flash.error}
+                        </Alert>
+                    )}
+
                     <form
                         onSubmit={(event: FormEvent) => {
                             event.preventDefault();
@@ -187,6 +214,14 @@ export default function IndexLabTypes({
                     <SettingsPagination links={labTypes.links} />
                 </Card>
             </div>
+
+            <LabCategoriesModal
+                show={categoriesOpen}
+                onClose={() => setCategoriesOpen(false)}
+                categories={categories}
+                canManage={Boolean(permissions.create)}
+                urls={categoryUrls}
+            />
         </DashboardLayout>
     );
 }

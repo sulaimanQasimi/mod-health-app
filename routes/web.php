@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\AdviceController;
 use App\Http\Controllers\AnesthesiaController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CategoryPageController;
 use App\Http\Controllers\NursingAssessmentController;
 use App\Http\Controllers\NutritionCareController;
 use App\Http\Controllers\TestCategoryController;
@@ -1372,7 +1371,7 @@ Route::get('nursing-assessments/{morphable_type}/{morphable_id}', [NursingAssess
     ->name('nursing-assessments.by-morphable');
 
 // Categories Routes
-Route::get('categories', CategoryPageController::class)->middleware('auth')->name('categories.index');
+Route::redirect('categories', '/react/lab-types')->middleware('auth')->name('categories.index');
 
 // Categories API Routes
 Route::middleware('auth')->prefix('api/categories')->name('api.categories.')->group(function () {

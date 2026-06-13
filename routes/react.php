@@ -28,7 +28,6 @@ use App\Http\Controllers\V1\BloodBankController;
 use App\Http\Controllers\V1\BloodUnitController;
 use App\Http\Controllers\V1\BloodBranchTransferController;
 use App\Http\Controllers\V1\BranchController;
-use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\ConsultationController;
 use App\Http\Controllers\V1\DashboardController;
 use App\Http\Controllers\V1\DentalChartController;
@@ -548,9 +547,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/print/{ref_no}', [LaboratoryController::class, 'printReport'])->name('reports.print');
     });
 
-    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::prefix('lab-types')->name('lab-types.')->group(function () {
         Route::get('/', [LabTypeController::class, 'index'])->name('index');
+        Route::post('/categories', [LabTypeController::class, 'storeCategory'])->name('categories.store');
+        Route::match(['put', 'post'], '/categories/{category}', [LabTypeController::class, 'updateCategory'])->name('categories.update');
+        Route::delete('/categories/{category}', [LabTypeController::class, 'destroyCategory'])->name('categories.destroy');
         Route::get('/create', [LabTypeController::class, 'create'])->name('create');
         Route::post('/', [LabTypeController::class, 'store'])->name('store');
         Route::get('/{labType}', [LabTypeController::class, 'show'])->name('show');

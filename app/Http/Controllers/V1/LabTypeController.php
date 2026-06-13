@@ -57,6 +57,7 @@ class LabTypeController extends Controller
             ]),
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
             'filterOptions' => $this->filterOptions($request),
+            'categories' => $this->categoryListPayload(),
             'permissions' => $this->labTypePermissions($request->user()),
             'urls' => [
                 'index' => route('react.lab-types.index'),
@@ -65,7 +66,63 @@ class LabTypeController extends Controller
                 'edit' => url('/react/lab-types'),
                 'destroy' => url('/react/lab-types'),
             ],
+            'categoryUrls' => [
+                'store' => route('react.lab-types.categories.store'),
+                'update' => url('/react/lab-types/categories'),
+                'destroy' => url('/react/lab-types/categories'),
+            ],
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
         ]);
+    }
+
+    public function storeCategory(Request $request): RedirectResponse
+    {
+        $this->authorizeLabTypeManage($request);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name',
+        ]);
+
+        Category::create($data);
+
+        return redirect()
+            ->route('react.lab-types.index')
+            ->with('success', localize('global.category_created_successfully.'));
+    }
+
+    public function updateCategory(Request $request, Category $category): RedirectResponse
+    {
+        $this->authorizeLabTypeManage($request);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name,'.$category->id,
+        ]);
+
+        $category->update($data);
+
+        return redirect()
+            ->route('react.lab-types.index')
+            ->with('success', localize('global.category_updated_successfully.'));
+    }
+
+    public function destroyCategory(Request $request, Category $category): RedirectResponse
+    {
+        $this->authorizeLabTypeManage($request);
+
+        if ($category->labTypes()->exists()) {
+            return redirect()
+                ->route('react.lab-types.index')
+                ->with('error', localize('global.category_cannot_delete_with_lab_types') ?: localize('global.category_cannot_delete'));
+        }
+
+        $category->delete();
+
+        return redirect()
+            ->route('react.lab-types.index')
+            ->with('success', localize('global.category_deleted_successfully.'));
     }
 
     public function show(Request $request, LabType $labType): Response
@@ -304,6 +361,24 @@ class LabTypeController extends Controller
         $data['branch_id'] = $branchId;
 
         return $data;
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string, lab_types_count: int}>
+     */
+    private function categoryListPayload(): array
+    {
+        return Category::query()
+            ->withCount('labTypes')
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Category $category) => [
+                'id' => $category->id,
+                'name' => $category->name,
+                'lab_types_count' => $category->lab_types_count,
+            ])
+            ->values()
+            ->all();
     }
 
     /**

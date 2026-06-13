@@ -340,9 +340,6 @@ class SidebarMenuService
             if ($user->can('show-vital-sign-types-menu')) {
                 $children[] = $this->item('vital-sign-types-settings', 'global.vital_sign_types', null, 'react.vital-sign-types.index');
             }
-            if ($user->can('show-categories-menu')) {
-                $children[] = $this->item('categories', 'global.categories', null, 'react.categories.index');
-            }
             if ($user->can('show-test-types-menu')) {
                 $children[] = $this->item('lab-types', 'global.lab_types', null, 'react.lab-types.index');
             }
@@ -373,7 +370,6 @@ class SidebarMenuService
                 'react.branches.*',
                 'react.nurses.*',
                 'react.vital-sign-types.*',
-                'react.categories.*',
                 'react.lab-types.*',
             ], $children);
         }

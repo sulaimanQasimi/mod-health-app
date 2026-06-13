@@ -149,7 +149,7 @@ export default function LabCategoriesModal({
     };
 
     return (
-        <Modal show={show} onClose={() => !processing && onClose()} size="3xl">
+        <Modal show={show} onClose={() => !processing && onClose()} size="5xl">
             <ModalHeader className="border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow">
@@ -166,7 +166,7 @@ export default function LabCategoriesModal({
                 </div>
             </ModalHeader>
 
-            <ModalBody className="space-y-4">
+            <ModalBody className="space-y-4 overflow-x-hidden">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                     <div className="flex-1">
                         <Label htmlFor="category-search">{t('global.search')}</Label>
@@ -219,7 +219,7 @@ export default function LabCategoriesModal({
                 )}
 
                 {filteredCategories.length > 0 ? (
-                    <Table embedded>
+                    <Table embedded className="!min-w-0 w-full">
                         <TableHead>
                             <TableRow variant="header">
                                 <TableHeader>#</TableHeader>

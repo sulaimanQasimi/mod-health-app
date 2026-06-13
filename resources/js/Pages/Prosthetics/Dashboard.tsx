@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { Badge, Card } from 'flowbite-react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import StatCard from '../../Components/ui/StatCard';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
@@ -40,6 +41,45 @@ const HIGHLIGHT_STATUSES = [
 export default function ProstheticsDashboard({ stats, statusCounts, recentCases, urls }: DashboardProps) {
     const { t } = useTranslation();
 
+    const statCards = [
+        {
+            title: t('global.prosthetics_pending_referrals'),
+            value: stats.referral_pending,
+            subtitle: t('global.prosthetics_referrals'),
+            iconClass: 'bx bx-time-five',
+            iconBgClass: 'bg-violet-600',
+            borderClass: 'border-violet-200 dark:border-violet-800',
+            valueClass: 'text-violet-700 dark:text-violet-300',
+        },
+        {
+            title: t('global.prosthetics_waiting_approval'),
+            value: stats.waiting_approval,
+            subtitle: t('global.prosthetics_case_status_waiting_approval'),
+            iconClass: 'bx bx-check-shield',
+            iconBgClass: 'bg-amber-500',
+            borderClass: 'border-amber-200 dark:border-amber-800',
+            valueClass: 'text-amber-700 dark:text-amber-300',
+        },
+        {
+            title: t('global.prosthetics_in_production'),
+            value: stats.in_production,
+            subtitle: t('global.prosthetics_production_trial'),
+            iconClass: 'bx bx-cog',
+            iconBgClass: 'bg-sky-600',
+            borderClass: 'border-sky-200 dark:border-sky-800',
+            valueClass: 'text-sky-700 dark:text-sky-300',
+        },
+        {
+            title: t('global.prosthetics_active_work_orders'),
+            value: stats.work_orders_active,
+            subtitle: t('global.prosthetics_workshop_orders'),
+            iconClass: 'bx bx-wrench',
+            iconBgClass: 'bg-emerald-600',
+            borderClass: 'border-emerald-200 dark:border-emerald-800',
+            valueClass: 'text-emerald-700 dark:text-emerald-300',
+        },
+    ];
+
     return (
         <DashboardLayout>
             <Head title={t('global.prosthetics_dashboard')} />
@@ -60,16 +100,8 @@ export default function ProstheticsDashboard({ stats, statusCounts, recentCases,
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    {[
-                        { key: 'referral_pending', label: 'global.prosthetics_pending_referrals', value: stats.referral_pending },
-                        { key: 'waiting_approval', label: 'global.prosthetics_waiting_approval', value: stats.waiting_approval },
-                        { key: 'in_production', label: 'global.prosthetics_in_production', value: stats.in_production },
-                        { key: 'work_orders_active', label: 'global.prosthetics_active_work_orders', value: stats.work_orders_active },
-                    ].map((item) => (
-                        <Card key={item.key}>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{t(item.label)}</p>
-                            <p className="text-3xl font-semibold text-gray-900 dark:text-white">{item.value}</p>
-                        </Card>
+                    {statCards.map((card) => (
+                        <StatCard key={card.title} {...card} />
                     ))}
                 </div>
 

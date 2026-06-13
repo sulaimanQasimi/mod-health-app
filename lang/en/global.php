@@ -4290,6 +4290,7 @@ return [
     'lab_type_created_successfully' => 'Lab type created successfully',
     'lab_type_updated_successfully' => 'Lab type updated successfully',
     'lab_type_deleted_successfully' => 'Lab type deleted successfully',
+    'lab_type_cannot_delete_with_registrations' => 'Cannot delete a lab type that already has patient test registrations.',
     'lab_type_restored_successfully' => 'Lab type restored successfully',
     'prescription_not_found' => 'Prescription list not found',
     'samples' => 'Samples',

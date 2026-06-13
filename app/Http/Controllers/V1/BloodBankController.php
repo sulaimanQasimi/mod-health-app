@@ -280,7 +280,12 @@ class BloodBankController extends Controller
 
         $remainingQty = max(0, $requestedQty - $issuedQty);
 
-        $workflow = $this->buildWorkflowState($bloodBank, $remainingQty, $reservedCompatibleQty);
+        $orderedVolumeMl = $bloodBank->orderedVolumeMl();
+        $issuedVolumeMl = $bloodBank->issuedVolumeMl();
+        $remainingVolumeMl = $bloodBank->remainingVolumeMl();
+        $reservedCompatibleVolumeMl = $bloodBank->reservedCompatibleVolumeMl($reservedUnitIds);
+
+        $workflow = $this->buildWorkflowState($bloodBank, $remainingVolumeMl, $reservedCompatibleVolumeMl);
 
         $user = $request->user();
         $bloodCheck = $bloodBank->bloodCheck();
@@ -328,6 +333,10 @@ class BloodBankController extends Controller
                 $reservedCompatibleQty,
                 $issuedQty,
                 $remainingQty,
+                $orderedVolumeMl,
+                $issuedVolumeMl,
+                $remainingVolumeMl,
+                $reservedCompatibleVolumeMl,
                 $quantityInferredFromVolumeMl,
                 $workflow,
                 $reservedUnitIds,
@@ -369,6 +378,7 @@ class BloodBankController extends Controller
                     'receiver_department_id' => $bloodBank->receiver_department_id,
                     'receiver_nurse_id' => $bloodBank->receiver_nurse_id,
                 ],
+                'defaultUnitVolumeMl' => $bloodBank->defaultUnitVolumeMl(),
             ],
             'receiverDepartments' => $this->bloodRequestFilterOptions()['departments'],
             'permissions' => [
@@ -448,6 +458,7 @@ class BloodBankController extends Controller
             'receiver_nurse_id' => ['required', 'integer', 'exists:nurses,id'],
             'unit_ids' => 'nullable|array',
             'unit_ids.*' => 'integer|exists:blood_units,id',
+            'mark_complete' => 'nullable|boolean',
         ]);
 
         $bloodBank->receiver_department_id = $validated['receiver_department_id'];
@@ -464,7 +475,11 @@ class BloodBankController extends Controller
         $unitIds = array_values(array_filter(array_map('intval', $validated['unit_ids'] ?? [])));
 
         try {
-            app(BloodBankStockService::class)->deliverRequest($bloodBank, count($unitIds) > 0 ? $unitIds : null);
+            app(BloodBankStockService::class)->deliverRequest(
+                $bloodBank,
+                count($unitIds) > 0 ? $unitIds : null,
+                $request->boolean('mark_complete'),
+            );
         } catch (\Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
@@ -633,6 +648,10 @@ class BloodBankController extends Controller
         int $reservedCompatibleQty,
         int $issuedQty,
         int $remainingQty,
+        int $orderedVolumeMl,
+        int $issuedVolumeMl,
+        int $remainingVolumeMl,
+        int $reservedCompatibleVolumeMl,
         bool $quantityInferredFromVolumeMl,
         array $workflow,
         array $reservedUnitIds,
@@ -663,6 +682,11 @@ class BloodBankController extends Controller
             'reserved_compatible_qty' => $reservedCompatibleQty,
             'issued_qty' => $issuedQty,
             'remaining_qty' => $remainingQty,
+            'ordered_volume_ml' => $orderedVolumeMl,
+            'issued_volume_ml' => $issuedVolumeMl,
+            'remaining_volume_ml' => $remainingVolumeMl,
+            'reserved_compatible_volume_ml' => $reservedCompatibleVolumeMl,
+            'uses_volume_ml_tracking' => $bloodBank->usesVolumeMlTracking(),
             'quantity_inferred_from_volume_ml' => $quantityInferredFromVolumeMl,
             'order_quantity_display' => $orderParts,
             'workflow' => $workflow,
@@ -700,6 +724,7 @@ class BloodBankController extends Controller
                 ->map(fn ($u) => [
                     'id' => $u->id,
                     'bag_number' => $u->bag_number,
+                    'volume_ml' => $u->volume_ml,
                     'expires_at' => $u->expires_at ? verta($u->expires_at)->format('Y-m-d H:i') : null,
                     'issued_at' => $u->pivot->issued_at
                         ? verta($u->pivot->issued_at)->format('Y-m-d H:i')
@@ -786,7 +811,7 @@ class BloodBankController extends Controller
     /**
      * @return array{current_step: int|null, steps: list<array{number: int, done: bool, current: bool}>}
      */
-    private function buildWorkflowState(BloodBank $bloodBank, int $remainingQty, int $reservedCompatibleQty): array
+    private function buildWorkflowState(BloodBank $bloodBank, int $remainingVolumeMl, int $reservedCompatibleVolumeMl): array
     {
         if ($bloodBank->status !== 'approved') {
             return ['current_step' => null, 'steps' => []];
@@ -794,7 +819,7 @@ class BloodBankController extends Controller
 
         $step1Done = true;
         $step2Done = $bloodBank->patientSamples->isNotEmpty();
-        $step3Done = $remainingQty < 1 || $reservedCompatibleQty >= $remainingQty;
+        $step3Done = $remainingVolumeMl < 1 || $reservedCompatibleVolumeMl >= $remainingVolumeMl;
         $currentStep = null;
 
         if (! $step2Done) {

@@ -121,42 +121,52 @@ class BloodBankStockService
 
     /**
      * Issue units for an approved blood request (FIFO or explicit ids).
+     * Validates selected volume against remaining ml; supports partial issue and optional early completion.
      *
-     * @param  list<int>|null  $unitIds  If empty/null, picks FIFO by expiry.
+     * @param  list<int>|null  $unitIds  If empty/null, picks FIFO by expiry until remaining ml is covered.
      *
      * @throws \RuntimeException
      */
-    public function deliverRequest(BloodBank $request, ?array $unitIds = null): void
+    public function deliverRequest(BloodBank $request, ?array $unitIds = null, bool $markComplete = false): void
     {
         if ($request->status !== 'approved') {
             throw new \RuntimeException(localize('global.blood_request_must_be_approved_to_deliver'));
         }
 
-        DB::transaction(function () use ($request, $unitIds) {
-            $requestedQty = $request->orderedUnitsForWorkflow();
-            if ($requestedQty < 1) {
+        DB::transaction(function () use ($request, $unitIds, $markComplete) {
+            $request->loadMissing(['bloodUnits']);
+            $orderedMl = $request->orderedVolumeMl();
+            if ($orderedMl < 1) {
                 throw new \RuntimeException(localize('global.blood_delivery_invalid_ordered_quantity'));
             }
-            $issuedCount = (int) DB::table('blood_bank_unit')
-                ->where('blood_bank_id', $request->id)
-                ->whereNotNull('issued_at')
-                ->count();
-            $remainingQty = max(0, $requestedQty - $issuedCount);
 
-            if ($remainingQty < 1) {
+            $remainingMl = $request->remainingVolumeMl();
+            $hasUnitSelection = $unitIds !== null && count($unitIds) > 0;
+
+            if ($remainingMl < 1 && ! $markComplete) {
                 throw new \RuntimeException(localize('global.blood_delivery_nothing_remaining'));
             }
 
-            if ($unitIds !== null && count($unitIds) > 0) {
-                $qty = count($unitIds);
-                if ($qty > $remainingQty) {
-                    throw new \RuntimeException(localize('global.blood_delivery_unit_count_mismatch'));
+            if (! $hasUnitSelection && ! $markComplete) {
+                if ($remainingMl < 1) {
+                    throw new \RuntimeException(localize('global.blood_delivery_nothing_remaining'));
+                }
+
+                $units = $this->resolveUnitsForDelivery($request, null, $remainingMl);
+            } elseif ($hasUnitSelection) {
+                $units = $this->resolveUnitsForDelivery($request, $unitIds, $remainingMl);
+                $selectedMl = $this->sumUnitsVolumeMl($request, $units);
+
+                if ($selectedMl > $remainingMl) {
+                    throw new \RuntimeException(localize('global.blood_delivery_volume_exceeds_remaining'));
+                }
+
+                if ($selectedMl < 1) {
+                    throw new \RuntimeException(localize('global.blood_delivery_select_at_least_one_unit'));
                 }
             } else {
-                $qty = $remainingQty;
+                $units = collect();
             }
-
-            $units = $this->resolveUnitsForDelivery($request, $unitIds, $qty);
 
             foreach ($units as $unit) {
                 $unit->status = 'issued';
@@ -178,14 +188,13 @@ class BloodBankStockService
                 ]);
             }
 
-            $totalIssuedAfter = (int) DB::table('blood_bank_unit')
-                ->where('blood_bank_id', $request->id)
-                ->whereNotNull('issued_at')
-                ->count();
+            $request->refresh();
+            $request->loadMissing(['bloodUnits']);
 
-            if ($totalIssuedAfter >= $requestedQty) {
+            if ($request->remainingVolumeMl() < 1 || $markComplete) {
                 $request->status = 'delivered';
             }
+
             $request->save();
         });
     }
@@ -193,10 +202,10 @@ class BloodBankStockService
     /**
      * @return Collection<int, BloodUnit>
      */
-    protected function resolveUnitsForDelivery(BloodBank $request, ?array $unitIds, int $qty): Collection
+    protected function resolveUnitsForDelivery(BloodBank $request, ?array $unitIds, int $remainingMl): Collection
     {
         if ($this->hasCrossmatchWorkflow($request)) {
-            return $this->resolveReservedCrossmatchUnits($request, $unitIds, $qty);
+            return $this->resolveReservedCrossmatchUnits($request, $unitIds, $remainingMl);
         }
 
         $base = BloodUnit::query()
@@ -209,10 +218,11 @@ class BloodBankStockService
             ->whereHas('test', fn ($q) => $q->where('overall_status', 'passed'))
             ->orderBy('expires_at')
             ->lockForUpdate();
+
         if ($unitIds !== null && count($unitIds) > 0) {
             $units = (clone $base)->whereIn('id', $unitIds)->get();
 
-            if ($units->count() !== $qty) {
+            if ($units->count() !== count($unitIds)) {
                 throw new \RuntimeException(localize('global.insufficient_blood_stock'));
             }
 
@@ -230,13 +240,7 @@ class BloodBankStockService
             return $units;
         }
 
-        $picked = (clone $base)->limit($qty)->get();
-
-        if ($picked->count() < $qty) {
-            throw new \RuntimeException(localize('global.insufficient_blood_stock'));
-        }
-
-        return $picked;
+        return $this->pickUnitsByVolumeFifo($request, (clone $base)->get(), $remainingMl);
     }
 
     protected function hasCrossmatchWorkflow(BloodBank $request): bool
@@ -247,7 +251,7 @@ class BloodBankStockService
     /**
      * @return Collection<int, BloodUnit>
      */
-    protected function resolveReservedCrossmatchUnits(BloodBank $request, ?array $unitIds, int $qty): Collection
+    protected function resolveReservedCrossmatchUnits(BloodBank $request, ?array $unitIds, int $remainingMl): Collection
     {
         $query = BloodUnit::query()
             ->select('blood_units.*')
@@ -269,19 +273,53 @@ class BloodBankStockService
 
         if ($unitIds !== null && count($unitIds) > 0) {
             $units = (clone $query)->whereIn('blood_units.id', $unitIds)->get();
-            if ($units->count() !== $qty) {
+            if ($units->count() !== count($unitIds)) {
                 throw new \RuntimeException(localize('global.crossmatch_delivery_requires_reserved_units'));
             }
 
             return $units;
         }
 
-        $units = (clone $query)->limit($qty)->get();
-        if ($units->count() < $qty) {
-            throw new \RuntimeException(localize('global.crossmatch_delivery_requires_reserved_units'));
+        $units = (clone $query)->get();
+
+        return $this->pickUnitsByVolumeFifo($request, $units, $remainingMl);
+    }
+
+    /**
+     * @param  Collection<int, BloodUnit>  $units
+     * @return Collection<int, BloodUnit>
+     */
+    protected function pickUnitsByVolumeFifo(BloodBank $request, Collection $units, int $remainingMl): Collection
+    {
+        $picked = collect();
+        $sumMl = 0;
+
+        foreach ($units as $unit) {
+            if ($sumMl >= $remainingMl) {
+                break;
+            }
+
+            $picked->push($unit);
+            $sumMl += $request->effectiveUnitVolumeMl($unit);
         }
 
-        return $units;
+        if ($picked->isEmpty()) {
+            throw new \RuntimeException(
+                $this->hasCrossmatchWorkflow($request)
+                    ? localize('global.crossmatch_delivery_requires_reserved_units')
+                    : localize('global.insufficient_blood_stock')
+            );
+        }
+
+        return $picked;
+    }
+
+    /**
+     * @param  Collection<int, BloodUnit>  $units
+     */
+    protected function sumUnitsVolumeMl(BloodBank $request, Collection $units): int
+    {
+        return (int) $units->sum(fn (BloodUnit $unit) => $request->effectiveUnitVolumeMl($unit));
     }
 
     /**

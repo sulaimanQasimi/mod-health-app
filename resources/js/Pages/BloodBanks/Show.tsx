@@ -147,7 +147,9 @@ export default function BloodBanksShow({
         {
             title: t('global.requested_quantity'),
             value: formatOrderQuantity(bloodRequest),
-            subtitle: t('global.blood_request_details'),
+            subtitle: bloodRequest.uses_volume_ml_tracking
+                ? `${bloodRequest.ordered_volume_ml} ml`
+                : t('global.blood_request_details'),
             iconClass: 'bx bx-droplet',
             iconBgClass: 'bg-rose-600',
             borderClass: 'border-rose-200 dark:border-rose-800',
@@ -155,7 +157,9 @@ export default function BloodBanksShow({
         },
         {
             title: t('global.crossmatch_reserved_compatible_summary'),
-            value: bloodRequest.reserved_compatible_qty,
+            value: bloodRequest.uses_volume_ml_tracking
+                ? `${bloodRequest.reserved_compatible_volume_ml} ml`
+                : bloodRequest.reserved_compatible_qty,
             subtitle: t('global.crossmatch_workflow'),
             iconClass: 'bx bx-test-tube',
             iconBgClass: 'bg-sky-600',
@@ -164,7 +168,9 @@ export default function BloodBanksShow({
         },
         {
             title: t('global.issued_blood_units'),
-            value: bloodRequest.issued_qty,
+            value: bloodRequest.uses_volume_ml_tracking
+                ? `${bloodRequest.issued_volume_ml} ml`
+                : bloodRequest.issued_qty,
             subtitle: t('global.delivered'),
             iconClass: 'bx bx-package',
             iconBgClass: 'bg-emerald-600',
@@ -173,8 +179,10 @@ export default function BloodBanksShow({
         },
         {
             title: t('global.remaining_quantity'),
-            value: bloodRequest.remaining_qty,
-            subtitle: t('global.quantity'),
+            value: bloodRequest.uses_volume_ml_tracking
+                ? `${bloodRequest.remaining_volume_ml} ml`
+                : bloodRequest.remaining_qty,
+            subtitle: bloodRequest.uses_volume_ml_tracking ? t('global.remaining_volume_ml_summary') : t('global.quantity'),
             iconClass: 'bx bx-time-five',
             iconBgClass: 'bg-amber-500',
             borderClass: 'border-amber-200 dark:border-amber-800',

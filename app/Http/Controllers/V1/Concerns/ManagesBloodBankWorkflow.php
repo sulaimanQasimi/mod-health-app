@@ -246,6 +246,13 @@ trait ManagesBloodBankWorkflow
                     throw new \RuntimeException(localize('global.crossmatch_unit_not_reservable'));
                 }
 
+                $bloodBank->loadMissing(['bloodUnits', 'crossmatches']);
+                $unitMl = $bloodBank->effectiveUnitVolumeMl($unit);
+                $alreadyReservedMl = $bloodBank->reservedCompatibleVolumeMl();
+                if ($alreadyReservedMl + $unitMl > $bloodBank->remainingVolumeMl()) {
+                    throw new \RuntimeException(localize('global.crossmatch_reserve_volume_exceeds_remaining'));
+                }
+
                 $pivotForUnit = DB::table('blood_bank_unit')
                     ->where('blood_unit_id', $unit->id)
                     ->first();

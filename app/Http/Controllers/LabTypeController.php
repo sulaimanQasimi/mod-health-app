@@ -32,11 +32,9 @@ class LabTypeController extends Controller
     public function index(Request $request)
     {
         // Build query with only necessary relationships
-        $query = LabType::with(['category', 'department']);
-
-        if ($branchId = $request->user()?->branch_id) {
-            $query->where('branch_id', $branchId);
-        }
+        $query = LabType::query()
+            ->forLaboratoryUser($request->user())
+            ->with(['category', 'department']);
         
         // Status filter - show deleted items if requested
         if ($request->filled('status')) {
@@ -122,7 +120,7 @@ class LabTypeController extends Controller
             ],
             'category_id' => 'required|exists:categories,id',
             'department_id' => [
-                'nullable',
+                'required',
                 Rule::exists('departments', 'id')->where(fn ($query) => $query->where('branch_id', $branchId)),
             ],
         ]);
@@ -166,6 +164,7 @@ class LabTypeController extends Controller
      */
     public function edit(LabType $labType)
     {
+        $this->ensureLabTypeAccess($labType);
         // Load categories for the edit form
         $categories = Cache::remember('lab_types_categories', 300, function () {
             return Category::select('id', 'name')->orderBy('name')->get();
@@ -178,10 +177,9 @@ class LabTypeController extends Controller
      */
     public function update(Request $request, LabType $labType)
     {
+        $this->ensureLabTypeAccess($labType, $request);
+
         $branchId = $request->user()?->branch_id ?? $labType->branch_id;
-        if ($request->user()?->branch_id && (int) $labType->branch_id !== (int) $request->user()->branch_id) {
-            abort(404);
-        }
 
         $data = $request->validate([
             'name' => [
@@ -192,7 +190,7 @@ class LabTypeController extends Controller
             ],
             'category_id' => 'required|exists:categories,id',
             'department_id' => [
-                'nullable',
+                'required',
                 Rule::exists('departments', 'id')->where(fn ($query) => $query->where('branch_id', $branchId)),
             ],
         ]);
@@ -257,6 +255,7 @@ class LabTypeController extends Controller
      */
     public function destroy(Request $request, LabType $labType)
     {
+        $this->ensureLabTypeAccess($labType, $request);
         $labType->delete();
 
         // Clear categories cache when lab type is deleted
@@ -301,12 +300,14 @@ class LabTypeController extends Controller
     public function getLabTypesForSelect(Request $request)
     {
         try {
-            $branchId = $request->user()?->branch_id;
-            $cacheKey = $branchId ? "lab_types_select_branch_{$branchId}" : 'lab_types_select';
+            $user = $request->user();
+            $cacheKey = $user
+                ? 'lab_types_select_user_'.$user->id
+                : 'lab_types_select';
 
-            $labTypes = Cache::remember($cacheKey, 300, function () use ($branchId) {
+            $labTypes = Cache::remember($cacheKey, 300, function () use ($request) {
                 return LabType::query()
-                    ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
+                    ->forLaboratoryUser($request->user())
                     ->select('id', 'name')
                     ->orderBy('name')
                     ->get();
@@ -322,6 +323,23 @@ class LabTypeController extends Controller
                 'message' => 'Failed to fetch lab types',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    private function ensureLabTypeAccess(LabType $labType, ?Request $request = null): void
+    {
+        $user = $request?->user() ?? auth()->user();
+        if (! $user) {
+            abort(404);
+        }
+
+        $accessible = LabType::query()
+            ->whereKey($labType->id)
+            ->forLaboratoryUser($user)
+            ->exists();
+
+        if (! $accessible) {
+            abort(404);
         }
     }
 

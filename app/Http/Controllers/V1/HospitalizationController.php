@@ -210,6 +210,9 @@ class HospitalizationController extends Controller
                 'nurse_notes' => $user->can('viewAny', NurseNote::class),
                 'nutrition_cares' => $user->can('viewAny', NutritionCare::class),
                 'icu' => $user->can('refer-to-icu') || $user->can('edit-icus') || $user->can('delete-icus'),
+                'pacu' => $user->can('refer-to-pacu') || $user->can('show-pacu-menu'),
+                'underReview' => ($user->can('patient-under-review') || $user->can('show-under-review-menu'))
+                    && (bool) $hospitalization->appointment_id,
                 'anesthesia' => $user->can('refer-to-anesthesia')
                     || $user->can('edit-anesthesias')
                     || $user->can('delete-anesthesias')

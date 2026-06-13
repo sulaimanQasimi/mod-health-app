@@ -32,6 +32,7 @@ import { SectionActionButton } from '../Appointments/Sections/SimpleTableSection
 interface HospitalizationNutritionCareSectionProps {
     hospitalizationId: number;
     isDischarged?: boolean;
+    baseUrl?: string;
 }
 
 const OBSERVATION_FIELDS = [
@@ -279,10 +280,11 @@ function CareFormFields({
 export default function HospitalizationNutritionCareSection({
     hospitalizationId,
     isDischarged = false,
+    baseUrl: baseUrlProp,
 }: HospitalizationNutritionCareSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/hospitalizations/${hospitalizationId}/nutrition-cares`;
+    const baseUrl = baseUrlProp ?? `/react/hospitalizations/${hospitalizationId}/nutrition-cares`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

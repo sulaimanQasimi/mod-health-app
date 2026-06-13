@@ -9,6 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from '../ui/Table';
+import { TableActionsCell } from '../ui/TableActions';
 import LaboratoryPriorityBadge from './LaboratoryPriorityBadge';
 import LaboratoryRegistrationActions from './LaboratoryRegistrationActions';
 import LaboratoryStatusBadge from './LaboratoryStatusBadge';
@@ -120,9 +121,9 @@ export default function LaboratoryPatientAccordion({
                         </button>
 
                         {isOpen && (
-                            <div className="p-0">
+                            <div className="border-t border-gray-100 dark:border-gray-700">
                                 {listMode === 'pending' && group.pending_accept_count > 0 && (
-                                    <div className="border-b border-gray-100 px-4 py-2 dark:border-gray-700">
+                                    <div className="border-b border-gray-100 px-4 py-3 dark:border-gray-700">
                                         <button
                                             type="button"
                                             onClick={() => acceptAllPending(group)}
@@ -134,54 +135,65 @@ export default function LaboratoryPatientAccordion({
                                     </div>
                                 )}
 
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>{t('global.reference_number')}</TableHead>
-                                                <TableHead>{t('global.test_type')}</TableHead>
-                                                <TableHead>{t('global.status')}</TableHead>
-                                                <TableHead>{t('global.priority')}</TableHead>
-                                                <TableHead>{t('global.doctor')}</TableHead>
-                                                <TableHead>{t('global.date')}</TableHead>
-                                                <TableHead className="text-center">
+                                <div className="p-4 pt-3">
+                                    <Table embedded>
+                                        <TableHead>
+                                            <TableRow variant="header">
+                                                <TableHeader>{t('global.reference_number')}</TableHeader>
+                                                <TableHeader>{t('global.test_type')}</TableHeader>
+                                                <TableHeader>{t('global.department')}</TableHeader>
+                                                <TableHeader>{t('global.status')}</TableHeader>
+                                                <TableHeader>{t('global.priority')}</TableHeader>
+                                                <TableHeader>{t('global.doctor')}</TableHeader>
+                                                <TableHeader>{t('global.date')}</TableHeader>
+                                                <TableHeader align="center">
                                                     {t('global.actions')}
-                                                </TableHead>
+                                                </TableHeader>
                                             </TableRow>
-                                        </TableHeader>
+                                        </TableHead>
                                         <TableBody>
                                             {group.registrations.map((registration) => (
                                                 <TableRow key={registration.id}>
-                                                    <TableCell className="font-mono text-sm">
+                                                    <TableCell className="whitespace-nowrap font-mono text-sm">
                                                         {registration.ref_no}
                                                     </TableCell>
                                                     <TableCell>
-                                                        <div className="font-medium">
-                                                            {registration.lab_type_name}
+                                                        <div className="font-medium text-gray-900 dark:text-white">
+                                                            {registration.lab_type_name ?? '—'}
                                                         </div>
                                                         {registration.category_name && (
-                                                            <div className="text-xs text-gray-500">
+                                                            <div className="text-xs text-gray-500 dark:text-gray-400">
                                                                 {registration.category_name}
                                                             </div>
                                                         )}
                                                     </TableCell>
+                                                    <TableCell muted>
+                                                        {registration.department_name ?? '—'}
+                                                    </TableCell>
                                                     <TableCell>
-                                                        <LaboratoryStatusBadge status={registration.status} />
+                                                        <LaboratoryStatusBadge
+                                                            status={registration.status}
+                                                        />
                                                     </TableCell>
                                                     <TableCell>
                                                         <LaboratoryPriorityBadge
                                                             priority={registration.priority}
                                                         />
                                                     </TableCell>
-                                                    <TableCell>{registration.doctor_name ?? '—'}</TableCell>
-                                                    <TableCell>
-                                                        {registration.date ?? registration.registration_date ?? '—'}
+                                                    <TableCell muted>
+                                                        {registration.doctor_name ?? '—'}
                                                     </TableCell>
-                                                    <TableCell>
+                                                    <TableCell muted className="whitespace-nowrap">
+                                                        {registration.date ??
+                                                            registration.registration_date ??
+                                                            '—'}
+                                                    </TableCell>
+                                                    <TableActionsCell>
                                                         <LaboratoryRegistrationActions
                                                             registration={registration}
+                                                            listMode={listMode}
                                                         />
-                                                    </TableCell>
+                                                    </TableActionsCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>

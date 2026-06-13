@@ -4,63 +4,41 @@ namespace App\Policies;
 
 use App\Models\Category;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class CategoryPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        return $user->can('view-categories');
+        return $this->canAccessLabTypes($user);
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, Category $category): bool
     {
-        return $user->can('view-categories');
+        return $this->canAccessLabTypes($user);
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
-        return $user->can('create-categories');
+        return $this->canManageLabTypes($user);
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
     public function update(User $user, Category $category): bool
     {
-        return $user->can('edit-categories');
+        return $this->canManageLabTypes($user);
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, Category $category): bool
     {
-        return $user->can('delete-categories');
+        return $this->canManageLabTypes($user);
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Category $category): bool
+    private function canManageLabTypes(User $user): bool
     {
-        //
+        return $user->hasRole(['super_admin', 'admin']) || $user->can('manage-lab-tests');
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Category $category): bool
+    private function canAccessLabTypes(User $user): bool
     {
-        //
+        return $this->canManageLabTypes($user) || $user->can('register-patient-tests');
     }
 }

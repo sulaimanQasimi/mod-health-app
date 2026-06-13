@@ -15,6 +15,7 @@ use App\Http\Controllers\V1\AppointmentSections\IcuVisitsController;
 use App\Http\Controllers\V1\AppointmentSections\LabTestController;
 use App\Http\Controllers\V1\AppointmentSections\NephrologyController as AppointmentNephrologyController;
 use App\Http\Controllers\V1\AppointmentSections\OperationController as AppointmentOperationController;
+use App\Http\Controllers\V1\AppointmentSections\PacuController as AppointmentPacuController;
 use App\Http\Controllers\V1\AppointmentSections\PhysiotherapyController as AppointmentPhysiotherapyController;
 use App\Http\Controllers\V1\AppointmentSections\PrescriptionController as AppointmentPrescriptionController;
 use App\Http\Controllers\V1\AppointmentSections\ProstheticsController as AppointmentProstheticsController;
@@ -28,7 +29,6 @@ use App\Http\Controllers\V1\BloodBankController;
 use App\Http\Controllers\V1\BloodUnitController;
 use App\Http\Controllers\V1\BloodBranchTransferController;
 use App\Http\Controllers\V1\BranchController;
-use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\ConsultationController;
 use App\Http\Controllers\V1\DashboardController;
 use App\Http\Controllers\V1\DentalChartController;
@@ -49,6 +49,8 @@ use App\Http\Controllers\V1\HospitalizationController;
 use App\Http\Controllers\V1\HospitalizationSections\DiabetesChartController as HospitalizationDiabetesChartController;
 use App\Http\Controllers\V1\HospitalizationSections\AnesthesiaController as HospitalizationAnesthesiaController;
 use App\Http\Controllers\V1\HospitalizationSections\IcuController as HospitalizationIcuController;
+use App\Http\Controllers\V1\HospitalizationSections\PacuController as HospitalizationPacuController;
+use App\Http\Controllers\V1\HospitalizationSections\UnderReviewController as HospitalizationUnderReviewController;
 use App\Http\Controllers\V1\HospitalizationSections\OperationController as HospitalizationOperationController;
 use App\Http\Controllers\V1\HospitalizationSections\NurseNoteController as HospitalizationNurseNoteController;
 use App\Http\Controllers\V1\HospitalizationSections\NutritionCareController as HospitalizationNutritionCareController;
@@ -181,6 +183,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('icu', [AppointmentIcuController::class, 'index'])->name('icu.index');
             Route::post('icu', [AppointmentIcuController::class, 'store'])->name('icu.store');
             Route::delete('icu/{icu}', [AppointmentIcuController::class, 'destroy'])->name('icu.destroy');
+            Route::get('pacus/meta', [AppointmentPacuController::class, 'meta'])->name('pacus.meta');
+            Route::get('pacus', [AppointmentPacuController::class, 'index'])->name('pacus.index');
+            Route::post('pacus', [AppointmentPacuController::class, 'store'])->name('pacus.store');
+            Route::delete('pacus/{pacu}', [AppointmentPacuController::class, 'destroy'])->name('pacus.destroy');
             Route::get('icu-visits', [IcuVisitsController::class, 'index'])->name('icu-visits.index');
             Route::get('physiotherapy/meta', [AppointmentPhysiotherapyController::class, 'meta'])->name('physiotherapy.meta');
             Route::get('physiotherapy', [AppointmentPhysiotherapyController::class, 'index'])->name('physiotherapy.index');
@@ -493,6 +499,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{hospitalization}/icu', [HospitalizationIcuController::class, 'index'])->name('icu.index');
         Route::post('/{hospitalization}/icu', [HospitalizationIcuController::class, 'store'])->name('icu.store');
         Route::delete('/{hospitalization}/icu/{icu}', [HospitalizationIcuController::class, 'destroy'])->name('icu.destroy');
+        Route::get('/{hospitalization}/pacus/meta', [HospitalizationPacuController::class, 'meta'])->name('pacus.meta');
+        Route::get('/{hospitalization}/pacus', [HospitalizationPacuController::class, 'index'])->name('pacus.index');
+        Route::post('/{hospitalization}/pacus', [HospitalizationPacuController::class, 'store'])->name('pacus.store');
+        Route::delete('/{hospitalization}/pacus/{pacu}', [HospitalizationPacuController::class, 'destroy'])->name('pacus.destroy');
+        Route::get('/{hospitalization}/under-review/meta', [HospitalizationUnderReviewController::class, 'meta'])->name('under-review.meta');
+        Route::get('/{hospitalization}/under-review', [HospitalizationUnderReviewController::class, 'index'])->name('under-review.index');
+        Route::post('/{hospitalization}/under-review', [HospitalizationUnderReviewController::class, 'store'])->name('under-review.store');
+        Route::delete('/{hospitalization}/under-review/{underReview}', [HospitalizationUnderReviewController::class, 'destroy'])->name('under-review.destroy');
         Route::get('/{hospitalization}/anesthesia/meta', [HospitalizationAnesthesiaController::class, 'meta'])->name('anesthesia.meta');
         Route::get('/{hospitalization}/anesthesia', [HospitalizationAnesthesiaController::class, 'index'])->name('anesthesia.index');
         Route::post('/{hospitalization}/anesthesia', [HospitalizationAnesthesiaController::class, 'store'])->name('anesthesia.store');
@@ -548,9 +562,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/print/{ref_no}', [LaboratoryController::class, 'printReport'])->name('reports.print');
     });
 
-    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::prefix('lab-types')->name('lab-types.')->group(function () {
         Route::get('/', [LabTypeController::class, 'index'])->name('index');
+        Route::post('/categories', [LabTypeController::class, 'storeCategory'])->name('categories.store');
+        Route::match(['put', 'post'], '/categories/{category}', [LabTypeController::class, 'updateCategory'])->name('categories.update');
+        Route::delete('/categories/{category}', [LabTypeController::class, 'destroyCategory'])->name('categories.destroy');
         Route::get('/create', [LabTypeController::class, 'create'])->name('create');
         Route::post('/', [LabTypeController::class, 'store'])->name('store');
         Route::get('/{labType}', [LabTypeController::class, 'show'])->name('show');
@@ -592,6 +608,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [PACUController::class, 'index'])->name('index');
         Route::get('/completed', [PACUController::class, 'completed'])->name('completed');
         Route::get('/report', [PACUController::class, 'report'])->name('report');
+        Route::post('/{pacu}/complete', [PACUController::class, 'complete'])->name('complete');
+        Route::post('/{pacu}/visits', [PACUController::class, 'storeVisit'])->name('visits.store');
+        Route::get('/{pacu}', [PACUController::class, 'show'])->name('show');
     });
 
     Route::prefix('anesthesias')->name('anesthesias.')->group(function () {

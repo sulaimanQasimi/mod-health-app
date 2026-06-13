@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1\Concerns;
 
+use App\Models\Department;
 use App\Models\PatientTestRegistration;
 use App\Models\PatientTestResult;
 use App\Models\User;
@@ -17,9 +18,48 @@ trait ManagesLaboratoryRegistrations
      */
     protected function scopedRegistrationQuery(User $user): Builder
     {
-        return PatientTestRegistration::query()
-            ->where('branch_id', $user->branch_id)
-            ->visibleToClinicType($user->clinic_type);
+        return PatientTestRegistration::query()->whereHas(
+            'labType',
+            fn (Builder $query) => $query->where('department_id', $user->department_id)
+        );
+    }
+
+    /**
+     * Pending tests for the user's lab department: unassigned + status pending.
+     *
+     * @return Builder<PatientTestRegistration>
+     */
+    protected function pendingRegistrationsQuery(User $user, Request $request): Builder
+    {
+        $query = $this->scopedRegistrationQuery($user)
+            ->with([
+                'testable.patient',
+                'labType.category',
+                'labType.department',
+                'labType' => fn ($labTypeQuery) => $labTypeQuery->withCount('directLabTestParameters'),
+                'doctor',
+                'assignedTo',
+            ])
+            ->where('patient_test_registrations.status', 'pending')
+            ->whereNull('patient_test_registrations.assigned_to');
+
+        return $this->applyResultsFilters($query, $request, 'pending');
+    }
+
+    /**
+     * @return array{is_restricted: bool, department_id: int|null, department_name: string|null}
+     */
+    protected function laboratoryScopeContext(User $user): array
+    {
+        $departmentId = $user->department_id ? (int) $user->department_id : null;
+
+        return [
+            'is_restricted' => $departmentId !== null,
+            'department_id' => $departmentId,
+            'department_name' => $departmentId
+                ? Department::query()->whereKey($departmentId)->value('name')
+                : null,
+        ];
     }
 
     /**
@@ -33,11 +73,11 @@ trait ManagesLaboratoryRegistrations
         }
 
         return match ($listMode) {
-            'pending' => $query->whereNull('assigned_to'),
-            'in_progress' => $query->where('assigned_to', $user->id),
+            'pending' => $query->whereNull('patient_test_registrations.assigned_to'),
+            'in_progress' => $query->where('patient_test_registrations.assigned_to', $user->id),
             'completed' => $query->where(function ($statusQuery) use ($user) {
-                $statusQuery->where('completed_by', $user->id)
-                    ->orWhere('assigned_to', $user->id);
+                $statusQuery->where('patient_test_registrations.completed_by', $user->id)
+                    ->orWhere('patient_test_registrations.assigned_to', $user->id);
             }),
             default => $query,
         };
@@ -68,17 +108,17 @@ trait ManagesLaboratoryRegistrations
         }
 
         if ($forcedStatus) {
-            $query->where('status', $forcedStatus);
+            $query->where('patient_test_registrations.status', $forcedStatus);
         } elseif ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->where('patient_test_registrations.status', $request->status);
         }
 
         if ($request->filled('priority')) {
-            $query->where('priority', $request->priority);
+            $query->where('patient_test_registrations.priority', $request->priority);
         }
 
         if ($request->filled('doctor')) {
-            $query->where('doctor_id', $request->doctor);
+            $query->where('patient_test_registrations.doctor_id', $request->doctor);
         }
 
         return $this->applyDateFilters($query, $request);
@@ -88,7 +128,7 @@ trait ManagesLaboratoryRegistrations
      * @param  Builder<PatientTestRegistration>  $query
      * @return Builder<PatientTestRegistration>
      */
-    protected function applyDateFilters(Builder $query, Request $request, string $dateField = 'registration_date'): Builder
+    protected function applyDateFilters(Builder $query, Request $request, string $dateField = 'patient_test_registrations.registration_date'): Builder
     {
         if ($request->filled('date_from_gregorian')) {
             $query->whereDate($dateField, '>=', $request->date_from_gregorian);
@@ -196,6 +236,7 @@ trait ManagesLaboratoryRegistrations
             'ref_no' => $registration->ref_no,
             'lab_type_name' => $registration->labType?->name,
             'category_name' => $registration->labType?->category?->name,
+            'department_name' => $registration->labType?->department?->name,
             'is_parametered' => $parameterCount > 0,
             'status' => $registration->status,
             'priority' => $registration->priority,
@@ -227,6 +268,21 @@ trait ManagesLaboratoryRegistrations
                 'markCompleted' => route('react.laboratory.registrations.mark-completed', $registration),
                 'cancel' => route('react.laboratory.registrations.cancel', $registration),
             ],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function pendingFiltersFromRequest(Request $request): array
+    {
+        return [
+            'search' => (string) $request->input('search', ''),
+            'patient_id' => (string) $request->input('patient_id', ''),
+            'priority' => (string) $request->input('priority', ''),
+            'date_from' => (string) $request->input('date_from', ''),
+            'date_to' => (string) $request->input('date_to', ''),
+            'per_page' => (string) $request->input('per_page', '50'),
         ];
     }
 

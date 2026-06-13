@@ -181,6 +181,11 @@ class Hospitalization extends Model
         return $this->hasMany(ICU::class);
     }
 
+    public function pacus()
+    {
+        return $this->hasMany(PACU::class);
+    }
+
     public function anesthesias()
     {
         return $this->hasMany(Anesthesia::class);

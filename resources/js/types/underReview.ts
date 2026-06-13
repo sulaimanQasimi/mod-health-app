@@ -18,7 +18,14 @@ export interface PaginatedUnderReviews {
 }
 
 export interface UnderReviewFilters {
-    q: string;
+    patient_name: string;
+    id_card: string;
+    father_name: string;
+    room_id: string;
+}
+
+export interface UnderReviewFilterOptions {
+    rooms: Array<{ id: number; name: string }>;
 }
 
 export interface UnderReviewVisit {
@@ -27,42 +34,10 @@ export interface UnderReviewVisit {
     doctor_name: string | null;
 }
 
-export interface UnderReviewDiabetesChart {
-    id: number;
-    date: string | null;
-    time: string | null;
-    rbs: string | number | null;
-    fbs: string | number | null;
-    insulin_dose: string | number | null;
-    nurse_name: string | null;
-    medicine_name: string | null;
-}
-
-export interface UnderReviewNurseNote {
-    id: number;
-    date: string | null;
-    note_am: string | null;
-    note_pm: string | null;
-    nurse_name: string | null;
-}
-
 export interface UnderReviewMedicationRecord {
     id: number;
     order_date: string | null;
     medicine_name: string | null;
-    nurse_name: string | null;
-}
-
-export interface UnderReviewVitalSign {
-    id: number;
-    type_name: string | null;
-    schedules_count: number;
-    recorded_at: string | null;
-}
-
-export interface UnderReviewNutritionCare {
-    id: number;
-    date: string | null;
     nurse_name: string | null;
 }
 
@@ -86,11 +61,7 @@ export interface UnderReviewDetail {
     room_name: string | null;
     bed_number: string | number | null;
     visits: UnderReviewVisit[];
-    diabetes_charts: UnderReviewDiabetesChart[];
-    nurse_notes: UnderReviewNurseNote[];
     medication_records: UnderReviewMedicationRecord[];
-    vital_signs: UnderReviewVitalSign[];
-    nutrition_cares: UnderReviewNutritionCare[];
     nursing_assessments_count: number;
     hospitalizations_count: number;
 }
@@ -101,6 +72,14 @@ export interface UnderReviewShowPermissions {
     store_visit: boolean;
     edit_visit: boolean;
     delete_visit: boolean;
+}
+
+export interface UnderReviewSectionPermissions {
+    prescription: boolean;
+    lab: boolean;
+    blood: boolean;
+    physiotherapy: boolean;
+    hospitalization: boolean;
 }
 
 export interface UnderReviewEditForm {

@@ -32,9 +32,11 @@ class PatientTestRegistrationController extends Controller
 
     private function scopedRegistrationQuery()
     {
+        $user = auth()->user();
+
         return PatientTestRegistration::query()
-            ->where('branch_id', auth()->user()->branch_id)
-            ->visibleToClinicType(auth()->user()->clinic_type);
+            ->whereHas('labType', fn ($query) => $query->where('department_id', $user->department_id))
+            ->visibleToClinicType($user->clinic_type);
     }
 
 

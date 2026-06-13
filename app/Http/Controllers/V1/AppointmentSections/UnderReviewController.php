@@ -118,6 +118,7 @@ class UnderReviewController extends Controller
 
     private function canOpenUnderReview($user): bool
     {
-        return $user?->can('show-under-review-menu') ?? false;
+        return ($user?->can('show-under-review-menu') ?? false)
+            || ($user?->can('patient-under-review') ?? false);
     }
 }

@@ -16,6 +16,7 @@ import {
     LabTestSection,
     NephrologySection,
     OperationSection,
+    PacuReferralSection,
     PhysiotherapySection,
     PrescriptionSection,
     ProstheticsSection,
@@ -64,6 +65,7 @@ interface ShowAppointmentProps {
         hospitalization: boolean;
         blood: boolean;
         icu: boolean;
+        pacu: boolean;
         anesthesia: boolean;
         operations: boolean;
     };
@@ -240,6 +242,7 @@ export default function ShowAppointment({
                     {sectionPermissions.anesthesia && <AnesthesiaSection appointmentId={id} />}
                     {sectionPermissions.operations && <OperationSection appointmentId={id} />}
                     {sectionPermissions.icu && <IcuReferralSection appointmentId={id} />}
+                    {sectionPermissions.pacu && <PacuReferralSection appointmentId={id} />}
                     <IcuVisitsSection appointmentId={id} />
                 </div>
             </div>

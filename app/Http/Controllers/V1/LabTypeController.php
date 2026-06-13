@@ -57,6 +57,7 @@ class LabTypeController extends Controller
             ]),
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
             'filterOptions' => $this->filterOptions($request),
+            'categories' => $this->categoryListPayload(),
             'permissions' => $this->labTypePermissions($request->user()),
             'urls' => [
                 'index' => route('react.lab-types.index'),
@@ -65,13 +66,69 @@ class LabTypeController extends Controller
                 'edit' => url('/react/lab-types'),
                 'destroy' => url('/react/lab-types'),
             ],
+            'categoryUrls' => [
+                'store' => route('react.lab-types.categories.store'),
+                'update' => url('/react/lab-types/categories'),
+                'destroy' => url('/react/lab-types/categories'),
+            ],
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
         ]);
+    }
+
+    public function storeCategory(Request $request): RedirectResponse
+    {
+        $this->authorizeLabTypeManage($request);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name',
+        ]);
+
+        Category::create($data);
+
+        return redirect()
+            ->route('react.lab-types.index')
+            ->with('success', localize('global.category_created_successfully.'));
+    }
+
+    public function updateCategory(Request $request, Category $category): RedirectResponse
+    {
+        $this->authorizeLabTypeManage($request);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name,'.$category->id,
+        ]);
+
+        $category->update($data);
+
+        return redirect()
+            ->route('react.lab-types.index')
+            ->with('success', localize('global.category_updated_successfully.'));
+    }
+
+    public function destroyCategory(Request $request, Category $category): RedirectResponse
+    {
+        $this->authorizeLabTypeManage($request);
+
+        if ($category->labTypes()->exists()) {
+            return redirect()
+                ->route('react.lab-types.index')
+                ->with('error', localize('global.category_cannot_delete_with_lab_types') ?: localize('global.category_cannot_delete'));
+        }
+
+        $category->delete();
+
+        return redirect()
+            ->route('react.lab-types.index')
+            ->with('success', localize('global.category_deleted_successfully.'));
     }
 
     public function show(Request $request, LabType $labType): Response
     {
         $this->authorizeLabTypeAccess($request);
-        $this->ensureLabTypeBranch($labType);
+        $this->ensureLabTypeAccess($labType);
 
         $labType->load(['category:id,name', 'department:id,name'])->loadCount('directLabTestParameters', 'patientTestRegistrations');
 
@@ -123,7 +180,7 @@ class LabTypeController extends Controller
     public function edit(Request $request, LabType $labType): Response
     {
         $this->authorizeLabTypeManage($request);
-        $this->ensureLabTypeBranch($labType);
+        $this->ensureLabTypeAccess($labType);
 
         return Inertia::render('LabTypes/Edit', [
             'labType' => [
@@ -140,7 +197,7 @@ class LabTypeController extends Controller
     public function update(Request $request, LabType $labType): RedirectResponse
     {
         $this->authorizeLabTypeManage($request);
-        $this->ensureLabTypeBranch($labType);
+        $this->ensureLabTypeAccess($labType);
 
         $labType->update($this->validateLabType($request, $labType));
 
@@ -152,7 +209,7 @@ class LabTypeController extends Controller
     public function destroy(Request $request, LabType $labType): RedirectResponse
     {
         $this->authorizeLabTypeManage($request);
-        $this->ensureLabTypeBranch($labType);
+        $this->ensureLabTypeAccess($labType);
 
         if ($labType->patientTestRegistrations()->exists()) {
             return redirect()
@@ -169,13 +226,7 @@ class LabTypeController extends Controller
 
     private function scopedQuery(Request $request)
     {
-        $query = LabType::query();
-
-        if ($branchId = $this->branchId($request)) {
-            $query->where('branch_id', $branchId);
-        }
-
-        return $query;
+        return LabType::query()->forLaboratoryUser($request->user());
     }
 
     private function branchId(Request $request): ?int
@@ -185,10 +236,19 @@ class LabTypeController extends Controller
         return $branchId ? (int) $branchId : null;
     }
 
-    private function ensureLabTypeBranch(LabType $labType): void
+    private function ensureLabTypeAccess(LabType $labType): void
     {
-        $branchId = auth()->user()?->branch_id;
-        if ($branchId && (int) $labType->branch_id !== (int) $branchId) {
+        $user = auth()->user();
+        if (! $user) {
+            abort(404);
+        }
+
+        $accessible = LabType::query()
+            ->whereKey($labType->id)
+            ->forLaboratoryUser($user)
+            ->exists();
+
+        if (! $accessible) {
             abort(404);
         }
     }
@@ -217,13 +277,21 @@ class LabTypeController extends Controller
     private function buildFormData(Request $request): array
     {
         $branchId = $this->branchId($request);
+        $user = $request->user();
+
+        $departmentsQuery = Department::query()
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->orderBy('name');
+
+        if ($user?->department_id) {
+            $departmentsQuery->where('id', $user->department_id);
+        } else {
+            $departmentsQuery->whereRaw('0 = 1');
+        }
 
         return [
             'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
-            'departments' => Department::query()
-                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
-                ->orderBy('name')
-                ->get(['id', 'name']),
+            'departments' => $departmentsQuery->get(['id', 'name']),
         ];
     }
 
@@ -233,13 +301,21 @@ class LabTypeController extends Controller
     private function filterOptions(Request $request): array
     {
         $branchId = $this->branchId($request);
+        $user = $request->user();
+
+        $departmentsQuery = Department::query()
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->orderBy('name');
+
+        if ($user?->department_id) {
+            $departmentsQuery->where('id', $user->department_id);
+        } else {
+            $departmentsQuery->whereRaw('0 = 1');
+        }
 
         return [
             'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
-            'departments' => Department::query()
-                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
-                ->orderBy('name')
-                ->get(['id', 'name']),
+            'departments' => $departmentsQuery->get(['id', 'name']),
         ];
     }
 
@@ -277,7 +353,7 @@ class LabTypeController extends Controller
             ],
             'category_id' => 'required|exists:categories,id',
             'department_id' => [
-                'nullable',
+                'required',
                 Rule::exists('departments', 'id')->where(fn ($query) => $query->where('branch_id', $branchId)),
             ],
         ]);
@@ -285,6 +361,24 @@ class LabTypeController extends Controller
         $data['branch_id'] = $branchId;
 
         return $data;
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string, lab_types_count: int}>
+     */
+    private function categoryListPayload(): array
+    {
+        return Category::query()
+            ->withCount('labTypes')
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Category $category) => [
+                'id' => $category->id,
+                'name' => $category->name,
+                'lab_types_count' => $category->lab_types_count,
+            ])
+            ->values()
+            ->all();
     }
 
     /**

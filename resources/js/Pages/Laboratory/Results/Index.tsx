@@ -1,11 +1,12 @@
-import { Head, router } from '@inertiajs/react';
-import { Alert, Badge, Card } from 'flowbite-react';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { Head } from '@inertiajs/react';
 import AppointmentPagination from '../../../Components/Appointments/AppointmentPagination';
+import LaboratoryFlashAlerts from '../../../Components/Laboratory/LaboratoryFlashAlerts';
 import LaboratoryPageHeader from '../../../Components/Laboratory/LaboratoryPageHeader';
 import LaboratoryPatientAccordion from '../../../Components/Laboratory/LaboratoryPatientAccordion';
 import LaboratoryResultsFilters from '../../../Components/Laboratory/LaboratoryResultsFilters';
+import LaboratoryResultsSummary from '../../../Components/Laboratory/LaboratoryResultsSummary';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import { useLaboratoryListFilters } from '../../../hooks/useLaboratoryListFilters';
 import { useTranslation } from '../../../hooks/useTranslation';
 import {
     LaboratoryListMode,
@@ -45,10 +46,6 @@ const EMPTY_FILTERS: Filters = {
     per_page: '50',
 };
 
-function cleanFilters(filters: Filters): Record<string, string> {
-    return Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== ''));
-}
-
 export default function Index({
     listMode,
     page,
@@ -59,12 +56,11 @@ export default function Index({
     flash,
 }: IndexProps) {
     const { t } = useTranslation();
-    const [filters, setFilters] = useState<Filters>(serverFilters);
-    const [processing, setProcessing] = useState(false);
-
-    useEffect(() => {
-        setFilters(serverFilters);
-    }, [serverFilters]);
+    const { filters, processing, updateFilter, handleSubmit, handleReset } = useLaboratoryListFilters(
+        serverFilters,
+        urls.index,
+        EMPTY_FILTERS,
+    );
 
     const activeTab =
         listMode === 'pending'
@@ -72,34 +68,6 @@ export default function Index({
             : listMode === 'in_progress'
               ? 'inProgress'
               : 'completed';
-
-    const applyFilters = useCallback(
-        (nextFilters: Filters) => {
-            setProcessing(true);
-            router.get(urls.index, cleanFilters(nextFilters), {
-                preserveScroll: true,
-                preserveState: true,
-                replace: true,
-                onFinish: () => setProcessing(false),
-            });
-        },
-        [urls.index],
-    );
-
-    const updateFilter = (field: keyof Filters, value: string) => {
-        setFilters((current) => ({ ...current, [field]: value }));
-    };
-
-    const handleFilterSubmit = (event: FormEvent) => {
-        event.preventDefault();
-        applyFilters(filters);
-    };
-
-    const handleReset = () => {
-        const reset = { ...EMPTY_FILTERS, per_page: filters.per_page };
-        setFilters(reset);
-        applyFilters(reset);
-    };
 
     return (
         <DashboardLayout>
@@ -114,42 +82,21 @@ export default function Index({
                 activeTab={activeTab}
             />
 
-            {flash?.success && (
-                <Alert color="success" className="mb-4">
-                    {flash.success}
-                </Alert>
-            )}
-            {flash?.error && (
-                <Alert color="failure" className="mb-4">
-                    {flash.error}
-                </Alert>
-            )}
+            <LaboratoryFlashAlerts flash={flash} />
 
             <LaboratoryResultsFilters
                 filters={filters}
                 onChange={updateFilter}
-                onSubmit={handleFilterSubmit}
+                onSubmit={handleSubmit}
                 onReset={handleReset}
                 processing={processing}
                 showStatusFilter={listMode === 'pending'}
             />
 
-            <Card className="mb-4 shadow-sm">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h2 className="font-semibold text-gray-900 dark:text-white">
-                        {t('global.test_results')} — {t('global.patients')}
-                    </h2>
-                    <div className="flex flex-wrap gap-2">
-                        <Badge color="info">
-                            {summary.patient_count} {t('global.patients')}
-                        </Badge>
-                        <Badge color="purple">
-                            {summary.registration_count}{' '}
-                            {t('global.registrations') || 'registrations'}
-                        </Badge>
-                    </div>
-                </div>
-            </Card>
+            <LaboratoryResultsSummary
+                patientCount={summary.patient_count}
+                registrationCount={summary.registration_count}
+            />
 
             <LaboratoryPatientAccordion patients={patients.data} listMode={listMode} />
 

@@ -182,12 +182,15 @@ class AppointmentController extends Controller
                 'printToken' => ! $appointment->is_completed,
             ],
             'sectionPermissions' => [
-                'underReview' => $request->user()->can('show-under-review-menu'),
+                'underReview' => $request->user()->can('patient-under-review')
+                    || $request->user()->can('show-under-review-menu'),
                 'hospitalization' => $request->user()->can('show-hospitalizations-menu'),
                 'blood' => $request->user()->can('show-blood-request-menu'),
                 'icu' => $request->user()->can('refer-to-icu')
                     || $request->user()->can('edit-icus')
                     || $request->user()->can('delete-icus'),
+                'pacu' => $request->user()->can('refer-to-pacu')
+                    || $request->user()->can('show-pacu-menu'),
                 'anesthesia' => $request->user()->can('refer-to-anesthesia')
                     || $request->user()->can('edit-anesthesias')
                     || $request->user()->can('delete-anesthesias')

@@ -1,11 +1,12 @@
 import { Head, router } from '@inertiajs/react';
-import { Button, Card, Label, Select, TextInput } from 'flowbite-react';
+import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useEffect, useState } from 'react';
 import AppointmentPagination from '../../../Components/Appointments/AppointmentPagination';
 import LaboratoryPageHeader from '../../../Components/Laboratory/LaboratoryPageHeader';
 import LaboratoryPriorityBadge from '../../../Components/Laboratory/LaboratoryPriorityBadge';
 import LaboratoryStatusBadge from '../../../Components/Laboratory/LaboratoryStatusBadge';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import {
     Table,
     TableBody,
@@ -15,6 +16,11 @@ import {
     TableRow,
 } from '../../../Components/ui/Table';
 import { useTranslation } from '../../../hooks/useTranslation';
+import {
+    perPageFilterOptionsWithAll,
+    selectOptionsWithAll,
+    statusFilterOptions,
+} from '../../../utils/laboratoryFilterOptions';
 import { PaginationLink } from '../../../types/appointment';
 import {
     LaboratoryDetailedReportRow,
@@ -108,31 +114,24 @@ export default function ReportDetailed({
                             />
                         </div>
                         <div>
-                            <Label>{t('global.test_type')}</Label>
-                            <Select
+                            <Label htmlFor="detailed-test-type">{t('global.test_type')}</Label>
+                            <SearchableSelect
+                                id="detailed-test-type"
                                 value={filters.test_type ?? ''}
-                                onChange={(e) => updateFilter('test_type', e.target.value)}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                {filterOptions.labTypes.map((type) => (
-                                    <option key={type.id} value={type.id}>
-                                        {type.name}
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => updateFilter('test_type', value)}
+                                placeholder={t('global.all')}
+                                options={selectOptionsWithAll(t, filterOptions.labTypes)}
+                            />
                         </div>
                         <div>
-                            <Label>{t('global.status')}</Label>
-                            <Select
+                            <Label htmlFor="detailed-status">{t('global.status')}</Label>
+                            <SearchableSelect
+                                id="detailed-status"
                                 value={filters.status ?? ''}
-                                onChange={(e) => updateFilter('status', e.target.value)}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                <option value="pending">{t('global.pending')}</option>
-                                <option value="in_progress">{t('global.in_progress')}</option>
-                                <option value="completed">{t('global.completed')}</option>
-                                <option value="cancelled">{t('global.cancelled')}</option>
-                            </Select>
+                                onChange={(value) => updateFilter('status', value)}
+                                placeholder={t('global.all')}
+                                options={statusFilterOptions(t)}
+                            />
                         </div>
                         <div>
                             <Label>{t('global.patient_id')}</Label>
@@ -142,31 +141,23 @@ export default function ReportDetailed({
                             />
                         </div>
                         <div>
-                            <Label>{t('global.doctor')}</Label>
-                            <Select
+                            <Label htmlFor="detailed-doctor">{t('global.doctor')}</Label>
+                            <SearchableSelect
+                                id="detailed-doctor"
                                 value={filters.doctor_id ?? ''}
-                                onChange={(e) => updateFilter('doctor_id', e.target.value)}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                {filterOptions.doctors.map((doctor) => (
-                                    <option key={doctor.id} value={doctor.id}>
-                                        {doctor.name}
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => updateFilter('doctor_id', value)}
+                                placeholder={t('global.all')}
+                                options={selectOptionsWithAll(t, filterOptions.doctors)}
+                            />
                         </div>
                         <div>
-                            <Label>{t('global.per_page')}</Label>
-                            <Select
+                            <Label htmlFor="detailed-per-page">{t('global.per_page')}</Label>
+                            <SearchableSelect
+                                id="detailed-per-page"
                                 value={filters.per_page ?? '15'}
-                                onChange={(e) => updateFilter('per_page', e.target.value)}
-                            >
-                                <option value="15">15</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                                <option value="all">{t('global.all')}</option>
-                            </Select>
+                                onChange={(value) => updateFilter('per_page', value)}
+                                options={perPageFilterOptionsWithAll(t, ['15', '25', '50', '100'])}
+                            />
                         </div>
                     </div>
 
@@ -181,46 +172,34 @@ export default function ReportDetailed({
                     {showAdvanced && (
                         <div className="grid grid-cols-1 gap-4 rounded-lg border border-gray-200 p-4 md:grid-cols-2 lg:grid-cols-4 dark:border-gray-700">
                             <div>
-                                <Label>{t('global.branch')}</Label>
-                                <Select
+                                <Label htmlFor="detailed-branch">{t('global.branch')}</Label>
+                                <SearchableSelect
+                                    id="detailed-branch"
                                     value={filters.branch_id ?? ''}
-                                    onChange={(e) => updateFilter('branch_id', e.target.value)}
-                                >
-                                    <option value="">{t('global.all')}</option>
-                                    {filterOptions.branches.map((branch) => (
-                                        <option key={branch.id} value={branch.id}>
-                                            {branch.name}
-                                        </option>
-                                    ))}
-                                </Select>
+                                    onChange={(value) => updateFilter('branch_id', value)}
+                                    placeholder={t('global.all')}
+                                    options={selectOptionsWithAll(t, filterOptions.branches)}
+                                />
                             </div>
                             <div>
-                                <Label>{t('global.department')}</Label>
-                                <Select
+                                <Label htmlFor="detailed-department">{t('global.department')}</Label>
+                                <SearchableSelect
+                                    id="detailed-department"
                                     value={filters.department_id ?? ''}
-                                    onChange={(e) => updateFilter('department_id', e.target.value)}
-                                >
-                                    <option value="">{t('global.all')}</option>
-                                    {filterOptions.departments.map((dept) => (
-                                        <option key={dept.id} value={dept.id}>
-                                            {dept.name}
-                                        </option>
-                                    ))}
-                                </Select>
+                                    onChange={(value) => updateFilter('department_id', value)}
+                                    placeholder={t('global.all')}
+                                    options={selectOptionsWithAll(t, filterOptions.departments)}
+                                />
                             </div>
                             <div>
-                                <Label>{t('global.assigned_to')}</Label>
-                                <Select
+                                <Label htmlFor="detailed-assigned-to">{t('global.assigned_to')}</Label>
+                                <SearchableSelect
+                                    id="detailed-assigned-to"
                                     value={filters.assigned_to ?? ''}
-                                    onChange={(e) => updateFilter('assigned_to', e.target.value)}
-                                >
-                                    <option value="">{t('global.all')}</option>
-                                    {filterOptions.users.map((user) => (
-                                        <option key={user.id} value={user.id}>
-                                            {user.name}
-                                        </option>
-                                    ))}
-                                </Select>
+                                    onChange={(value) => updateFilter('assigned_to', value)}
+                                    placeholder={t('global.all')}
+                                    options={selectOptionsWithAll(t, filterOptions.users)}
+                                />
                             </div>
                             <div>
                                 <Label>{t('global.notes')}</Label>

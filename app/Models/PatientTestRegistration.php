@@ -303,4 +303,5 @@ class PatientTestRegistration extends Model
             $q->whereIn('clinic_type', [$viewerClinicType, 'both']);
         });
     }
+
 }

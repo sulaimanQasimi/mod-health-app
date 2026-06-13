@@ -1,9 +1,10 @@
 import { Head, router } from '@inertiajs/react';
-import { Button, Card, Label, Select, TextInput } from 'flowbite-react';
+import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useEffect, useState } from 'react';
 import AppointmentPagination from '../../../Components/Appointments/AppointmentPagination';
 import LaboratoryPageHeader from '../../../Components/Laboratory/LaboratoryPageHeader';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import {
     Table,
     TableBody,
@@ -13,6 +14,10 @@ import {
     TableRow,
 } from '../../../Components/ui/Table';
 import { useTranslation } from '../../../hooks/useTranslation';
+import {
+    perPageFilterOptionsWithAll,
+    selectOptionsWithAll,
+} from '../../../utils/laboratoryFilterOptions';
 import { PaginationLink } from '../../../types/appointment';
 import { LaboratoryReportRow, SelectOption } from '../../../types/laboratory';
 
@@ -96,18 +101,14 @@ export default function Report({ items, filters: serverFilters, filterOptions, u
                             />
                         </div>
                         <div>
-                            <Label>{t('global.test_type')}</Label>
-                            <Select
+                            <Label htmlFor="report-test-type">{t('global.test_type')}</Label>
+                            <SearchableSelect
+                                id="report-test-type"
                                 value={filters.test_type}
-                                onChange={(e) => setFilters({ ...filters, test_type: e.target.value })}
-                            >
-                                <option value="">{t('global.all')}</option>
-                                {filterOptions.labTypes.map((type) => (
-                                    <option key={type.id} value={type.id}>
-                                        {type.name}
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, test_type: value })}
+                                placeholder={t('global.all')}
+                                options={selectOptionsWithAll(t, filterOptions.labTypes)}
+                            />
                         </div>
                         <div>
                             <Label>{t('global.patient_id')}</Label>
@@ -117,17 +118,13 @@ export default function Report({ items, filters: serverFilters, filterOptions, u
                             />
                         </div>
                         <div>
-                            <Label>{t('global.per_page')}</Label>
-                            <Select
+                            <Label htmlFor="report-per-page">{t('global.per_page')}</Label>
+                            <SearchableSelect
+                                id="report-per-page"
                                 value={filters.per_page}
-                                onChange={(e) => setFilters({ ...filters, per_page: e.target.value })}
-                            >
-                                <option value="15">15</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                                <option value="all">{t('global.all')}</option>
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, per_page: value })}
+                                options={perPageFilterOptionsWithAll(t, ['15', '25', '50', '100'])}
+                            />
                         </div>
                     </div>
                     <Button type="submit" color="blue" disabled={processing}>

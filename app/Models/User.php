@@ -215,4 +215,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(PharmacyFulfillment::class);
     }
+
+    public function laboratoryDepartmentId(): ?int
+    {
+        if ($this->department_id) {
+            return (int) $this->department_id;
+        }
+
+        if ($this->relationLoaded('section')) {
+            return $this->section?->department_id ? (int) $this->section->department_id : null;
+        }
+
+        return $this->section()->value('department_id');
+    }
 }

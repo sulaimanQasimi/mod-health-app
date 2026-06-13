@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -71,5 +72,22 @@ class LabType extends Model
     public function patientTestRegistrations()
     {
         return $this->hasMany(PatientTestRegistration::class);
+    }
+
+    /**
+     * @param  Builder<LabType>  $query
+     * @return Builder<LabType>
+     */
+    public function scopeForLaboratoryUser(Builder $query, User $user): Builder
+    {
+        if ($user->branch_id) {
+            $query->where('branch_id', $user->branch_id);
+        }
+
+        if (! $user->department_id) {
+            return $query->whereRaw('0 = 1');
+        }
+
+        return $query->where('department_id', $user->department_id);
     }
 }

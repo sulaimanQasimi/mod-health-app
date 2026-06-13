@@ -32,6 +32,7 @@ import { SectionActionButton } from '../Appointments/Sections/SimpleTableSection
 interface HospitalizationNurseNoteSectionProps {
     hospitalizationId: number;
     isDischarged?: boolean;
+    baseUrl?: string;
 }
 
 interface NurseNoteListItem {
@@ -144,10 +145,11 @@ function NoteFormFields({
 export default function HospitalizationNurseNoteSection({
     hospitalizationId,
     isDischarged = false,
+    baseUrl: baseUrlProp,
 }: HospitalizationNurseNoteSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/hospitalizations/${hospitalizationId}/nurse-notes`;
+    const baseUrl = baseUrlProp ?? `/react/hospitalizations/${hospitalizationId}/nurse-notes`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

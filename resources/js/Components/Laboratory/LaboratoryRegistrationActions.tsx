@@ -10,10 +10,12 @@ import { useTranslation } from '../../hooks/useTranslation';
 
 interface LaboratoryRegistrationActionsProps {
     registration: LaboratoryRegistrationItem;
+    listMode?: 'pending' | 'in_progress' | 'completed';
 }
 
 export default function LaboratoryRegistrationActions({
     registration,
+    listMode,
 }: LaboratoryRegistrationActionsProps) {
     const { t } = useTranslation();
     const { permissions, urls } = registration;
@@ -26,6 +28,8 @@ export default function LaboratoryRegistrationActions({
         router.post(url, {}, { preserveScroll: true });
     };
 
+    const pendingOnly = listMode === 'pending';
+
     return (
         <AppointmentActionGroup>
             {permissions.accept && (
@@ -36,7 +40,7 @@ export default function LaboratoryRegistrationActions({
                     onClick={() => postAction(urls.accept, t('global.are_you_sure') || 'Are you sure?')}
                 />
             )}
-            {permissions.enterResults && (
+            {!pendingOnly && permissions.enterResults && (
                 <AppointmentIconAnchor
                     href={urls.enterResults}
                     icon="bx-edit-alt"
@@ -44,7 +48,7 @@ export default function LaboratoryRegistrationActions({
                     variant="edit"
                 />
             )}
-            {permissions.markCompleted && (
+            {!pendingOnly && permissions.markCompleted && (
                 <AppointmentPillButton
                     icon="bx-check-double"
                     label={t('global.completed')}
@@ -57,7 +61,7 @@ export default function LaboratoryRegistrationActions({
                     }
                 />
             )}
-            {permissions.print && (
+            {!pendingOnly && permissions.print && (
                 <AppointmentIconAnchor
                     href={urls.print}
                     icon="bx-printer"
@@ -65,7 +69,7 @@ export default function LaboratoryRegistrationActions({
                     variant="view"
                 />
             )}
-            {permissions.cancel && (
+            {!pendingOnly && permissions.cancel && (
                 <AppointmentIconButton
                     icon="bx-x"
                     title={t('global.cancel')}

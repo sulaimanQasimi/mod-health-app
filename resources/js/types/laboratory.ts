@@ -27,6 +27,7 @@ export interface LaboratoryRegistrationItem {
     ref_no: string;
     lab_type_name: string | null;
     category_name: string | null;
+    department_name: string | null;
     is_parametered: boolean;
     status: LaboratoryStatus;
     priority: LaboratoryPriority;
@@ -71,6 +72,21 @@ export interface LaboratoryResultsFilters {
     date_from: string;
     date_to: string;
     per_page: string;
+}
+
+export interface LaboratoryPendingFilters {
+    search: string;
+    patient_id: string;
+    priority: string;
+    date_from: string;
+    date_to: string;
+    per_page: string;
+}
+
+export interface LaboratoryDepartmentScope {
+    is_restricted: boolean;
+    department_id: number | null;
+    department_name: string | null;
 }
 
 export interface LaboratoryNavUrls {

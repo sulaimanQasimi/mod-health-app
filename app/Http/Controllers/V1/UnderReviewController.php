@@ -5,9 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\Bed;
-use App\Models\DiabetesChart;
 use App\Models\MedicationAdministrationRecord;
-use App\Models\NurseNote;
 use App\Models\Room;
 use App\Models\UnderReview;
 use App\Models\Visit;
@@ -50,6 +48,25 @@ class UnderReviewController extends Controller
             ])
             ->orderByDesc('created_at');
 
+        if ($request->filled('patient_name')) {
+            $search = $request->patient_name;
+            $query->whereHas('patient', fn ($p) => $p->where('name', 'like', '%'.$search.'%'));
+        }
+
+        if ($request->filled('id_card')) {
+            $search = $request->id_card;
+            $query->whereHas('patient', fn ($p) => $p->where('id_card', 'like', '%'.$search.'%'));
+        }
+
+        if ($request->filled('father_name')) {
+            $search = $request->father_name;
+            $query->whereHas('patient', fn ($p) => $p->where('father_name', 'like', '%'.$search.'%'));
+        }
+
+        if ($request->filled('room_id')) {
+            $query->where('room_id', $request->room_id);
+        }
+
         if ($request->filled('q')) {
             $search = $request->q;
             $query->where(function ($w) use ($search) {
@@ -60,6 +77,8 @@ class UnderReviewController extends Controller
                 });
             });
         }
+
+        $branchId = $this->branchId();
 
         $paginator = $this->paginateQuery($query, $request, 25, [10, 15, 25, 50, 100]);
         $items = $this->paginationPayload($paginator, fn (UnderReview $item) => [
@@ -77,7 +96,18 @@ class UnderReviewController extends Controller
 
         return Inertia::render('UnderReviews/Index', [
             'underReviews' => $items,
-            'filters' => ['q' => (string) $request->input('q', '')],
+            'filters' => [
+                'patient_name' => (string) $request->input('patient_name', ''),
+                'id_card' => (string) $request->input('id_card', ''),
+                'father_name' => (string) $request->input('father_name', ''),
+                'room_id' => (string) $request->input('room_id', ''),
+            ],
+            'filterOptions' => [
+                'rooms' => Room::query()
+                    ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                    ->orderBy('name')
+                    ->get(['id', 'name']),
+            ],
             'urls' => [
                 'current' => route('react.under-reviews.index'),
                 'show' => url('/react/under-reviews'),
@@ -98,30 +128,8 @@ class UnderReviewController extends Controller
             'appointment:id,patient_id,doctor_id,is_completed',
             'visits.doctor:id,name',
             'hospitalization:id,under_review_id,is_discharged',
-            'vitalSigns.vitalSignType:id,name',
-            'vitalSigns.schedules.nurse:id,first_name,last_name',
-            'nutritionCares.createdBy:id,name,last_name',
-            'nutritionCares.nurse:id,first_name,last_name',
             'nursingAssessments:id,morphable_id,morphable_type,created_at',
         ]);
-
-        $diabetesCharts = DiabetesChart::query()
-            ->where('diabetes_chartable_type', UnderReview::class)
-            ->where('diabetes_chartable_id', $underReview->id)
-            ->with(['nurse:id,first_name,last_name', 'medicine:id,name'])
-            ->orderByDesc('date')
-            ->orderByDesc('time')
-            ->limit(50)
-            ->get();
-
-        $nurseNotes = NurseNote::query()
-            ->where('morphable_type', UnderReview::class)
-            ->where('morphable_id', $underReview->id)
-            ->with(['nurse:id,first_name,last_name'])
-            ->orderByDesc('date')
-            ->orderByDesc('created_at')
-            ->limit(50)
-            ->get();
 
         $medicationRecords = MedicationAdministrationRecord::query()
             ->where('morphable_type', UnderReview::class)
@@ -135,17 +143,20 @@ class UnderReviewController extends Controller
         $user = $request->user();
 
         return Inertia::render('UnderReviews/Show', [
-            'underReview' => $this->transformDetail($underReview, $diabetesCharts, $nurseNotes, $medicationRecords),
+            'underReview' => $this->transformDetail($underReview, $medicationRecords),
             'permissions' => [
                 'edit' => $user->can('edit-under-reviews'),
-                'discharge' => ! $underReview->discharge_remark && $user->can('edit-under-reviews'),
+                'discharge' => ! (bool) $underReview->is_discharged && $user->can('edit-under-reviews'),
                 'store_visit' => ! (bool) $underReview->is_discharged,
                 'edit_visit' => $user->can('edit-under-review-visit'),
                 'delete_visit' => $user->can('delete-under-review-visit'),
             ],
             'sectionPermissions' => [
-                'prescription' => $user->can('show-prescriptions-menu'),
-                'lab' => $user->can('show-labs-menu'),
+                'prescription' => $user->can('show-prescriptions-menu') && (bool) $underReview->appointment_id,
+                'lab' => $user->can('show-labs-menu') && (bool) $underReview->appointment_id,
+                'blood' => $user->can('show-blood-request-menu') && (bool) $underReview->appointment_id,
+                'physiotherapy' => $user->can('show-physiotherapy-procedures') && (bool) $underReview->appointment_id,
+                'hospitalization' => $user->can('show-hospitalizations-menu') && (bool) $underReview->appointment_id,
             ],
             'urls' => [
                 'index' => route('react.under-reviews.index'),
@@ -168,6 +179,8 @@ class UnderReviewController extends Controller
 
         $underReview->load(['appointment:id,patient_id', 'room:id,name', 'bed:id,number']);
 
+        $branchId = $underReview->branch_id ?? request()->user()->branch_id;
+
         return Inertia::render('UnderReviews/Edit', [
             'underReview' => [
                 'id' => $underReview->id,
@@ -179,8 +192,14 @@ class UnderReviewController extends Controller
                 'appointment_id' => $underReview->appointment_id,
                 'branch_id' => $underReview->branch_id,
             ],
-            'rooms' => Room::query()->orderBy('name')->get(['id', 'name']),
-            'beds' => Bed::query()->orderBy('number')->get(['id', 'number', 'room_id', 'is_occupied']),
+            'rooms' => Room::query()
+                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                ->orderBy('name')
+                ->get(['id', 'name']),
+            'beds' => Bed::query()
+                ->when($branchId, fn ($q) => $q->whereHas('room', fn ($room) => $room->where('branch_id', $branchId)))
+                ->orderBy('number')
+                ->get(['id', 'number', 'room_id', 'is_occupied']),
             'urls' => [
                 'show' => route('react.under-reviews.show', $underReview),
                 'update' => route('react.under-reviews.update', $underReview),
@@ -300,17 +319,11 @@ class UnderReviewController extends Controller
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, DiabetesChart>  $diabetesCharts
-     * @param  \Illuminate\Support\Collection<int, NurseNote>  $nurseNotes
      * @param  \Illuminate\Support\Collection<int, MedicationAdministrationRecord>  $medicationRecords
      * @return array<string, mixed>
      */
-    private function transformDetail(
-        UnderReview $underReview,
-        $diabetesCharts,
-        $nurseNotes,
-        $medicationRecords,
-    ): array {
+    private function transformDetail(UnderReview $underReview, $medicationRecords): array
+    {
         return [
             'id' => $underReview->id,
             'reason' => $underReview->reason,
@@ -335,46 +348,12 @@ class UnderReviewController extends Controller
                 'description' => $visit->description,
                 'doctor_name' => $visit->doctor?->name,
             ])->values()->all(),
-            'diabetes_charts' => $diabetesCharts->map(fn (DiabetesChart $chart) => [
-                'id' => $chart->id,
-                'date' => $chart->date,
-                'time' => $chart->time,
-                'rbs' => $chart->rbs,
-                'fbs' => $chart->fbs,
-                'insulin_dose' => $chart->insulin_dose,
-                'nurse_name' => $chart->nurse
-                    ? trim($chart->nurse->first_name.' '.$chart->nurse->last_name)
-                    : null,
-                'medicine_name' => $chart->medicine?->name,
-            ])->values()->all(),
-            'nurse_notes' => $nurseNotes->map(fn (NurseNote $note) => [
-                'id' => $note->id,
-                'date' => $note->date,
-                'note_am' => $note->note_am,
-                'note_pm' => $note->note_pm,
-                'nurse_name' => $note->nurse
-                    ? trim($note->nurse->first_name.' '.$note->nurse->last_name)
-                    : null,
-            ])->values()->all(),
             'medication_records' => $medicationRecords->map(fn (MedicationAdministrationRecord $record) => [
                 'id' => $record->id,
                 'order_date' => $record->order_date,
                 'medicine_name' => $record->medicine?->name,
                 'nurse_name' => $record->nurse
                     ? trim($record->nurse->first_name.' '.$record->nurse->last_name)
-                    : null,
-            ])->values()->all(),
-            'vital_signs' => $underReview->vitalSigns->map(fn ($vital) => [
-                'id' => $vital->id,
-                'type_name' => $vital->vitalSignType?->name,
-                'schedules_count' => $vital->schedules->count(),
-                'recorded_at' => $this->formatDate($vital->created_at),
-            ])->values()->all(),
-            'nutrition_cares' => $underReview->nutritionCares->map(fn ($care) => [
-                'id' => $care->id,
-                'date' => $care->date,
-                'nurse_name' => $care->nurse
-                    ? trim($care->nurse->first_name.' '.$care->nurse->last_name)
                     : null,
             ])->values()->all(),
             'nursing_assessments_count' => $underReview->nursingAssessments->count(),

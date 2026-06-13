@@ -75,7 +75,51 @@ class LaboratoryController extends Controller
 
     public function pending(Request $request): Response
     {
-        return $this->renderResultsList($request, 'pending', 'pending');
+        $this->authorize('viewAny', PatientTestRegistration::class);
+
+        $request->validate([
+            'search' => 'nullable|string|max:255',
+            'patient_id' => 'nullable|string',
+            'priority' => 'nullable|in:normal,urgent,stat',
+            'date_from' => 'nullable|string',
+            'date_to' => 'nullable|string',
+            'per_page' => 'nullable|integer|min:15|max:100',
+        ]);
+
+        $user = $request->user();
+        $query = $this->pendingRegistrationsQuery($user, $request);
+
+        $perPage = min(max((int) $request->input('per_page', 50), 15), 100);
+        $paginator = $query
+            ->latest('patient_test_registrations.registration_date')
+            ->latest('patient_test_registrations.id')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        $patientGroups = $this->transformPatientGroups($paginator, $user);
+
+        return Inertia::render('Laboratory/Results/Pending', [
+            'patients' => [
+                'data' => $patientGroups,
+                ...$this->paginatedInertiaPayload($paginator),
+            ],
+            'summary' => [
+                'patient_count' => count($patientGroups),
+                'registration_count' => $paginator->total(),
+            ],
+            'filters' => $this->pendingFiltersFromRequest($request),
+            'scope' => $this->laboratoryScopeContext($user),
+            'permissions' => [
+                'manageResults' => $user->can('manageResults', PatientTestRegistration::class),
+            ],
+            'urls' => array_merge($this->laboratoryNavUrls(), [
+                'index' => route('react.laboratory.results.pending'),
+            ]),
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
+        ]);
     }
 
     public function inProgress(Request $request): Response
@@ -581,7 +625,7 @@ class LaboratoryController extends Controller
             'items' => $items,
             'filters' => $filters,
             'filterOptions' => [
-                'labTypes' => LabType::query()->orderBy('name')->get(['id', 'name']),
+                'labTypes' => $this->labTypesForUser($user),
             ],
             'urls' => [
                 'report' => route('react.laboratory.registrations.report'),
@@ -605,6 +649,7 @@ class LaboratoryController extends Controller
                 ->with([
                     'testable.patient',
                     'labType',
+                    'labType.department',
                     'doctor',
                     'branch',
                     'creator',
@@ -646,9 +691,9 @@ class LaboratoryController extends Controller
             'items' => $items,
             'filters' => $filters,
             'filterOptions' => [
-                'labTypes' => LabType::query()->orderBy('name')->get(['id', 'name']),
+                'labTypes' => $this->labTypesForUser($user),
                 'branches' => Branch::query()->orderBy('name')->get(['id', 'name']),
-                'departments' => Department::query()->orderBy('name')->get(['id', 'name']),
+                'departments' => $this->departmentsForUser($user),
                 'doctors' => Doctor::query()
                     ->where('active_status', true)
                     ->orderBy('name')
@@ -719,6 +764,7 @@ class LaboratoryController extends Controller
             ->with([
                 'testable.patient',
                 'labType.category',
+                'labType.department',
                 'labType' => fn ($labTypeQuery) => $labTypeQuery->withCount('directLabTestParameters'),
                 'doctor',
                 'assignedTo',
@@ -728,7 +774,11 @@ class LaboratoryController extends Controller
         $query = $this->applyResultsFilters($query, $request, $forcedStatus);
 
         $perPage = min(max((int) $request->input('per_page', 50), 15), 100);
-        $paginator = $query->latest()->paginate($perPage)->withQueryString();
+        $paginator = $query
+            ->latest('patient_test_registrations.registration_date')
+            ->latest('patient_test_registrations.id')
+            ->paginate($perPage)
+            ->withQueryString();
 
         $filters = $this->resultsFiltersFromRequest($request);
         if ($listMode !== 'pending') {
@@ -842,8 +892,8 @@ class LaboratoryController extends Controller
         }
 
         if ($request->filled('department_id')) {
-            $query->whereHas('assignedSection', function ($sectionQuery) use ($request) {
-                $sectionQuery->where('department_id', $request->department_id);
+            $query->whereHas('labType', function ($labTypeQuery) use ($request) {
+                $labTypeQuery->where('department_id', $request->department_id);
             });
         }
 
@@ -922,9 +972,41 @@ class LaboratoryController extends Controller
                 ? verta($row->assigned_at)->format('Y-m-d H:i')
                 : null,
             'assigned_section_name' => $row->assignedSection?->name,
-            'department_name' => $row->assignedSection?->department?->name,
+            'department_name' => $row->labType?->department?->name
+                ?? $row->assignedSection?->department?->name,
             'notes' => $row->notes,
         ];
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, LabType>
+     */
+    private function labTypesForUser(User $user)
+    {
+        return LabType::query()
+            ->forLaboratoryUser($user)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, Department>
+     */
+    private function departmentsForUser(User $user)
+    {
+        $query = Department::query()->orderBy('name');
+
+        if ($user->branch_id) {
+            $query->where('branch_id', $user->branch_id);
+        }
+
+        if ($user->department_id) {
+            $query->where('id', $user->department_id);
+        } else {
+            $query->whereRaw('0 = 1');
+        }
+
+        return $query->get(['id', 'name']);
     }
 
     /**

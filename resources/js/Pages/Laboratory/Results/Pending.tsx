@@ -1,18 +1,18 @@
-import { Head, router } from '@inertiajs/react';
-import { Alert, Badge, Card } from 'flowbite-react';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { Head } from '@inertiajs/react';
 import AppointmentPagination from '../../../Components/Appointments/AppointmentPagination';
 import LaboratoryDepartmentScopeBanner from '../../../Components/Laboratory/LaboratoryDepartmentScopeBanner';
+import LaboratoryFlashAlerts from '../../../Components/Laboratory/LaboratoryFlashAlerts';
 import LaboratoryPageHeader from '../../../Components/Laboratory/LaboratoryPageHeader';
 import LaboratoryPatientAccordion from '../../../Components/Laboratory/LaboratoryPatientAccordion';
-import LaboratoryResultsFilters from '../../../Components/Laboratory/LaboratoryResultsFilters';
+import LaboratoryPendingFilters from '../../../Components/Laboratory/LaboratoryPendingFilters';
+import LaboratoryResultsSummary from '../../../Components/Laboratory/LaboratoryResultsSummary';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import { useLaboratoryListFilters } from '../../../hooks/useLaboratoryListFilters';
 import { useTranslation } from '../../../hooks/useTranslation';
 import {
     LaboratoryDepartmentScope,
     LaboratoryNavUrls,
-    LaboratoryPendingFilters,
-    LaboratoryResultsFilters as Filters,
+    LaboratoryPendingFilters as PendingFilters,
     PaginatedLaboratoryPatients,
 } from '../../../types/laboratory';
 
@@ -22,7 +22,7 @@ interface PendingProps {
         patient_count: number;
         registration_count: number;
     };
-    filters: LaboratoryPendingFilters;
+    filters: PendingFilters;
     scope: LaboratoryDepartmentScope;
     permissions: {
         manageResults: boolean;
@@ -34,7 +34,7 @@ interface PendingProps {
     };
 }
 
-const EMPTY_FILTERS: LaboratoryPendingFilters = {
+const EMPTY_FILTERS: PendingFilters = {
     search: '',
     patient_id: '',
     priority: '',
@@ -42,14 +42,6 @@ const EMPTY_FILTERS: LaboratoryPendingFilters = {
     date_to: '',
     per_page: '50',
 };
-
-function toFilterForm(filters: LaboratoryPendingFilters): Filters {
-    return { ...filters, status: '' };
-}
-
-function cleanFilters(filters: LaboratoryPendingFilters): Record<string, string> {
-    return Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== ''));
-}
 
 export default function Pending({
     patients,
@@ -60,44 +52,11 @@ export default function Pending({
     flash,
 }: PendingProps) {
     const { t } = useTranslation();
-    const [filters, setFilters] = useState<LaboratoryPendingFilters>(serverFilters);
-    const [processing, setProcessing] = useState(false);
-
-    useEffect(() => {
-        setFilters(serverFilters);
-    }, [serverFilters]);
-
-    const applyFilters = useCallback(
-        (nextFilters: LaboratoryPendingFilters) => {
-            setProcessing(true);
-            router.get(urls.index, cleanFilters(nextFilters), {
-                preserveScroll: true,
-                preserveState: true,
-                replace: true,
-                onFinish: () => setProcessing(false),
-            });
-        },
-        [urls.index],
+    const { filters, processing, updateFilter, handleSubmit, handleReset } = useLaboratoryListFilters(
+        serverFilters,
+        urls.index,
+        EMPTY_FILTERS,
     );
-
-    const updateFilter = (field: keyof Filters, value: string) => {
-        if (field === 'status') {
-            return;
-        }
-
-        setFilters((current) => ({ ...current, [field]: value }));
-    };
-
-    const handleFilterSubmit = (event: FormEvent) => {
-        event.preventDefault();
-        applyFilters(filters);
-    };
-
-    const handleReset = () => {
-        const reset = { ...EMPTY_FILTERS, per_page: filters.per_page };
-        setFilters(reset);
-        applyFilters(reset);
-    };
 
     return (
         <DashboardLayout>
@@ -112,43 +71,22 @@ export default function Pending({
                 activeTab="pending"
             />
 
-            {flash?.success && (
-                <Alert color="success" className="mb-4">
-                    {flash.success}
-                </Alert>
-            )}
-            {flash?.error && (
-                <Alert color="failure" className="mb-4">
-                    {flash.error}
-                </Alert>
-            )}
+            <LaboratoryFlashAlerts flash={flash} />
 
             <LaboratoryDepartmentScopeBanner scope={scope} />
 
-            <LaboratoryResultsFilters
-                filters={toFilterForm(filters)}
+            <LaboratoryPendingFilters
+                filters={filters}
                 onChange={updateFilter}
-                onSubmit={handleFilterSubmit}
+                onSubmit={handleSubmit}
                 onReset={handleReset}
                 processing={processing}
             />
 
-            <Card className="mb-4 shadow-sm">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h2 className="font-semibold text-gray-900 dark:text-white">
-                        {t('global.test_results')} — {t('global.patients')}
-                    </h2>
-                    <div className="flex flex-wrap gap-2">
-                        <Badge color="info">
-                            {summary.patient_count} {t('global.patients')}
-                        </Badge>
-                        <Badge color="purple">
-                            {summary.registration_count}{' '}
-                            {t('global.registrations') || 'registrations'}
-                        </Badge>
-                    </div>
-                </div>
-            </Card>
+            <LaboratoryResultsSummary
+                patientCount={summary.patient_count}
+                registrationCount={summary.registration_count}
+            />
 
             <LaboratoryPatientAccordion patients={patients.data} listMode="pending" />
 

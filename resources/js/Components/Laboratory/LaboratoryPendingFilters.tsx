@@ -24,7 +24,7 @@ export default function LaboratoryPendingFilters({
         <Card className="mb-6 shadow-sm">
             <form onSubmit={onSubmit} className="space-y-4">
                 <div className="flex items-center gap-2 border-b border-gray-100 pb-3 dark:border-gray-700">
-                    <i className="bx bx-filter-alt text-lg text-amber-600" />
+                    <i className="bx bx-filter-alt text-lg text-teal-600" />
                     <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
                         {t('global.search_and_filters')}
                     </h2>
@@ -96,7 +96,7 @@ export default function LaboratoryPendingFilters({
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                    <Button type="submit" color="warning" disabled={processing}>
+                    <Button type="submit" color="blue" disabled={processing}>
                         <i className="bx bx-search me-1" />
                         {t('global.search')}
                     </Button>

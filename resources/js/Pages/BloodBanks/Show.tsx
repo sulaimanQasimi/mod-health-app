@@ -2,7 +2,6 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Alert, Badge, Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea } from 'flowbite-react';
 import { FormEvent, ReactNode, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
-import BloodRequestSummary from '../../Components/BloodBanks/BloodRequestSummary';
 import BloodRequestWorkflow from '../../Components/BloodBanks/BloodRequestWorkflow';
 import BloodUnitDetailTile from '../../Components/BloodBanks/BloodUnitDetailTile';
 import {
@@ -228,8 +227,6 @@ export default function BloodBanksShow({
                         </div>
                     </Alert>
                 )}
-
-                <BloodRequestSummary bloodRequest={bloodRequest} />
 
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     <StatCard

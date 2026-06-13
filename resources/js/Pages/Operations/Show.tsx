@@ -2,6 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { Button, Checkbox, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea, TextInput } from 'flowbite-react';
 import { FormEvent, useMemo, useState } from 'react';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
+import BloodBankSection from '../../Components/Appointments/Sections/BloodBankSection';
 import HospitalizationFormModal from '../../Components/Hospitalizations/HospitalizationFormModal';
 import {
     EMPTY_HOSPITALIZATION_FORM,
@@ -275,6 +276,10 @@ export default function OperationsShow({
                             </div>
                         </div>
                     </div>
+                )}
+
+                {hasAppointment && permissions.blood && operation.appointment_id && (
+                    <BloodBankSection appointmentId={operation.appointment_id} />
                 )}
 
                 {hasAppointment && permissions.prescription && operation.appointment_id && (

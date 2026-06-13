@@ -62,6 +62,7 @@ interface ShowAppointmentProps {
     sectionPermissions: {
         underReview: boolean;
         hospitalization: boolean;
+        blood: boolean;
         icu: boolean;
         anesthesia: boolean;
         operations: boolean;
@@ -220,7 +221,7 @@ export default function ShowAppointment({
                 </Card>
 
                 <div className="space-y-4">
-                    <BloodBankSection appointmentId={id} />
+                    {sectionPermissions.blood && <BloodBankSection appointmentId={id} />}
                     <DiagnosisSection appointmentId={id} />
                     <PrescriptionSection appointmentId={id} />
                     <AdviceSection appointmentId={id} />

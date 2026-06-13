@@ -184,6 +184,7 @@ class AppointmentController extends Controller
             'sectionPermissions' => [
                 'underReview' => $request->user()->can('show-under-review-menu'),
                 'hospitalization' => $request->user()->can('show-hospitalizations-menu'),
+                'blood' => $request->user()->can('show-blood-request-menu'),
                 'icu' => $request->user()->can('refer-to-icu')
                     || $request->user()->can('edit-icus')
                     || $request->user()->can('delete-icus'),

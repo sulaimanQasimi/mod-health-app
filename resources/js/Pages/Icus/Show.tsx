@@ -2,6 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
+import BloodBankSection from '../../Components/Appointments/Sections/BloodBankSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import HospitalizationVisitSection from '../../Components/Hospitalizations/HospitalizationVisitSection';
 import IcuDailyProgressSection from '../../Components/Icus/IcuDailyProgressSection';
@@ -27,6 +28,7 @@ interface ShowProps {
     sectionPermissions: {
         prescription: boolean;
         lab: boolean;
+        blood: boolean;
         visits: boolean;
         procedures: boolean;
         daily_progress: boolean;
@@ -235,6 +237,9 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
                                 isDischarged={icu.is_discharged}
                                 iconClassName="text-sky-500"
                             />
+                        )}
+                        {hasAppointment && sectionPermissions.blood && icu.appointment_id && (
+                            <BloodBankSection appointmentId={icu.appointment_id} />
                         )}
                         {hasAppointment && sectionPermissions.prescription && icu.appointment_id && (
                             <PrescriptionSection appointmentId={icu.appointment_id} />

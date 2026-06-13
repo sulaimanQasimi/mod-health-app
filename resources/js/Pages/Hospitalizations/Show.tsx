@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
+import BloodBankSection from '../../Components/Appointments/Sections/BloodBankSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import HospitalizationOperationSection from '../../Components/Hospitalizations/HospitalizationOperationSection';
 import PhysiotherapySection from '../../Components/Appointments/Sections/PhysiotherapySection';
@@ -39,6 +40,7 @@ interface ShowProps {
     sectionPermissions: {
         prescription: boolean;
         lab: boolean;
+        blood: boolean;
         physiotherapy: boolean;
         vital_signs: boolean;
         visits: boolean;
@@ -235,6 +237,9 @@ export default function HospitalizationsShow({
 
                 {hasAppointment && (
                     <div className="space-y-4">
+                        {sectionPermissions.blood && (
+                            <BloodBankSection appointmentId={hospitalization.appointment_id!} />
+                        )}
                         {sectionPermissions.prescription && (
                             <PrescriptionSection appointmentId={hospitalization.appointment_id!} />
                         )}
@@ -314,19 +319,6 @@ export default function HospitalizationsShow({
                             {t('global.clinical_findings')}
                         </h3>
                     </div>
-
-                    <UnderReviewSectionPanel
-                        id="hospitalization-blood-bank"
-                        icon="bx-donate-blood"
-                        title={t('global.request_blood')}
-                        count={hospitalization.blood_banks.length}
-                    >
-                        <ClinicalDataTable
-                            headers={[t('global.blood_group'), t('global.date')]}
-                            rows={hospitalization.blood_banks.map((row) => [row.group, row.created_at])}
-                            emptyMessage={t('global.no_records_found')}
-                        />
-                    </UnderReviewSectionPanel>
 
                     <UnderReviewSectionPanel
                         id="hospitalization-mar"

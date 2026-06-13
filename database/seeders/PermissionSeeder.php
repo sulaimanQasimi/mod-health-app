@@ -1159,6 +1159,33 @@ class PermissionSeeder extends Seeder
         );
 
         Permission::updateOrCreate(
+            ['name' => 'show-blood-request-menu'],
+            [
+                'name_dr' => 'نمایش درخواست خون',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'add-blood-request'],
+            [
+                'name_dr' => 'ثبت درخواست خون',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'delete-blood-request'],
+            [
+                'name_dr' => 'حذف درخواست خون',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
             ['name' => 'add-advice'],
             [
                 'name_dr' => 'اضافه نمودن توصیه',

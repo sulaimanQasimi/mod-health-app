@@ -202,6 +202,7 @@ class HospitalizationController extends Controller
             'sectionPermissions' => [
                 'prescription' => $user->can('show-prescriptions-menu'),
                 'lab' => $user->can('show-labs-menu'),
+                'blood' => $user->can('show-blood-request-menu'),
                 'physiotherapy' => $user->can('show-physiotherapy-procedures'),
                 'vital_signs' => $user->can('viewAny', VitalSign::class),
                 'visits' => $user->can('show-hospitalizations-menu'),

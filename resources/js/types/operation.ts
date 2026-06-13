@@ -139,5 +139,6 @@ export interface OperationLinkedHospitalization {
 
 export interface OperationShowPermissions {
     prescription: boolean;
+    blood: boolean;
     hospitalize: boolean;
 }

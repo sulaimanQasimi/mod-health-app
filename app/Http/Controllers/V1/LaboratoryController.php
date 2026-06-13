@@ -1000,13 +1000,10 @@ class LaboratoryController extends Controller
             $query->where('branch_id', $user->branch_id);
         }
 
-        if (! LabType::userBypassesDepartmentScope($user)) {
-            $departmentId = $user->laboratoryDepartmentId();
-            if ($departmentId) {
-                $query->where('id', $departmentId);
-            } else {
-                $query->whereRaw('0 = 1');
-            }
+        if ($user->department_id) {
+            $query->where('id', $user->department_id);
+        } else {
+            $query->whereRaw('0 = 1');
         }
 
         return $query->get(['id', 'name']);

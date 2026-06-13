@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\V1\Concerns;
 
 use App\Models\Department;
-use App\Models\LabType;
 use App\Models\PatientTestRegistration;
 use App\Models\PatientTestResult;
 use App\Models\User;
@@ -19,7 +18,10 @@ trait ManagesLaboratoryRegistrations
      */
     protected function scopedRegistrationQuery(User $user): Builder
     {
-        return PatientTestRegistration::query()->forDepartmentProcessing($user);
+        return PatientTestRegistration::query()->whereHas(
+            'labType',
+            fn (Builder $query) => $query->where('department_id', $user->department_id)
+        );
     }
 
     /**
@@ -49,18 +51,10 @@ trait ManagesLaboratoryRegistrations
      */
     protected function laboratoryScopeContext(User $user): array
     {
-        if (LabType::userBypassesDepartmentScope($user)) {
-            return [
-                'is_restricted' => false,
-                'department_id' => null,
-                'department_name' => null,
-            ];
-        }
-
-        $departmentId = $user->laboratoryDepartmentId();
+        $departmentId = $user->department_id ? (int) $user->department_id : null;
 
         return [
-            'is_restricted' => true,
+            'is_restricted' => $departmentId !== null,
             'department_id' => $departmentId,
             'department_name' => $departmentId
                 ? Department::query()->whereKey($departmentId)->value('name')

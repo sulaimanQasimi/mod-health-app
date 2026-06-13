@@ -226,13 +226,10 @@ class LabTypeController extends Controller
             ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
             ->orderBy('name');
 
-        if (! LabType::userBypassesDepartmentScope($user)) {
-            $departmentId = $user?->laboratoryDepartmentId();
-            if ($departmentId) {
-                $departmentsQuery->where('id', $departmentId);
-            } else {
-                $departmentsQuery->whereRaw('0 = 1');
-            }
+        if ($user?->department_id) {
+            $departmentsQuery->where('id', $user->department_id);
+        } else {
+            $departmentsQuery->whereRaw('0 = 1');
         }
 
         return [
@@ -253,13 +250,10 @@ class LabTypeController extends Controller
             ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
             ->orderBy('name');
 
-        if (! LabType::userBypassesDepartmentScope($user)) {
-            $departmentId = $user?->laboratoryDepartmentId();
-            if ($departmentId) {
-                $departmentsQuery->where('id', $departmentId);
-            } else {
-                $departmentsQuery->whereRaw('0 = 1');
-            }
+        if ($user?->department_id) {
+            $departmentsQuery->where('id', $user->department_id);
+        } else {
+            $departmentsQuery->whereRaw('0 = 1');
         }
 
         return [

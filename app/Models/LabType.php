@@ -74,11 +74,6 @@ class LabType extends Model
         return $this->hasMany(PatientTestRegistration::class);
     }
 
-    public static function userBypassesDepartmentScope(?User $user): bool
-    {
-        return $user !== null && $user->hasRole(['super_admin', 'admin']);
-    }
-
     /**
      * @param  Builder<LabType>  $query
      * @return Builder<LabType>
@@ -89,15 +84,10 @@ class LabType extends Model
             $query->where('branch_id', $user->branch_id);
         }
 
-        if (self::userBypassesDepartmentScope($user)) {
-            return $query;
-        }
-
-        $departmentId = $user->laboratoryDepartmentId();
-        if (! $departmentId) {
+        if (! $user->department_id) {
             return $query->whereRaw('0 = 1');
         }
 
-        return $query->where('department_id', $departmentId);
+        return $query->where('department_id', $user->department_id);
     }
 }

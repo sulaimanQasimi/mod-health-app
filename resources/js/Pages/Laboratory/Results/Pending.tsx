@@ -5,13 +5,14 @@ import AppointmentPagination from '../../../Components/Appointments/AppointmentP
 import LaboratoryDepartmentScopeBanner from '../../../Components/Laboratory/LaboratoryDepartmentScopeBanner';
 import LaboratoryPageHeader from '../../../Components/Laboratory/LaboratoryPageHeader';
 import LaboratoryPatientAccordion from '../../../Components/Laboratory/LaboratoryPatientAccordion';
-import LaboratoryPendingFilters from '../../../Components/Laboratory/LaboratoryPendingFilters';
+import LaboratoryResultsFilters from '../../../Components/Laboratory/LaboratoryResultsFilters';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../../hooks/useTranslation';
 import {
     LaboratoryDepartmentScope,
     LaboratoryNavUrls,
-    LaboratoryPendingFilters as Filters,
+    LaboratoryPendingFilters,
+    LaboratoryResultsFilters as Filters,
     PaginatedLaboratoryPatients,
 } from '../../../types/laboratory';
 
@@ -21,19 +22,19 @@ interface PendingProps {
         patient_count: number;
         registration_count: number;
     };
-    filters: Filters;
+    filters: LaboratoryPendingFilters;
     scope: LaboratoryDepartmentScope;
-    urls: LaboratoryNavUrls & { index: string };
     permissions: {
         manageResults: boolean;
     };
+    urls: LaboratoryNavUrls;
     flash?: {
         success?: string | null;
         error?: string | null;
     };
 }
 
-const EMPTY_FILTERS: Filters = {
+const EMPTY_FILTERS: LaboratoryPendingFilters = {
     search: '',
     patient_id: '',
     priority: '',
@@ -42,7 +43,11 @@ const EMPTY_FILTERS: Filters = {
     per_page: '50',
 };
 
-function cleanFilters(filters: Filters): Record<string, string> {
+function toFilterForm(filters: LaboratoryPendingFilters): Filters {
+    return { ...filters, status: '' };
+}
+
+function cleanFilters(filters: LaboratoryPendingFilters): Record<string, string> {
     return Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== ''));
 }
 
@@ -55,7 +60,7 @@ export default function Pending({
     flash,
 }: PendingProps) {
     const { t } = useTranslation();
-    const [filters, setFilters] = useState<Filters>(serverFilters);
+    const [filters, setFilters] = useState<LaboratoryPendingFilters>(serverFilters);
     const [processing, setProcessing] = useState(false);
 
     useEffect(() => {
@@ -63,7 +68,7 @@ export default function Pending({
     }, [serverFilters]);
 
     const applyFilters = useCallback(
-        (nextFilters: Filters) => {
+        (nextFilters: LaboratoryPendingFilters) => {
             setProcessing(true);
             router.get(urls.index, cleanFilters(nextFilters), {
                 preserveScroll: true,
@@ -76,6 +81,10 @@ export default function Pending({
     );
 
     const updateFilter = (field: keyof Filters, value: string) => {
+        if (field === 'status') {
+            return;
+        }
+
         setFilters((current) => ({ ...current, [field]: value }));
     };
 
@@ -103,8 +112,6 @@ export default function Pending({
                 activeTab="pending"
             />
 
-            <LaboratoryDepartmentScopeBanner scope={scope} />
-
             {flash?.success && (
                 <Alert color="success" className="mb-4">
                     {flash.success}
@@ -116,8 +123,10 @@ export default function Pending({
                 </Alert>
             )}
 
-            <LaboratoryPendingFilters
-                filters={filters}
+            <LaboratoryDepartmentScopeBanner scope={scope} />
+
+            <LaboratoryResultsFilters
+                filters={toFilterForm(filters)}
                 onChange={updateFilter}
                 onSubmit={handleFilterSubmit}
                 onReset={handleReset}
@@ -127,14 +136,15 @@ export default function Pending({
             <Card className="mb-4 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <h2 className="font-semibold text-gray-900 dark:text-white">
-                        {t('global.pending_tests')} — {t('global.patients')}
+                        {t('global.test_results')} — {t('global.patients')}
                     </h2>
                     <div className="flex flex-wrap gap-2">
                         <Badge color="info">
                             {summary.patient_count} {t('global.patients')}
                         </Badge>
-                        <Badge color="warning">
-                            {summary.registration_count} {t('global.pending')}
+                        <Badge color="purple">
+                            {summary.registration_count}{' '}
+                            {t('global.registrations') || 'registrations'}
                         </Badge>
                     </div>
                 </div>

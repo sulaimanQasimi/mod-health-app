@@ -59,8 +59,8 @@ export default function HospitalizationsRoomManagement({
                 {rooms.length === 0 ? (
                     <p className={HOSPITALIZATION_MUTED_NOTE_CLASS}>{t('global.no_records_found')}</p>
                 ) : (
-                    <div className="grid gap-4 lg:grid-cols-12 lg:items-start">
-                        <div className="lg:col-span-4 xl:col-span-3">
+                    <div className="grid gap-5 md:grid-cols-12 md:items-start">
+                        <div className="min-w-0 md:col-span-4 md:sticky md:top-4 md:self-start xl:col-span-3">
                             <RoomManagementRoomList
                                 rooms={rooms}
                                 selectedRoomId={selectedRoom?.id ?? null}
@@ -68,7 +68,7 @@ export default function HospitalizationsRoomManagement({
                             />
                         </div>
 
-                        <div className="lg:col-span-8 xl:col-span-9">
+                        <div className="min-w-0 md:col-span-8 xl:col-span-9">
                             {selectedRoom ? (
                                 <RoomManagementBedGrid room={selectedRoom} beds={beds} />
                             ) : (

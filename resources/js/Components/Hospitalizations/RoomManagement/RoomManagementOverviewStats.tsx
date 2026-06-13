@@ -1,4 +1,4 @@
-import { HOSPITALIZATION_CARD_CLASS } from '../hospitalizationUi';
+import StatCard from '../../ui/StatCard';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { HospitalizationRoomManagementOverview } from '../../../types/hospitalization';
 
@@ -6,12 +6,58 @@ interface RoomManagementOverviewStatsProps {
     overview: HospitalizationRoomManagementOverview;
 }
 
-const cards = [
-    { key: 'rooms_count' as const, labelKey: 'global.rooms', icon: 'bx-building-house', gradient: 'from-slate-500 to-gray-600' },
-    { key: 'beds_count' as const, labelKey: 'global.beds', icon: 'bx-grid-alt', gradient: 'from-violet-500 to-purple-600' },
-    { key: 'occupied_beds_count' as const, labelKey: 'global.occupied', icon: 'bx-user-pin', gradient: 'from-amber-500 to-orange-500' },
-    { key: 'empty_beds_count' as const, labelKey: 'global.empty_bed', icon: 'bx-check-circle', gradient: 'from-emerald-500 to-teal-600' },
-    { key: 'occupancy_rate' as const, labelKey: 'global.bed_occupancy', icon: 'bx-pie-chart-alt-2', gradient: 'from-cyan-500 to-blue-600', suffix: '%' },
+interface StatCardConfig {
+    key: keyof HospitalizationRoomManagementOverview;
+    labelKey: string;
+    iconClass: string;
+    iconBgClass: string;
+    borderClass: string;
+    valueClass: string;
+    suffix?: string;
+}
+
+const cards: StatCardConfig[] = [
+    {
+        key: 'rooms_count',
+        labelKey: 'global.rooms',
+        iconClass: 'bx bx-building-house',
+        iconBgClass: 'bg-slate-600',
+        borderClass: 'border-slate-200 dark:border-slate-700',
+        valueClass: 'text-slate-700 dark:text-slate-300',
+    },
+    {
+        key: 'beds_count',
+        labelKey: 'global.beds',
+        iconClass: 'bx bx-grid-alt',
+        iconBgClass: 'bg-violet-600',
+        borderClass: 'border-violet-200 dark:border-violet-800',
+        valueClass: 'text-violet-700 dark:text-violet-300',
+    },
+    {
+        key: 'occupied_beds_count',
+        labelKey: 'global.occupied',
+        iconClass: 'bx bx-user-pin',
+        iconBgClass: 'bg-amber-500',
+        borderClass: 'border-amber-200 dark:border-amber-800',
+        valueClass: 'text-amber-700 dark:text-amber-300',
+    },
+    {
+        key: 'empty_beds_count',
+        labelKey: 'global.empty_bed',
+        iconClass: 'bx bx-check-circle',
+        iconBgClass: 'bg-emerald-600',
+        borderClass: 'border-emerald-200 dark:border-emerald-800',
+        valueClass: 'text-emerald-700 dark:text-emerald-300',
+    },
+    {
+        key: 'occupancy_rate',
+        labelKey: 'global.bed_occupancy',
+        iconClass: 'bx bx-pie-chart-alt-2',
+        iconBgClass: 'bg-cyan-600',
+        borderClass: 'border-cyan-200 dark:border-cyan-800',
+        valueClass: 'text-cyan-700 dark:text-cyan-300',
+        suffix: '%',
+    },
 ];
 
 export default function RoomManagementOverviewStats({ overview }: RoomManagementOverviewStatsProps) {
@@ -20,24 +66,16 @@ export default function RoomManagementOverviewStats({ overview }: RoomManagement
     return (
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
             {cards.map((card) => (
-                <div key={card.key} className={`${HOSPITALIZATION_CARD_CLASS} bg-white p-4 dark:bg-gray-900`}>
-                    <div className="flex items-center justify-between gap-2">
-                        <div className="min-w-0">
-                            <p className="truncate text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                {t(card.labelKey)}
-                            </p>
-                            <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
-                                {overview[card.key]}
-                                {card.suffix ?? ''}
-                            </p>
-                        </div>
-                        <div
-                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${card.gradient} text-white shadow-sm`}
-                        >
-                            <i className={`bx ${card.icon} text-lg`} />
-                        </div>
-                    </div>
-                </div>
+                <StatCard
+                    key={card.key}
+                    title={t(card.labelKey)}
+                    value={`${overview[card.key]}${card.suffix ?? ''}`}
+                    subtitle=""
+                    iconClass={card.iconClass}
+                    iconBgClass={card.iconBgClass}
+                    borderClass={card.borderClass}
+                    valueClass={card.valueClass}
+                />
             ))}
         </div>
     );

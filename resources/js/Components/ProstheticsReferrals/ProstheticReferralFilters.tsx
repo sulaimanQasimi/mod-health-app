@@ -1,6 +1,7 @@
 import { Button, Label, TextInput } from 'flowbite-react';
 import { FormEvent } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
+import { prostheticReferralStatusLabel } from './prostheticsReferralUi';
 
 export interface ProstheticReferralFilters {
     q: string;
@@ -64,17 +65,17 @@ export default function ProstheticReferralFilters({
             }}
         >
             {[
-                { key: 'q' as const, label: t('global.search') },
-                { key: 'referral_number' as const, label: t('global.prosthetics_referral_number') },
-                { key: 'patient_name' as const, label: t('global.patient_name') },
-                { key: 'patient_id' as const, label: t('global.id'), type: 'number' },
-                { key: 'phone' as const, label: t('global.phone') },
-                { key: 'nid' as const, label: t('global.nid') },
-                { key: 'id_card' as const, label: t('global.id_card') },
-                { key: 'urgency' as const, label: t('global.urgency') },
-                { key: 'requested_service_type' as const, label: t('global.prosthetics_requested_service_type') },
-                { key: 'from' as const, label: t('global.from'), type: 'date' },
-                { key: 'to' as const, label: t('global.to'), type: 'date' },
+                { key: 'q' as const, label: t('global.search'), placeholder: t('global.search') },
+                { key: 'referral_number' as const, label: t('global.prosthetics_referral_number'), placeholder: t('global.prosthetics_referral_number') },
+                { key: 'patient_name' as const, label: t('global.patient_name'), placeholder: t('global.search_by_patient_name') },
+                { key: 'patient_id' as const, label: t('global.id'), type: 'number', placeholder: t('global.search_by_patient_id') },
+                { key: 'phone' as const, label: t('global.phone'), placeholder: t('global.phone') },
+                { key: 'nid' as const, label: t('global.nid'), placeholder: t('global.nid') },
+                { key: 'id_card' as const, label: t('global.id_card'), placeholder: t('global.search_by_card_number') },
+                { key: 'urgency' as const, label: t('global.urgency'), placeholder: t('global.urgency') },
+                { key: 'requested_service_type' as const, label: t('global.prosthetics_requested_service_type'), placeholder: t('global.prosthetics_service_type') },
+                { key: 'from' as const, label: t('global.from'), type: 'date', placeholder: t('global.from') },
+                { key: 'to' as const, label: t('global.to'), type: 'date', placeholder: t('global.to') },
             ].map((field) => (
                 <div key={field.key}>
                     <Label htmlFor={field.key} value={field.label} className="mb-1 text-xs" />
@@ -82,6 +83,7 @@ export default function ProstheticReferralFilters({
                         id={field.key}
                         type={field.type ?? 'text'}
                         sizing="sm"
+                        placeholder={field.placeholder}
                         value={filters[field.key]}
                         onChange={(e) => setField(field.key, e.target.value)}
                     />
@@ -98,7 +100,7 @@ export default function ProstheticReferralFilters({
                     <option value="">{t('global.all')}</option>
                     {statusOptions.map((status) => (
                         <option key={status} value={status}>
-                            {status}
+                            {prostheticReferralStatusLabel(status, t)}
                         </option>
                     ))}
                 </select>

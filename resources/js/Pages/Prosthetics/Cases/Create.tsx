@@ -1,10 +1,16 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, Card, Label, Textarea, TextInput } from 'flowbite-react';
+import { Button, Label, Textarea, TextInput } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
+import IcuPanel from '../../../Components/Icus/IcuPanel';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import {
+    prostheticCaseCategoryLabel,
+    prostheticCasePriorityLabel,
+    prostheticCaseSideLabel,
+} from '../../../Components/ProstheticsCases/prostheticsCaseUi';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { SETTINGS_FORM_WIDTH } from '../../../utils/settingsUi';
+import { SETTINGS_WIDE_FORM_WIDTH } from '../../../utils/settingsUi';
 
 interface CreateProps {
     prefill: {
@@ -20,6 +26,9 @@ interface CreateProps {
     };
     urls: { index: string; store: string };
 }
+
+const SELECT_CLASS =
+    'block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm dark:border-gray-600 dark:bg-gray-700';
 
 export default function ProstheticsCasesCreate({ prefill, formOptions, urls }: CreateProps) {
     const { t } = useTranslation();
@@ -50,7 +59,7 @@ export default function ProstheticsCasesCreate({ prefill, formOptions, urls }: C
         <DashboardLayout>
             <Head title={t('global.prosthetics_new_case')} />
 
-            <div className={`mx-auto space-y-6 ${SETTINGS_FORM_WIDTH}`}>
+            <div className={`mx-auto space-y-6 ${SETTINGS_WIDE_FORM_WIDTH}`}>
                 <SettingsPageHeader
                     title={t('global.prosthetics_new_case')}
                     icon="bx-plus"
@@ -59,40 +68,55 @@ export default function ProstheticsCasesCreate({ prefill, formOptions, urls }: C
                     backLabel={t('global.back')}
                 />
 
-                <Card>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit}>
+                    <IcuPanel
+                        title={t('global.prosthetics_new_case')}
+                        icon="bx-detail"
+                        variant="filter"
+                        contentClassName="space-y-4"
+                        footer={
+                            <div className="flex flex-wrap gap-2">
+                                <Button type="submit" color="blue" disabled={processing}>
+                                    {t('global.save')}
+                                </Button>
+                                <Button as={Link} href={urls.index} color="light">
+                                    {t('global.back')}
+                                </Button>
+                            </div>
+                        }
+                    >
                         {prefill?.referral_id && (
                             <input type="hidden" name="referral_id" value={form.referral_id} />
                         )}
                         {prefill?.patient_name && (
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                                 {t('global.patient_name')}: {prefill.patient_name}
                             </p>
                         )}
-                        <div>
-                            <Label htmlFor="patient_id" value={`${t('global.prosthetics_patient_id')} *`} />
-                            <TextInput
-                                id="patient_id"
-                                type="number"
-                                min={1}
-                                required
-                                value={form.patient_id}
-                                onChange={(e) => setForm((prev) => ({ ...prev, patient_id: e.target.value }))}
-                            />
-                        </div>
-                        <div className="grid gap-4 md:grid-cols-2">
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            <div>
+                                <Label htmlFor="patient_id" value={`${t('global.prosthetics_patient_id')} *`} />
+                                <TextInput
+                                    id="patient_id"
+                                    type="number"
+                                    min={1}
+                                    required
+                                    value={form.patient_id}
+                                    onChange={(e) => setForm((prev) => ({ ...prev, patient_id: e.target.value }))}
+                                />
+                            </div>
                             <div>
                                 <Label htmlFor="side" value={`${t('global.prosthetics_side')} *`} />
                                 <select
                                     id="side"
                                     required
-                                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm dark:border-gray-600 dark:bg-gray-700"
+                                    className={SELECT_CLASS}
                                     value={form.side}
                                     onChange={(e) => setForm((prev) => ({ ...prev, side: e.target.value }))}
                                 >
                                     {formOptions.sides.map((side) => (
                                         <option key={side} value={side}>
-                                            {t(`global.prosthetics_side_${side}`)}
+                                            {prostheticCaseSideLabel(side, t)}
                                         </option>
                                     ))}
                                 </select>
@@ -102,77 +126,75 @@ export default function ProstheticsCasesCreate({ prefill, formOptions, urls }: C
                                 <select
                                     id="case_category"
                                     required
-                                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm dark:border-gray-600 dark:bg-gray-700"
+                                    className={SELECT_CLASS}
                                     value={form.case_category}
                                     onChange={(e) => setForm((prev) => ({ ...prev, case_category: e.target.value }))}
                                 >
                                     {formOptions.categories.map((category) => (
                                         <option key={category} value={category}>
-                                            {t(`global.prosthetics_category_${category}`)}
+                                            {prostheticCaseCategoryLabel(category, t)}
                                         </option>
                                     ))}
                                 </select>
                             </div>
                         </div>
-                        <div>
-                            <Label htmlFor="priority" value={t('global.priority')} />
-                            <select
-                                id="priority"
-                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm dark:border-gray-600 dark:bg-gray-700"
-                                value={form.priority}
-                                onChange={(e) => setForm((prev) => ({ ...prev, priority: e.target.value }))}
-                            >
-                                {formOptions.priorities.map((priority) => (
-                                    <option key={priority} value={priority}>
-                                        {priority}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            <div>
+                                <Label htmlFor="priority" value={t('global.priority')} />
+                                <select
+                                    id="priority"
+                                    className={SELECT_CLASS}
+                                    value={form.priority}
+                                    onChange={(e) => setForm((prev) => ({ ...prev, priority: e.target.value }))}
+                                >
+                                    {formOptions.priorities.map((priority) => (
+                                        <option key={priority} value={priority}>
+                                            {prostheticCasePriorityLabel(priority, t)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <Label htmlFor="body_region" value={t('global.prosthetics_body_region')} />
+                                <TextInput
+                                    id="body_region"
+                                    value={form.body_region}
+                                    onChange={(e) => setForm((prev) => ({ ...prev, body_region: e.target.value }))}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="device_type" value={t('global.prosthetics_device_type')} />
+                                <TextInput
+                                    id="device_type"
+                                    value={form.device_type}
+                                    onChange={(e) => setForm((prev) => ({ ...prev, device_type: e.target.value }))}
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <Label htmlFor="body_region" value={t('global.prosthetics_body_region')} />
-                            <TextInput
-                                id="body_region"
-                                value={form.body_region}
-                                onChange={(e) => setForm((prev) => ({ ...prev, body_region: e.target.value }))}
-                            />
+                        <div className="grid gap-4 lg:grid-cols-2">
+                            <div>
+                                <Label htmlFor="primary_diagnosis" value={t('global.diagnose')} />
+                                <Textarea
+                                    id="primary_diagnosis"
+                                    rows={3}
+                                    value={form.primary_diagnosis}
+                                    onChange={(e) => setForm((prev) => ({ ...prev, primary_diagnosis: e.target.value }))}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="cause_of_loss_notes" value={t('global.prosthetics_cause_of_loss')} />
+                                <Textarea
+                                    id="cause_of_loss_notes"
+                                    rows={3}
+                                    value={form.cause_of_loss_notes}
+                                    onChange={(e) =>
+                                        setForm((prev) => ({ ...prev, cause_of_loss_notes: e.target.value }))
+                                    }
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <Label htmlFor="device_type" value={t('global.prosthetics_device_type')} />
-                            <TextInput
-                                id="device_type"
-                                value={form.device_type}
-                                onChange={(e) => setForm((prev) => ({ ...prev, device_type: e.target.value }))}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="primary_diagnosis" value={t('global.diagnose')} />
-                            <Textarea
-                                id="primary_diagnosis"
-                                rows={2}
-                                value={form.primary_diagnosis}
-                                onChange={(e) => setForm((prev) => ({ ...prev, primary_diagnosis: e.target.value }))}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="cause_of_loss_notes" value={t('global.prosthetics_cause_of_loss')} />
-                            <Textarea
-                                id="cause_of_loss_notes"
-                                rows={2}
-                                value={form.cause_of_loss_notes}
-                                onChange={(e) => setForm((prev) => ({ ...prev, cause_of_loss_notes: e.target.value }))}
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <Button type="submit" color="blue" disabled={processing}>
-                                {t('global.save')}
-                            </Button>
-                            <Button as={Link} href={urls.index} color="light">
-                                {t('global.back')}
-                            </Button>
-                        </div>
-                    </form>
-                </Card>
+                    </IcuPanel>
+                </form>
             </div>
         </DashboardLayout>
     );

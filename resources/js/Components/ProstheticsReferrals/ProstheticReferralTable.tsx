@@ -12,6 +12,7 @@ import { TableActions, TableActionsCell } from '../ui/TableActions';
 import SettingsEmptyState from '../Settings/SettingsEmptyState';
 import { useTranslation } from '../../hooks/useTranslation';
 import { ProstheticReferralListItem } from '../../types/prosthetics';
+import { prostheticReferralStatusLabel } from './prostheticsReferralUi';
 
 interface ProstheticReferralTableProps {
     items: ProstheticReferralListItem[];
@@ -58,7 +59,7 @@ export default function ProstheticReferralTable({ items, showUrlBase }: Prosthet
                         </TableCell>
                         <TableCell muted>{referral.requested_service_type ?? '—'}</TableCell>
                         <TableCell>
-                            <Badge color="info">{referral.status}</Badge>
+                            <Badge color="info">{prostheticReferralStatusLabel(referral.status, t)}</Badge>
                         </TableCell>
                         <TableCell muted dir="ltr">
                             {referral.referral_date ?? '—'}

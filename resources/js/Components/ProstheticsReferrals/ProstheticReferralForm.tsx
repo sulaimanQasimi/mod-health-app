@@ -30,6 +30,7 @@ interface ProstheticReferralFormProps {
     submitLabel: string;
     onSubmit: (values: ProstheticReferralFormValues) => void;
     onCancel?: () => void;
+    hideActions?: boolean;
 }
 
 export default function ProstheticReferralForm({
@@ -40,6 +41,7 @@ export default function ProstheticReferralForm({
     submitLabel,
     onSubmit,
     onCancel,
+    hideActions = false,
 }: ProstheticReferralFormProps) {
     const { t } = useTranslation();
     const [form, setForm] = useState(initialValues);
@@ -234,16 +236,18 @@ export default function ProstheticReferralForm({
                 />
             </div>
 
-            <div className="flex gap-2">
-                <Button type="submit" color="blue" disabled={disabled}>
-                    {submitLabel}
-                </Button>
-                {onCancel && (
-                    <Button type="button" color="light" onClick={onCancel} disabled={disabled}>
-                        {t('global.back')}
+            {!hideActions && (
+                <div className="flex gap-2">
+                    <Button type="submit" color="blue" disabled={disabled}>
+                        {submitLabel}
                     </Button>
-                )}
-            </div>
+                    {onCancel && (
+                        <Button type="button" color="light" onClick={onCancel} disabled={disabled}>
+                            {t('global.back')}
+                        </Button>
+                    )}
+                </div>
+            )}
         </form>
     );
 }

@@ -4406,6 +4406,7 @@ return [
     'current_room' => 'اطاق فعلی',
     'current_bed' => 'بستر فعلی',
     'anesthesia_clears_hospitalization_bed' => 'پس از ثبت ارجاع به انستیزی، اطاق و بستر فعلی بستری این مریض آزاد می‌شود.',
+    'pacu_clears_hospitalization_bed' => 'پس از ثبت ارجاع به PACU، اطاق و بستر فعلی بستری این مریض آزاد می‌شود.',
     'select_room' => 'انتخاب اطاق',
     'select_bed' => 'انتخاب بستر',
     'changing_room_bed_note' => 'تغییر اطاق و بستر به صورت خودکار بستر فعلی را آزاد کرده و بستر جدید را اشغال می‌کند.',

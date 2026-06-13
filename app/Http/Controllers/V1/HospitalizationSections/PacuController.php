@@ -4,11 +4,13 @@ namespace App\Http\Controllers\V1\HospitalizationSections;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\SendNewPACUNotification;
+use App\Models\Bed;
 use App\Models\Department;
 use App\Models\Hospitalization;
 use App\Models\PACU;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PacuController extends Controller
 {
@@ -82,19 +84,37 @@ class PacuController extends Controller
             'department_id' => 'required|exists:departments,id',
         ]);
 
-        $pacu = PACU::create([
-            'description' => $validated['description'],
-            'patient_id' => $hospitalization->patient_id,
-            'appointment_id' => $hospitalization->appointment_id,
-            'hospitalization_id' => $hospitalization->id,
-            'department_id' => $validated['department_id'],
-            'branch_id' => $hospitalization->branch_id ?? $request->user()->branch_id,
-            'status' => 'new',
-        ]);
+        DB::transaction(function () use ($validated, $hospitalization, $request) {
+            $pacu = PACU::create([
+                'description' => $validated['description'],
+                'patient_id' => $hospitalization->patient_id,
+                'appointment_id' => $hospitalization->appointment_id,
+                'hospitalization_id' => $hospitalization->id,
+                'department_id' => $validated['department_id'],
+                'branch_id' => $hospitalization->branch_id ?? $request->user()->branch_id,
+                'status' => 'new',
+            ]);
 
-        SendNewPACUNotification::dispatch($request->user()->id, $pacu->id);
+            $this->clearHospitalizationBed($hospitalization);
+
+            SendNewPACUNotification::dispatch($request->user()->id, $pacu->id);
+        });
 
         return response()->json(['success' => true]);
+    }
+
+    private function clearHospitalizationBed(Hospitalization $hospitalization): void
+    {
+        if ($hospitalization->bed_id) {
+            Bed::query()
+                ->where('id', $hospitalization->bed_id)
+                ->update(['is_occupied' => false]);
+        }
+
+        $hospitalization->update([
+            'room_id' => null,
+            'bed_id' => null,
+        ]);
     }
 
     public function destroy(Hospitalization $hospitalization, PACU $pacu): JsonResponse

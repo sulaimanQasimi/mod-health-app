@@ -9,7 +9,7 @@ import {
     Textarea,
 } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import {
     Table,
     TableBody,
@@ -189,6 +189,7 @@ export default function HospitalizationPacuSection({
             }
             closeCreate();
             await loadData();
+            router.reload({ only: ['hospitalization'] });
         } finally {
             setSubmitting(false);
         }
@@ -341,6 +342,10 @@ export default function HospitalizationPacuSection({
                                         <p className="mt-1 text-sm font-medium">{currentBedNumber ?? '—'}</p>
                                     </div>
                                 </div>
+
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    {t('global.pacu_clears_hospitalization_bed')}
+                                </p>
 
                                 <div>
                                     <Label htmlFor="pacu-referral-department">{t('global.department')}</Label>

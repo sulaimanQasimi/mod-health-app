@@ -84,7 +84,7 @@ class PACUController extends Controller
         $this->authorizePacuMenu();
 
         $pacu->load([
-            'patient:id,name,last_name,father_name,id_card,phone,nid,image,province_id,district_id,recipient_id,created_at',
+            'patient:id,name,last_name,father_name,id_card,phone,nid,image,province_id,district_id,referred_by,created_at',
             'patient.province:id,name_dr',
             'patient.district:id,name_dr',
             'patient.recipient:id,name',

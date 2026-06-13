@@ -132,8 +132,12 @@ export interface BloodRequestWorkflowAvailableUnit {
     blood_group: string | null;
     rh: string | null;
     component_type: string | null;
+    volume_ml: number | null;
+    status: string;
+    screening_status: string;
     expires_at: string | null;
     auto_abo_rh_compatible: boolean;
+    can_reserve: boolean;
     is_reserved: boolean;
     crossmatch: {
         id: number;

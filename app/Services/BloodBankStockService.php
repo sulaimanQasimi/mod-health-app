@@ -93,6 +93,33 @@ class BloodBankStockService
     }
 
     /**
+     * Blood units shown in the crossmatch table for an approved request.
+     *
+     * @return Collection<int, BloodUnit>
+     */
+    public function crossmatchCandidateUnits(BloodBank $request): Collection
+    {
+        $componentType = $request->bloodCheckRecord?->component_type ?: $request->type;
+
+        $query = BloodUnit::query()
+            ->where('branch_id', $request->branch_id)
+            ->whereIn('status', ['available', 'reserved', 'quarantine'])
+            ->where('expires_at', '>', now())
+            ->where(function ($q) {
+                $q->whereHas('test', fn ($t) => $t->whereIn('overall_status', ['passed', 'pending']))
+                    ->orWhereDoesntHave('test');
+            })
+            ->with('test')
+            ->orderBy('expires_at');
+
+        if ($componentType !== null && trim((string) $componentType) !== '') {
+            $query->where('component_type', $componentType);
+        }
+
+        return $query->get();
+    }
+
+    /**
      * Issue units for an approved blood request (FIFO or explicit ids).
      *
      * @param  list<int>|null  $unitIds  If empty/null, picks FIFO by expiry.

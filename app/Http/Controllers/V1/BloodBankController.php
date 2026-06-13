@@ -290,21 +290,21 @@ class BloodBankController extends Controller
         $inventoryPreviewUnits = collect();
 
         if ($bloodBank->status === 'approved') {
-            $availableUnits = BloodUnit::where('branch_id', $bloodBank->branch_id)
-                ->where('component_type', $bloodBank->type)
-                ->whereIn('status', ['available', 'reserved'])
-                ->where('expires_at', '>', now())
-                ->whereHas('test', fn ($q) => $q->where('overall_status', 'passed'))
-                ->with('test')
-                ->orderBy('expires_at')
-                ->get();
+            $stockService = app(BloodBankStockService::class);
+            $availableUnits = $stockService->crossmatchCandidateUnits($bloodBank);
 
             $inventoryPreviewUnits = BloodUnit::query()
                 ->where('branch_id', $bloodBank->branch_id)
-                ->where('component_type', $bloodBank->type)
-                ->where('status', 'available')
+                ->whereIn('status', ['available', 'reserved'])
                 ->where('expires_at', '>', now())
-                ->whereHas('test', fn ($q) => $q->where('overall_status', 'passed'))
+                ->when(
+                    ($bloodBank->bloodCheckRecord?->component_type ?: $bloodBank->type),
+                    fn ($q, $type) => $q->where('component_type', $type),
+                )
+                ->where(function ($q) {
+                    $q->whereHas('test', fn ($t) => $t->whereIn('overall_status', ['passed', 'pending']))
+                        ->orWhereDoesntHave('test');
+                })
                 ->with('test')
                 ->orderBy('expires_at')
                 ->limit(12)
@@ -732,8 +732,12 @@ class BloodBankController extends Controller
             'blood_group' => $unit->blood_group,
             'rh' => $unit->rh,
             'component_type' => $unit->component_type,
+            'volume_ml' => $unit->volume_ml,
+            'status' => $unit->status,
+            'screening_status' => $unit->test?->overall_status ?? 'pending',
             'expires_at' => $unit->expires_at ? verta($unit->expires_at)->format('Y-m-d H:i') : null,
             'auto_abo_rh_compatible' => $bloodCheck->isAboRhAutoCompatibleWithBloodUnit($unit),
+            'can_reserve' => $unit->status === 'available' && ($unit->test?->overall_status ?? 'pending') === 'passed',
             'is_reserved' => in_array($unit->id, $reservedUnitIds, true),
             'crossmatch' => $cx ? [
                 'id' => $cx->id,

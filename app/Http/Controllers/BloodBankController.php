@@ -367,14 +367,7 @@ class BloodBankController extends Controller
 
         $availableUnits = collect();
         if ($bloodBank->status === 'approved') {
-            $availableUnits = BloodUnit::where('branch_id', $bloodBank->branch_id)
-                ->where('component_type', $bloodBank->type)
-                ->whereIn('status', ['available', 'reserved'])
-                ->where('expires_at', '>', now())
-                ->whereHas('test', fn ($q) => $q->where('overall_status', 'passed'))
-                ->with('test')
-                ->orderBy('expires_at')
-                ->get();
+            $availableUnits = app(BloodBankStockService::class)->crossmatchCandidateUnits($bloodBank);
         }
 
         $inventoryUrl = route('blood_banks.inventory', [
@@ -387,10 +380,16 @@ class BloodBankController extends Controller
 
         $inventoryPreviewUnits = BloodUnit::query()
             ->where('branch_id', $bloodBank->branch_id)
-            ->where('component_type', $bloodBank->type)
-            ->where('status', 'available')
+            ->whereIn('status', ['available', 'reserved', 'quarantine'])
             ->where('expires_at', '>', now())
-            ->whereHas('test', fn ($q) => $q->where('overall_status', 'passed'))
+            ->when(
+                $bloodBank->bloodCheckRecord?->component_type ?: $bloodBank->type,
+                fn ($q, $type) => $q->where('component_type', $type),
+            )
+            ->where(function ($q) {
+                $q->whereHas('test', fn ($t) => $t->whereIn('overall_status', ['passed', 'pending']))
+                    ->orWhereDoesntHave('test');
+            })
             ->with('test')
             ->orderBy('expires_at')
             ->limit(12)

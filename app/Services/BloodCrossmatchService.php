@@ -25,7 +25,7 @@ class BloodCrossmatchService
             } elseif (! $this->isRhCompatible($request->rh, $unit->rh)) {
                 $status = 'incompatible';
                 $reason = localize('global.crossmatch_rh_mismatch');
-            } elseif ($request->type !== $unit->component_type) {
+            } elseif ($request->type !== null && trim((string) $request->type) !== '' && $request->type !== $unit->component_type) {
                 $status = 'incompatible';
                 $reason = localize('global.crossmatch_component_mismatch');
             } else {
@@ -52,8 +52,12 @@ class BloodCrossmatchService
         return $crossmatch->fresh();
     }
 
-    public function isAboCompatible(string $recipientGroup, string $donorGroup): bool
+    public function isAboCompatible(?string $recipientGroup, string $donorGroup): bool
     {
+        if ($recipientGroup === null || trim($recipientGroup) === '') {
+            return true;
+        }
+
         $matrix = [
             'O' => ['O'],
             'A' => ['O', 'A'],
@@ -64,8 +68,12 @@ class BloodCrossmatchService
         return in_array($donorGroup, $matrix[$recipientGroup] ?? [], true);
     }
 
-    public function isRhCompatible(string $recipientRh, string $donorRh): bool
+    public function isRhCompatible(?string $recipientRh, string $donorRh): bool
     {
+        if ($recipientRh === null || trim($recipientRh) === '') {
+            return true;
+        }
+
         if ($recipientRh === '+') {
             return in_array($donorRh, ['+', '-'], true);
         }

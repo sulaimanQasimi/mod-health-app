@@ -146,6 +146,10 @@ final class BloodCheck
 
     public function isComponentCompatibleWithBloodUnit(BloodUnit $unit): bool
     {
+        if ($this->componentType === '') {
+            return true;
+        }
+
         return $this->componentType === $unit->component_type;
     }
 

@@ -9,6 +9,7 @@ import {
     bloodRhLabel,
     crossmatchStatusBadgeColor,
     screeningStatusBadgeColor,
+    bloodUnitStatusBadgeColor,
 } from './bloodBankUi';
 import SearchableSelect from '../ui/SearchableSelect';
 import PersianDateTimeField from '../ui/PersianDateTimeField';
@@ -452,7 +453,10 @@ export default function BloodRequestWorkflow({
                                 <TableHeader>{t('global.bag_number')}</TableHeader>
                                 <TableHeader>{t('global.blood_group')}</TableHeader>
                                 <TableHeader>{t('global.blood_rh')}</TableHeader>
+                                <TableHeader>{t('global.component_type')}</TableHeader>
+                                <TableHeader>{t('global.volume_ml')}</TableHeader>
                                 <TableHeader>{t('global.expires_at')}</TableHeader>
+                                <TableHeader>{t('global.screening_status')}</TableHeader>
                                 <TableHeader>{t('global.crossmatch_auto_check')}</TableHeader>
                                 <TableHeader>{t('global.crossmatch_status')}</TableHeader>
                                 {permissions.manageCrossmatch && <TableHeader>{t('global.actions')}</TableHeader>}
@@ -461,7 +465,7 @@ export default function BloodRequestWorkflow({
                         <TableBody>
                             {workflowData.availableUnits.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={permissions.manageCrossmatch ? 7 : 6} muted className="text-center py-6">
+                                    <TableCell colSpan={permissions.manageCrossmatch ? 10 : 9} muted className="py-6 text-center">
                                         {t('global.no_item_is_found')}
                                     </TableCell>
                                 </TableRow>
@@ -828,8 +832,24 @@ function CrossmatchUnitRow({
             </TableCell>
             <TableCell muted>{unit.blood_group ?? '—'}</TableCell>
             <TableCell muted>{unit.rh ?? '—'}</TableCell>
+            <TableCell muted>{unit.component_type ?? '—'}</TableCell>
+            <TableCell muted dir="ltr">
+                {unit.volume_ml != null ? `${unit.volume_ml} ml` : '—'}
+            </TableCell>
             <TableCell muted dir="ltr">
                 {unit.expires_at ?? '—'}
+            </TableCell>
+            <TableCell>
+                <div className="flex flex-wrap gap-1">
+                    <Badge color={screeningStatusBadgeColor(unit.screening_status)} className="w-fit font-normal capitalize">
+                        {unit.screening_status}
+                    </Badge>
+                    {unit.status !== 'available' && (
+                        <Badge color={bloodUnitStatusBadgeColor(unit.status)} className="w-fit font-normal capitalize">
+                            {unit.status}
+                        </Badge>
+                    )}
+                </div>
             </TableCell>
             <TableCell>
                 <Badge color={unit.auto_abo_rh_compatible ? 'success' : 'failure'} className="w-fit font-normal">
@@ -916,17 +936,23 @@ function CrossmatchUnitRow({
                                     {t('global.unreserve_unit')}
                                 </button>
                             ) : (
-                                cx && (
+                                cx && unit.can_reserve && (
                                     <button
                                         type="button"
-                                        className="w-full rounded-lg bg-emerald-600 px-2 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
-                                        disabled={processing}
+                                        className="w-full rounded-lg bg-emerald-600 px-2 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                        disabled={processing || !unit.can_reserve}
                                         onClick={() => onPost(cx.urls.reserve)}
                                     >
                                         {t('global.reserve_unit')}
                                     </button>
                                 )
                             ))}
+
+                        {compatible && cx && !unit.can_reserve && !unit.is_reserved && unit.screening_status !== 'passed' && (
+                            <p className="text-xs text-amber-700 dark:text-amber-300">
+                                {t('global.screening_status')}: {unit.screening_status}
+                            </p>
+                        )}
 
                         {cx && cx.status === 'incompatible' && canOverride && (
                             <form

@@ -1,78 +1,92 @@
+import StatCard from '../ui/StatCard';
 import { HospitalizationDashboardStats } from '../../types/hospitalization';
 import { useTranslation } from '../../hooks/useTranslation';
-import { HOSPITALIZATION_CARD_CLASS } from './hospitalizationUi';
 
 interface HospitalizationStatsCardsProps {
     stats: HospitalizationDashboardStats;
     variant?: 'active' | 'discharged';
 }
 
-const activeCards = [
+interface StatCardConfig {
+    key: keyof HospitalizationDashboardStats | 'occupied_beds' | 'recovered' | 'moved';
+    labelKey: string;
+    iconClass: string;
+    iconBgClass: string;
+    borderClass: string;
+    valueClass: string;
+}
+
+const activeCards: StatCardConfig[] = [
     {
-        key: 'active' as const,
+        key: 'active',
         labelKey: 'global.hospitalized_patients',
-        icon: 'bx-bed',
-        gradient: 'from-emerald-500 to-teal-600',
-        tint: 'bg-emerald-50 dark:bg-emerald-950/30',
+        iconClass: 'bx bx-bed',
+        iconBgClass: 'bg-emerald-600',
+        borderClass: 'border-emerald-200 dark:border-emerald-800',
+        valueClass: 'text-emerald-700 dark:text-emerald-300',
     },
     {
-        key: 'discharged' as const,
+        key: 'discharged',
         labelKey: 'global.discharged_hospitalizations',
-        icon: 'bx-exit',
-        gradient: 'from-slate-500 to-gray-600',
-        tint: 'bg-slate-50 dark:bg-slate-900/40',
+        iconClass: 'bx bx-exit',
+        iconBgClass: 'bg-slate-600',
+        borderClass: 'border-slate-200 dark:border-slate-700',
+        valueClass: 'text-slate-700 dark:text-slate-300',
     },
     {
-        key: 'occupied_beds' as const,
+        key: 'occupied_beds',
         labelKey: 'global.occupied',
-        icon: 'bx-user-pin',
-        gradient: 'from-amber-500 to-orange-500',
-        tint: 'bg-amber-50 dark:bg-amber-950/30',
+        iconClass: 'bx bx-user-pin',
+        iconBgClass: 'bg-amber-500',
+        borderClass: 'border-amber-200 dark:border-amber-800',
+        valueClass: 'text-amber-700 dark:text-amber-300',
     },
     {
-        key: 'total_beds' as const,
+        key: 'total_beds',
         labelKey: 'global.beds',
-        icon: 'bx-grid-alt',
-        gradient: 'from-violet-500 to-purple-600',
-        tint: 'bg-violet-50 dark:bg-violet-950/30',
+        iconClass: 'bx bx-grid-alt',
+        iconBgClass: 'bg-violet-600',
+        borderClass: 'border-violet-200 dark:border-violet-800',
+        valueClass: 'text-violet-700 dark:text-violet-300',
     },
 ];
 
-const dischargedCards = [
+const dischargedCards: StatCardConfig[] = [
     {
-        key: 'discharged' as const,
+        key: 'discharged',
         labelKey: 'global.discharged_hospitalizations',
-        icon: 'bx-exit',
-        gradient: 'from-slate-500 to-gray-600',
-        tint: 'bg-slate-50 dark:bg-slate-900/40',
+        iconClass: 'bx bx-exit',
+        iconBgClass: 'bg-slate-600',
+        borderClass: 'border-slate-200 dark:border-slate-700',
+        valueClass: 'text-slate-700 dark:text-slate-300',
     },
     {
-        key: 'active' as const,
+        key: 'active',
         labelKey: 'global.hospitalized_patients',
-        icon: 'bx-bed',
-        gradient: 'from-emerald-500 to-teal-600',
-        tint: 'bg-emerald-50 dark:bg-emerald-950/30',
+        iconClass: 'bx bx-bed',
+        iconBgClass: 'bg-emerald-600',
+        borderClass: 'border-emerald-200 dark:border-emerald-800',
+        valueClass: 'text-emerald-700 dark:text-emerald-300',
     },
     {
-        key: 'recovered' as const,
+        key: 'recovered',
         labelKey: 'global.recovered',
-        icon: 'bx-check-circle',
-        gradient: 'from-emerald-500 to-green-600',
-        tint: 'bg-emerald-50 dark:bg-emerald-950/30',
+        iconClass: 'bx bx-check-circle',
+        iconBgClass: 'bg-green-600',
+        borderClass: 'border-green-200 dark:border-green-800',
+        valueClass: 'text-green-700 dark:text-green-300',
     },
     {
-        key: 'moved' as const,
+        key: 'moved',
         labelKey: 'global.moved',
-        icon: 'bx-transfer',
-        gradient: 'from-cyan-500 to-blue-600',
-        tint: 'bg-cyan-50 dark:bg-cyan-950/30',
+        iconClass: 'bx bx-transfer',
+        iconBgClass: 'bg-cyan-600',
+        borderClass: 'border-cyan-200 dark:border-cyan-800',
+        valueClass: 'text-cyan-700 dark:text-cyan-300',
     },
 ];
 
-function formatStatValue(
-    key: string,
-    stats: HospitalizationDashboardStats
-): string {
+function formatStatValue(key: string, stats: HospitalizationDashboardStats): string {
     if (key === 'occupied_beds') {
         const total = stats.total_beds ?? 0;
         const occupied = stats.occupied_beds ?? 0;
@@ -82,11 +96,11 @@ function formatStatValue(
     return String(stats[key as keyof HospitalizationDashboardStats] ?? 0);
 }
 
-function formatStatHint(
+function formatStatSubtitle(
     key: string,
     stats: HospitalizationDashboardStats,
     t: (key: string) => string
-): string | null {
+): string {
     if (key === 'occupied_beds' && (stats.total_beds ?? 0) > 0) {
         const rate = Math.round(((stats.occupied_beds ?? 0) / stats.total_beds) * 100);
         return `${rate}% ${t('global.occupied')}`;
@@ -97,7 +111,7 @@ function formatStatHint(
         return `${available} ${t('global.empty_bed')}`;
     }
 
-    return null;
+    return '';
 }
 
 export default function HospitalizationStatsCards({
@@ -109,32 +123,18 @@ export default function HospitalizationStatsCards({
 
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {cards.map((card) => {
-                const hint = formatStatHint(card.key, stats, t);
-
-                return (
-                    <div key={card.key} className={`${HOSPITALIZATION_CARD_CLASS} ${card.tint} p-4`}>
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                    {t(card.labelKey)}
-                                </p>
-                                <p className="mt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                    {formatStatValue(card.key, stats)}
-                                </p>
-                                {hint && (
-                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{hint}</p>
-                                )}
-                            </div>
-                            <div
-                                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${card.gradient} text-white shadow-sm`}
-                            >
-                                <i className={`bx ${card.icon} text-lg`} />
-                            </div>
-                        </div>
-                    </div>
-                );
-            })}
+            {cards.map((card) => (
+                <StatCard
+                    key={card.key}
+                    title={t(card.labelKey)}
+                    value={formatStatValue(card.key, stats)}
+                    subtitle={formatStatSubtitle(card.key, stats, t)}
+                    iconClass={card.iconClass}
+                    iconBgClass={card.iconBgClass}
+                    borderClass={card.borderClass}
+                    valueClass={card.valueClass}
+                />
+            ))}
         </div>
     );
 }

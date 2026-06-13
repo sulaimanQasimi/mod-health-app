@@ -33,6 +33,7 @@ import { SectionActionButton } from '../Appointments/Sections/SimpleTableSection
 interface HospitalizationVitalSignSectionProps {
     hospitalizationId: number;
     isDischarged?: boolean;
+    baseUrl?: string;
 }
 
 interface VitalSignListItem {
@@ -119,10 +120,11 @@ function groupByDate(items: VitalSignListItem[]): VitalSignDayGroup[] {
 export default function HospitalizationVitalSignSection({
     hospitalizationId,
     isDischarged = false,
+    baseUrl: baseUrlProp,
 }: HospitalizationVitalSignSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/hospitalizations/${hospitalizationId}/vital-signs`;
+    const baseUrl = baseUrlProp ?? `/react/hospitalizations/${hospitalizationId}/vital-signs`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

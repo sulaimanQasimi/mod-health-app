@@ -1,9 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
+import BloodBankSection from '../../Components/Appointments/Sections/BloodBankSection';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
 import PhysiotherapySection from '../../Components/Appointments/Sections/PhysiotherapySection';
+import HospitalizationSection from '../../Components/Appointments/Sections/HospitalizationSection';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import UnderReviewSectionPanel, {
@@ -21,16 +23,17 @@ import {
 } from '../../Components/UnderReviews/underReviewUi';
 import TableActionButton from '../../Components/ui/TableActionButton';
 import { useTranslation } from '../../hooks/useTranslation';
-import { UnderReviewDetail, UnderReviewShowPermissions } from '../../types/underReview';
+import {
+    UnderReviewDetail,
+    UnderReviewSectionPermissions,
+    UnderReviewShowPermissions,
+} from '../../types/underReview';
 import { SETTINGS_INDEX_WIDTH, settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface ShowProps {
     underReview: UnderReviewDetail;
     permissions: UnderReviewShowPermissions;
-    sectionPermissions: {
-        prescription: boolean;
-        lab: boolean;
-    };
+    sectionPermissions: UnderReviewSectionPermissions;
     urls: {
         index: string;
         edit: string;
@@ -193,15 +196,20 @@ export default function UnderReviewsShow({
 
                 <UnderReviewSummary underReview={underReview} />
 
-                {underReview.is_discharged && underReview.discharge_remark && (
+                {underReview.is_discharged && (
                     <div className={UNDER_REVIEW_DISCHARGED_PANEL_CLASS}>
-                        <p className="font-medium">{t('global.discharge_remark')}</p>
-                        <p className="mt-1">{underReview.discharge_remark}</p>
+                        <p className="font-medium">{t('global.discharge_patient')}</p>
+                        {underReview.discharge_remark && (
+                            <p className="mt-1">{underReview.discharge_remark}</p>
+                        )}
                     </div>
                 )}
 
-                {hasAppointment && (
+                {hasAppointment ? (
                     <div className="space-y-4">
+                        {sectionPermissions.blood && (
+                            <BloodBankSection appointmentId={underReview.appointment_id!} />
+                        )}
                         {sectionPermissions.prescription && (
                             <PrescriptionSection
                                 appointmentId={underReview.appointment_id!}
@@ -211,178 +219,142 @@ export default function UnderReviewsShow({
                         {sectionPermissions.lab && (
                             <LabTestSection appointmentId={underReview.appointment_id!} />
                         )}
-                        <PhysiotherapySection appointmentId={underReview.appointment_id!} />
-                    </div>
-                )}
-
-                {!hasAppointment && (
-                    <div className={UNDER_REVIEW_MUTED_NOTE_CLASS}>
-                        {t('global.not_available')}
-                    </div>
-                )}
-
-                <div className="space-y-4">
-                    <UnderReviewSectionPanel
-                        id="under-review-visits"
-                        icon="bx-glasses"
-                        title={t('global.visits')}
-                        count={underReview.visits.length}
-                        defaultOpen
-                    >
-                        {permissions.store_visit && (
-                            <form onSubmit={handleAddVisit} className="mb-4 space-y-3">
-                                <div>
-                                    <Label htmlFor="visit-description">{t('global.description')}</Label>
-                                    <Textarea
-                                        id="visit-description"
-                                        rows={2}
-                                        value={visitDescription}
-                                        onChange={(e) => setVisitDescription(e.target.value)}
-                                    />
-                                </div>
-                                <Button type="submit" color="blue" size="sm" disabled={processing}>
-                                    <i className="bx bx-plus me-2" />
-                                    {t('global.add_visit')}
-                                </Button>
-                            </form>
+                        {sectionPermissions.physiotherapy && (
+                            <PhysiotherapySection appointmentId={underReview.appointment_id!} />
                         )}
+                        {sectionPermissions.hospitalization && (
+                            <HospitalizationSection appointmentId={underReview.appointment_id!} />
+                        )}
+                    </div>
+                ) : (
+                    <div className={UNDER_REVIEW_MUTED_NOTE_CLASS}>{t('global.not_available')}</div>
+                )}
 
-                        <UnderReviewDataTable>
-                            <UnderReviewDataTableHead>
-                                <UnderReviewDataTableTh>{t('global.number')}</UnderReviewDataTableTh>
-                                <UnderReviewDataTableTh>{t('global.description')}</UnderReviewDataTableTh>
-                                <UnderReviewDataTableTh>{t('global.by')}</UnderReviewDataTableTh>
-                                <UnderReviewDataTableTh className="w-24 text-end">
-                                    {t('global.actions')}
-                                </UnderReviewDataTableTh>
-                            </UnderReviewDataTableHead>
-                            <UnderReviewDataTableBody>
-                                {underReview.visits.map((visit, index) => (
-                                    <UnderReviewDataTableRow key={visit.id}>
-                                        <UnderReviewDataTableTd>{index + 1}</UnderReviewDataTableTd>
-                                        <UnderReviewDataTableTd>
-                                            {editingVisitId === visit.id ? (
-                                                <form onSubmit={handleUpdateVisit} className="flex flex-col gap-2 sm:flex-row">
-                                                    <Textarea
-                                                        rows={2}
-                                                        className="min-w-0 flex-1"
-                                                        value={editingVisitDescription}
-                                                        onChange={(e) =>
-                                                            setEditingVisitDescription(e.target.value)
-                                                        }
-                                                    />
-                                                    <div className="flex shrink-0 gap-1">
-                                                        <Button
-                                                            type="submit"
-                                                            size="xs"
-                                                            color="blue"
-                                                            disabled={processing}
-                                                        >
-                                                            {t('global.save')}
-                                                        </Button>
-                                                        <Button
-                                                            type="button"
-                                                            size="xs"
-                                                            color="light"
-                                                            onClick={() => setEditingVisitId(null)}
-                                                        >
-                                                            {t('global.cancel')}
-                                                        </Button>
-                                                    </div>
-                                                </form>
-                                            ) : (
-                                                visit.description
-                                            )}
-                                        </UnderReviewDataTableTd>
-                                        <UnderReviewDataTableTd className="text-gray-600 dark:text-gray-400">
-                                            {visit.doctor_name ?? '—'}
-                                        </UnderReviewDataTableTd>
-                                        <UnderReviewDataTableTd className="text-end">
-                                            {permissions.edit_visit && editingVisitId !== visit.id && (
-                                                <TableActionButton
-                                                    kind="edit"
-                                                    title={t('global.edit')}
-                                                    onClick={() => {
-                                                        setEditingVisitId(visit.id);
-                                                        setEditingVisitDescription(visit.description ?? '');
-                                                    }}
-                                                />
-                                            )}
-                                            {permissions.delete_visit && (
-                                                <TableActionButton
-                                                    kind="delete"
-                                                    confirm={t('global.confirm_delete')}
-                                                    disabled={processing}
-                                                    onClick={() =>
-                                                        router.delete(`${urls.visit_update}/${visit.id}`, {
-                                                            preserveScroll: true,
-                                                        })
+                <UnderReviewSectionPanel
+                    id="under-review-visits"
+                    icon="bx-glasses"
+                    title={t('global.visits')}
+                    count={underReview.visits.length}
+                    defaultOpen
+                >
+                    {permissions.store_visit && (
+                        <form onSubmit={handleAddVisit} className="mb-4 space-y-3">
+                            <div>
+                                <Label htmlFor="visit-description">{t('global.description')}</Label>
+                                <Textarea
+                                    id="visit-description"
+                                    rows={2}
+                                    value={visitDescription}
+                                    onChange={(e) => setVisitDescription(e.target.value)}
+                                />
+                            </div>
+                            <Button type="submit" color="blue" size="sm" disabled={processing}>
+                                <i className="bx bx-plus me-2" />
+                                {t('global.add_visit')}
+                            </Button>
+                        </form>
+                    )}
+
+                    <UnderReviewDataTable>
+                        <UnderReviewDataTableHead>
+                            <UnderReviewDataTableTh>{t('global.number')}</UnderReviewDataTableTh>
+                            <UnderReviewDataTableTh>{t('global.description')}</UnderReviewDataTableTh>
+                            <UnderReviewDataTableTh>{t('global.by')}</UnderReviewDataTableTh>
+                            <UnderReviewDataTableTh className="w-24 text-end">
+                                {t('global.actions')}
+                            </UnderReviewDataTableTh>
+                        </UnderReviewDataTableHead>
+                        <UnderReviewDataTableBody>
+                            {underReview.visits.map((visit, index) => (
+                                <UnderReviewDataTableRow key={visit.id}>
+                                    <UnderReviewDataTableTd>{index + 1}</UnderReviewDataTableTd>
+                                    <UnderReviewDataTableTd>
+                                        {editingVisitId === visit.id ? (
+                                            <form
+                                                onSubmit={handleUpdateVisit}
+                                                className="flex flex-col gap-2 sm:flex-row"
+                                            >
+                                                <Textarea
+                                                    rows={2}
+                                                    className="min-w-0 flex-1"
+                                                    value={editingVisitDescription}
+                                                    onChange={(e) =>
+                                                        setEditingVisitDescription(e.target.value)
                                                     }
                                                 />
-                                            )}
-                                        </UnderReviewDataTableTd>
-                                    </UnderReviewDataTableRow>
-                                ))}
-                                {underReview.visits.length === 0 && (
-                                    <UnderReviewDataTableRow>
-                                        <UnderReviewDataTableTd colSpan={4} className="py-8 text-center text-gray-500">
-                                            {t('global.no_previous_visits')}
-                                        </UnderReviewDataTableTd>
-                                    </UnderReviewDataTableRow>
-                                )}
-                            </UnderReviewDataTableBody>
-                        </UnderReviewDataTable>
-                    </UnderReviewSectionPanel>
+                                                <div className="flex shrink-0 gap-1">
+                                                    <Button
+                                                        type="submit"
+                                                        size="xs"
+                                                        color="blue"
+                                                        disabled={processing}
+                                                    >
+                                                        {t('global.save')}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        size="xs"
+                                                        color="light"
+                                                        onClick={() => setEditingVisitId(null)}
+                                                    >
+                                                        {t('global.cancel')}
+                                                    </Button>
+                                                </div>
+                                            </form>
+                                        ) : (
+                                            visit.description
+                                        )}
+                                    </UnderReviewDataTableTd>
+                                    <UnderReviewDataTableTd className="text-gray-600 dark:text-gray-400">
+                                        {visit.doctor_name ?? '—'}
+                                    </UnderReviewDataTableTd>
+                                    <UnderReviewDataTableTd className="text-end">
+                                        {permissions.edit_visit && editingVisitId !== visit.id && (
+                                            <TableActionButton
+                                                kind="edit"
+                                                title={t('global.edit')}
+                                                onClick={() => {
+                                                    setEditingVisitId(visit.id);
+                                                    setEditingVisitDescription(visit.description ?? '');
+                                                }}
+                                            />
+                                        )}
+                                        {permissions.delete_visit && (
+                                            <TableActionButton
+                                                kind="delete"
+                                                confirm={t('global.confirm_delete')}
+                                                disabled={processing}
+                                                onClick={() =>
+                                                    router.delete(`${urls.visit_update}/${visit.id}`, {
+                                                        preserveScroll: true,
+                                                    })
+                                                }
+                                            />
+                                        )}
+                                    </UnderReviewDataTableTd>
+                                </UnderReviewDataTableRow>
+                            ))}
+                            {underReview.visits.length === 0 && (
+                                <UnderReviewDataTableRow>
+                                    <UnderReviewDataTableTd
+                                        colSpan={4}
+                                        className="py-8 text-center text-gray-500"
+                                    >
+                                        {t('global.no_previous_visits')}
+                                    </UnderReviewDataTableTd>
+                                </UnderReviewDataTableRow>
+                            )}
+                        </UnderReviewDataTableBody>
+                    </UnderReviewDataTable>
+                </UnderReviewSectionPanel>
 
-                    <UnderReviewSectionPanel
-                        id="under-review-diabetes"
-                        icon="bx-droplet"
-                        title={t('global.diabetes_charts')}
-                        count={underReview.diabetes_charts.length}
-                    >
-                        <ClinicalDataTable
-                            headers={[
-                                t('global.date'),
-                                t('global.time'),
-                                'RBS',
-                                'FBS',
-                                t('global.nurse'),
-                                t('global.medicine'),
-                            ]}
-                            rows={underReview.diabetes_charts.map((row) => [
-                                row.date,
-                                row.time,
-                                row.rbs,
-                                row.fbs,
-                                row.nurse_name,
-                                row.medicine_name,
-                            ])}
-                            emptyMessage={t('global.no_records_found')}
-                        />
-                    </UnderReviewSectionPanel>
-
-                    <UnderReviewSectionPanel
-                        id="under-review-nurse-notes"
-                        icon="bx-note"
-                        title={t('global.nurse_notes')}
-                        count={underReview.nurse_notes.length}
-                    >
-                        <ClinicalDataTable
-                            headers={[
-                                t('global.date'),
-                                t('global.morning'),
-                                t('global.evening'),
-                                t('global.nurse'),
-                            ]}
-                            rows={underReview.nurse_notes.map((row) => [
-                                row.date,
-                                row.note_am,
-                                row.note_pm,
-                                row.nurse_name,
-                            ])}
-                            emptyMessage={t('global.no_records_found')}
-                        />
-                    </UnderReviewSectionPanel>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-1 pt-1">
+                        <i className="bx bx-clinic text-lg text-emerald-600 dark:text-emerald-400" />
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                            {t('global.clinical_findings')}
+                        </h3>
+                    </div>
 
                     <UnderReviewSectionPanel
                         id="under-review-mar"
@@ -401,43 +373,15 @@ export default function UnderReviewsShow({
                         />
                     </UnderReviewSectionPanel>
 
-                    <UnderReviewSectionPanel
-                        id="under-review-vitals"
-                        icon="bx-pulse"
-                        title={t('global.vital_signs')}
-                        count={underReview.vital_signs.length}
-                    >
-                        <ClinicalDataTable
-                            headers={[t('global.type'), t('global.schedules'), t('global.date')]}
-                            rows={underReview.vital_signs.map((row) => [
-                                row.type_name,
-                                row.schedules_count,
-                                row.recorded_at,
-                            ])}
-                            emptyMessage={t('global.no_records_found')}
-                        />
-                    </UnderReviewSectionPanel>
-
-                    <UnderReviewSectionPanel
-                        id="under-review-nutrition"
-                        icon="bx-food-menu"
-                        title={t('global.nutrition_care')}
-                        count={underReview.nutrition_cares.length}
-                    >
-                        <ClinicalDataTable
-                            headers={[t('global.date'), t('global.nurse')]}
-                            rows={underReview.nutrition_cares.map((row) => [row.date, row.nurse_name])}
-                            emptyMessage={t('global.no_records_found')}
-                        />
-                    </UnderReviewSectionPanel>
-
-                    {(underReview.nursing_assessments_count > 0 || underReview.hospitalizations_count > 0) && (
+                    {(underReview.nursing_assessments_count > 0 ||
+                        underReview.hospitalizations_count > 0) && (
                         <UnderReviewSectionPanel
                             id="under-review-related"
                             icon="bx-link"
                             title={t('global.related_record')}
                             count={
-                                underReview.nursing_assessments_count + underReview.hospitalizations_count
+                                underReview.nursing_assessments_count +
+                                underReview.hospitalizations_count
                             }
                         >
                             <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">

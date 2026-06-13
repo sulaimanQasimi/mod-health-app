@@ -33,6 +33,7 @@ import { SectionActionButton } from '../Appointments/Sections/SimpleTableSection
 interface HospitalizationDiabetesChartSectionProps {
     hospitalizationId: number;
     isDischarged?: boolean;
+    baseUrl?: string;
 }
 
 interface MedicineOption {
@@ -224,10 +225,11 @@ function ChartFormFields({
 export default function HospitalizationDiabetesChartSection({
     hospitalizationId,
     isDischarged = false,
+    baseUrl: baseUrlProp,
 }: HospitalizationDiabetesChartSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/hospitalizations/${hospitalizationId}/diabetes-charts`;
+    const baseUrl = baseUrlProp ?? `/react/hospitalizations/${hospitalizationId}/diabetes-charts`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

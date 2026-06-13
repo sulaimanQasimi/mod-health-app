@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DoctorOption, NamedOption, PatientCreateUrls } from '../../types/patient';
-import FormSection from './ui/FormSection';
-import { FormField, IconSelect } from './ui/FormField';
+import { FormField, GridDivider } from './ui/FormField';
+import SearchableSelect from '../ui/SearchableSelect';
 
 interface AppointmentSectionProps {
     clinicType: string | null;
@@ -65,36 +65,35 @@ export default function AppointmentSection({
     }, [clinicType, urls.doctorsByDepartment, values.appointment_clinic_type, values.appointment_department_id]);
 
     return (
-        <FormSection
-            icon="bx-calendar-plus"
-            title={t('global.create_appointment')}
-            description={t('global.select_department')}
-            accent="cyan"
-        >
+        <>
+            <GridDivider title={t('global.create_appointment')} />
             {clinicType === 'both' && (
-                <FormField label={t('global.clinic_type')} icon="bx-clinic" error={errors.appointment_clinic_type}>
-                    <IconSelect
+                <FormField label={t('global.clinic_type')} error={errors.appointment_clinic_type} compact className="lg:col-span-2">
+                    <SearchableSelect
                         id="appointment_clinic_type"
-                        icon="bx-clinic"
+                        compact
                         value={values.appointment_clinic_type}
                         onChange={(value) => onChange('appointment_clinic_type', value)}
+                        placeholder={`${t('global.select')}...`}
                     >
                         <option value="">{t('global.select')}...</option>
                         <option value="hospital">{t('global.hospital')}</option>
                         <option value="clinic">{t('global.clinic')}</option>
-                    </IconSelect>
+                    </SearchableSelect>
                 </FormField>
             )}
             <FormField
                 label={t('global.department')}
-                icon="bx-building"
                 error={errors.appointment_department_id}
+                compact
+                className="lg:col-span-2"
             >
-                <IconSelect
+                <SearchableSelect
                     id="appointment_department_id"
-                    icon="bx-building"
+                    compact
                     value={values.appointment_department_id}
                     onChange={(value) => onChange('appointment_department_id', value)}
+                    placeholder={t('global.select_department')}
                 >
                     <option value="">{t('global.select_department')}</option>
                     {departments.map((department) => (
@@ -102,15 +101,16 @@ export default function AppointmentSection({
                             {department.name}
                         </option>
                     ))}
-                </IconSelect>
+                </SearchableSelect>
             </FormField>
-            <FormField label={t('global.doctor')} icon="bx-user-voice" error={errors.appointment_doctor_id}>
-                <IconSelect
+            <FormField label={t('global.doctor')} error={errors.appointment_doctor_id} compact className="lg:col-span-2">
+                <SearchableSelect
                     id="appointment_doctor_id"
-                    icon="bx-user-voice"
+                    compact
                     value={values.appointment_doctor_id}
                     disabled={!values.appointment_department_id || loadingDoctors}
                     onChange={(value) => onChange('appointment_doctor_id', value)}
+                    placeholder={loadingDoctors ? `${t('global.loading')}...` : t('global.select_doctor')}
                 >
                     <option value="">
                         {loadingDoctors ? `${t('global.loading')}...` : t('global.select_doctor')}
@@ -120,8 +120,8 @@ export default function AppointmentSection({
                             {doctor.name}
                         </option>
                     ))}
-                </IconSelect>
+                </SearchableSelect>
             </FormField>
-        </FormSection>
+        </>
     );
 }

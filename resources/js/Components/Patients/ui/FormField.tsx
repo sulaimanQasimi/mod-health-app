@@ -141,13 +141,13 @@ export function IconSelect({
     );
 }
 
-export function GridDivider({ icon, title }: { icon: string; title: string }) {
+export function GridDivider({ title, variant = 'info' }: { title: string; icon?: string; variant?: 'info' | 'primary' }) {
+    const styles =
+        variant === 'primary'
+            ? 'bg-indigo-50 text-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-100'
+            : 'bg-sky-50 text-sky-900 dark:bg-sky-950/40 dark:text-sky-100';
+
     return (
-        <div className="col-span-full mt-1 flex items-center gap-2 border-t border-gray-100 pt-3 dark:border-gray-700">
-            <i className={`bx ${icon} text-sm text-blue-500`} />
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                {title}
-            </span>
-        </div>
+        <div className={`col-span-full mt-2 rounded-md px-3 py-2 text-sm font-medium ${styles}`}>{title}</div>
     );
 }

@@ -1,6 +1,6 @@
-import { Alert, Button, Spinner } from 'flowbite-react';
+import { Alert, Button, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useMemo, useState } from 'react';
-import { router, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
 import {
@@ -18,9 +18,10 @@ import { buildAgeValue } from '../../utils/patientAge';
 import AppointmentSection from './AppointmentSection';
 import TokenModal from './TokenModal';
 import AgeInput from './ui/AgeInput';
-import FormSection from './ui/FormSection';
-import { FormField, IconSelect, IconTextInput } from './ui/FormField';
-import SegmentedControl from './ui/SegmentedControl';
+import { FormField, GridDivider } from './ui/FormField';
+import SearchableSelect from '../ui/SearchableSelect';
+
+const FORM_GRID_CLASS = 'grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 lg:grid-cols-4';
 
 interface PatientCreateFormProps {
     mode?: PatientFormMode;
@@ -29,6 +30,7 @@ interface PatientCreateFormProps {
     urls: PatientFormUrls;
     patient?: PatientFormValues;
     permissions?: PatientFormPermissions;
+    backHref?: string;
 }
 
 interface FormState {
@@ -135,6 +137,7 @@ export default function PatientCreateForm({
     urls,
     patient,
     permissions,
+    backHref,
 }: PatientCreateFormProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
@@ -363,208 +366,160 @@ export default function PatientCreateForm({
                     </Alert>
                 )}
 
-                <FormSection
-                    icon="bx-user-circle"
-                    title={t('global.personal_information')}
-                    accent="blue"
-                    isFirst
-                >
+                <div className={FORM_GRID_CLASS}>
                     {patientType === '0' && (
-                        <FormField label={t('global.id_card')} icon="bx-id-card" error={errors.id_card}>
-                            <IconTextInput
+                        <FormField label={t('global.id_card')} error={errors.id_card} compact>
+                            <TextInput
                                 id="id_card"
-                                icon="bx-id-card"
+                                sizing="sm"
                                 value={form.id_card}
-                                onChange={(value) => updateField('id_card', value)}
+                                onChange={(e) => updateField('id_card', e.target.value)}
                             />
                         </FormField>
                     )}
 
-                    <FormField label={t('global.name')} icon="bx-user" required error={errors.name}>
-                        <IconTextInput
+                    <FormField label={t('global.name')} required error={errors.name} compact>
+                        <TextInput
                             id="name"
-                            icon="bx-user"
+                            sizing="sm"
                             required
                             value={form.name}
-                            onChange={(value) => updateField('name', value)}
+                            onChange={(e) => updateField('name', e.target.value)}
                         />
                     </FormField>
 
-                    <FormField label={t('global.last_name')} icon="bx-user" error={errors.last_name}>
-                        <IconTextInput
+                    <FormField label={t('global.last_name')} error={errors.last_name} compact>
+                        <TextInput
                             id="last_name"
-                            icon="bx-user"
+                            sizing="sm"
                             value={form.last_name}
-                            onChange={(value) => updateField('last_name', value)}
+                            onChange={(e) => updateField('last_name', e.target.value)}
                         />
                     </FormField>
 
-                    <FormField label={t('global.father_name')} icon="bx-male" error={errors.father_name}>
-                        <IconTextInput
+                    <FormField label={t('global.father_name')} error={errors.father_name} compact>
+                        <TextInput
                             id="father_name"
-                            icon="bx-male"
+                            sizing="sm"
                             value={form.father_name}
-                            onChange={(value) => updateField('father_name', value)}
+                            onChange={(e) => updateField('father_name', e.target.value)}
                         />
                     </FormField>
 
-                    <FormField label={t('global.nid')} icon="bx-fingerprint" required error={errors.nid}>
-                        <IconTextInput
+                    <FormField label={t('global.nid')} required error={errors.nid} compact>
+                        <TextInput
                             id="nid"
-                            icon="bx-fingerprint"
+                            sizing="sm"
                             required
                             value={form.nid}
-                            onChange={(value) => updateField('nid', value)}
+                            onChange={(e) => updateField('nid', e.target.value)}
                         />
                     </FormField>
 
-                    {patientType === '2' && (
-                        <FormField label={jobLabel} icon="bx-briefcase" error={errors.job}>
-                            <IconTextInput
-                                id="job"
-                                icon="bx-briefcase"
-                                value={form.job}
-                                onChange={(value) => updateField('job', value)}
-                            />
-                        </FormField>
-                    )}
-                </FormSection>
+                    <FormField label={jobLabel} error={errors.job} compact>
+                        <TextInput
+                            id="job"
+                            sizing="sm"
+                            value={form.job}
+                            onChange={(e) => updateField('job', e.target.value)}
+                        />
+                    </FormField>
 
-                {patientType !== '2' && (
-                    <FormSection
-                        icon="bx-briefcase"
-                        title={t('global.employment_information')}
-                        accent="violet"
-                    >
-                        <FormField label={jobLabel} icon="bx-briefcase" error={errors.job}>
-                            <IconTextInput
-                                id="job"
-                                icon="bx-briefcase"
-                                value={form.job}
-                                onChange={(value) => updateField('job', value)}
-                            />
-                        </FormField>
-
-                        <FormField
-                            label={t('global.job_category')}
-                            icon="bx-category"
-                            required
-                            className="md:col-span-2 xl:col-span-3"
-                        >
-                            <SegmentedControl
-                                value={form.job_category}
-                                onChange={(value) => handleJobCategoryChange(value as '0' | '1')}
-                                options={[
-                                    { value: '0', label: t('global.military'), icon: 'bx-shield' },
-                                    { value: '1', label: t('global.civilian'), icon: 'bx-buildings' },
-                                ]}
-                            />
-                        </FormField>
-
-                        {showMilitaryFields && (
-                            <FormField
-                                label={t('global.militery_type')}
-                                icon="bx-shield-quarter"
-                                error={errors.militery_type_id}
-                            >
-                                <IconSelect
-                                    id="militery_type_id"
-                                    icon="bx-shield-quarter"
-                                    value={form.militery_type_id}
-                                    onChange={(value) => updateField('militery_type_id', value)}
+                    {patientType !== '2' && (
+                        <>
+                            <FormField label={t('global.job_category')} required error={errors.job_category} compact>
+                                <SearchableSelect
+                                    id="job_category"
+                                    compact
+                                    value={form.job_category}
+                                    onChange={(value) => handleJobCategoryChange(value as '0' | '1')}
                                 >
-                                    <option value="">{t('global.select')}</option>
-                                    {formData.militeryTypes.map((type) => (
-                                        <option key={type.id} value={type.id}>
-                                            {type.name}
-                                        </option>
-                                    ))}
-                                </IconSelect>
+                                    <option value="0">{t('global.military')}</option>
+                                    <option value="1">{t('global.civilian')}</option>
+                                </SearchableSelect>
                             </FormField>
-                        )}
 
-                        {showRankField && (
-                            <FormField label={rankLabel} icon="bx-medal" error={errors.rank}>
-                                <IconTextInput
-                                    id="rank"
-                                    icon="bx-medal"
-                                    value={form.rank}
-                                    onChange={(value) => updateField('rank', value)}
-                                />
-                            </FormField>
-                        )}
-                    </FormSection>
-                )}
+                            {showMilitaryFields && (
+                                <FormField label={t('global.militery_type')} error={errors.militery_type_id} compact>
+                                    <SearchableSelect
+                                        id="militery_type_id"
+                                        compact
+                                        value={form.militery_type_id}
+                                        onChange={(value) => updateField('militery_type_id', value)}
+                                        placeholder={t('global.select')}
+                                    >
+                                        <option value="">{t('global.select')}</option>
+                                        {formData.militeryTypes.map((type) => (
+                                            <option key={type.id} value={type.id}>
+                                                {type.name}
+                                            </option>
+                                        ))}
+                                    </SearchableSelect>
+                                </FormField>
+                            )}
 
-                <FormSection
-                    icon="bx-map-pin"
-                    title={t('global.contact_information')}
-                    description={t('global.location_details')}
-                    accent="amber"
-                >
-                    <FormField label={t('global.phone')} icon="bx-phone" error={errors.phone}>
-                        <IconTextInput
+                            {showRankField && (
+                                <FormField label={rankLabel} error={errors.rank} compact>
+                                    <TextInput
+                                        id="rank"
+                                        sizing="sm"
+                                        value={form.rank}
+                                        onChange={(e) => updateField('rank', e.target.value)}
+                                    />
+                                </FormField>
+                            )}
+                        </>
+                    )}
+
+                    <FormField label={t('global.phone')} error={errors.phone} compact>
+                        <TextInput
                             id="phone"
-                            icon="bx-phone"
+                            sizing="sm"
                             value={form.phone}
-                            onChange={(value) => updateField('phone', value)}
+                            onChange={(e) => updateField('phone', e.target.value)}
                         />
                     </FormField>
 
-                    <FormField label={t('global.age')} icon="bx-calendar" error={errors.age}>
+                    <FormField label={t('global.age')} error={errors.age} compact>
                         <AgeInput
                             year={form.age_year}
                             month={form.age_month}
                             day={form.age_day}
                             onChange={updateField}
                             preview={ageValue || undefined}
+                            compact
                         />
                     </FormField>
 
-                    <FormField
-                        label={t('global.gender')}
-                        icon="bx-male-female"
-                        required
-                        error={errors.gender}
-                        className={patientType === '2' ? undefined : 'md:col-span-2 xl:col-span-3'}
-                    >
-                        {patientType === '2' ? (
-                            <IconSelect
-                                id="gender"
-                                icon="bx-male-female"
-                                required
-                                value={form.gender}
-                                onChange={(value) => updateField('gender', value)}
-                            >
-                                <option value="">{t('global.select')}</option>
-                                <option value="0">{t('global.male')}</option>
-                                <option value="1">{t('global.female')}</option>
-                            </IconSelect>
-                        ) : (
-                            <SegmentedControl
-                                value={form.gender}
-                                onChange={(value) => updateField('gender', value)}
-                                options={[
-                                    { value: '0', label: t('global.male'), icon: 'bx-male' },
-                                    { value: '1', label: t('global.female'), icon: 'bx-female' },
-                                ]}
-                            />
-                        )}
+                    <FormField label={t('global.gender')} required error={errors.gender} compact>
+                        <SearchableSelect
+                            id="gender"
+                            compact
+                            required
+                            value={form.gender}
+                            onChange={(value) => updateField('gender', value)}
+                            placeholder={t('global.select')}
+                        >
+                            {patientType === '2' && <option value="">{t('global.select')}</option>}
+                            <option value="0">{t('global.male')}</option>
+                            <option value="1">{t('global.female')}</option>
+                        </SearchableSelect>
                     </FormField>
 
                     {patientType !== '2' && (
                         <FormField
                             label={t('global.referred_by')}
-                            icon="bx-user-check"
                             required={patientType === '1'}
                             error={errors.referred_by}
+                            compact
                         >
-                            <IconSelect
+                            <SearchableSelect
                                 id="referred_by"
-                                icon="bx-user-check"
+                                compact
                                 required={patientType === '1'}
                                 value={form.referred_by}
                                 onChange={(value) => updateField('referred_by', value)}
+                                placeholder={t('global.select')}
                             >
                                 <option value="">{t('global.select')}</option>
                                 {formData.recipients.map((recipient) => (
@@ -572,17 +527,18 @@ export default function PatientCreateForm({
                                         {recipient.name}
                                     </option>
                                 ))}
-                            </IconSelect>
+                            </SearchableSelect>
                         </FormField>
                     )}
 
-                    <FormField label={t('global.province')} icon="bx-map" required error={errors.province_id}>
-                        <IconSelect
+                    <FormField label={t('global.province')} required error={errors.province_id} compact>
+                        <SearchableSelect
                             id="province_id"
-                            icon="bx-map"
+                            compact
                             required
                             value={form.province_id}
                             onChange={loadDistricts}
+                            placeholder={t('global.select')}
                         >
                             <option value="">{t('global.select')}</option>
                             {formData.provinces.map((province) => (
@@ -590,17 +546,18 @@ export default function PatientCreateForm({
                                     {province.name_dr}
                                 </option>
                             ))}
-                        </IconSelect>
+                        </SearchableSelect>
                     </FormField>
 
-                    <FormField label={t('global.district')} icon="bx-map-alt" required error={errors.district_id}>
-                        <IconSelect
+                    <FormField label={t('global.district')} required error={errors.district_id} compact>
+                        <SearchableSelect
                             id="district_id"
-                            icon="bx-map-alt"
+                            compact
                             required
                             disabled={!form.province_id || loadingDistricts}
                             value={form.district_id}
                             onChange={(value) => updateField('district_id', value)}
+                            placeholder={loadingDistricts ? `${t('global.loading')}...` : t('global.select')}
                         >
                             <option value="">
                                 {loadingDistricts ? `${t('global.loading')}...` : t('global.select')}
@@ -610,140 +567,150 @@ export default function PatientCreateForm({
                                     {district.name_dr}
                                 </option>
                             ))}
-                        </IconSelect>
+                        </SearchableSelect>
                     </FormField>
-                </FormSection>
 
-                {!isEdit && (
-                    <AppointmentSection
-                        clinicType={formData.clinicType}
-                        departments={formData.departments}
-                        urls={urls}
-                        values={{
-                            appointment_clinic_type: form.appointment_clinic_type,
-                            appointment_department_id: form.appointment_department_id,
-                            appointment_doctor_id: form.appointment_doctor_id,
-                        }}
-                        onChange={updateAppointmentField}
-                        errors={errors}
-                    />
-                )}
+                    <FormField label={t('global.registration_date')} compact>
+                        <TextInput
+                            id="registration_date"
+                            sizing="sm"
+                            readOnly
+                            value={formData.registrationDate}
+                        />
+                    </FormField>
 
-                {patientType === '2' && (
-                    <FormSection
-                        icon="bx-group"
-                        title={t('global.referred_person')}
-                        accent="emerald"
-                    >
-                        <FormField label={t('global.name')} icon="bx-user" required error={errors.referral_name}>
-                            <IconTextInput
-                                id="referral_name"
-                                icon="bx-user"
-                                required
-                                value={form.referral_name}
-                                onChange={(value) => updateField('referral_name', value)}
-                            />
-                        </FormField>
+                    {!isEdit && (
+                        <AppointmentSection
+                            clinicType={formData.clinicType}
+                            departments={formData.departments}
+                            urls={urls}
+                            values={{
+                                appointment_clinic_type: form.appointment_clinic_type,
+                                appointment_department_id: form.appointment_department_id,
+                                appointment_doctor_id: form.appointment_doctor_id,
+                            }}
+                            onChange={updateAppointmentField}
+                            errors={errors}
+                        />
+                    )}
 
-                        <FormField label={t('global.last_name')} icon="bx-user" error={errors.referral_last_name}>
-                            <IconTextInput
-                                id="referral_last_name"
-                                icon="bx-user"
-                                value={form.referral_last_name}
-                                onChange={(value) => updateField('referral_last_name', value)}
-                            />
-                        </FormField>
+                    {patientType === '2' && (
+                        <>
+                            <GridDivider title={t('global.referred_person')} variant="primary" />
+                            <FormField label={t('global.name')} required error={errors.referral_name} compact>
+                                <TextInput
+                                    id="referral_name"
+                                    sizing="sm"
+                                    required
+                                    value={form.referral_name}
+                                    onChange={(e) => updateField('referral_name', e.target.value)}
+                                />
+                            </FormField>
+                            <FormField label={t('global.last_name')} error={errors.referral_last_name} compact>
+                                <TextInput
+                                    id="referral_last_name"
+                                    sizing="sm"
+                                    value={form.referral_last_name}
+                                    onChange={(e) => updateField('referral_last_name', e.target.value)}
+                                />
+                            </FormField>
+                            <FormField label={t('global.father_name')} error={errors.referral_father_name} compact>
+                                <TextInput
+                                    id="referral_father_name"
+                                    sizing="sm"
+                                    value={form.referral_father_name}
+                                    onChange={(e) => updateField('referral_father_name', e.target.value)}
+                                />
+                            </FormField>
+                            <FormField label={t('global.nid')} required error={errors.referral_nid} compact>
+                                <TextInput
+                                    id="referral_nid"
+                                    sizing="sm"
+                                    required
+                                    value={form.referral_nid}
+                                    onChange={(e) => updateField('referral_nid', e.target.value)}
+                                />
+                            </FormField>
+                            <FormField label={t('global.id_card')} error={errors.referral_id_card} compact>
+                                <TextInput
+                                    id="referral_id_card"
+                                    sizing="sm"
+                                    value={form.referral_id_card}
+                                    onChange={(e) => updateField('referral_id_card', e.target.value)}
+                                />
+                            </FormField>
+                            <FormField label={t('global.phone')} error={errors.referral_phone} compact>
+                                <TextInput
+                                    id="referral_phone"
+                                    sizing="sm"
+                                    value={form.referral_phone}
+                                    onChange={(e) => updateField('referral_phone', e.target.value)}
+                                />
+                            </FormField>
+                            <FormField label={t('global.referred_by')} required error={errors.referral_recipient} compact>
+                                <SearchableSelect
+                                    id="referral_recipient"
+                                    compact
+                                    required
+                                    value={form.referral_recipient}
+                                    onChange={(value) => updateField('referral_recipient', value)}
+                                    placeholder={t('global.select')}
+                                >
+                                    <option value="">{t('global.select')}</option>
+                                    {formData.recipients.map((recipient) => (
+                                        <option key={recipient.id} value={recipient.id}>
+                                            {recipient.name}
+                                        </option>
+                                    ))}
+                                </SearchableSelect>
+                            </FormField>
+                            <FormField label={t('global.relation')} required error={errors.relation_id} compact>
+                                <SearchableSelect
+                                    id="relation_id"
+                                    compact
+                                    required
+                                    value={form.relation_id}
+                                    onChange={(value) => updateField('relation_id', value)}
+                                    placeholder={t('global.select')}
+                                >
+                                    <option value="">{t('global.select')}</option>
+                                    {formData.relations.map((relation) => (
+                                        <option key={relation.id} value={relation.id}>
+                                            {relation.name}
+                                        </option>
+                                    ))}
+                                </SearchableSelect>
+                            </FormField>
+                        </>
+                    )}
+                </div>
 
-                        <FormField
-                            label={t('global.father_name')}
-                            icon="bx-male"
-                            error={errors.referral_father_name}
-                        >
-                            <IconTextInput
-                                id="referral_father_name"
-                                icon="bx-male"
-                                value={form.referral_father_name}
-                                onChange={(value) => updateField('referral_father_name', value)}
-                            />
-                        </FormField>
-
-                        <FormField label={t('global.nid')} icon="bx-fingerprint" required error={errors.referral_nid}>
-                            <IconTextInput
-                                id="referral_nid"
-                                icon="bx-fingerprint"
-                                required
-                                value={form.referral_nid}
-                                onChange={(value) => updateField('referral_nid', value)}
-                            />
-                        </FormField>
-
-                        <FormField label={t('global.id_card')} icon="bx-id-card" error={errors.referral_id_card}>
-                            <IconTextInput
-                                id="referral_id_card"
-                                icon="bx-id-card"
-                                value={form.referral_id_card}
-                                onChange={(value) => updateField('referral_id_card', value)}
-                            />
-                        </FormField>
-
-                        <FormField label={t('global.phone')} icon="bx-phone" error={errors.referral_phone}>
-                            <IconTextInput
-                                id="referral_phone"
-                                icon="bx-phone"
-                                value={form.referral_phone}
-                                onChange={(value) => updateField('referral_phone', value)}
-                            />
-                        </FormField>
-
-                        <FormField
-                            label={t('global.referred_by')}
-                            icon="bx-user-check"
-                            required
-                            error={errors.referral_recipient}
-                        >
-                            <IconSelect
-                                id="referral_recipient"
-                                icon="bx-user-check"
-                                required
-                                value={form.referral_recipient}
-                                onChange={(value) => updateField('referral_recipient', value)}
-                            >
-                                <option value="">{t('global.select')}</option>
-                                {formData.recipients.map((recipient) => (
-                                    <option key={recipient.id} value={recipient.id}>
-                                        {recipient.name}
-                                    </option>
-                                ))}
-                            </IconSelect>
-                        </FormField>
-
-                        <FormField label={t('global.relation')} icon="bx-link" required error={errors.relation_id}>
-                            <IconSelect
-                                id="relation_id"
-                                icon="bx-link"
-                                required
-                                value={form.relation_id}
-                                onChange={(value) => updateField('relation_id', value)}
-                            >
-                                <option value="">{t('global.select')}</option>
-                                {formData.relations.map((relation) => (
-                                    <option key={relation.id} value={relation.id}>
-                                        {relation.name}
-                                    </option>
-                                ))}
-                            </IconSelect>
-                        </FormField>
-                    </FormSection>
-                )}
-
-                <div className="mt-8 flex flex-col-reverse gap-3 border-t border-gray-200 pt-6 sm:flex-row sm:items-center sm:justify-between dark:border-gray-700">
-                    {isEdit && permissions?.delete ? (
+                <div className="mt-6 flex flex-wrap items-center gap-2">
+                    <Button type="submit" color="blue" disabled={submitting || deleting}>
+                        {submitting ? (
+                            <>
+                                <Spinner size="sm" className="me-2" />
+                                {isEdit ? `${t('global.updating')}...` : `${t('global.creating')}...`}
+                            </>
+                        ) : (
+                            isEdit ? t('global.update') : t('global.create')
+                        )}
+                    </Button>
+                    {backHref && (
+                        <Link href={backHref}>
+                            <Button type="button" color="gray">
+                                {t('global.back')}
+                            </Button>
+                        </Link>
+                    )}
+                    {isEdit && permissions?.delete && (
                         <Button
                             type="button"
                             color="failure"
                             outline
                             disabled={deleting || submitting}
                             onClick={handleDelete}
+                            className="ms-auto"
                         >
                             {deleting ? (
                                 <>
@@ -751,28 +718,10 @@ export default function PatientCreateForm({
                                     {t('global.deleting')}...
                                 </>
                             ) : (
-                                <>
-                                    <i className="bx bx-trash me-2 text-lg" />
-                                    {t('global.delete')}
-                                </>
+                                t('global.delete')
                             )}
                         </Button>
-                    ) : (
-                        <span />
                     )}
-                    <Button type="submit" color="blue" disabled={submitting || deleting} className="w-full sm:ms-auto sm:w-auto sm:min-w-[140px]">
-                        {submitting ? (
-                            <>
-                                <Spinner size="sm" className="me-2" />
-                                {isEdit ? `${t('global.updating')}...` : `${t('global.creating')}...`}
-                            </>
-                        ) : (
-                            <>
-                                <i className={`bx ${isEdit ? 'bx-save' : 'bx-plus-circle'} me-2 text-lg`} />
-                                {isEdit ? t('global.update') : t('global.create')}
-                            </>
-                        )}
-                    </Button>
                 </div>
             </form>
 

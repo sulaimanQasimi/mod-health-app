@@ -1,10 +1,10 @@
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
-import BackLink from '../../Components/ui/BackLink';
 import PatientCreateForm from '../../Components/Patients/PatientCreateForm';
 import PatientTypeSelector from '../../Components/Patients/ui/PatientTypeSelector';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
+import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 import {
     PatientFormData,
     PatientFormMode,
@@ -42,29 +42,15 @@ export function PatientFormPage({
         <DashboardLayout>
             <Head title={title} />
 
-            <div className="mx-auto max-w-6xl">
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <div className="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                    <div className="flex flex-col gap-4 border-b border-gray-200 px-6 py-5 dark:border-gray-700 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h1>
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                {t('global.registration_date')}:{' '}
-                                <span className="font-medium text-gray-700 dark:text-gray-300">
-                                    {formData.registrationDate}
-                                </span>
-                            </p>
-                        </div>
-                        <BackLink href={backHref}>{t('global.back')}</BackLink>
+                    <div className="border-b border-gray-200 px-5 py-4 dark:border-gray-700">
+                        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h1>
                     </div>
 
-                    <div className="px-6 py-6">
+                    <div className="px-5 py-5">
                         {!isEdit && (
-                            <div className="mb-8">
-                                <p className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    {t('global.type')}
-                                </p>
-                                <PatientTypeSelector value={patientType} onChange={setPatientType} />
-                            </div>
+                            <PatientTypeSelector value={patientType} onChange={setPatientType} />
                         )}
 
                         <PatientCreateForm
@@ -75,6 +61,7 @@ export function PatientFormPage({
                             urls={urls}
                             patient={patient}
                             permissions={permissions}
+                            backHref={backHref}
                         />
                     </div>
                 </div>

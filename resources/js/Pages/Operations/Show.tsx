@@ -10,10 +10,6 @@ import {
 } from '../../Components/Hospitalizations/hospitalizationFormTypes';
 import OperationSummary from '../../Components/Operations/OperationSummary';
 import {
-    OPERATION_APPROVE_BTN_CLASS,
-    OPERATION_COMPLETE_BTN_CLASS,
-    OPERATION_PENDING_PANEL_CLASS,
-    OPERATION_RESERVE_BTN_CLASS,
     operationPatientLabel,
 } from '../../Components/Operations/operationUi';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
@@ -209,28 +205,28 @@ export default function OperationsShow({
                     action={
                         <SettingsPageActions>
                             {canApprove && (
-                                <button type="button" className={OPERATION_APPROVE_BTN_CLASS} onClick={() => setApproveOpen(true)}>
-                                    <i className="bx bx-check text-lg" />
+                                <Button type="button" color="success" onClick={() => setApproveOpen(true)}>
+                                    <i className="bx bx-check me-2" />
                                     {t('global.operation_approval')}
-                                </button>
+                                </Button>
                             )}
                             {canComplete && (
-                                <button type="button" className={OPERATION_COMPLETE_BTN_CLASS} onClick={openComplete}>
-                                    <i className="bx bx-check-double text-lg" />
+                                <Button type="button" color="blue" onClick={openComplete}>
+                                    <i className="bx bx-check-double me-2" />
                                     {t('global.complete_operation')}
-                                </button>
+                                </Button>
                             )}
                             {canReserve && (
-                                <button type="button" className={OPERATION_RESERVE_BTN_CLASS} onClick={() => setReserveOpen(true)}>
-                                    <i className="bx bx-calendar-check text-lg" />
+                                <Button type="button" color="warning" onClick={() => setReserveOpen(true)}>
+                                    <i className="bx bx-calendar-check me-2" />
                                     {t('global.reserve_operation')}
-                                </button>
+                                </Button>
                             )}
                             {canUnreserve && (
-                                <button type="button" className={OPERATION_RESERVE_BTN_CLASS} onClick={handleUnreserve} disabled={processing}>
-                                    <i className="bx bx-transfer text-lg" />
+                                <Button type="button" color="gray" onClick={handleUnreserve} disabled={processing}>
+                                    <i className="bx bx-transfer me-2" />
                                     {t('global.move_operation')}
-                                </button>
+                                </Button>
                             )}
                         </SettingsPageActions>
                     }
@@ -239,39 +235,34 @@ export default function OperationsShow({
                 <OperationSummary operation={operation} />
 
                 {(canApprove || canComplete || canReserve) && (
-                    <div className={OPERATION_PENDING_PANEL_CLASS}>
+                    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
                         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex min-w-0 items-start gap-4">
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-md">
-                                    <i className="bx bx-cut text-2xl" />
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-base font-bold text-amber-950 dark:text-amber-50">
-                                        {t('global.operation_details')}
-                                    </p>
-                                    <p className="mt-1 line-clamp-2 text-sm text-amber-800/80 dark:text-amber-200/80">
-                                        {operation.plan ?? '—'}
-                                    </p>
-                                </div>
+                            <div className="min-w-0">
+                                <p className="text-base font-semibold text-gray-900 dark:text-white">
+                                    {t('global.operation_details')}
+                                </p>
+                                <p className="mt-1 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
+                                    {operation.plan ?? '—'}
+                                </p>
                             </div>
                             <div className="flex shrink-0 flex-wrap gap-2">
                                 {canApprove && (
-                                    <button type="button" className={OPERATION_APPROVE_BTN_CLASS} onClick={() => setApproveOpen(true)}>
-                                        <i className="bx bx-check-circle text-lg" />
+                                    <Button type="button" color="success" onClick={() => setApproveOpen(true)}>
+                                        <i className="bx bx-check-circle me-2" />
                                         {t('global.operation_approval')}
-                                    </button>
+                                    </Button>
                                 )}
                                 {canComplete && (
-                                    <button type="button" className={OPERATION_COMPLETE_BTN_CLASS} onClick={() => setCompleteOpen(true)}>
-                                        <i className="bx bx-check-double text-lg" />
+                                    <Button type="button" color="blue" onClick={() => setCompleteOpen(true)}>
+                                        <i className="bx bx-check-double me-2" />
                                         {t('global.complete_operation')}
-                                    </button>
+                                    </Button>
                                 )}
                                 {canReserve && (
-                                    <button type="button" className={OPERATION_RESERVE_BTN_CLASS} onClick={() => setReserveOpen(true)}>
-                                        <i className="bx bx-calendar-check text-lg" />
+                                    <Button type="button" color="warning" onClick={() => setReserveOpen(true)}>
+                                        <i className="bx bx-calendar-check me-2" />
                                         {t('global.reserve_operation')}
-                                    </button>
+                                    </Button>
                                 )}
                             </div>
                         </div>
@@ -343,10 +334,10 @@ export default function OperationsShow({
                             <Button type="button" color="light" onClick={() => setApproveOpen(false)} disabled={processing}>
                                 {t('global.cancel')}
                             </Button>
-                            <button type="submit" className={OPERATION_APPROVE_BTN_CLASS} disabled={processing}>
-                                {processing ? <Spinner size="sm" /> : <i className="bx bx-check" />}
+                            <Button type="submit" color="success" disabled={processing}>
+                                {processing ? <Spinner size="sm" /> : <i className="bx bx-check me-2" />}
                                 {t('global.save')}
-                            </button>
+                            </Button>
                         </ModalFooter>
                     </form>
                 </div>
@@ -411,10 +402,10 @@ export default function OperationsShow({
                             <Button type="button" color="light" onClick={() => setCompleteOpen(false)} disabled={processing}>
                                 {t('global.cancel')}
                             </Button>
-                            <button type="submit" className={OPERATION_COMPLETE_BTN_CLASS} disabled={processing}>
-                                {processing ? <Spinner size="sm" /> : <i className="bx bx-check" />}
+                            <Button type="submit" color="blue" disabled={processing}>
+                                {processing ? <Spinner size="sm" /> : <i className="bx bx-check me-2" />}
                                 {t('global.save')}
-                            </button>
+                            </Button>
                         </ModalFooter>
                     </form>
                 </div>
@@ -461,10 +452,10 @@ export default function OperationsShow({
                             <Button type="button" color="light" onClick={() => setReserveOpen(false)} disabled={processing}>
                                 {t('global.cancel')}
                             </Button>
-                            <button type="submit" className={OPERATION_RESERVE_BTN_CLASS} disabled={processing}>
-                                {processing ? <Spinner size="sm" /> : <i className="bx bx-check" />}
+                            <Button type="submit" color="warning" disabled={processing}>
+                                {processing ? <Spinner size="sm" /> : <i className="bx bx-check me-2" />}
                                 {t('global.save')}
-                            </button>
+                            </Button>
                         </ModalFooter>
                     </form>
                 </div>

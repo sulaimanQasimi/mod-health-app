@@ -3,10 +3,16 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\V1\Concerns\ManagesAppointmentReport;
+use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Http\Controllers\V1\Concerns\RendersInertiaPage;
 use App\Models\Appointment;
 use App\Models\Department;
+use App\Models\District;
 use App\Models\Doctor;
+use App\Models\Province;
+use App\Models\Relation;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -15,6 +21,8 @@ use Inertia\Response;
 
 class AppointmentController extends Controller
 {
+    use ManagesAppointmentReport;
+    use PaginatesInertiaIndex;
     use RendersInertiaPage;
 
     private const INDEX_FILTER_KEYS = [
@@ -596,9 +604,95 @@ class AppointmentController extends Controller
             ->with('success', localize('global.department_updated_successfully'));
     }
 
-    public function report()
+    public function report(Request $request): Response
     {
-        return $this->renderPage('global.reports');
+        $this->authorize('viewAny', Appointment::class);
+
+        $user = $request->user();
+        $branchId = (int) $user->branch_id;
+        $hasSearch = $this->appointmentReportHasSearch($request);
+
+        $appointments = [
+            'data' => [],
+            'links' => [],
+            'meta' => [
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => 25,
+                'total' => 0,
+                'from' => null,
+                'to' => null,
+            ],
+        ];
+        $summary = [
+            'total' => 0,
+            'completed' => 0,
+            'ongoing' => 0,
+        ];
+
+        if ($hasSearch) {
+            $query = $this->appointmentReportBaseQuery($request, $branchId);
+            $summary = $this->appointmentReportSummary($query);
+
+            $perPage = $request->input('per_page', '25');
+            if ($perPage === 'all') {
+                $items = $query->get();
+                $appointments = [
+                    'data' => $items->map(fn (Appointment $item) => $this->transformAppointmentReportItem($item))->values()->all(),
+                    'links' => [],
+                    'meta' => [
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'per_page' => $items->count(),
+                        'total' => $items->count(),
+                        'from' => $items->count() > 0 ? 1 : null,
+                        'to' => $items->count() > 0 ? $items->count() : null,
+                    ],
+                ];
+            } else {
+                $paginator = $this->paginateQuery(
+                    $query,
+                    $request,
+                    25,
+                    [10, 15, 25, 50, 100],
+                );
+                $appointments = $this->paginationPayload(
+                    $paginator,
+                    fn (Appointment $item) => $this->transformAppointmentReportItem($item),
+                );
+            }
+        }
+
+        return Inertia::render('Appointments/Report', [
+            'appointments' => $appointments,
+            'summary' => $summary,
+            'hasSearch' => $hasSearch,
+            'filters' => $this->collectFilters($request, self::APPOINTMENT_REPORT_FILTER_KEYS),
+            'filterOptions' => [
+                'doctors' => Doctor::query()
+                    ->where('active_status', true)
+                    ->orderBy('name')
+                    ->get(['id', 'name']),
+                'users' => User::query()
+                    ->where('status', 1)
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'last_name']),
+                'provinces' => Province::query()
+                    ->orderBy('name_dr')
+                    ->get(['id', 'name', 'name_dr']),
+                'districts' => District::query()
+                    ->orderBy('name_dr')
+                    ->get(['id', 'name', 'name_dr', 'province_id']),
+                'relations' => Relation::query()
+                    ->orderBy('name')
+                    ->get(['id', 'name']),
+            ],
+            'urls' => [
+                'current' => route('react.appointments.report'),
+                'index' => route('react.appointments.index'),
+                'export' => route('appointments.export-report'),
+            ],
+        ]);
     }
 
     /**

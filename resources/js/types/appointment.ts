@@ -245,3 +245,77 @@ export interface PaginatedDoctorAppointments {
         to: number | null;
     };
 }
+
+export interface AppointmentReportFilters {
+    patient_name: string;
+    doctor_id: string;
+    processed_by: string;
+    registered_by: string;
+    is_completed: string;
+    start: string;
+    end: string;
+    time: string;
+    clinic_type: string;
+    job: string;
+    job_type: string;
+    gender: string;
+    rank: string;
+    relation_id: string;
+    province_id: string;
+    district_id: string;
+    per_page: string;
+}
+
+export interface AppointmentReportSummary {
+    total: number;
+    completed: number;
+    ongoing: number;
+}
+
+export interface AppointmentReportItem {
+    id: number;
+    patient_name: string | null;
+    doctor_name: string | null;
+    branch_name: string | null;
+    clinic_type: string | null;
+    processed_by_name: string | null;
+    registered_by_name: string | null;
+    job: string | null;
+    job_type: string | null;
+    gender: string | number | null;
+    rank: string | null;
+    relation_name: string | null;
+    province_name: string | null;
+    district_name: string | null;
+    is_completed: boolean;
+    date: string | null;
+    time: string | null;
+    urls: { show: string };
+}
+
+export interface AppointmentReportFilterOptions {
+    doctors: Array<{ id: number; name: string }>;
+    users: Array<{ id: number; name: string; last_name?: string | null }>;
+    provinces: Array<{ id: number; name: string; name_dr?: string | null }>;
+    districts: Array<{ id: number; name: string; name_dr?: string | null; province_id: number }>;
+    relations: Array<{ id: number; name: string }>;
+}
+
+export interface PaginatedAppointmentReport {
+    data: AppointmentReportItem[];
+    links: PaginationLink[];
+    meta: {
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+        from: number | null;
+        to: number | null;
+    };
+}
+
+export interface AppointmentReportUrls {
+    current: string;
+    index: string;
+    export: string;
+}

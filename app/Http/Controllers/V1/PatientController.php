@@ -4,6 +4,8 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PatientController as LegacyPatientController;
+use App\Http\Controllers\V1\Concerns\ManagesPatientReport;
+use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\Department;
 use App\Models\District;
 use App\Models\MiliteryType;
@@ -18,6 +20,8 @@ use Inertia\Response;
 
 class PatientController extends Controller
 {
+    use ManagesPatientReport;
+    use PaginatesInertiaIndex;
     private const INDEX_FILTER_KEYS = [
         'name',
         'father_name',
@@ -333,10 +337,71 @@ class PatientController extends Controller
         return app(LegacyPatientController::class)->getDoctorsByDepartment($departmentId, $request);
     }
 
-    public function report()
+    public function report(Request $request): Response
     {
-        return Inertia::render('Placeholder', [
-            'title' => 'global.reports',
+        $this->authorize('viewAny', Patient::class);
+
+        $user = $request->user();
+        $branchId = (int) $user->branch_id;
+        $hasSearch = $this->patientReportHasSearch($request);
+
+        $patients = [
+            'data' => [],
+            'links' => [],
+            'meta' => [
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => 15,
+                'total' => 0,
+                'from' => null,
+                'to' => null,
+            ],
+        ];
+        $summary = ['total' => 0];
+
+        if ($hasSearch) {
+            $query = $this->patientReportBaseQuery($request, $branchId);
+            $summary = $this->patientReportSummary($query);
+
+            $perPage = $request->input('per_page', '15');
+            if ($perPage === 'all') {
+                $items = $query->get();
+                $patients = [
+                    'data' => $items->map(fn (Patient $item) => $this->transformPatientReportItem($item))->values()->all(),
+                    'links' => [],
+                    'meta' => [
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'per_page' => $items->count(),
+                        'total' => $items->count(),
+                        'from' => $items->count() > 0 ? 1 : null,
+                        'to' => $items->count() > 0 ? $items->count() : null,
+                    ],
+                ];
+            } else {
+                $paginator = $this->paginateQuery($query, $request, 15, [10, 15, 25, 50, 100]);
+                $patients = $this->paginationPayload(
+                    $paginator,
+                    fn (Patient $item) => $this->transformPatientReportItem($item),
+                );
+            }
+        }
+
+        return Inertia::render('Patients/Report', [
+            'patients' => $patients,
+            'summary' => $summary,
+            'hasSearch' => $hasSearch,
+            'filters' => $this->collectFilters($request, $this->patientReportFilterKeys()),
+            'filterOptions' => [
+                'provinces' => Province::query()->orderBy('name_dr')->get(['id', 'name_dr']),
+                'districts' => District::query()->orderBy('name_dr')->get(['id', 'name_dr', 'province_id']),
+                'recipients' => Recipient::query()->orderBy('name')->get(['id', 'name']),
+            ],
+            'urls' => [
+                'current' => route('react.patients.report'),
+                'index' => route('react.patients.index'),
+                'export' => route('patients.export-report'),
+            ],
         ]);
     }
 

@@ -18,29 +18,26 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
-interface PrescriptionReportItem {
+interface PatientReportItem {
     id: number;
     patient_name: string | null;
-    patient_father_name: string | null;
-    patient_id_card: string | null;
-    doctor_name: string | null;
-    branch_name: string | null;
-    pharmacy_name: string | null;
-    department_name: string | null;
-    processor_name: string | null;
-    is_completed: boolean;
-    created_at: string | null;
+    nid: string | null;
+    id_card: string | null;
+    referral_name: string | null;
+    age: string | number | null;
+    gender: string | number | null;
+    job_category: string | number | null;
+    type: string | number | null;
+    referred_by_name: string | null;
+    province_name: string | null;
+    district_name: string | null;
+    registration_date: string | null;
     urls: { show: string };
 }
 
-interface PharmacyUser {
-    id: number;
-    name: string;
-}
-
 interface ReportProps {
-    prescriptions: {
-        data: PrescriptionReportItem[];
+    patients: {
+        data: PatientReportItem[];
         links: Array<{ url: string | null; label: string; active: boolean }>;
         meta: {
             current_page: number;
@@ -51,30 +48,39 @@ interface ReportProps {
             to: number | null;
         };
     };
-    summary: { total: number; completed: number; pending: number };
+    summary: { total: number };
     hasSearch: boolean;
     filters: Record<string, string>;
     filterOptions: {
-        pharmacies: Array<{ id: number; name: string }>;
+        provinces: Array<{ id: number; name_dr: string }>;
+        districts: Array<{ id: number; name_dr: string; province_id: number }>;
+        recipients: Array<{ id: number; name: string }>;
     };
     urls: {
         current: string;
         index: string;
-        pharmacyUsers: string;
         export: string;
     };
 }
 
-const EMPTY_FILTERS = {
-    patient_name: '',
-    father_name: '',
-    is_completed: '',
-    pharmacy_id: '',
-    processed_by_user_id: '',
-    start: '',
-    end: '',
-    per_page: '25',
-};
+const FILTER_KEYS = [
+    'patient_name',
+    'nid',
+    'id_card',
+    'referral_name',
+    'age',
+    'gender',
+    'job_category',
+    'type',
+    'referred_by',
+    'province_id',
+    'district_id',
+    'from',
+    'to',
+    'per_page',
+] as const;
+
+const EMPTY_FILTERS = Object.fromEntries(FILTER_KEYS.map((key) => [key, key === 'per_page' ? '15' : '']));
 
 function buildSearchParams(filters: Record<string, string>): Record<string, string> {
     const params: Record<string, string> = { search: '1' };
@@ -86,8 +92,8 @@ function buildSearchParams(filters: Record<string, string>): Record<string, stri
     return params;
 }
 
-export default function PrescriptionsReport({
-    prescriptions,
+export default function PatientsReport({
+    patients,
     summary,
     hasSearch,
     filters: serverFilters,
@@ -99,24 +105,17 @@ export default function PrescriptionsReport({
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
     const [filtersOpen, setFiltersOpen] = useState(true);
-    const [pharmacyUsers, setPharmacyUsers] = useState<PharmacyUser[]>([]);
-    const [loadingUsers, setLoadingUsers] = useState(false);
 
     useEffect(() => setFilters(serverFilters), [serverFilters]);
 
-    useEffect(() => {
-        if (!filters.pharmacy_id) {
-            setPharmacyUsers([]);
-            return;
+    const filteredDistricts = useMemo(() => {
+        if (!filters.province_id) {
+            return filterOptions.districts;
         }
-
-        setLoadingUsers(true);
-        fetch(`${urls.pharmacyUsers}/${filters.pharmacy_id}/users`)
-            .then((response) => response.json())
-            .then((data: PharmacyUser[]) => setPharmacyUsers(data))
-            .catch(() => setPharmacyUsers([]))
-            .finally(() => setLoadingUsers(false));
-    }, [filters.pharmacy_id, urls.pharmacyUsers]);
+        return filterOptions.districts.filter(
+            (district) => String(district.province_id) === filters.province_id
+        );
+    }, [filterOptions.districts, filters.province_id]);
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -146,7 +145,33 @@ export default function PrescriptionsReport({
         return fields;
     }, [filters]);
 
-    const canExport = hasSearch && prescriptions.data.length > 0;
+    const genderLabel = (value: string | number | null) => {
+        if (value === null || value === '') {
+            return '—';
+        }
+        return String(value) === '1' ? t('global.female') : t('global.male');
+    };
+
+    const jobCategoryLabel = (value: string | number | null) => {
+        if (value === null || value === '') {
+            return '—';
+        }
+        return String(value) === '0' ? t('global.military') : t('global.civilian');
+    };
+
+    const typeLabel = (value: string | number | null) => {
+        if (value === null || value === '') {
+            return '—';
+        }
+        const map: Record<string, string> = {
+            '0': t('global.mod'),
+            '1': t('global.recipient'),
+            '2': t('global.family'),
+        };
+        return map[String(value)] ?? String(value);
+    };
+
+    const canExport = hasSearch && patients.data.length > 0;
 
     return (
         <DashboardLayout>
@@ -155,9 +180,9 @@ export default function PrescriptionsReport({
             <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <SettingsPageHeader
                     title={t('global.reports')}
-                    subtitle={t('global.prescriptions')}
+                    subtitle={t('global.patients')}
                     icon="bx-bar-chart-alt-2"
-                    accent="from-emerald-500 to-teal-600"
+                    accent="from-emerald-600 to-teal-700"
                     backHref={urls.index}
                     backLabel={t('global.back')}
                     action={
@@ -192,27 +217,17 @@ export default function PrescriptionsReport({
                 />
 
                 {hasSearch && (
-                    <div className="grid gap-4 sm:grid-cols-3">
-                        {[
-                            { label: t('global.total'), value: summary.total, accent: 'from-emerald-500 to-teal-600' },
-                            { label: t('global.completed'), value: summary.completed, accent: 'from-blue-500 to-cyan-600' },
-                            { label: t('global.pending'), value: summary.pending, accent: 'from-amber-500 to-orange-600' },
-                        ].map((stat) => (
-                            <Card key={stat.label} className="overflow-hidden !shadow-sm">
-                                <div className="flex items-center gap-4">
-                                    <div
-                                        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${stat.accent} text-white shadow-md`}
-                                    >
-                                        <i className="bx bx-receipt text-xl" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500">{stat.label}</p>
-                                        <p className="text-2xl font-bold">{stat.value}</p>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
+                    <Card className="!shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md">
+                                <i className="bx bx-user text-xl" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{t('global.total')}</p>
+                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.total}</p>
+                            </div>
+                        </div>
+                    </Card>
                 )}
 
                 <Card className="!shadow-sm">
@@ -241,59 +256,112 @@ export default function PrescriptionsReport({
                                     />
                                 </div>
                                 <div>
-                                    <Label>{t('global.father_name')}</Label>
+                                    <Label>{t('global.nid')}</Label>
                                     <TextInput
-                                        value={filters.father_name}
+                                        value={filters.nid}
+                                        onChange={(e) => setFilters((prev) => ({ ...prev, nid: e.target.value }))}
+                                    />
+                                </div>
+                                <div>
+                                    <Label>{t('global.id_card')}</Label>
+                                    <TextInput
+                                        value={filters.id_card}
+                                        onChange={(e) => setFilters((prev) => ({ ...prev, id_card: e.target.value }))}
+                                    />
+                                </div>
+                                <div>
+                                    <Label>{t('global.referral_name')}</Label>
+                                    <TextInput
+                                        value={filters.referral_name}
                                         onChange={(e) =>
-                                            setFilters((prev) => ({ ...prev, father_name: e.target.value }))
+                                            setFilters((prev) => ({ ...prev, referral_name: e.target.value }))
                                         }
                                     />
                                 </div>
                                 <div>
-                                    <Label>{t('global.status')}</Label>
+                                    <Label>{t('global.age')}</Label>
+                                    <TextInput
+                                        value={filters.age}
+                                        onChange={(e) => setFilters((prev) => ({ ...prev, age: e.target.value }))}
+                                    />
+                                </div>
+                                <div>
+                                    <Label>{t('global.gender')}</Label>
                                     <SearchableSelect
-                                        value={filters.is_completed}
-                                        onChange={(value) => setFilters((prev) => ({ ...prev, is_completed: value }))}
+                                        value={filters.gender}
+                                        onChange={(value) => setFilters((prev) => ({ ...prev, gender: value }))}
                                         options={[
                                             { value: '', label: t('global.all') },
-                                            { value: '1', label: t('global.completed') },
-                                            { value: '0', label: t('global.pending') },
+                                            { value: '0', label: t('global.male') },
+                                            { value: '1', label: t('global.female') },
                                         ]}
                                     />
                                 </div>
                                 <div>
-                                    <Label>{t('global.pharmacy')}</Label>
+                                    <Label>{t('global.job_category')}</Label>
                                     <SearchableSelect
-                                        value={filters.pharmacy_id}
-                                        onChange={(value) =>
-                                            setFilters((prev) => ({
-                                                ...prev,
-                                                pharmacy_id: value,
-                                                processed_by_user_id: '',
-                                            }))
-                                        }
+                                        value={filters.job_category}
+                                        onChange={(value) => setFilters((prev) => ({ ...prev, job_category: value }))}
                                         options={[
                                             { value: '', label: t('global.all') },
-                                            ...filterOptions.pharmacies.map((pharmacy) => ({
-                                                value: String(pharmacy.id),
-                                                label: pharmacy.name,
+                                            { value: '0', label: t('global.military') },
+                                            { value: '1', label: t('global.civilian') },
+                                        ]}
+                                    />
+                                </div>
+                                <div>
+                                    <Label>{t('global.disease_type')}</Label>
+                                    <SearchableSelect
+                                        value={filters.type}
+                                        onChange={(value) => setFilters((prev) => ({ ...prev, type: value }))}
+                                        options={[
+                                            { value: '', label: t('global.all') },
+                                            { value: '0', label: t('global.mod') },
+                                            { value: '1', label: t('global.recipient') },
+                                            { value: '2', label: t('global.family') },
+                                        ]}
+                                    />
+                                </div>
+                                <div>
+                                    <Label>{t('global.referred_by')}</Label>
+                                    <SearchableSelect
+                                        value={filters.referred_by}
+                                        onChange={(value) => setFilters((prev) => ({ ...prev, referred_by: value }))}
+                                        options={[
+                                            { value: '', label: t('global.all') },
+                                            ...filterOptions.recipients.map((recipient) => ({
+                                                value: String(recipient.id),
+                                                label: recipient.name,
                                             })),
                                         ]}
                                     />
                                 </div>
                                 <div>
-                                    <Label>{t('global.processed_by')}</Label>
+                                    <Label>{t('global.province')}</Label>
                                     <SearchableSelect
-                                        value={filters.processed_by_user_id}
+                                        value={filters.province_id}
                                         onChange={(value) =>
-                                            setFilters((prev) => ({ ...prev, processed_by_user_id: value }))
+                                            setFilters((prev) => ({ ...prev, province_id: value, district_id: '' }))
                                         }
-                                        disabled={!filters.pharmacy_id || loadingUsers}
                                         options={[
                                             { value: '', label: t('global.all') },
-                                            ...pharmacyUsers.map((user) => ({
-                                                value: String(user.id),
-                                                label: user.name,
+                                            ...filterOptions.provinces.map((province) => ({
+                                                value: String(province.id),
+                                                label: province.name_dr,
+                                            })),
+                                        ]}
+                                    />
+                                </div>
+                                <div>
+                                    <Label>{t('global.district')}</Label>
+                                    <SearchableSelect
+                                        value={filters.district_id}
+                                        onChange={(value) => setFilters((prev) => ({ ...prev, district_id: value }))}
+                                        options={[
+                                            { value: '', label: t('global.all') },
+                                            ...filteredDistricts.map((district) => ({
+                                                value: String(district.id),
+                                                label: district.name_dr,
                                             })),
                                         ]}
                                     />
@@ -301,15 +369,15 @@ export default function PrescriptionsReport({
                                 <div>
                                     <Label>{t('global.from')}</Label>
                                     <PersianDateInput
-                                        value={filters.start}
-                                        onChange={(value) => setFilters((prev) => ({ ...prev, start: value }))}
+                                        value={filters.from}
+                                        onChange={(value) => setFilters((prev) => ({ ...prev, from: value }))}
                                     />
                                 </div>
                                 <div>
                                     <Label>{t('global.to')}</Label>
                                     <PersianDateInput
-                                        value={filters.end}
-                                        onChange={(value) => setFilters((prev) => ({ ...prev, end: value }))}
+                                        value={filters.to}
+                                        onChange={(value) => setFilters((prev) => ({ ...prev, to: value }))}
                                     />
                                 </div>
                             </div>
@@ -338,7 +406,7 @@ export default function PrescriptionsReport({
 
                 <Card className="!shadow-sm">
                     {!hasSearch ? (
-                        <div className="flex flex-col items-center gap-3 py-16 text-center text-gray-500">
+                        <div className="flex flex-col items-center gap-3 py-16 text-center text-gray-500 dark:text-gray-400">
                             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950/30">
                                 <i className="bx bx-search-alt text-2xl text-emerald-500" />
                             </div>
@@ -352,43 +420,45 @@ export default function PrescriptionsReport({
                                         <TableRow variant="header">
                                             <TableHeader>#</TableHeader>
                                             <TableHeader>{t('global.patient_name')}</TableHeader>
-                                            <TableHeader>{t('global.father_name')}</TableHeader>
+                                            <TableHeader>{t('global.nid')}</TableHeader>
                                             <TableHeader>{t('global.id_card')}</TableHeader>
-                                            <TableHeader>{t('global.doctor')}</TableHeader>
-                                            <TableHeader>{t('global.pharmacy')}</TableHeader>
-                                            <TableHeader>{t('global.department')}</TableHeader>
-                                            <TableHeader>{t('global.processed_by')}</TableHeader>
-                                            <TableHeader>{t('global.status')}</TableHeader>
-                                            <TableHeader>{t('global.created_at')}</TableHeader>
+                                            <TableHeader>{t('global.referral_name')}</TableHeader>
+                                            <TableHeader>{t('global.age')}</TableHeader>
+                                            <TableHeader>{t('global.gender')}</TableHeader>
+                                            <TableHeader>{t('global.job_category')}</TableHeader>
+                                            <TableHeader>{t('global.disease_type')}</TableHeader>
+                                            <TableHeader>{t('global.referred_by')}</TableHeader>
+                                            <TableHeader>{t('global.province')}</TableHeader>
+                                            <TableHeader>{t('global.district')}</TableHeader>
+                                            <TableHeader>{t('global.registration_date')}</TableHeader>
                                             <TableHeader className="text-end">{t('global.actions')}</TableHeader>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {prescriptions.data.length === 0 ? (
+                                        {patients.data.length === 0 ? (
                                             <TableRow className="hover:bg-transparent dark:hover:bg-transparent">
-                                                <TableCell colSpan={11} align="center" muted className="py-12">
+                                                <TableCell colSpan={14} align="center" muted className="py-12">
                                                     {t('global.no_records_found')}
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
-                                            prescriptions.data.map((item, index) => (
+                                            patients.data.map((item, index) => (
                                                 <TableRow key={item.id}>
                                                     <TableCell className="font-mono text-xs text-gray-500">
-                                                        {(prescriptions.meta.from ?? 1) + index}
+                                                        {(patients.meta.from ?? 1) + index}
                                                     </TableCell>
                                                     <TableCell className="font-medium">{item.patient_name ?? '—'}</TableCell>
-                                                    <TableCell muted>{item.patient_father_name ?? '—'}</TableCell>
-                                                    <TableCell muted>{item.patient_id_card ?? '—'}</TableCell>
-                                                    <TableCell muted>{item.doctor_name ?? '—'}</TableCell>
-                                                    <TableCell muted>{item.pharmacy_name ?? '—'}</TableCell>
-                                                    <TableCell muted>{item.department_name ?? '—'}</TableCell>
-                                                    <TableCell muted>{item.processor_name ?? '—'}</TableCell>
-                                                    <TableCell>
-                                                        <Badge color={item.is_completed ? 'success' : 'warning'}>
-                                                            {item.is_completed ? t('global.completed') : t('global.pending')}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell muted dir="ltr">{item.created_at ?? '—'}</TableCell>
+                                                    <TableCell muted>{item.nid ?? '—'}</TableCell>
+                                                    <TableCell muted>{item.id_card ?? '—'}</TableCell>
+                                                    <TableCell muted>{item.referral_name ?? '—'}</TableCell>
+                                                    <TableCell muted>{item.age ?? '—'}</TableCell>
+                                                    <TableCell muted>{genderLabel(item.gender)}</TableCell>
+                                                    <TableCell muted>{jobCategoryLabel(item.job_category)}</TableCell>
+                                                    <TableCell muted>{typeLabel(item.type)}</TableCell>
+                                                    <TableCell muted>{item.referred_by_name ?? '—'}</TableCell>
+                                                    <TableCell muted>{item.province_name ?? '—'}</TableCell>
+                                                    <TableCell muted>{item.district_name ?? '—'}</TableCell>
+                                                    <TableCell muted dir="ltr">{item.registration_date ?? '—'}</TableCell>
                                                     <TableCell align="right">
                                                         <Link
                                                             href={item.urls.show}
@@ -403,12 +473,8 @@ export default function PrescriptionsReport({
                                     </TableBody>
                                 </Table>
                             </div>
-                            {prescriptions.links.length > 3 && (
-                                <AppointmentPagination
-                                    links={prescriptions.links}
-                                    meta={prescriptions.meta}
-                                    t={t}
-                                />
+                            {patients.links.length > 3 && (
+                                <AppointmentPagination links={patients.links} meta={patients.meta} t={t} />
                             )}
                         </>
                     )}

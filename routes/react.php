@@ -284,6 +284,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [PrescriptionController::class, 'index'])->name('index');
         Route::get('/delivered', [PrescriptionController::class, 'delivered'])->name('delivered');
         Route::get('/report', [PrescriptionController::class, 'report'])->name('report');
+        Route::get('/report/pharmacies/{pharmacy}/users', [PrescriptionController::class, 'reportPharmacyUsers'])->name('report.pharmacy-users');
         Route::post('/bulk-update-status', [PrescriptionController::class, 'bulkUpdateStatus'])->name('bulk-update-status');
         Route::post('/bulk-delete', [PrescriptionController::class, 'bulkDelete'])->name('bulk-delete');
         Route::post('/alternatives', [PrescriptionController::class, 'addAlternative'])->name('alternatives.store');

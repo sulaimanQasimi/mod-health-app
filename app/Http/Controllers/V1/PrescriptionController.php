@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\V1\Concerns\ManagesPrescriptionReport;
+use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\Doctor;
 use App\Models\Medicine;
 use App\Models\MedicineType;
 use App\Models\MedicineUsageType;
+use App\Models\Pharmacy;
 use App\Models\Prescription;
 use App\Models\PrescriptionAlternativeItem;
 use App\Models\PrescriptionItem;
@@ -20,6 +23,9 @@ use Inertia\Response;
 
 class PrescriptionController extends Controller
 {
+    use ManagesPrescriptionReport;
+    use PaginatesInertiaIndex;
+
     private const INDEX_FILTER_KEYS = [
         'patient_name',
         'card_number',
@@ -83,12 +89,103 @@ class PrescriptionController extends Controller
     {
         $this->authorize('viewAny', Prescription::class);
 
+        $user = $request->user();
+        $hasSearch = $this->prescriptionReportHasSearch($request);
+
+        $prescriptions = [
+            'data' => [],
+            'links' => [],
+            'meta' => [
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => 25,
+                'total' => 0,
+                'from' => null,
+                'to' => null,
+            ],
+        ];
+        $summary = [
+            'total' => 0,
+            'completed' => 0,
+            'pending' => 0,
+        ];
+
+        if ($hasSearch) {
+            $query = $this->prescriptionReportBaseQuery($request, $user->clinic_type);
+            $summary = $this->prescriptionReportSummary($query);
+
+            $perPage = $request->input('per_page', '25');
+            if ($perPage === 'all') {
+                $items = $query->get();
+                $prescriptions = [
+                    'data' => $items->map(fn ($item) => $this->transformPrescriptionReportItem($item))->values()->all(),
+                    'links' => [],
+                    'meta' => [
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'per_page' => $items->count(),
+                        'total' => $items->count(),
+                        'from' => $items->count() > 0 ? 1 : null,
+                        'to' => $items->count() > 0 ? $items->count() : null,
+                    ],
+                ];
+            } else {
+                $perPage = (int) $request->input('per_page', 25);
+                $allowed = [10, 15, 25, 50, 100];
+                if (! in_array($perPage, $allowed, true)) {
+                    $perPage = 25;
+                }
+
+                $paginator = $query->paginate($perPage)->withQueryString();
+                $prescriptions = [
+                    'data' => collect($paginator->items())
+                        ->map(fn ($item) => $this->transformPrescriptionReportItem($item))
+                        ->values()
+                        ->all(),
+                    'links' => $paginator->linkCollection()->toArray(),
+                    'meta' => [
+                        'current_page' => $paginator->currentPage(),
+                        'last_page' => $paginator->lastPage(),
+                        'per_page' => $paginator->perPage(),
+                        'total' => $paginator->total(),
+                        'from' => $paginator->firstItem(),
+                        'to' => $paginator->lastItem(),
+                    ],
+                ];
+            }
+        }
+
         return Inertia::render('Prescriptions/Report', [
+            'prescriptions' => $prescriptions,
+            'summary' => $summary,
+            'hasSearch' => $hasSearch,
+            'filters' => $this->collectFilters($request, $this->prescriptionReportFilterKeys()),
+            'filterOptions' => [
+                'pharmacies' => Pharmacy::query()->orderBy('name')->get(['id', 'name']),
+            ],
             'urls' => [
+                'current' => route('react.prescriptions.report'),
                 'index' => route('react.prescriptions.index'),
-                'legacyReport' => url('/prescriptions/report'),
+                'pharmacyUsers' => url('/react/prescriptions/report/pharmacies'),
+                'export' => url('/prescriptions/report-search'),
             ],
         ]);
+    }
+
+    public function reportPharmacyUsers(Pharmacy $pharmacy): \Illuminate\Http\JsonResponse
+    {
+        $this->authorize('viewAny', Prescription::class);
+
+        $users = $pharmacy->activeUsers()
+            ->orderBy('name')
+            ->get(['users.id', 'users.name', 'users.last_name'])
+            ->map(fn ($user) => [
+                'id' => $user->id,
+                'name' => trim($user->name.' '.($user->last_name ?? '')),
+            ])
+            ->values();
+
+        return response()->json($users);
     }
 
     public function show(Request $request, Prescription $prescription): Response

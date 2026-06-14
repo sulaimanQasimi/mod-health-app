@@ -472,9 +472,42 @@ class AppointmentController extends Controller
         ];
     }
 
-    public function departmentReport()
+    public function departmentReport(Request $request): Response
     {
-        return $this->renderPage('global.department_report');
+        $this->authorize('viewAny', Appointment::class);
+
+        $user = $request->user();
+        $branchId = (int) $user->branch_id;
+        $hasSearch = $this->departmentReportHasSearch($request);
+
+        $appointments = [
+            'data' => [],
+            'meta' => ['total' => 0],
+        ];
+
+        if ($hasSearch) {
+            $items = $this->departmentReportBaseQuery($request, $branchId)->get();
+            $appointments = [
+                'data' => $items
+                    ->map(fn (Appointment $item) => $this->transformDepartmentReportItem($item))
+                    ->values()
+                    ->all(),
+                'meta' => ['total' => $items->count()],
+            ];
+        }
+
+        return Inertia::render('Appointments/DepartmentReport', [
+            'appointments' => $appointments,
+            'hasSearch' => $hasSearch,
+            'filters' => $this->collectFilters($request, $this->departmentReportFilterKeys()),
+            'filterOptions' => [
+                'departments' => $this->departmentsForUser($user),
+            ],
+            'urls' => [
+                'current' => route('react.appointments.department-report'),
+                'index' => route('react.appointments.index'),
+            ],
+        ]);
     }
 
     public function department(Request $request): Response

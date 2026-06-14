@@ -225,4 +225,85 @@ trait ManagesAppointmentReport
             return is_string($date) ? $date : null;
         }
     }
+
+    private const DEPARTMENT_REPORT_FILTER_KEYS = [
+        'department_id',
+        'date_from',
+        'date_to',
+    ];
+
+    protected function departmentReportHasSearch(Request $request): bool
+    {
+        return $request->boolean('search') && $request->filled('department_id');
+    }
+
+    /**
+     * @return Builder<Appointment>
+     */
+    protected function departmentReportBaseQuery(Request $request, int $branchId): Builder
+    {
+        $query = Appointment::query()
+            ->where('branch_id', $branchId)
+            ->where('department_id', $request->department_id)
+            ->with([
+                'patient:id,name,father_name,last_name,age,gender,nid,job',
+                'department:id,name',
+            ])
+            ->select([
+                'appointments.id',
+                'appointments.patient_id',
+                'appointments.department_id',
+                'appointments.created_at',
+            ]);
+
+        if ($request->filled('date_from')) {
+            try {
+                $startDate = verta()->parse($request->date_from)->datetime();
+                $query->whereDate('appointments.created_at', '>=', $startDate);
+            } catch (\Throwable) {
+                // Skip invalid jalali date.
+            }
+        }
+
+        if ($request->filled('date_to')) {
+            try {
+                $endDate = verta()->parse($request->date_to)->datetime();
+                $query->whereDate('appointments.created_at', '<=', $endDate);
+            } catch (\Throwable) {
+                // Skip invalid jalali date.
+            }
+        }
+
+        return $query->orderByDesc('appointments.created_at');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function transformDepartmentReportItem(Appointment $appointment): array
+    {
+        $patient = $appointment->patient;
+
+        return [
+            'id' => $appointment->id,
+            'patient_name' => $patient?->name,
+            'father_name' => $patient?->father_name,
+            'last_name' => $patient?->last_name,
+            'age' => $patient?->age,
+            'gender' => $patient?->gender,
+            'nid' => $patient?->nid,
+            'job' => $patient?->job,
+            'created_at' => $appointment->created_at
+                ? verta($appointment->created_at)->format('Y/m/d H:i')
+                : null,
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function departmentReportFilterKeys(): array
+    {
+        return self::DEPARTMENT_REPORT_FILTER_KEYS;
+    }
 }

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\ManagesDepotAccess;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Http\Controllers\V1\Concerns\ProvidesDepotFormData;
-use App\Http\Requests\Depot\StoreDepotTransactionRequest;
+use App\Http\Requests\Depot\StoreReactDepotTransactionRequest;
 use App\Models\Depot;
 use App\Models\DepotTransaction;
 use App\Models\PharmacyFulfillment;
@@ -82,9 +82,12 @@ class DepotTransactionController extends Controller
     {
         $this->authorizeDepotPermission('depot.transaction.create');
 
+        $user = $request->user();
+        $hintedDepotId = $this->validatedTransactionDepotHint($request);
+
         return Inertia::render('Depots/Transactions/Create', [
+            'depot' => $this->transactionDepotPreview($hintedDepotId, $user),
             'defaults' => [
-                'depot_id' => (string) $request->query('depot_id', ''),
                 'type' => DepotTransaction::TYPE_STOCK_IN,
             ],
             'formData' => $this->depotFormOptions(),
@@ -103,10 +106,14 @@ class DepotTransactionController extends Controller
         ]);
     }
 
-    public function store(StoreDepotTransactionRequest $request): RedirectResponse
+    public function store(StoreReactDepotTransactionRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $this->authorizeDepotPermission('depot.transaction.create', (int) $data['depot_id']);
+        $hintedDepotId = session()->pull('depot_transaction_depot_hint');
+        $depotId = $this->resolveTransactionDepotId($hintedDepotId, $request->user());
+        $data['depot_id'] = $depotId;
+
+        $this->authorizeDepotPermission('depot.transaction.create', $depotId);
 
         $itemType = ! empty($data['medicine_id'])
             ? DepotTransaction::ITEM_MEDICINE

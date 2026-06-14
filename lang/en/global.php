@@ -4435,6 +4435,7 @@ return [
         'incoming_requests' => 'Incoming Requests',
         'full_stock' => 'Full Stock',
         'transaction_created_successfully.' => 'Depot transaction created successfully.',
+        'transaction_depot_required' => 'Open this form from your depot page to create a transaction.',
         'transaction_cancelled_successfully.' => 'Depot transaction cancelled successfully.',
         'transaction_already_cancelled.' => 'Transaction is already cancelled.',
         'depot_to_depot_completed_successfully.' => 'Depot to depot movement completed successfully.',

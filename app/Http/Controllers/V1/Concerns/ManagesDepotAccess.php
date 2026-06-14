@@ -8,6 +8,8 @@ use App\Models\DepotTransaction;
 use App\Models\Pharmacy;
 use App\Models\User;
 use App\Support\DepotRolePermissions;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 trait ManagesDepotAccess
 {
@@ -367,6 +369,60 @@ trait ManagesDepotAccess
 
         if ($depotId !== null) {
             $this->authorizeDepotMembership($depotId);
+        }
+    }
+
+    protected function validatedTransactionDepotHint(Request $request): ?int
+    {
+        if (! $request->filled('depot_id')) {
+            return session('depot_transaction_depot_hint');
+        }
+
+        $depotId = (int) $request->query('depot_id');
+        $this->authorizeDepotPermission('depot.transaction.create', $depotId);
+        session(['depot_transaction_depot_hint' => $depotId]);
+
+        return $depotId;
+    }
+
+    protected function resolveTransactionDepotId(?int $hintedDepotId = null, ?User $user = null): int
+    {
+        $user ??= request()->user();
+        abort_unless($user, 403);
+
+        $allowedIds = $this->isDepotSystemAdmin($user)
+            ? Depot::query()->where('is_active', true)->orderBy('name')->pluck('id')->map(fn ($id) => (int) $id)->all()
+            : $this->allowedDepotIdsForAction(DepotRolePermissions::ACTION_TRANSACTION_CREATE, $user);
+
+        if ($allowedIds === []) {
+            abort(403);
+        }
+
+        if ($hintedDepotId && in_array($hintedDepotId, $allowedIds, true)) {
+            return $hintedDepotId;
+        }
+
+        if (count($allowedIds) === 1) {
+            return $allowedIds[0];
+        }
+
+        throw ValidationException::withMessages([
+            'depot_id' => [localize('global.depot.transaction_depot_required')],
+        ]);
+    }
+
+    /**
+     * @return array{id: int, name: string}|null
+     */
+    protected function transactionDepotPreview(?int $hintedDepotId = null, ?User $user = null): ?array
+    {
+        try {
+            $depotId = $this->resolveTransactionDepotId($hintedDepotId, $user);
+            $depot = Depot::query()->find($depotId);
+
+            return $depot ? ['id' => $depotId, 'name' => $depot->name] : null;
+        } catch (\Throwable) {
+            return null;
         }
     }
 }

@@ -20,6 +20,7 @@
         "mbezhanov/faker-provider-collection": "^2.0",
         "morilog/jalali": "^3.4",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/laravel-activitylog": "^5.0",
         "spatie/laravel-backup": "^10.0",
         "spatie/laravel-html": "^3.2",
         "spatie/laravel-permission": "^6.0"

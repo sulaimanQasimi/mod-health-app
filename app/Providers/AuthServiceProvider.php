@@ -47,6 +47,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\Prescription::class => \App\Policies\PrescriptionPolicy::class,
         \App\Models\Pharmacy::class => \App\Policies\PharmacyPolicy::class,
         \App\Models\PatientTestRegistration::class => \App\Policies\LaboratoryPolicy::class,
+        \Spatie\Activitylog\Models\Activity::class => \App\Policies\ActivityPolicy::class,
     ];
 
     /**

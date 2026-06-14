@@ -45,6 +45,7 @@ class HandleInertiaRequests extends Middleware
             'locale' => $locale,
             'direction' => $locale === 'en' ? 'ltr' : 'rtl',
             'translations' => Lang::get('global', [], $locale),
+            'activityLogTranslations' => Lang::get('activity_log', [], $locale),
             'sidebarMenu' => app(SidebarMenuService::class)->build($request),
             'currentRoute' => $request->route()?->getName(),
             'auth' => [

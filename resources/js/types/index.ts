@@ -20,6 +20,7 @@ export interface SharedPageProps extends Record<string, unknown> {
     locale: string;
     direction: 'ltr' | 'rtl';
     translations: Record<string, unknown>;
+    activityLogTranslations?: Record<string, unknown>;
     sidebarMenu: SidebarMenuItem[];
     currentRoute: string | null;
     auth: {

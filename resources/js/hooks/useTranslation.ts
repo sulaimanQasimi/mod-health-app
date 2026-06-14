@@ -1,13 +1,9 @@
 import { usePage } from '@inertiajs/react';
 import { SharedPageProps } from '../types';
 
-function resolveTranslation(translations: Record<string, unknown>, key: string): string {
-    if (!key.startsWith('global.')) {
-        return key;
-    }
-
-    const parts = key.replace(/^global\./, '').split('.');
-    let value: unknown = translations;
+function resolveTranslation(source: Record<string, unknown>, key: string): string {
+    const parts = key.split('.');
+    let value: unknown = source;
 
     for (const part of parts) {
         if (value && typeof value === 'object' && part in (value as Record<string, unknown>)) {
@@ -21,9 +17,19 @@ function resolveTranslation(translations: Record<string, unknown>, key: string):
 }
 
 export function useTranslation() {
-    const { translations, locale, direction } = usePage<SharedPageProps>().props;
+    const { translations, activityLogTranslations, locale, direction } = usePage<SharedPageProps>().props;
 
-    const t = (key: string): string => resolveTranslation(translations, key);
+    const t = (key: string): string => {
+        if (key.startsWith('activity_log.')) {
+            return resolveTranslation(activityLogTranslations ?? {}, key.replace(/^activity_log\./, ''));
+        }
+
+        if (!key.startsWith('global.')) {
+            return key;
+        }
+
+        return resolveTranslation(translations, key.replace(/^global\./, ''));
+    };
 
     return { t, locale, direction };
 }

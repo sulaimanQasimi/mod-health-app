@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\V1\ActivityLogController;
 use App\Http\Controllers\V1\AnesthesiaController;
 use App\Http\Controllers\V1\AppointmentSections\AdviceController;
 use App\Http\Controllers\V1\AppointmentSections\AnesthesiaController as AppointmentAnesthesiaController;
@@ -672,6 +673,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
+    Route::prefix('activity-logs')->name('activity-logs.')->middleware('role:super_admin')->group(function () {
+        Route::get('/', [ActivityLogController::class, 'index'])->name('index');
+        Route::get('/{activity}', [ActivityLogController::class, 'show'])->name('show');
+    });
     Route::prefix('recipients')->name('recipients.')->group(function () {
         Route::get('/', [RecipientController::class, 'index'])->name('index');
         Route::get('/create', [RecipientController::class, 'create'])->name('create');

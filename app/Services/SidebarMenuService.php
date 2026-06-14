@@ -345,6 +345,7 @@ class SidebarMenuService
             }
             if ($user->hasRole('super_admin')) {
                 $children[] = $this->item('backups-super', 'global.backups', null, 'react.backups.index');
+                $children[] = $this->item('activity-logs', 'activity_log.title', null, 'react.activity-logs.index');
             }
             $items[] = $this->group('settings', 'global.settings', 'bx-cog', [
                 'react.users.*',
@@ -352,6 +353,7 @@ class SidebarMenuService
                 'react.roles.*',
                 'react.permissions.*',
                 'react.backups.*',
+                'react.activity-logs.*',
                 'react.recipients.*',
                 'react.relations.*',
                 'react.departments.*',

@@ -9,7 +9,7 @@ import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader'
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotFormData, DepotNavUrls } from '../../../types/depot';
+import { DepotFormData, DepotNavPermissions, DepotNavUrls } from '../../../types/depot';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 export default function CreateDepotTransaction({
@@ -17,12 +17,14 @@ export default function CreateDepotTransaction({
     formData,
     types,
     navUrls,
+    navPermissions,
     urls,
 }: {
     defaults: { depot_id: string; type: string };
     formData: DepotFormData;
     types: string[];
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: { index: string; store: string; stockAvailable: string };
 }) {
     const { t } = useTranslation();
@@ -73,7 +75,7 @@ export default function CreateDepotTransaction({
         <DashboardLayout>
             <Head title={t('global.depot.new')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="transactions" urls={navUrls} />
+                <DepotNavTabs active="transactions" urls={navUrls} permissions={navPermissions} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.depot.new')}

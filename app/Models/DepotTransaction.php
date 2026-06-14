@@ -224,6 +224,11 @@ class DepotTransaction extends Model
         });
     }
 
+    public function primaryDepotId(): ?int
+    {
+        return $this->depot_id ?? $this->from_depot_id ?? $this->to_depot_id;
+    }
+
     public function depot()
     {
         return $this->belongsTo(Depot::class, 'depot_id');

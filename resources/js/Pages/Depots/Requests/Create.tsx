@@ -11,7 +11,7 @@ import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader'
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotFormData, DepotNavUrls } from '../../../types/depot';
+import { DepotFormData, DepotNavPermissions, DepotNavUrls } from '../../../types/depot';
 import { OptionItem } from '../../../types/settings';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
@@ -21,6 +21,7 @@ export default function CreateDepotRequest({
     defaults,
     formData,
     navUrls,
+    navPermissions,
     urls,
     viewContext = 'depot',
     userPharmacies = [],
@@ -33,6 +34,7 @@ export default function CreateDepotRequest({
     };
     formData: DepotFormData;
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: { index: string; store: string; stockAvailable: string };
     viewContext?: 'depot' | 'pharmacy';
     userPharmacies?: OptionItem[];
@@ -81,7 +83,7 @@ export default function CreateDepotRequest({
         <DashboardLayout>
             <Head title={t('global.depot.new_request')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} />}
+                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} permissions={navPermissions} />}
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.depot.new_request')}

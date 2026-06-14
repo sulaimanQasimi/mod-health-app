@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\DepotRolePermissions;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -137,6 +138,55 @@ class User extends Authenticatable
     public function activeDepots()
     {
         return $this->depots()->wherePivot('is_active', true);
+    }
+
+    public function hasDepotAccess(int $depotId): bool
+    {
+        return $this->depots()
+            ->where('depots.id', $depotId)
+            ->wherePivot('is_active', true)
+            ->exists();
+    }
+
+    public function getDepotRole(int $depotId): ?string
+    {
+        $depot = $this->depots()
+            ->where('depots.id', $depotId)
+            ->wherePivot('is_active', true)
+            ->first();
+
+        return $depot?->pivot?->role;
+    }
+
+    public function canPerformDepotAction(int $depotId, string $action): bool
+    {
+        $role = $this->getDepotRole($depotId);
+
+        return DepotRolePermissions::roleCan($role, $action);
+    }
+
+    public function canPerformDepotActionOnAny(string $action): bool
+    {
+        foreach ($this->activeDepots as $depot) {
+            if (DepotRolePermissions::roleCan($depot->pivot->role, $action)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function allowedDepotIdsForAction(string $action): array
+    {
+        return $this->activeDepots
+            ->filter(fn ($depot) => DepotRolePermissions::roleCan($depot->pivot->role, $action))
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values()
+            ->all();
     }
 
     // Get pharmacies where user is manager

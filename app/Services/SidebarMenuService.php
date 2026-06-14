@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Support\DepotRolePermissions;
 use Illuminate\Http\Request;
 
 class SidebarMenuService
@@ -138,28 +139,35 @@ class SidebarMenuService
             }
         }
 
-        $depotChildren = [
-            $this->item('depots', 'global.depot.list', null, 'react.depots.index', ['global.depot', 'list']),
-        ];
-        if ($user->can('depot.transaction.view')) {
-            $depotChildren[] = $this->item('depot-transactions', 'global.depot.transactions', null, 'react.depots.transactions.index', ['global.depot', 'transactions']);
+        if ($this->canSeeDepotMenu($user)) {
+            $depotChildren = [];
+
+            if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_VIEW)) {
+                $depotChildren[] = $this->item('depots', 'global.depot.list', null, 'react.depots.index', ['global.depot', 'list']);
+            }
+            if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_TRANSACTION_VIEW)) {
+                $depotChildren[] = $this->item('depot-transactions', 'global.depot.transactions', null, 'react.depots.transactions.index', ['global.depot', 'transactions']);
+            }
+            if ($this->canSeeDepotRequestsMenu($user)) {
+                $depotChildren[] = $this->item('depot-requests', 'global.depot.requests', null, 'react.depots.requests.index', ['global.depot', 'requests']);
+            }
+            if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_MOVEMENT_DEPOT_TO_DEPOT)) {
+                $depotChildren[] = $this->item('depot-to-depot', 'global.depot.depot_to_depot', null, 'react.depots.movements.depot-to-depot', ['global.depot', 'depot_to_depot']);
+            }
+            if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_VIEW)) {
+                $depotChildren[] = $this->item('tools', 'global.depot.tools', null, 'react.tools.index', ['global.depot', 'tools']);
+            }
+            if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_REPORT_EXPORT)) {
+                $depotChildren[] = $this->item('depot-reports', 'global.depot.reports', null, 'react.depots.reports.index', ['global.depot', 'reports']);
+            }
+
+            if ($depotChildren !== []) {
+                $items[] = $this->group('depots', 'global.depot.title', 'bx-store', [
+                    'react.depots.*',
+                    'react.tools.*',
+                ], $depotChildren, ['global.depot', 'title']);
+            }
         }
-        if ($user->can('depot.request.create') || $user->can('depot.request.approve') || $user->can('depot.request.fulfill')) {
-            $depotChildren[] = $this->item('depot-requests', 'global.depot.requests', null, 'react.depots.requests.index', ['global.depot', 'requests']);
-        }
-        if ($user->can('depot.movement.depot_to_depot')) {
-            $depotChildren[] = $this->item('depot-to-depot', 'global.depot.depot_to_depot', null, 'react.depots.movements.depot-to-depot', ['global.depot', 'depot_to_depot']);
-        }
-        if ($user->can('depot.view')) {
-            $depotChildren[] = $this->item('tools', 'global.depot.tools', null, 'react.tools.index', ['global.depot', 'tools']);
-        }
-        if ($user->can('depot.report.export')) {
-            $depotChildren[] = $this->item('depot-reports', 'global.depot.reports', null, 'react.depots.reports.index', ['global.depot', 'reports']);
-        }
-        $items[] = $this->group('depots', 'global.depot.title', 'bx-store', [
-            'react.depots.*',
-            'react.tools.*',
-        ], $depotChildren, ['global.depot', 'title']);
 
         if ($user->can('show-blood-bank-menu')) {
             $items[] = $this->group('blood-bank', 'global.blood_bank', 'bx-donate-blood', [
@@ -415,5 +423,35 @@ class SidebarMenuService
     {
         return $user->hasRole(['admin', 'super_admin'])
             || $user->hasActivePharmacyRole(['manager', 'procurement']);
+    }
+
+    private function canSeeDepotMenu(User $user): bool
+    {
+        if ($user->hasRole(['admin', 'super_admin'])) {
+            return true;
+        }
+
+        return $user->activeDepots()->exists();
+    }
+
+    private function userCanDepotMenuAction(User $user, string $action): bool
+    {
+        if ($user->hasRole(['admin', 'super_admin'])) {
+            return true;
+        }
+
+        return $user->canPerformDepotActionOnAny($action);
+    }
+
+    private function canSeeDepotRequestsMenu(User $user): bool
+    {
+        if ($user->hasRole(['admin', 'super_admin'])) {
+            return true;
+        }
+
+        return $this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_REQUEST_CREATE)
+            || $this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_REQUEST_APPROVE)
+            || $this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_REQUEST_FULFILL)
+            || $this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_VIEW);
     }
 }

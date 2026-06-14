@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import TableActionButton from '../../../Components/ui/TableActionButton';
 import { TableActionsCell } from '../../../Components/ui/TableActions';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotNavUrls, PaginatedDepotRequests } from '../../../types/depot';
+import { DepotNavPermissions, DepotNavUrls, PaginatedDepotRequests } from '../../../types/depot';
 import { OptionItem } from '../../../types/settings';
 import { buildPaginationSummary } from '../../../utils/pagination';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
@@ -59,6 +59,7 @@ export default function IndexDepotRequests({
     filterOptions,
     permissions,
     navUrls,
+    navPermissions,
     urls,
     viewContext = 'depot',
 }: {
@@ -74,6 +75,7 @@ export default function IndexDepotRequests({
     };
     permissions: RequestPermissions;
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: { index: string; create: string; show: string };
     viewContext?: 'depot' | 'pharmacy';
 }) {
@@ -107,7 +109,7 @@ export default function IndexDepotRequests({
         <DashboardLayout>
             <Head title={t('global.depot.requests')} />
             <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} />}
+                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} permissions={navPermissions} />}
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.depot.requests')}

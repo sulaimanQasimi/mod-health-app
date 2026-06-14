@@ -6,7 +6,7 @@ import { depotStatusBadgeColor, depotTypeLabel } from '../../../Components/Depot
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotNavUrls } from '../../../types/depot';
+import { DepotNavPermissions, DepotNavUrls } from '../../../types/depot';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 interface TransactionDetail {
@@ -39,11 +39,13 @@ export default function ShowDepotTransaction({
     transaction,
     permissions,
     navUrls,
+    navPermissions,
     urls,
 }: {
     transaction: TransactionDetail;
     permissions: { view: boolean; create: boolean; cancel: boolean };
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: { index: string; cancel: string };
 }) {
     const { t } = useTranslation();
@@ -75,7 +77,7 @@ export default function ShowDepotTransaction({
         <DashboardLayout>
             <Head title={transaction.transaction_number ?? t('global.depot.transactions')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="transactions" urls={navUrls} />
+                <DepotNavTabs active="transactions" urls={navUrls} permissions={navPermissions} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={transaction.transaction_number ?? `#${transaction.id}`}

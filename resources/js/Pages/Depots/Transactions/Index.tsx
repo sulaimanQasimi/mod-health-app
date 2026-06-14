@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import TableActionButton from '../../../Components/ui/TableActionButton';
 import { TableActionsCell } from '../../../Components/ui/TableActions';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotNavUrls, PaginatedDepotTransactions } from '../../../types/depot';
+import { DepotNavPermissions, DepotNavUrls, PaginatedDepotTransactions } from '../../../types/depot';
 import { OptionItem } from '../../../types/settings';
 import { buildPaginationSummary } from '../../../utils/pagination';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
@@ -58,6 +58,7 @@ export default function IndexDepotTransactions({
     filterOptions,
     permissions,
     navUrls,
+    navPermissions,
     urls,
 }: {
     transactions: PaginatedDepotTransactions;
@@ -72,6 +73,7 @@ export default function IndexDepotTransactions({
     };
     permissions: TransactionPermissions;
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: { index: string; create: string; show: string; cancel: string };
 }) {
     const { t } = useTranslation();
@@ -104,7 +106,7 @@ export default function IndexDepotTransactions({
         <DashboardLayout>
             <Head title={t('global.depot.depot_transactions')} />
             <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="transactions" urls={navUrls} />
+                <DepotNavTabs active="transactions" urls={navUrls} permissions={navPermissions} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.depot.depot_transactions')}

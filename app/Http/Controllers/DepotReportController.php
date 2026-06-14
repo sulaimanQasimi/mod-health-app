@@ -109,10 +109,23 @@ class DepotReportController extends Controller
 
     private function exportStock(Request $request, string $type)
     {
-        $items = $this->stockService->stockReport(
-            $request->filled('depot_id') ? (int) $request->depot_id : null,
-            $request->filled('item_type') ? $request->item_type : null
-        );
+        $allowedIds = $this->allowedDepotIdsFromRequest($request);
+
+        if ($request->filled('depot_id')) {
+            $items = $this->stockService->stockReport((int) $request->depot_id, $request->filled('item_type') ? $request->item_type : null);
+        } elseif ($allowedIds !== null) {
+            $items = collect();
+            foreach ($allowedIds as $depotId) {
+                $items = $items->merge(
+                    $this->stockService->stockReport($depotId, $request->filled('item_type') ? $request->item_type : null)
+                );
+            }
+        } else {
+            $items = $this->stockService->stockReport(
+                null,
+                $request->filled('item_type') ? $request->item_type : null
+            );
+        }
 
         if ($type === 'pdf') {
             $html = view('pages.depots.reports.stock_pdf', compact('items'))->render();
@@ -197,6 +210,8 @@ class DepotReportController extends Controller
             $query->whereDate('transaction_date', '<=', $request->date_to);
         }
 
+        $this->applyAllowedDepotScopeToTransactions($query, $request);
+
         return $query->latest('transaction_date')->latest('id');
     }
 
@@ -220,7 +235,58 @@ class DepotReportController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
+        $this->applyAllowedDepotScopeToRequests($query, $request);
+
         return $query->latest('id');
+    }
+
+    /**
+     * @return list<int>|null
+     */
+    private function allowedDepotIdsFromRequest(Request $request): ?array
+    {
+        $allowedIds = $request->input('_allowed_depot_ids');
+
+        if (! is_array($allowedIds) || $allowedIds === []) {
+            return null;
+        }
+
+        return array_values(array_map('intval', $allowedIds));
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<DepotTransaction>  $query
+     */
+    private function applyAllowedDepotScopeToTransactions($query, Request $request): void
+    {
+        $allowedIds = $this->allowedDepotIdsFromRequest($request);
+
+        if ($allowedIds === null) {
+            return;
+        }
+
+        $query->where(function ($scoped) use ($allowedIds) {
+            $scoped->whereIn('depot_id', $allowedIds)
+                ->orWhereIn('from_depot_id', $allowedIds)
+                ->orWhereIn('to_depot_id', $allowedIds);
+        });
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<DepotRequest>  $query
+     */
+    private function applyAllowedDepotScopeToRequests($query, Request $request): void
+    {
+        $allowedIds = $this->allowedDepotIdsFromRequest($request);
+
+        if ($allowedIds === null) {
+            return;
+        }
+
+        $query->where(function ($scoped) use ($allowedIds) {
+            $scoped->whereIn('requesting_depot_id', $allowedIds)
+                ->orWhereIn('source_depot_id', $allowedIds);
+        });
     }
 
     private function streamExcel(string $filename, array $headers, $items, callable $rowWriter): StreamedResponse

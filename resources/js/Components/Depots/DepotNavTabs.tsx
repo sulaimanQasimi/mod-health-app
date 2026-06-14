@@ -8,6 +8,7 @@ export type DepotNavKey = 'index' | 'transactions' | 'requests' | 'reports' | 't
 interface DepotNavTabsProps {
     active: DepotNavKey;
     urls: DepotNavUrls;
+    permissions?: Partial<Record<DepotNavKey, boolean>>;
 }
 
 const TABS: Array<{
@@ -24,13 +25,19 @@ const TABS: Array<{
     { key: 'tools', labelKey: 'global.depot.tools', icon: 'bx-wrench', activeGradient: 'from-gray-600 to-gray-800', idleIcon: 'text-gray-500' },
 ];
 
-export default function DepotNavTabs({ active, urls }: DepotNavTabsProps) {
+export default function DepotNavTabs({ active, urls, permissions }: DepotNavTabsProps) {
     const { t } = useTranslation();
+
+    const visibleTabs = TABS.filter((tab) => permissions?.[tab.key] !== false);
+
+    if (visibleTabs.length === 0) {
+        return null;
+    }
 
     return (
         <nav className={`${DEPOT_CARD_CLASS} p-2`}>
             <div className="flex flex-wrap gap-2">
-                {TABS.map((tab) => {
+                {visibleTabs.map((tab) => {
                     const href = urls[tab.key];
                     const isActive = active === tab.key;
 

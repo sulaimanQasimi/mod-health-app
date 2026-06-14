@@ -144,3 +144,5 @@ export type PaginatedDepotTransactions = PaginatedResult<DepotTransactionListIte
 export type PaginatedDepotRequests = PaginatedResult<DepotRequestListItem>;
 
 export type DepotCrudPermissions = SettingsPermissions;
+
+export type DepotNavPermissions = Partial<Record<'index' | 'transactions' | 'requests' | 'reports' | 'tools', boolean>>;

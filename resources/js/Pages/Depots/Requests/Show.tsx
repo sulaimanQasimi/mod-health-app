@@ -21,7 +21,7 @@ import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader'
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../Components/ui/Table';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotNavUrls, DepotRequestDetail } from '../../../types/depot';
+import { DepotNavPermissions, DepotNavUrls, DepotRequestDetail } from '../../../types/depot';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 interface RequestActionPermissions {
@@ -38,6 +38,7 @@ export default function ShowDepotRequest({
     workflowSteps,
     permissions,
     navUrls,
+    navPermissions,
     urls,
     viewContext = 'depot',
 }: {
@@ -45,6 +46,7 @@ export default function ShowDepotRequest({
     workflowSteps: string[];
     permissions: RequestActionPermissions;
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: {
         index: string;
         edit: string;
@@ -103,7 +105,7 @@ export default function ShowDepotRequest({
         <DashboardLayout>
             <Head title={depotRequest.request_number ?? t('global.depot.requests')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} />}
+                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} permissions={navPermissions} />}
 
                 <Card className="shadow-sm">
                     <SettingsPageHeader

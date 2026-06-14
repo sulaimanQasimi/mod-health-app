@@ -7,7 +7,7 @@ import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader'
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotNavUrls } from '../../../types/depot';
+import { DepotNavPermissions, DepotNavUrls } from '../../../types/depot';
 import { OptionItem } from '../../../types/settings';
 import { SETTINGS_WIDE_FORM_WIDTH } from '../../../utils/settingsUi';
 
@@ -80,6 +80,7 @@ function buildExportUrl(baseUrl: string, report: ReportKey, type: 'excel' | 'pdf
 export default function IndexDepotReports({
     filterOptions,
     navUrls,
+    navPermissions,
     urls,
 }: {
     filterOptions: {
@@ -92,6 +93,7 @@ export default function IndexDepotReports({
         requestStatuses: string[];
     };
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: { export: string };
 }) {
     const { t } = useTranslation();
@@ -113,7 +115,7 @@ export default function IndexDepotReports({
         <DashboardLayout>
             <Head title={t('global.depot.reports')} />
             <div className={`mx-auto ${SETTINGS_WIDE_FORM_WIDTH} space-y-4`}>
-                <DepotNavTabs active="reports" urls={navUrls} />
+                <DepotNavTabs active="reports" urls={navUrls} permissions={navPermissions} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.depot.reports')}

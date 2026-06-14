@@ -8,7 +8,7 @@ import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader'
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotFormData, DepotNavUrls, DepotRequestDetail } from '../../../types/depot';
+import { DepotFormData, DepotNavPermissions, DepotNavUrls, DepotRequestDetail } from '../../../types/depot';
 import { OptionItem } from '../../../types/settings';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
@@ -28,6 +28,7 @@ export default function EditDepotRequest({
     request: depotRequest,
     formData,
     navUrls,
+    navPermissions,
     urls,
     viewContext = 'depot',
     userPharmacies = [],
@@ -35,6 +36,7 @@ export default function EditDepotRequest({
     request: DepotRequestDetail;
     formData: DepotFormData;
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: { index: string; show: string; update: string; stockAvailable: string };
     viewContext?: 'depot' | 'pharmacy';
     userPharmacies?: OptionItem[];
@@ -75,7 +77,7 @@ export default function EditDepotRequest({
         <DashboardLayout>
             <Head title={depotRequest.request_number ?? t('global.edit')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} />}
+                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} permissions={navPermissions} />}
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={depotRequest.request_number ?? `#${depotRequest.id}`}

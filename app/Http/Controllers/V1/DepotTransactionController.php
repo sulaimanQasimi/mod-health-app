@@ -11,6 +11,7 @@ use App\Models\Depot;
 use App\Models\DepotTransaction;
 use App\Models\PharmacyFulfillment;
 use App\Services\DepotStockService;
+use App\Support\DepotRolePermissions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,6 +50,7 @@ class DepotTransactionController extends Controller
         ]);
 
         $this->applyTransactionFilters($query, $request);
+        $this->scopeTransactionsToUserDepots($query, $request->user());
 
         $paginator = $this->paginateQuery($query->latest('transaction_date')->latest('id'), $request, 15);
         $options = $this->depotFormOptions();
@@ -66,6 +68,7 @@ class DepotTransactionController extends Controller
             ],
             'permissions' => $this->depotTransactionPermissions(),
             'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
                 'index' => route('react.depots.transactions.index'),
                 'create' => route('react.depots.transactions.create'),
@@ -91,6 +94,7 @@ class DepotTransactionController extends Controller
                 DepotTransaction::TYPE_ADJUSTMENT,
             ],
             'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
                 'index' => route('react.depots.transactions.index'),
                 'store' => route('react.depots.transactions.store'),
@@ -101,9 +105,9 @@ class DepotTransactionController extends Controller
 
     public function store(StoreDepotTransactionRequest $request): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.transaction.create');
-
         $data = $request->validated();
+        $this->authorizeDepotPermission('depot.transaction.create', (int) $data['depot_id']);
+
         $itemType = ! empty($data['medicine_id'])
             ? DepotTransaction::ITEM_MEDICINE
             : DepotTransaction::ITEM_TOOL;
@@ -133,7 +137,7 @@ class DepotTransactionController extends Controller
 
     public function show(DepotTransaction $depotTransaction): Response
     {
-        $this->authorizeDepotPermission('depot.transaction.view');
+        $this->authorizeDepotTransactionRecord($depotTransaction, DepotRolePermissions::ACTION_TRANSACTION_VIEW);
 
         $depotTransaction->load([
             'depot:id,name',
@@ -152,6 +156,7 @@ class DepotTransactionController extends Controller
             'transaction' => $this->transformDetail($depotTransaction),
             'permissions' => $this->depotTransactionPermissions(),
             'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
                 'index' => route('react.depots.transactions.index'),
                 'cancel' => route('react.depots.transactions.cancel', $depotTransaction),
@@ -161,7 +166,7 @@ class DepotTransactionController extends Controller
 
     public function cancel(DepotTransaction $depotTransaction): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.transaction.create');
+        $this->authorizeDepotTransactionRecord($depotTransaction, DepotRolePermissions::ACTION_TRANSACTION_CREATE);
 
         if ($depotTransaction->status === DepotTransaction::STATUS_CANCELLED) {
             return redirect()->back()->with('error', localize('global.depot.transaction_already_cancelled.'));
@@ -187,14 +192,14 @@ class DepotTransactionController extends Controller
 
     public function availableStock(Request $request): JsonResponse
     {
-        $this->authorizeDepotStockView();
-
         $request->validate([
             'depot_id' => ['required', 'exists:depots,id'],
             'item_type' => ['nullable', 'in:medicine,tool'],
             'medicine_id' => ['nullable', 'exists:medicines,id'],
             'tool_id' => ['nullable', 'exists:tools,id'],
         ]);
+
+        $this->authorizeDepotStockView((int) $request->depot_id);
 
         $itemType = $request->get('item_type');
         if (! $itemType) {
@@ -270,6 +275,30 @@ class DepotTransactionController extends Controller
                     ->orWhereHas('pharmacy', fn ($pharmacy) => $pharmacy->where('name', 'like', "%{$search}%"));
             });
         }
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<DepotTransaction>  $query
+     */
+    private function scopeTransactionsToUserDepots($query, ?\App\Models\User $user = null): void
+    {
+        if ($this->isDepotSystemAdmin($user)) {
+            return;
+        }
+
+        $allowedIds = $this->allowedDepotIds($user);
+
+        if (empty($allowedIds)) {
+            $query->whereRaw('1 = 0');
+
+            return;
+        }
+
+        $query->where(function ($scoped) use ($allowedIds) {
+            $scoped->whereIn('depot_id', $allowedIds)
+                ->orWhereIn('from_depot_id', $allowedIds)
+                ->orWhereIn('to_depot_id', $allowedIds);
+        });
     }
 
     /**

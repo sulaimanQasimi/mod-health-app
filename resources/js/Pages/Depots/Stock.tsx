@@ -16,7 +16,7 @@ import SearchableSelect from '../../Components/ui/SearchableSelect';
 import StatCard from '../../Components/ui/StatCard';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
-import { DepotNavUrls } from '../../types/depot';
+import { DepotNavPermissions, DepotNavUrls } from '../../types/depot';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface StockItem {
@@ -79,6 +79,7 @@ export default function StockDepot({
     filters: serverFilters,
     filterOptions,
     navUrls,
+    navPermissions,
     urls,
     permissions,
 }: {
@@ -89,6 +90,7 @@ export default function StockDepot({
     filters: StockFilters;
     filterOptions: { stockStatuses: string[]; sortFields: string[] };
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: {
         show: string;
         stock: string;
@@ -202,7 +204,7 @@ export default function StockDepot({
         <DashboardLayout>
             <Head title={`${depot.name} — ${t('global.depot.full_stock')}`} />
             <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="index" urls={navUrls} />
+                <DepotNavTabs active="index" urls={navUrls} permissions={navPermissions} />
 
                 <Card className="overflow-hidden shadow-sm">
                     <SettingsPageHeader

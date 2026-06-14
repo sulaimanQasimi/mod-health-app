@@ -15,6 +15,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import {
     DepotCrudPermissions,
     DepotListFilters,
+    DepotNavPermissions,
     DepotNavUrls,
     PaginatedDepots,
 } from '../../types/depot';
@@ -39,6 +40,7 @@ export default function IndexDepots({
     filterOptions,
     permissions,
     navUrls,
+    navPermissions,
     urls,
 }: {
     depots: PaginatedDepots;
@@ -51,6 +53,7 @@ export default function IndexDepots({
     };
     permissions: DepotCrudPermissions;
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: {
         index: string;
         create: string;
@@ -95,7 +98,7 @@ export default function IndexDepots({
         <DashboardLayout>
             <Head title={t('global.depot.list')} />
             <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="index" urls={navUrls} />
+                <DepotNavTabs active="index" urls={navUrls} permissions={navPermissions} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.depot.list')}

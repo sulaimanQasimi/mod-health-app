@@ -2,26 +2,217 @@
 
 namespace App\Http\Controllers\V1\Concerns;
 
+use App\Models\Depot;
+use App\Models\DepotRequest;
+use App\Models\DepotTransaction;
 use App\Models\Pharmacy;
 use App\Models\User;
+use App\Support\DepotRolePermissions;
 
 trait ManagesDepotAccess
 {
-    protected function authorizeDepotPermission(string $permission): void
+    protected function isDepotSystemAdmin(?User $user = null): bool
     {
-        $user = request()->user();
+        $user ??= request()->user();
 
-        abort_unless(
-            $user && ($user->hasRole(['super_admin', 'admin']) || $user->can($permission)),
-            403
-        );
+        return $user && $user->hasRole(['super_admin', 'admin']);
+    }
+
+    protected function authorizeDepotPermission(string $permission, ?int $depotId = null): void
+    {
+        $action = DepotRolePermissions::permissionToAction($permission);
+
+        abort_unless($this->userCanDepotAction($action, $depotId), 403);
     }
 
     protected function userCan(string $permission): bool
     {
-        $user = request()->user();
+        return $this->userCanDepotAction(
+            DepotRolePermissions::permissionToAction($permission),
+        );
+    }
 
-        return $user && ($user->hasRole(['super_admin', 'admin']) || $user->can($permission));
+    protected function userCanDepotAction(string $action, ?int $depotId = null, ?User $user = null): bool
+    {
+        $user ??= request()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        if ($this->isDepotSystemAdmin($user)) {
+            return true;
+        }
+
+        if ($depotId !== null) {
+            return $user->hasDepotAccess($depotId)
+                && $user->canPerformDepotAction($depotId, $action);
+        }
+
+        return $user->canPerformDepotActionOnAny($action);
+    }
+
+    protected function authorizeDepotMembership(int $depotId, ?User $user = null): void
+    {
+        $user ??= request()->user();
+
+        abort_unless($user, 403);
+
+        if ($this->isDepotSystemAdmin($user)) {
+            return;
+        }
+
+        abort_unless($user->hasDepotAccess($depotId), 403);
+    }
+
+    protected function authorizeDepotRecord(Depot $depot, string $action): void
+    {
+        $this->authorizeDepotMembership($depot->id);
+        abort_unless($this->userCanDepotAction($action, $depot->id), 403);
+    }
+
+    protected function authorizeDepotTransactionRecord(DepotTransaction $transaction, string $action): void
+    {
+        $depotId = $transaction->primaryDepotId();
+
+        abort_unless($depotId, 403);
+        $this->authorizeDepotMembership($depotId);
+        abort_unless($this->userCanDepotAction($action, $depotId), 403);
+    }
+
+    protected function authorizeDepotRequestRecord(DepotRequest $depotRequest, string $action): void
+    {
+        if ($this->isDepotSystemAdmin()) {
+            return;
+        }
+
+        $user = request()->user();
+        abort_unless($user, 403);
+
+        if ($depotRequest->isPharmacyRequest()) {
+            if ($action === DepotRolePermissions::ACTION_REQUEST_CREATE) {
+                $allowedPharmacyIds = $this->allowedPharmacyIdsForRequests($user);
+                abort_unless(
+                    $depotRequest->pharmacy_id && in_array((int) $depotRequest->pharmacy_id, $allowedPharmacyIds, true),
+                    403
+                );
+
+                return;
+            }
+
+            if (in_array($action, [
+                DepotRolePermissions::ACTION_REQUEST_APPROVE,
+                DepotRolePermissions::ACTION_REQUEST_FULFILL,
+            ], true)) {
+                abort_unless(
+                    $depotRequest->source_depot_id
+                        && $user->canPerformDepotAction((int) $depotRequest->source_depot_id, $action),
+                    403
+                );
+
+                return;
+            }
+
+            abort_unless($this->userCanAccessDepotRequest($depotRequest, $user), 403);
+
+            return;
+        }
+
+        $requiredDepotId = match ($action) {
+            DepotRolePermissions::ACTION_REQUEST_CREATE => $depotRequest->requesting_depot_id,
+            DepotRolePermissions::ACTION_REQUEST_APPROVE,
+            DepotRolePermissions::ACTION_REQUEST_FULFILL => $depotRequest->source_depot_id,
+            default => null,
+        };
+
+        if ($requiredDepotId) {
+            abort_unless($user->canPerformDepotAction((int) $requiredDepotId, $action), 403);
+
+            return;
+        }
+
+        abort_unless($this->userCanAccessDepotRequest($depotRequest, $user), 403);
+    }
+
+    protected function userCanAccessDepotRequest(DepotRequest $depotRequest, ?User $user = null): bool
+    {
+        $user ??= request()->user();
+
+        if (! $user || $this->isDepotSystemAdmin($user)) {
+            return (bool) $user;
+        }
+
+        if ($depotRequest->isPharmacyRequest()) {
+            $allowedPharmacyIds = $this->allowedPharmacyIdsForRequests($user);
+
+            if ($depotRequest->pharmacy_id && in_array((int) $depotRequest->pharmacy_id, $allowedPharmacyIds, true)) {
+                return true;
+            }
+        }
+
+        foreach ([$depotRequest->source_depot_id, $depotRequest->requesting_depot_id] as $depotId) {
+            if ($depotId && $user->hasDepotAccess((int) $depotId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return list<int>
+     */
+    protected function allowedDepotIds(?User $user = null): array
+    {
+        $user ??= request()->user();
+
+        if (! $user) {
+            return [];
+        }
+
+        if ($this->isDepotSystemAdmin($user)) {
+            return Depot::query()->pluck('id')->map(fn ($id) => (int) $id)->all();
+        }
+
+        return $user->activeDepots->pluck('id')->map(fn ($id) => (int) $id)->all();
+    }
+
+    /**
+     * @return list<int>
+     */
+    protected function allowedDepotIdsForAction(string $action, ?User $user = null): array
+    {
+        $user ??= request()->user();
+
+        if (! $user) {
+            return [];
+        }
+
+        if ($this->isDepotSystemAdmin($user)) {
+            return Depot::query()->pluck('id')->map(fn ($id) => (int) $id)->all();
+        }
+
+        return $user->allowedDepotIdsForAction($action);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\Depot>  $query
+     */
+    protected function scopeQueryToUserDepots($query, ?User $user = null): void
+    {
+        if ($this->isDepotSystemAdmin($user)) {
+            return;
+        }
+
+        $allowedIds = $this->allowedDepotIds($user);
+
+        if (empty($allowedIds)) {
+            $query->whereRaw('1 = 0');
+
+            return;
+        }
+
+        $query->whereIn('id', $allowedIds);
     }
 
     /**
@@ -40,31 +231,41 @@ trait ManagesDepotAccess
     }
 
     /**
+     * @return array<string, bool>
+     */
+    protected function depotNavPermissions(?User $user = null): array
+    {
+        return [
+            'index' => $this->userCanDepotAction(DepotRolePermissions::ACTION_VIEW, null, $user),
+            'transactions' => $this->userCanDepotAction(DepotRolePermissions::ACTION_TRANSACTION_VIEW, null, $user),
+            'requests' => $this->canViewDepotRequests($user),
+            'reports' => $this->userCanDepotAction(DepotRolePermissions::ACTION_REPORT_EXPORT, null, $user),
+            'tools' => $this->userCanDepotAction(DepotRolePermissions::ACTION_VIEW, null, $user),
+        ];
+    }
+
+    /**
      * @return array{view: bool, create: bool, edit: bool, delete: bool}
      */
     protected function depotCrudPermissions(?User $user = null): array
     {
-        $user ??= request()->user();
-
         return [
-            'view' => $this->userCan('depot.view'),
-            'create' => $this->userCan('depot.create'),
-            'edit' => $this->userCan('depot.update'),
-            'delete' => $this->userCan('depot.delete'),
+            'view' => $this->userCanDepotAction(DepotRolePermissions::ACTION_VIEW, null, $user),
+            'create' => $this->isDepotSystemAdmin($user),
+            'edit' => $this->isDepotSystemAdmin($user),
+            'delete' => $this->isDepotSystemAdmin($user),
         ];
     }
 
     /**
      * @return array{view: bool, create: bool, cancel: bool}
      */
-    protected function depotTransactionPermissions(?User $user = null): array
+    protected function depotTransactionPermissions(?int $depotId = null, ?User $user = null): array
     {
-        $user ??= request()->user();
-
         return [
-            'view' => $this->userCan('depot.transaction.view'),
-            'create' => $this->userCan('depot.transaction.create'),
-            'cancel' => $this->userCan('depot.transaction.create'),
+            'view' => $this->userCanDepotAction(DepotRolePermissions::ACTION_TRANSACTION_VIEW, $depotId, $user),
+            'create' => $this->userCanDepotAction(DepotRolePermissions::ACTION_TRANSACTION_CREATE, $depotId, $user),
+            'cancel' => $this->userCanDepotAction(DepotRolePermissions::ACTION_TRANSACTION_CREATE, $depotId, $user),
         ];
     }
 
@@ -73,13 +274,11 @@ trait ManagesDepotAccess
      */
     protected function depotRequestPermissions(?User $user = null): array
     {
-        $user ??= request()->user();
-
         return [
             'view' => $this->canViewDepotRequests($user),
             'create' => $this->canCreateDepotRequest($user),
-            'approve' => $this->userCan('depot.request.approve'),
-            'fulfill' => $this->userCan('depot.request.fulfill'),
+            'approve' => $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_APPROVE, null, $user),
+            'fulfill' => $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_FULFILL, null, $user),
         ];
     }
 
@@ -87,7 +286,10 @@ trait ManagesDepotAccess
     {
         $user ??= request()->user();
 
-        return $this->userCanAny(['depot.request.create', 'depot.request.approve', 'depot.request.fulfill'])
+        return $this->userCanDepotAction(DepotRolePermissions::ACTION_VIEW, null, $user)
+            || $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_CREATE, null, $user)
+            || $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_APPROVE, null, $user)
+            || $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_FULFILL, null, $user)
             || $this->canAccessPharmacyRequests($user);
     }
 
@@ -95,7 +297,7 @@ trait ManagesDepotAccess
     {
         $user ??= request()->user();
 
-        return $this->userCan('depot.request.create')
+        return $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_CREATE, null, $user)
             || $this->canAccessPharmacyRequests($user);
     }
 
@@ -104,7 +306,7 @@ trait ManagesDepotAccess
         $user ??= request()->user();
 
         return $user && (
-            $user->hasRole(['admin', 'super_admin'])
+            $this->isDepotSystemAdmin($user)
             || $user->hasActivePharmacyRole(['manager', 'procurement'])
         );
     }
@@ -114,7 +316,9 @@ trait ManagesDepotAccess
         $user ??= request()->user();
 
         return $this->canAccessPharmacyRequests($user)
-            && ! $this->userCanAny(['depot.request.create', 'depot.request.approve', 'depot.request.fulfill']);
+            && ! $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_CREATE, null, $user)
+            && ! $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_APPROVE, null, $user)
+            && ! $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_FULFILL, null, $user);
     }
 
     /**
@@ -128,7 +332,7 @@ trait ManagesDepotAccess
             return [];
         }
 
-        if ($user->hasRole(['admin', 'super_admin'])) {
+        if ($this->isDepotSystemAdmin($user)) {
             if ($filterPharmacyId) {
                 return [$filterPharmacyId];
             }
@@ -150,17 +354,19 @@ trait ManagesDepotAccess
         return false;
     }
 
-    protected function authorizeDepotStockView(): void
+    protected function authorizeDepotStockView(?int $depotId = null): void
     {
         abort_unless(
-            $this->userCanAny([
-                'depot.transaction.view',
-                'depot.transaction.create',
-                'depot.movement.depot_to_pharmacy',
-                'depot.request.create',
-                'depot.request.fulfill',
-            ]) || $this->canAccessPharmacyRequests(),
+            $this->userCanDepotAction(DepotRolePermissions::ACTION_TRANSACTION_VIEW, $depotId)
+            || $this->userCanDepotAction(DepotRolePermissions::ACTION_TRANSACTION_CREATE, $depotId)
+            || $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_CREATE, $depotId)
+            || $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_FULFILL, $depotId)
+            || $this->canAccessPharmacyRequests(),
             403
         );
+
+        if ($depotId !== null) {
+            $this->authorizeDepotMembership($depotId);
+        }
     }
 }

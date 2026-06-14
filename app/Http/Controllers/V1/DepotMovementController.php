@@ -15,7 +15,14 @@ class DepotMovementController extends Controller
 
     public function depotToDepot(Request $request): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.request.create');
+        $fromDepotId = (int) $request->query('from_depot_id', 0);
+        $toDepotId = (int) $request->query('to_depot_id', 0);
+
+        if ($fromDepotId) {
+            $this->authorizeDepotPermission('depot.request.create', $fromDepotId);
+        } else {
+            $this->authorizeDepotPermission('depot.request.create');
+        }
 
         return redirect()->route('react.depots.requests.create', [
             'source_depot_id' => $request->query('from_depot_id'),
@@ -25,7 +32,13 @@ class DepotMovementController extends Controller
 
     public function depotToPharmacy(Request $request): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.movement.depot_to_pharmacy');
+        $fromDepotId = (int) $request->query('from_depot_id', 0);
+
+        if ($fromDepotId) {
+            $this->authorizeDepotPermission('depot.movement.depot_to_pharmacy', $fromDepotId);
+        } else {
+            $this->authorizeDepotPermission('depot.movement.depot_to_pharmacy');
+        }
 
         return redirect()->route('react.depots.requests.create', [
             'destination' => 'pharmacy',

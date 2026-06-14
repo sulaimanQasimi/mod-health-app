@@ -40,6 +40,7 @@ interface ShowPatientProps {
 interface DetailFieldProps {
     label: string;
     value: string | null | undefined;
+    icon?: string;
 }
 
 interface SectionCardProps {
@@ -60,11 +61,14 @@ function displayValue(value: string | number | null | undefined) {
     return String(value);
 }
 
-function DetailField({ label, value }: DetailFieldProps) {
+function DetailField({ label, value, icon }: DetailFieldProps) {
     return (
-        <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800/50">
-            <dt className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{displayValue(value)}</dd>
+        <div className="min-w-0 rounded-md border border-gray-200/80 px-2.5 py-2 dark:border-gray-700/80">
+            <p className="mb-1.5 text-sm font-semibold text-gray-700 dark:text-gray-300">{label}</p>
+            <p className="flex min-w-0 items-start gap-1.5 text-sm text-gray-900 dark:text-white">
+                {icon && <i className={`bx ${icon} mt-0.5 shrink-0 text-base text-cyan-500`} />}
+                <span className="break-words">{displayValue(value)}</span>
+            </p>
         </div>
     );
 }
@@ -76,7 +80,7 @@ function SectionCard({ title, action, children }: SectionCardProps) {
                 <h2 className="text-sm font-semibold text-gray-900 dark:text-white">{title}</h2>
                 {action}
             </div>
-            <div className="min-w-0 p-5">{children}</div>
+            <div className="min-w-0 p-4">{children}</div>
         </section>
     );
 }
@@ -215,10 +219,12 @@ export default function ShowPatient({
                         <div className="flex shrink-0 flex-wrap gap-2">
                             <BackLink href={urls.index}>{t('global.back')}</BackLink>
                             {permissions.edit && (
-                                <Button color="warning" as={Link} href={urls.edit}>
-                                    <i className="bx bx-edit me-2 text-lg" />
-                                    {t('global.edit')}
-                                </Button>
+                                <Link href={urls.edit}>
+                                    <Button color="warning">
+                                        <i className="bx bx-edit me-2 text-lg" />
+                                        {t('global.edit')}
+                                    </Button>
+                                </Link>
                             )}
                             {permissions.delete && (
                                 <Button color="failure" outline disabled={deleting} onClick={handleDelete}>
@@ -230,69 +236,140 @@ export default function ShowPatient({
                     </div>
                 </div>
 
-                <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
-                    <div className="min-w-0 space-y-6">
-                        <SectionCard title={t('global.personal_information')}>
-                            <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                <DetailField label={t('global.patient_name')} value={patient.name} />
-                                <DetailField label={t('global.last_name')} value={patient.last_name} />
-                                <DetailField label={t('global.father_name')} value={patient.father_name} />
-                                <DetailField label={t('global.nid')} value={patient.nid} />
-                                <DetailField label={t('global.phone')} value={patient.phone} />
-                                <DetailField label={t('global.age')} value={patient.age} />
-                                <DetailField label={t('global.gender')} value={genderLabel} />
-                                <DetailField label={t('global.job')} value={patient.job} />
-                                <DetailField label={t('global.job_category')} value={jobCategoryLabel} />
-                                <DetailField label={t('global.rank')} value={patient.rank} />
-                                <DetailField label={t('global.militery_type')} value={patient.militery_type} />
-                                <DetailField label={t('global.province')} value={patient.province} />
-                                <DetailField label={t('global.district')} value={patient.district} />
-                                <DetailField label={t('global.referred_by')} value={patient.referred_by} />
-                                <DetailField label={t('global.creation_date')} value={patient.created_at} />
-                                <DetailField label={t('global.created_by')} value={patient.created_by} />
-                            </dl>
+                <div className="min-w-0 space-y-6">
+                    <SectionCard title={t('global.personal_information')}>
+                        <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
+                            <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
+                                <DetailField label={t('global.patient_name')} value={patient.name} icon="bx-user" />
+                                <DetailField label={t('global.last_name')} value={patient.last_name} icon="bx-user" />
+                                <DetailField label={t('global.father_name')} value={patient.father_name} icon="bx-user" />
+                                <DetailField label={t('global.nid')} value={patient.nid} icon="bx-id-card" />
+                                <DetailField label={t('global.phone')} value={patient.phone} icon="bx-phone" />
+                                <DetailField label={t('global.age')} value={patient.age} icon="bx-calendar" />
+                                <DetailField label={t('global.gender')} value={genderLabel} icon="bx-male-female" />
+                                <DetailField label={t('global.job')} value={patient.job} icon="bx-briefcase" />
+                                <DetailField label={t('global.job_category')} value={jobCategoryLabel} icon="bx-group" />
+                                <DetailField label={t('global.rank')} value={patient.rank} icon="bx-medal" />
+                                <DetailField label={t('global.militery_type')} value={patient.militery_type} icon="bx-shield" />
+                                <DetailField label={t('global.province')} value={patient.province} icon="bx-map" />
+                                <DetailField label={t('global.district')} value={patient.district} icon="bx-map-pin" />
+                                <DetailField label={t('global.referred_by')} value={patient.referred_by} icon="bx-user-plus" />
+                                <DetailField label={t('global.creation_date')} value={patient.created_at} icon="bx-time" />
+                                <DetailField label={t('global.created_by')} value={patient.created_by} icon="bx-user-check" />
+                            </div>
+
+                            <aside className="min-w-0 space-y-4">
+                                <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-4 dark:border-gray-700/60 dark:bg-gray-800/40">
+                                    <div className="space-y-4">
+                                        <div className="text-center">
+                                            <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                {t('global.qr_code')}
+                                            </p>
+                                            <div className="flex justify-center">
+                                                <PatientQrCode patientId={patient.id} size={96} />
+                                            </div>
+                                        </div>
+
+                                        <div className="border-t border-gray-200 pt-4 dark:border-gray-700">
+                                            <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                {t('global.patient_image')}
+                                            </p>
+                                            <div className="mx-auto flex aspect-square max-w-[160px] items-center justify-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700/50">
+                                                {patient.image ? (
+                                                    <img
+                                                        src={patient.image}
+                                                        alt={fullName}
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="flex flex-col items-center gap-2 text-gray-400">
+                                                        <i className="bx bx-user text-5xl" />
+                                                        <span className="text-xs">{t('global.no_image')}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col gap-3 border-t border-gray-200 pt-4 dark:border-gray-700">
+                                            {permissions.printCard && (
+                                                <a
+                                                    href={urls.printCard}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="block"
+                                                >
+                                                    <Button size="sm" color="blue" className="w-full">
+                                                        <i className="bx bx-printer me-2" />
+                                                        {t('global.print_card')}
+                                                    </Button>
+                                                </a>
+                                            )}
+                                            {permissions.createAppointment && (
+                                                <Button
+                                                    size="sm"
+                                                    color="blue"
+                                                    className="w-full"
+                                                    onClick={() => setAppointmentModalOpen(true)}
+                                                >
+                                                    <i className="bx bx-calendar-plus me-2" />
+                                                    {t('global.assign_appointment')}
+                                                </Button>
+                                            )}
+                                            {permissions.uploadImage && (
+                                                <a href={urls.webcam} className="block">
+                                                    <Button size="sm" color="success" className="w-full">
+                                                        <i className="bx bx-camera me-2" />
+                                                        {t('global.take_image')}
+                                                    </Button>
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+                    </SectionCard>
+
+                    {(patient.referral_name || patient.referral_nid) && (
+                        <SectionCard title={t('global.referred_person')}>
+                            <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
+                                <DetailField label={t('global.name')} value={patient.referral_name} icon="bx-user" />
+                                <DetailField label={t('global.last_name')} value={patient.referral_last_name} icon="bx-user" />
+                                <DetailField label={t('global.father_name')} value={patient.referral_father_name} icon="bx-user" />
+                                <DetailField label={t('global.nid')} value={patient.referral_nid} icon="bx-id-card" />
+                                <DetailField label={t('global.id_card')} value={patient.referral_id_card} icon="bx-id-card" />
+                                <DetailField label={t('global.phone')} value={patient.referral_phone} icon="bx-phone" />
+                                <DetailField label={t('global.relation')} value={patient.relation} icon="bx-link" />
+                            </div>
                         </SectionCard>
+                    )}
 
-                        {(patient.referral_name || patient.referral_nid) && (
-                            <SectionCard title={t('global.referred_person')}>
-                                <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                    <DetailField label={t('global.name')} value={patient.referral_name} />
-                                    <DetailField label={t('global.last_name')} value={patient.referral_last_name} />
-                                    <DetailField label={t('global.father_name')} value={patient.referral_father_name} />
-                                    <DetailField label={t('global.nid')} value={patient.referral_nid} />
-                                    <DetailField label={t('global.id_card')} value={patient.referral_id_card} />
-                                    <DetailField label={t('global.phone')} value={patient.referral_phone} />
-                                    <DetailField label={t('global.relation')} value={patient.relation} />
-                                </dl>
-                            </SectionCard>
-                        )}
+                    <SectionCard title={t('global.previous_appointments')}>
+                        <Table>
+                            <TableHead>
+                                <TableRow variant="header">
+                                    <TableHeader>{t('global.number')}</TableHeader>
+                                    <TableHeader>{t('global.doctor_name')}</TableHeader>
+                                    <TableHeader>{t('global.date')}</TableHeader>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {appointments.length === 0 ? (
+                                    <EmptyTableRow colSpan={3} message={t('global.no_results_found')} />
+                                ) : (
+                                    appointments.map((appointment) => (
+                                        <TableRow key={appointment.id}>
+                                            <TableCell className="font-medium">{appointment.number}</TableCell>
+                                            <TableCell>{displayValue(appointment.doctor_name)}</TableCell>
+                                            <TableCell muted>{appointment.date}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </SectionCard>
 
-                        <SectionCard title={t('global.previous_appointments')}>
-                            <Table>
-                                <TableHead>
-                                    <TableRow variant="header">
-                                        <TableHeader>{t('global.number')}</TableHeader>
-                                        <TableHeader>{t('global.doctor_name')}</TableHeader>
-                                        <TableHeader>{t('global.date')}</TableHeader>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {appointments.length === 0 ? (
-                                        <EmptyTableRow colSpan={3} message={t('global.no_results_found')} />
-                                    ) : (
-                                        appointments.map((appointment) => (
-                                            <TableRow key={appointment.id}>
-                                                <TableCell className="font-medium">{appointment.number}</TableCell>
-                                                <TableCell>{displayValue(appointment.doctor_name)}</TableCell>
-                                                <TableCell muted>{appointment.date}</TableCell>
-                                            </TableRow>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </SectionCard>
-
-                        {permissions.nephrology && (
+                        {/* {permissions.nephrology && (
                             <SectionCard
                                 title={t('global.nephrology_history')}
                                 action={
@@ -402,91 +479,24 @@ export default function ShowPatient({
                                     </div>
                                 )}
                             </SectionCard>
-                        )}
+                        )} */}
 
                         <SectionCard title={t('global.all_diagnoses')}>
                             <div className="grid gap-6 lg:grid-cols-2">
                                 <div className="min-w-0">
-                                    <h3 className="mb-3 text-sm font-medium text-amber-700 dark:text-amber-300">
+                                    <h3 className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-center text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
                                         {t('global.primary_diagnoses')}
                                     </h3>
                                     <DiagnosisList items={diagnoses.primary} variant="primary" />
                                 </div>
                                 <div className="min-w-0">
-                                    <h3 className="mb-3 text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                                    <h3 className="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
                                         {t('global.final_diagnoses')}
                                     </h3>
                                     <DiagnosisList items={diagnoses.final} variant="final" />
                                 </div>
                             </div>
                         </SectionCard>
-                    </div>
-
-                    <aside className="min-w-0 space-y-4 xl:sticky xl:top-24 xl:self-start">
-                        <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
-                            <div className="space-y-5">
-                                <div className="text-center">
-                                    <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
-                                        {t('global.qr_code')}
-                                    </p>
-                                    <div className="flex justify-center">
-                                        <PatientQrCode patientId={patient.id} size={120} />
-                                    </div>
-                                </div>
-
-                                <div className="border-t border-gray-200 pt-5 dark:border-gray-700">
-                                    <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
-                                        {t('global.patient_image')}
-                                    </p>
-                                    <div className="mx-auto flex aspect-square max-w-[220px] items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700/50">
-                                        {patient.image ? (
-                                            <img
-                                                src={patient.image}
-                                                alt={fullName}
-                                                className="h-full w-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="flex flex-col items-center gap-2 text-gray-400">
-                                                <i className="bx bx-user text-5xl" />
-                                                <span className="text-xs">{t('global.no_image')}</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2 border-t border-gray-200 pt-5 dark:border-gray-700">
-                                    {permissions.printCard && (
-                                        <Button
-                                            color="blue"
-                                            className="w-full"
-                                            as="a"
-                                            href={urls.printCard}
-                                            target="_blank"
-                                        >
-                                            <i className="bx bx-printer me-2 text-lg" />
-                                            {t('global.print_card')}
-                                        </Button>
-                                    )}
-                                    {permissions.createAppointment && (
-                                        <Button
-                                            color="cyan"
-                                            className="w-full"
-                                            onClick={() => setAppointmentModalOpen(true)}
-                                        >
-                                            <i className="bx bx-calendar-plus me-2 text-lg" />
-                                            {t('global.assign_appointment')}
-                                        </Button>
-                                    )}
-                                    {permissions.uploadImage && (
-                                        <Button color="success" className="w-full" as="a" href={urls.webcam}>
-                                            <i className="bx bx-camera me-2 text-lg" />
-                                            {t('global.take_image')}
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
                 </div>
             </div>
 

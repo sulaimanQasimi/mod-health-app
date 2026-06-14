@@ -59,6 +59,7 @@ interface DepotRequestItemsEditorProps {
     sourceDepotId: string;
     stockUrl?: string;
     errors?: Record<string, string>;
+    medicinesOnly?: boolean;
 }
 
 export default function DepotRequestItemsEditor({
@@ -68,6 +69,7 @@ export default function DepotRequestItemsEditor({
     sourceDepotId,
     stockUrl,
     errors = {},
+    medicinesOnly = false,
 }: DepotRequestItemsEditorProps) {
     const { t } = useTranslation();
     const [kinds, setKinds] = useState<DepotItemKind[]>(() => items.map((line) => (line.tool_id ? 'tool' : 'medicine')));
@@ -154,7 +156,12 @@ export default function DepotRequestItemsEditor({
                                     {index + 1}
                                 </TableCell>
                                 <TableCell className="align-top">
-                                    <div className="inline-flex rounded-lg border border-gray-200 p-0.5 dark:border-gray-600">
+                                    {medicinesOnly ? (
+                                        <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                                            {t('global.medicine')}
+                                        </span>
+                                    ) : (
+                                        <div className="inline-flex rounded-lg border border-gray-200 p-0.5 dark:border-gray-600">
                                             <button
                                                 type="button"
                                                 onClick={() => switchKind(index, 'medicine')}
@@ -178,9 +185,10 @@ export default function DepotRequestItemsEditor({
                                                 {t('global.depot.tool')}
                                             </button>
                                         </div>
+                                    )}
                                 </TableCell>
                                 <TableCell className="min-w-[14rem] align-top">
-                                    {kind === 'medicine' ? (
+                                    {medicinesOnly || kind === 'medicine' ? (
                                             <SearchableSelect
                                                 value={line.medicine_id}
                                                 onChange={(value) => updateLine(index, { medicine_id: value, tool_id: '' })}

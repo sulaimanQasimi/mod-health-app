@@ -5,7 +5,6 @@ export interface DepotNavUrls {
     transactions: string;
     requests: string;
     depotToDepot: string;
-    depotToPharmacy: string;
     reports: string;
     tools: string;
 }
@@ -106,17 +105,21 @@ export interface DepotRequestListItem {
     id: number;
     request_number: string | null;
     status: string;
+    destination_type: 'depot' | 'pharmacy';
     items_count: number;
     total_quantity: number;
     items_summary: string;
     requesting_depot_name: string | null;
+    pharmacy_id: number | null;
+    pharmacy_name: string | null;
+    destination_name: string | null;
     source_depot_name: string | null;
     requested_by_name: string | null;
     created_at: string | null;
 }
 
 export interface DepotRequestDetail extends DepotRequestListItem {
-    requesting_depot_id: number;
+    requesting_depot_id: number | null;
     source_depot_id: number;
     notes: string | null;
     workflow_rank: number;

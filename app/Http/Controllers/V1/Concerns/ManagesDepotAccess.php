@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1\Concerns;
 
+use App\Models\Pharmacy;
 use App\Models\User;
 
 trait ManagesDepotAccess
@@ -33,7 +34,6 @@ trait ManagesDepotAccess
             'transactions' => route('react.depots.transactions.index'),
             'requests' => route('react.depots.requests.index'),
             'depotToDepot' => route('react.depots.requests.create'),
-            'depotToPharmacy' => route('react.depots.movements.depot-to-pharmacy'),
             'reports' => route('react.depots.reports.index'),
             'tools' => route('react.tools.index'),
         ];
@@ -76,11 +76,67 @@ trait ManagesDepotAccess
         $user ??= request()->user();
 
         return [
-            'view' => $this->userCanAny(['depot.request.create', 'depot.request.approve', 'depot.request.fulfill']),
-            'create' => $this->userCan('depot.request.create'),
+            'view' => $this->canViewDepotRequests($user),
+            'create' => $this->canCreateDepotRequest($user),
             'approve' => $this->userCan('depot.request.approve'),
             'fulfill' => $this->userCan('depot.request.fulfill'),
         ];
+    }
+
+    protected function canViewDepotRequests(?User $user = null): bool
+    {
+        $user ??= request()->user();
+
+        return $this->userCanAny(['depot.request.create', 'depot.request.approve', 'depot.request.fulfill'])
+            || $this->canAccessPharmacyRequests($user);
+    }
+
+    protected function canCreateDepotRequest(?User $user = null): bool
+    {
+        $user ??= request()->user();
+
+        return $this->userCan('depot.request.create')
+            || $this->canAccessPharmacyRequests($user);
+    }
+
+    protected function canAccessPharmacyRequests(?User $user = null): bool
+    {
+        $user ??= request()->user();
+
+        return $user && (
+            $user->hasRole(['admin', 'super_admin'])
+            || $user->hasActivePharmacyRole(['manager', 'procurement'])
+        );
+    }
+
+    protected function isPharmacyRequestContext(?User $user = null): bool
+    {
+        $user ??= request()->user();
+
+        return $this->canAccessPharmacyRequests($user)
+            && ! $this->userCanAny(['depot.request.create', 'depot.request.approve', 'depot.request.fulfill']);
+    }
+
+    /**
+     * @return list<int>
+     */
+    protected function allowedPharmacyIdsForRequests(?User $user = null, ?int $filterPharmacyId = null): array
+    {
+        $user ??= request()->user();
+
+        if (! $user) {
+            return [];
+        }
+
+        if ($user->hasRole(['admin', 'super_admin'])) {
+            if ($filterPharmacyId) {
+                return [$filterPharmacyId];
+            }
+
+            return Pharmacy::query()->pluck('id')->map(fn ($id) => (int) $id)->all();
+        }
+
+        return $user->activePharmacies->pluck('id')->map(fn ($id) => (int) $id)->all();
     }
 
     protected function userCanAny(array $permissions): bool
@@ -96,12 +152,15 @@ trait ManagesDepotAccess
 
     protected function authorizeDepotStockView(): void
     {
-        abort_unless($this->userCanAny([
-            'depot.transaction.view',
-            'depot.transaction.create',
-            'depot.movement.depot_to_pharmacy',
-            'depot.request.create',
-            'depot.request.fulfill',
-        ]), 403);
+        abort_unless(
+            $this->userCanAny([
+                'depot.transaction.view',
+                'depot.transaction.create',
+                'depot.movement.depot_to_pharmacy',
+                'depot.request.create',
+                'depot.request.fulfill',
+            ]) || $this->canAccessPharmacyRequests(),
+            403
+        );
     }
 }

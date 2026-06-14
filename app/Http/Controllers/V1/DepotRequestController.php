@@ -26,7 +26,7 @@ class DepotRequestController extends Controller
     use ProvidesDepotFormData;
 
     private const FILTER_KEYS = [
-        'search', 'requesting_depot_id', 'source_depot_id', 'status', 'medicine_id', 'tool_id', 'date_from', 'date_to', 'per_page',
+        'search', 'requesting_depot_id', 'source_depot_id', 'pharmacy_id', 'destination_type', 'status', 'medicine_id', 'tool_id', 'date_from', 'date_to', 'per_page',
     ];
 
     public function __construct(
@@ -39,6 +39,7 @@ class DepotRequestController extends Controller
 
         $query = DepotRequest::with([
             'requestingDepot:id,name',
+            'pharmacy:id,name',
             'sourceDepot:id,name',
             'items.medicine:id,name',
             'items.tool:id,name',
@@ -55,11 +56,14 @@ class DepotRequestController extends Controller
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
             'filterOptions' => [
                 'depots' => $options['activeDepots'],
+                'pharmacies' => $options['pharmacies'],
                 'medicines' => $options['medicines'],
                 'tools' => $options['tools'],
                 'statuses' => DepotRequest::statuses(),
+                'destinationTypes' => ['depot', 'pharmacy'],
             ],
             'permissions' => $this->depotRequestPermissions(),
+            'viewContext' => $this->isPharmacyRequestContext() ? 'pharmacy' : 'depot',
             'navUrls' => $this->depotNavUrls(),
             'urls' => [
                 'index' => route('react.depots.requests.index'),
@@ -71,14 +75,33 @@ class DepotRequestController extends Controller
 
     public function create(Request $request): Response
     {
-        $this->authorizeDepotPermission('depot.request.create');
+        $this->authorizeDepotRequestCreate();
+
+        $user = $request->user();
+        $destination = $request->query('destination', '');
+        $defaultPharmacyId = (string) $request->query('pharmacy_id', '');
+
+        if ($destination !== 'pharmacy' && $this->isPharmacyRequestContext()) {
+            $destination = 'pharmacy';
+        }
+
+        if ($destination === 'pharmacy' && $defaultPharmacyId === '' && $user) {
+            $defaultPharmacyId = (string) ($user->activePharmacies->first()?->id ?? '');
+        }
 
         return Inertia::render('Depots/Requests/Create', [
             'defaults' => [
+                'destination_type' => $destination === 'pharmacy' ? 'pharmacy' : 'depot',
                 'requesting_depot_id' => (string) $request->query('requesting_depot_id', ''),
                 'source_depot_id' => (string) $request->query('source_depot_id', ''),
+                'pharmacy_id' => $defaultPharmacyId,
             ],
             'formData' => $this->depotFormOptions(),
+            'viewContext' => $this->isPharmacyRequestContext() ? 'pharmacy' : 'depot',
+            'userPharmacies' => $user?->activePharmacies->map(fn ($pharmacy) => [
+                'id' => $pharmacy->id,
+                'name' => $pharmacy->name,
+            ])->values()->all() ?? [],
             'navUrls' => $this->depotNavUrls(),
             'urls' => [
                 'index' => route('react.depots.requests.index'),
@@ -90,13 +113,16 @@ class DepotRequestController extends Controller
 
     public function store(StoreDepotRequestRequest $request): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.request.create');
+        $this->authorizeDepotRequestCreate();
 
         $data = $request->validated();
+        $this->authorizePharmacyDestination($data['pharmacy_id'] ?? null);
+        $this->enforcePharmacyOnlyRequestDestination($data);
 
         $depotRequest = DB::transaction(function () use ($data) {
             $depotRequest = DepotRequest::create([
-                'requesting_depot_id' => $data['requesting_depot_id'],
+                'requesting_depot_id' => $data['requesting_depot_id'] ?? null,
+                'pharmacy_id' => $data['pharmacy_id'] ?? null,
                 'source_depot_id' => $data['source_depot_id'],
                 'notes' => $data['notes'] ?? null,
                 'status' => DepotRequest::STATUS_DRAFT,
@@ -120,9 +146,11 @@ class DepotRequestController extends Controller
     public function show(DepotRequest $depotRequest): Response
     {
         $this->authorizeDepotRequestView();
+        $this->authorizeDepotRequestRecord($depotRequest);
 
         $depotRequest->load([
             'requestingDepot:id,name',
+            'pharmacy:id,name',
             'sourceDepot:id,name',
             'items.medicine:id,name',
             'items.tool:id,name',
@@ -139,6 +167,7 @@ class DepotRequestController extends Controller
             'request' => $this->transformDetail($depotRequest),
             'workflowSteps' => DepotRequest::WORKFLOW_STEPS,
             'permissions' => $this->requestActionPermissions($depotRequest),
+            'viewContext' => $this->isPharmacyRequestContext() ? 'pharmacy' : 'depot',
             'navUrls' => $this->depotNavUrls(),
             'urls' => [
                 'index' => route('react.depots.requests.index'),
@@ -156,7 +185,8 @@ class DepotRequestController extends Controller
 
     public function edit(DepotRequest $depotRequest): Response
     {
-        $this->authorizeDepotPermission('depot.request.create');
+        $this->authorizeDepotRequestCreate();
+        $this->authorizeDepotRequestRecord($depotRequest);
 
         abort_unless($depotRequest->status === DepotRequest::STATUS_DRAFT, 403);
 
@@ -169,6 +199,11 @@ class DepotRequestController extends Controller
         return Inertia::render('Depots/Requests/Edit', [
             'request' => $this->transformDetail($depotRequest),
             'formData' => $this->depotFormOptions(),
+            'viewContext' => $this->isPharmacyRequestContext() ? 'pharmacy' : 'depot',
+            'userPharmacies' => request()->user()?->activePharmacies->map(fn ($pharmacy) => [
+                'id' => $pharmacy->id,
+                'name' => $pharmacy->name,
+            ])->values()->all() ?? [],
             'navUrls' => $this->depotNavUrls(),
             'urls' => [
                 'index' => route('react.depots.requests.index'),
@@ -181,15 +216,19 @@ class DepotRequestController extends Controller
 
     public function update(UpdateDepotRequestRequest $request, DepotRequest $depotRequest): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.request.create');
+        $this->authorizeDepotRequestCreate();
+        $this->authorizeDepotRequestRecord($depotRequest);
 
         abort_unless($depotRequest->status === DepotRequest::STATUS_DRAFT, 403);
 
         $data = $request->validated();
+        $this->authorizePharmacyDestination($data['pharmacy_id'] ?? null);
+        $this->enforcePharmacyOnlyRequestDestination($data);
 
         DB::transaction(function () use ($depotRequest, $data) {
             $depotRequest->update([
-                'requesting_depot_id' => $data['requesting_depot_id'],
+                'requesting_depot_id' => $data['requesting_depot_id'] ?? null,
+                'pharmacy_id' => $data['pharmacy_id'] ?? null,
                 'source_depot_id' => $data['source_depot_id'],
                 'notes' => $data['notes'] ?? null,
             ]);
@@ -204,7 +243,8 @@ class DepotRequestController extends Controller
 
     public function submit(DepotRequest $depotRequest): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.request.create');
+        $this->authorizeDepotRequestCreate();
+        $this->authorizeDepotRequestRecord($depotRequest);
 
         try {
             $this->requestService->submit($depotRequest);
@@ -285,7 +325,53 @@ class DepotRequestController extends Controller
 
     private function authorizeDepotRequestView(): void
     {
-        abort_unless($this->userCanAny(['depot.request.create', 'depot.request.approve', 'depot.request.fulfill']), 403);
+        abort_unless($this->canViewDepotRequests(), 403);
+    }
+
+    private function authorizeDepotRequestCreate(): void
+    {
+        abort_unless($this->canCreateDepotRequest(), 403);
+    }
+
+    private function authorizeDepotRequestRecord(DepotRequest $depotRequest): void
+    {
+        if ($this->userCanAny(['depot.request.create', 'depot.request.approve', 'depot.request.fulfill'])) {
+            return;
+        }
+
+        $allowedPharmacyIds = $this->allowedPharmacyIdsForRequests();
+
+        if ($depotRequest->pharmacy_id && in_array((int) $depotRequest->pharmacy_id, $allowedPharmacyIds, true)) {
+            return;
+        }
+
+        abort(403);
+    }
+
+    private function authorizePharmacyDestination(?int $pharmacyId): void
+    {
+        if (! $pharmacyId || $this->userCan('depot.request.create')) {
+            return;
+        }
+
+        $allowedPharmacyIds = $this->allowedPharmacyIdsForRequests();
+
+        abort_unless(in_array((int) $pharmacyId, $allowedPharmacyIds, true), 403);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function enforcePharmacyOnlyRequestDestination(array $data): void
+    {
+        if ($this->userCan('depot.request.create')) {
+            return;
+        }
+
+        abort_unless(
+            ! empty($data['pharmacy_id']) && empty($data['requesting_depot_id']),
+            403
+        );
     }
 
     /**
@@ -296,13 +382,13 @@ class DepotRequestController extends Controller
         $status = $depotRequest->status;
 
         return [
-            'edit' => $status === DepotRequest::STATUS_DRAFT && $this->userCan('depot.request.create'),
-            'submit' => $status === DepotRequest::STATUS_DRAFT && $this->userCan('depot.request.create'),
+            'edit' => $status === DepotRequest::STATUS_DRAFT && $this->canCreateDepotRequest(),
+            'submit' => $status === DepotRequest::STATUS_DRAFT && $this->canCreateDepotRequest(),
             'approve' => $status === DepotRequest::STATUS_PENDING && $this->userCan('depot.request.approve'),
             'reject' => $status === DepotRequest::STATUS_PENDING && $this->userCan('depot.request.approve'),
             'fulfill' => $status === DepotRequest::STATUS_APPROVED && $this->userCan('depot.request.fulfill'),
             'cancel' => in_array($status, [DepotRequest::STATUS_DRAFT, DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED], true)
-                && ($this->userCan('depot.request.create') || $this->userCan('depot.request.approve')),
+                && ($this->canCreateDepotRequest() || $this->userCan('depot.request.approve')),
         ];
     }
 
@@ -311,8 +397,24 @@ class DepotRequestController extends Controller
      */
     private function applyRequestFilters($query, Request $request): void
     {
+        $user = $request->user();
+
+        if ($this->isPharmacyRequestContext() && $user) {
+            $query->whereIn('pharmacy_id', $this->allowedPharmacyIdsForRequests($user));
+        }
+
         if ($request->filled('requesting_depot_id')) {
             $query->where('requesting_depot_id', $request->requesting_depot_id);
+        }
+        if ($request->filled('pharmacy_id')) {
+            $query->where('pharmacy_id', $request->pharmacy_id);
+        }
+        if ($request->filled('destination_type')) {
+            if ($request->destination_type === 'pharmacy') {
+                $query->whereNotNull('pharmacy_id');
+            } elseif ($request->destination_type === 'depot') {
+                $query->whereNotNull('requesting_depot_id');
+            }
         }
         if ($request->filled('source_depot_id')) {
             $query->where('source_depot_id', $request->source_depot_id);
@@ -351,10 +453,14 @@ class DepotRequestController extends Controller
             'id' => $item->id,
             'request_number' => $item->request_number,
             'status' => $item->status,
+            'destination_type' => $item->isPharmacyRequest() ? 'pharmacy' : 'depot',
             'items_count' => $item->items_count ?? $item->items->count(),
             'total_quantity' => $item->totalQuantity(),
             'items_summary' => $item->itemsSummary(),
             'requesting_depot_name' => $item->requestingDepot?->name,
+            'pharmacy_id' => $item->pharmacy_id,
+            'pharmacy_name' => $item->pharmacy?->name,
+            'destination_name' => $item->destinationLabel(),
             'source_depot_name' => $item->sourceDepot?->name,
             'requested_by_name' => $item->requestedBy ? trim("{$item->requestedBy->name} {$item->requestedBy->last_name}") : null,
             'created_at' => $item->created_at?->format('Y-m-d H:i'),
@@ -389,6 +495,7 @@ class DepotRequestController extends Controller
         return [
             ...$this->transformListItem($item),
             'requesting_depot_id' => $item->requesting_depot_id,
+            'pharmacy_id' => $item->pharmacy_id,
             'source_depot_id' => $item->source_depot_id,
             'notes' => $item->notes,
             'workflow_rank' => $item->workflowRank(),

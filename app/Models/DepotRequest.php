@@ -28,6 +28,7 @@ class DepotRequest extends Model
     protected $fillable = [
         'request_number',
         'requesting_depot_id',
+        'pharmacy_id',
         'source_depot_id',
         'notes',
         'status',
@@ -121,9 +122,28 @@ class DepotRequest extends Model
         return $this->hasOne(DepotTransaction::class, 'depot_request_id')->latestOfMany('id');
     }
 
+    public function isPharmacyRequest(): bool
+    {
+        return $this->pharmacy_id !== null;
+    }
+
+    public function destinationLabel(): string
+    {
+        if ($this->isPharmacyRequest()) {
+            return $this->pharmacy?->name ?? '-';
+        }
+
+        return $this->requestingDepot?->name ?? '-';
+    }
+
     public function requestingDepot()
     {
         return $this->belongsTo(Depot::class, 'requesting_depot_id');
+    }
+
+    public function pharmacy()
+    {
+        return $this->belongsTo(Pharmacy::class);
     }
 
     public function sourceDepot()

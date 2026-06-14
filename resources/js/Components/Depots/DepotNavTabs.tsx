@@ -3,7 +3,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { DepotNavUrls } from '../../types/depot';
 import { DEPOT_CARD_CLASS } from './depotUi';
 
-export type DepotNavKey = 'index' | 'transactions' | 'requests' | 'depotToPharmacy' | 'reports' | 'tools';
+export type DepotNavKey = 'index' | 'transactions' | 'requests' | 'reports' | 'tools';
 
 interface DepotNavTabsProps {
     active: DepotNavKey;
@@ -20,7 +20,6 @@ const TABS: Array<{
     { key: 'index', labelKey: 'global.depot.list', icon: 'bx-store', activeGradient: 'from-amber-500 to-orange-600', idleIcon: 'text-amber-500' },
     { key: 'transactions', labelKey: 'global.depot.transactions', icon: 'bx-transfer', activeGradient: 'from-sky-500 to-blue-600', idleIcon: 'text-sky-500' },
     { key: 'requests', labelKey: 'global.depot.requests', icon: 'bx-git-pull-request', activeGradient: 'from-violet-500 to-purple-600', idleIcon: 'text-violet-500' },
-    { key: 'depotToPharmacy', labelKey: 'global.depot.depot_to_pharmacy', icon: 'bx-clinic', activeGradient: 'from-rose-500 to-pink-600', idleIcon: 'text-rose-500' },
     { key: 'reports', labelKey: 'global.depot.reports', icon: 'bx-bar-chart-alt-2', activeGradient: 'from-indigo-500 to-blue-700', idleIcon: 'text-indigo-500' },
     { key: 'tools', labelKey: 'global.depot.tools', icon: 'bx-wrench', activeGradient: 'from-gray-600 to-gray-800', idleIcon: 'text-gray-500' },
 ];

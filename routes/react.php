@@ -322,16 +322,7 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::get('/prescription-stocks', [PrescriptionStockController::class, 'index'])->name('prescription-stocks.index');
 
-    Route::prefix('pharmacy-fulfillments')->name('pharmacy-fulfillments.')->group(function () {
-        Route::get('/', [PharmacyFulfillmentController::class, 'index'])->name('index');
-        Route::get('/stock', [PharmacyFulfillmentController::class, 'stock'])->name('stock');
-        Route::get('/create', [PharmacyFulfillmentController::class, 'create'])->name('create');
-        Route::post('/', [PharmacyFulfillmentController::class, 'store'])->name('store');
-        Route::get('/{pharmacyFulfillment}', [PharmacyFulfillmentController::class, 'show'])->name('show');
-        Route::get('/{pharmacyFulfillment}/edit', [PharmacyFulfillmentController::class, 'edit'])->name('edit');
-        Route::match(['put', 'post'], '/{pharmacyFulfillment}', [PharmacyFulfillmentController::class, 'update'])->name('update');
-        Route::delete('/{pharmacyFulfillment}', [PharmacyFulfillmentController::class, 'destroy'])->name('destroy');
-    });
+    Route::get('/pharmacy-stock', [PharmacyFulfillmentController::class, 'stock'])->name('pharmacy-stock.index');
 
     Route::prefix('incomes')->name('incomes.')->group(function () {
         Route::get('/', [IncomeController::class, 'index'])->name('index');
@@ -367,7 +358,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/requests/{depotRequest}/cancel', [DepotRequestController::class, 'cancel'])->name('requests.cancel');
         Route::get('/movements/depot-to-depot', [DepotMovementController::class, 'depotToDepot'])->name('movements.depot-to-depot');
         Route::get('/movements/depot-to-pharmacy', [DepotMovementController::class, 'depotToPharmacy'])->name('movements.depot-to-pharmacy');
-        Route::post('/movements/depot-to-pharmacy', [DepotMovementController::class, 'storeDepotToPharmacy'])->name('movements.depot-to-pharmacy.store');
         Route::get('/reports', [DepotReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [DepotReportController::class, 'export'])->name('reports.export');
         Route::get('/{depot}/stock', [DepotController::class, 'stock'])->name('stock');

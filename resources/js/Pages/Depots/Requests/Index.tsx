@@ -22,6 +22,8 @@ interface RequestFilters {
     search: string;
     requesting_depot_id: string;
     source_depot_id: string;
+    pharmacy_id: string;
+    destination_type: string;
     status: string;
     medicine_id: string;
     tool_id: string;
@@ -41,6 +43,8 @@ const EMPTY_FILTERS: RequestFilters = {
     search: '',
     requesting_depot_id: '',
     source_depot_id: '',
+    pharmacy_id: '',
+    destination_type: '',
     status: '',
     medicine_id: '',
     tool_id: '',
@@ -56,20 +60,25 @@ export default function IndexDepotRequests({
     permissions,
     navUrls,
     urls,
+    viewContext = 'depot',
 }: {
     requests: PaginatedDepotRequests;
     filters: RequestFilters;
     filterOptions: {
         depots: OptionItem[];
+        pharmacies: OptionItem[];
         medicines: OptionItem[];
         tools: OptionItem[];
         statuses: string[];
+        destinationTypes: string[];
     };
     permissions: RequestPermissions;
     navUrls: DepotNavUrls;
     urls: { index: string; create: string; show: string };
+    viewContext?: 'depot' | 'pharmacy';
 }) {
     const { t } = useTranslation();
+    const isPharmacyContext = viewContext === 'pharmacy';
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
 
@@ -98,7 +107,7 @@ export default function IndexDepotRequests({
         <DashboardLayout>
             <Head title={t('global.depot.requests')} />
             <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="requests" urls={navUrls} />
+                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} />}
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.depot.requests')}
@@ -130,13 +139,43 @@ export default function IndexDepotRequests({
                             />
                         </div>
                         <div>
-                            <Label>{t('global.depot.requesting_depot')}</Label>
+                            <Label>{t('global.depot.destination_type')}</Label>
                             <SearchableSelect
-                                value={filters.requesting_depot_id}
-                                onChange={(value) => setFilters({ ...filters, requesting_depot_id: value })}
+                                value={filters.destination_type}
+                                onChange={(value) => setFilters({ ...filters, destination_type: value })}
                                 options={[
                                     { value: '', label: t('global.all') },
-                                    ...filterOptions.depots.map((item) => ({
+                                    ...filterOptions.destinationTypes.map((type) => ({
+                                        value: type,
+                                        label: type === 'pharmacy' ? t('global.pharmacy') : t('global.depot.requesting_depot'),
+                                    })),
+                                ]}
+                            />
+                        </div>
+                        {!isPharmacyContext && (
+                            <div>
+                                <Label>{t('global.depot.requesting_depot')}</Label>
+                                <SearchableSelect
+                                    value={filters.requesting_depot_id}
+                                    onChange={(value) => setFilters({ ...filters, requesting_depot_id: value })}
+                                    options={[
+                                        { value: '', label: t('global.all') },
+                                        ...filterOptions.depots.map((item) => ({
+                                            value: String(item.id),
+                                            label: item.name,
+                                        })),
+                                    ]}
+                                />
+                            </div>
+                        )}
+                        <div>
+                            <Label>{t('global.pharmacy')}</Label>
+                            <SearchableSelect
+                                value={filters.pharmacy_id}
+                                onChange={(value) => setFilters({ ...filters, pharmacy_id: value })}
+                                options={[
+                                    { value: '', label: t('global.all') },
+                                    ...filterOptions.pharmacies.map((item) => ({
                                         value: String(item.id),
                                         label: item.name,
                                     })),
@@ -234,7 +273,7 @@ export default function IndexDepotRequests({
                                 <TableRow variant="header">
                                     <TableHeader>#</TableHeader>
                                     <TableHeader>{t('global.request_number')}</TableHeader>
-                                    <TableHeader>{t('global.depot.requesting_depot')}</TableHeader>
+                                    <TableHeader>{t('global.depot.destination')}</TableHeader>
                                     <TableHeader>{t('global.depot.source_depot')}</TableHeader>
                                     <TableHeader>{t('global.depot.transfer_lines')}</TableHeader>
                                     <TableHeader align="center">{t('global.quantity')}</TableHeader>
@@ -248,7 +287,7 @@ export default function IndexDepotRequests({
                                     <TableRow key={item.id}>
                                         <TableCell>{(requests.meta.from ?? 1) + index}</TableCell>
                                         <TableCell className="font-medium">{item.request_number ?? '—'}</TableCell>
-                                        <TableCell muted>{item.requesting_depot_name ?? '—'}</TableCell>
+                                        <TableCell muted>{item.destination_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.source_depot_name ?? '—'}</TableCell>
                                         <TableCell muted>
                                             {item.items_summary}

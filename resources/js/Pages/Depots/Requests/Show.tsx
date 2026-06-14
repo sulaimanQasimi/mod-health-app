@@ -39,6 +39,7 @@ export default function ShowDepotRequest({
     permissions,
     navUrls,
     urls,
+    viewContext = 'depot',
 }: {
     request: DepotRequestDetail;
     workflowSteps: string[];
@@ -55,8 +56,10 @@ export default function ShowDepotRequest({
         transactions: string;
         transactionShow: string;
     };
+    viewContext?: 'depot' | 'pharmacy';
 }) {
     const { t } = useTranslation();
+    const isPharmacyContext = viewContext === 'pharmacy';
     const [rejectOpen, setRejectOpen] = useState(false);
     const [processing, setProcessing] = useState<string | null>(null);
 
@@ -68,7 +71,12 @@ export default function ShowDepotRequest({
     };
 
     const metaRows: Array<[string, string]> = [
-        [t('global.depot.requesting_depot'), depotRequest.requesting_depot_name ?? '—'],
+        [
+            depotRequest.destination_type === 'pharmacy'
+                ? t('global.pharmacy')
+                : t('global.depot.requesting_depot'),
+            depotRequest.destination_name ?? '—',
+        ],
         [t('global.depot.source_depot'), depotRequest.source_depot_name ?? '—'],
         [t('global.depot.transfer_lines'), depotRequest.items_count.toLocaleString()],
         [t('global.quantity'), depotRequest.total_quantity.toLocaleString()],
@@ -95,7 +103,7 @@ export default function ShowDepotRequest({
         <DashboardLayout>
             <Head title={depotRequest.request_number ?? t('global.depot.requests')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="requests" urls={navUrls} />
+                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} />}
 
                 <Card className="shadow-sm">
                     <SettingsPageHeader

@@ -118,8 +118,8 @@ class SidebarMenuService
                 $children[] = $this->item('prescription-stocks', 'global.stock_overview', null, 'react.prescription-stocks.index');
             }
             if ($user->hasRole(['admin', 'super_admin']) || $user->hasActivePharmacyRole(['manager', 'procurement'])) {
-                $children[] = $this->item('pharmacy-fulfillments', 'global.pharmacy_fulfillments', null, 'react.pharmacy-fulfillments.index');
-                $children[] = $this->item('pharmacy-stock', 'global.pharmacy_stock', null, 'react.pharmacy-fulfillments.stock');
+                $children[] = $this->item('depot-requests', 'global.depot.requests', null, 'react.depots.requests.index');
+                $children[] = $this->item('pharmacy-stock', 'global.pharmacy_stock', null, 'react.pharmacy-stock.index');
             }
             if ($user->hasRole(['admin', 'super_admin']) || $user->hasActivePharmacyRole(['manager'])) {
                 $children[] = $this->item('incomes', 'global.stock_income', null, 'react.incomes.index');
@@ -129,7 +129,8 @@ class SidebarMenuService
             if ($children) {
                 $items[] = $this->group('pharmacy-stock', 'global.prescription_stocks', 'bx-package', [
                     'react.prescription-stocks.*',
-                    'react.pharmacy-fulfillments.*',
+                    'react.depots.requests.*',
+                    'react.pharmacy-stock.*',
                     'react.pharmacies.*',
                     'react.incomes.*',
                     'react.outcomes.*',
@@ -148,9 +149,6 @@ class SidebarMenuService
         }
         if ($user->can('depot.movement.depot_to_depot')) {
             $depotChildren[] = $this->item('depot-to-depot', 'global.depot.depot_to_depot', null, 'react.depots.movements.depot-to-depot', ['global.depot', 'depot_to_depot']);
-        }
-        if ($user->can('depot.movement.depot_to_pharmacy')) {
-            $depotChildren[] = $this->item('depot-to-pharmacy', 'global.depot.depot_to_pharmacy', null, 'react.depots.movements.depot-to-pharmacy', ['global.depot', 'depot_to_pharmacy']);
         }
         if ($user->can('depot.view')) {
             $depotChildren[] = $this->item('tools', 'global.depot.tools', null, 'react.tools.index', ['global.depot', 'tools']);

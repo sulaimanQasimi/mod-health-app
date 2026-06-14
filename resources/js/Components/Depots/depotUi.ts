@@ -34,3 +34,31 @@ export function depotRequestStatusLabel(status: string, t: (key: string) => stri
     if (translated !== key) return translated;
     return status.replace(/_/g, ' ');
 }
+
+export type DepotStockLevel = 'healthy' | 'low_stock' | 'out_of_stock';
+
+export const DEPOT_LOW_STOCK_THRESHOLD = 10;
+
+export function depotStockLevel(quantity: number): DepotStockLevel {
+    if (quantity <= 0) return 'out_of_stock';
+    if (quantity <= DEPOT_LOW_STOCK_THRESHOLD) return 'low_stock';
+    return 'healthy';
+}
+
+export function depotStockLevelBadgeColor(level: DepotStockLevel): 'success' | 'warning' | 'failure' {
+    if (level === 'healthy') return 'success';
+    if (level === 'low_stock') return 'warning';
+    return 'failure';
+}
+
+export function depotStockLevelLabel(level: DepotStockLevel, t: (key: string) => string): string {
+    if (level === 'healthy') return t('global.in_stock');
+    if (level === 'low_stock') return t('global.low_stock');
+    return t('global.out_of_stock');
+}
+
+export function depotStockBarColor(level: DepotStockLevel): string {
+    if (level === 'healthy') return 'bg-emerald-500';
+    if (level === 'low_stock') return 'bg-amber-500';
+    return 'bg-red-500';
+}

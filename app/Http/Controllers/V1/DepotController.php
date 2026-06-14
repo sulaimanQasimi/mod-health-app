@@ -217,24 +217,73 @@ class DepotController extends Controller
     {
         $this->authorizeDepotPermission('depot.view');
 
-        $itemType = $request->get('item_type');
-        $search = $request->get('search');
+        $itemType = $request->get('item_type') ?: null;
+        $search = $request->get('search') ?: null;
+        $stockStatus = $request->get('stock_status') ?: null;
+        $sortBy = $request->get('sort_by', 'name');
+        $sortOrder = $request->get('sort_order', 'asc');
 
-        $stockItems = $this->stockService->stockItemsForDepot($depot->id, $itemType, $search)->values()->all();
+        $stockItems = $this->stockService
+            ->stockItemsForDepot($depot->id, $itemType, $search, includeZero: true)
+            ->when(
+                ! $stockStatus,
+                fn ($items) => $items->where('available', '>', 0),
+            )
+            ->pipe(fn ($items) => $this->stockService->filterAndSortStockItems($items, $stockStatus, (string) $sortBy, (string) $sortOrder))
+            ->map(fn (array $item) => [
+                ...$item,
+                'stock_status' => $this->stockLevelForQuantity((int) $item['available']),
+            ])
+            ->values()
+            ->all();
+
+        $maxQuantity = collect($stockItems)->max('available') ?: 1;
 
         return Inertia::render('Depots/Stock', [
-            'depot' => ['id' => $depot->id, 'name' => $depot->name],
+            'depot' => [
+                'id' => $depot->id,
+                'name' => $depot->name,
+                'is_active' => (bool) $depot->is_active,
+            ],
             'stockItems' => $stockItems,
+            'stockStats' => $this->stockService->stockStatsForDepot($depot->id),
+            'maxQuantity' => (int) $maxQuantity,
             'filters' => [
                 'item_type' => (string) ($itemType ?? ''),
                 'search' => (string) ($search ?? ''),
+                'stock_status' => (string) ($stockStatus ?? ''),
+                'sort_by' => (string) $sortBy,
+                'sort_order' => (string) $sortOrder,
+            ],
+            'filterOptions' => [
+                'stockStatuses' => ['healthy', 'low_stock', 'out_of_stock'],
+                'sortFields' => ['name', 'quantity', 'item_type'],
             ],
             'navUrls' => $this->depotNavUrls(),
             'urls' => [
                 'show' => route('react.depots.show', $depot),
                 'stock' => route('react.depots.stock', $depot),
+                'requestCreate' => route('react.depots.requests.create', ['source_depot_id' => $depot->id]),
+                'transactionCreate' => route('react.depots.transactions.create', ['depot_id' => $depot->id]),
+            ],
+            'permissions' => [
+                'request_create' => $this->userCan('depot.request.create'),
+                'transaction_create' => $this->userCan('depot.transaction.create'),
             ],
         ]);
+    }
+
+    private function stockLevelForQuantity(int $quantity): string
+    {
+        if ($quantity <= 0) {
+            return 'out_of_stock';
+        }
+
+        if ($quantity <= DepotStockService::LOW_STOCK_THRESHOLD) {
+            return 'low_stock';
+        }
+
+        return 'healthy';
     }
 
     public function edit(Depot $depot): Response

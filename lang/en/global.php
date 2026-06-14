@@ -411,6 +411,7 @@ return [
     'all_statuses' => 'All Statuses',
     'low_stock' => 'Low Stock',
     'out_of_stock' => 'Out of Stock',
+    'in_stock' => 'In Stock',
     'overstocked' => 'Overstocked',
     'expired' => 'Expired',
     'expiring_soon' => 'Expiring Soon',

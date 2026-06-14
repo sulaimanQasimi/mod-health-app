@@ -129,10 +129,7 @@ export default function OperationReferralSection({
                         {!isDischarged && (
                             <div className="mb-4">
                                 <AccordionButton onClick={() => setReferOpen(true)} permission={data?.permissions.create}>
-                                    <span className="inline-flex items-center gap-2">
-                                        <i className="bx bx-plus-circle text-lg" />
-                                        {t('global.refere_to_operation')}
-                                    </span>
+                                    {t('global.refere_to_operation')}
                                 </AccordionButton>
                             </div>
                         )}

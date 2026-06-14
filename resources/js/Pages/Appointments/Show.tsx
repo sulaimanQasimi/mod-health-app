@@ -25,7 +25,8 @@ import {
     UnderReviewSection,
 } from '../../Components/Appointments/Sections';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import BackArrowIcon from '../../Components/ui/BackArrowIcon';
+import AppointmentPageHeader from '../../Components/Appointments/AppointmentPageHeader';
+import BackLink from '../../Components/ui/BackLink';
 import { useTranslation } from '../../hooks/useTranslation';
 
 interface ShowAppointmentHeader {
@@ -110,49 +111,49 @@ export default function ShowAppointment({
 
             <div className="mx-auto max-w-6xl space-y-6">
                 <Card className="border !shadow-sm">
-                    <div className="flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-700 lg:flex-row lg:items-center lg:justify-between">
-                        <div>
-                            <h1 className="flex items-center gap-2 text-xl text-gray-900 dark:text-white">
-                                <i className="bx bx-calendar-check text-cyan-500" />
-                                {t('global.appointment_details')}
-                            </h1>
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">#{id}</p>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {appointment.is_completed ? (
-                                <Badge color="success">{t('global.appointment_completed')}</Badge>
-                            ) : (
-                                <>
-                                    {permissions.complete && (
-                                        <Button
-                                            size="sm"
-                                            color="info"
-                                            onClick={() => setCompleteOpen(true)}
-                                        >
-                                            <i className="bx bx-check-shield me-2" />
-                                            {t('global.complete_appointment')}
+                    <AppointmentPageHeader
+                        title={t('global.appointment_details')}
+                        subtitle={`#${id}`}
+                        icon="bx-calendar-check"
+                        action={
+                            <>
+                                {appointment.is_completed ? (
+                                    <Badge color="success">{t('global.appointment_completed')}</Badge>
+                                ) : (
+                                    <>
+                                        {permissions.complete && (
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                color="blue"
+                                                onClick={() => setCompleteOpen(true)}
+                                            >
+                                                <i className="bx bx-check-shield me-2" />
+                                                {t('global.complete_appointment')}
+                                            </Button>
+                                        )}
+                                        {permissions.printToken && (
+                                            <a href={urls.printToken} target="_blank" rel="noopener noreferrer">
+                                                <Button size="sm" color="success">
+                                                    <i className="bx bx-printer me-2" />
+                                                    {t('global.token')}
+                                                </Button>
+                                            </a>
+                                        )}
+                                    </>
+                                )}
+                                {permissions.edit && (
+                                    <Link href={urls.edit}>
+                                        <Button size="sm" color="light">
+                                            <i className="bx bx-edit me-2" />
+                                            {t('global.edit')}
                                         </Button>
-                                    )}
-                                    {permissions.printToken && (
-                                        <Button size="sm" color="success" as="a" href={urls.printToken} target="_blank">
-                                            <i className="bx bx-printer me-2" />
-                                            {t('global.token')}
-                                        </Button>
-                                    )}
-                                </>
-                            )}
-                            {permissions.edit && (
-                                <Button size="sm" color="light" as={Link} href={urls.edit}>
-                                    <i className="bx bx-edit me-2" />
-                                    {t('global.edit')}
-                                </Button>
-                            )}
-                            <Button size="sm" color="light" as={Link} href={urls.index}>
-                                <BackArrowIcon className="me-2" />
-                                {t('global.back')}
-                            </Button>
-                        </div>
-                    </div>
+                                    </Link>
+                                )}
+                                <BackLink href={urls.index}>{t('global.back')}</BackLink>
+                            </>
+                        }
+                    />
 
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         {[

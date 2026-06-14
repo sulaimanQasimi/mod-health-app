@@ -377,10 +377,7 @@ export default function AnesthesiaReferralSection({
             {!isDischarged && (
                 <div className="mb-4">
                     <AccordionButton onClick={openCreate} permission={data?.permissions.create}>
-                        <span className="inline-flex items-center gap-2">
-                            <i className="bx bx-plus-circle text-lg" />
-                            {t('global.refere_to_anasthesia')}
-                        </span>
+                        {t('global.refere_to_anasthesia')}
                     </AccordionButton>
                 </div>
             )}

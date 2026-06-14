@@ -1,11 +1,12 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Card, Label, Select, TextInput } from 'flowbite-react';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { Badge, Card, Label, TextInput } from 'flowbite-react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
 import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
+import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import TableActionButton from '../../Components/ui/TableActionButton';
 import { TableActionsCell } from '../../Components/ui/TableActions';
@@ -84,6 +85,16 @@ export default function ActivityLogsIndex({
 
     const summaryLabel = buildPaginationSummary(activities.meta, t);
 
+    const eventOptions = useMemo(
+        () => filterOptions.events.map((option) => ({ value: option.value, label: option.label })),
+        [filterOptions.events],
+    );
+
+    const subjectTypeOptions = useMemo(
+        () => filterOptions.subjectTypes.map((option) => ({ value: option.value, label: option.label })),
+        [filterOptions.subjectTypes],
+    );
+
     return (
         <DashboardLayout>
             <Head title={t('activity_log.title')} />
@@ -109,33 +120,23 @@ export default function ActivityLogsIndex({
                         </div>
                         <div>
                             <Label htmlFor="event">{t('activity_log.event')}</Label>
-                            <Select
+                            <SearchableSelect
                                 id="event"
                                 value={filters.event}
-                                onChange={(event) => setFilters({ ...filters, event: event.target.value })}
-                            >
-                                <option value="">{t('activity_log.all_events')}</option>
-                                {filterOptions.events.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, event: value })}
+                                options={eventOptions}
+                                placeholder={t('activity_log.all_events')}
+                            />
                         </div>
                         <div>
                             <Label htmlFor="subject_type">{t('activity_log.subject_type')}</Label>
-                            <Select
+                            <SearchableSelect
                                 id="subject_type"
                                 value={filters.subject_type}
-                                onChange={(event) => setFilters({ ...filters, subject_type: event.target.value })}
-                            >
-                                <option value="">{t('activity_log.all_subject_types')}</option>
-                                {filterOptions.subjectTypes.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => setFilters({ ...filters, subject_type: value })}
+                                options={subjectTypeOptions}
+                                placeholder={t('activity_log.all_subject_types')}
+                            />
                         </div>
                         <div className="md:col-span-2 xl:col-span-3">
                             <SettingsFilterActions processing={processing} showClear onClear={handleClear} />

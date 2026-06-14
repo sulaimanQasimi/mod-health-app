@@ -679,10 +679,10 @@ class AppointmentController extends Controller
                     ->get(['id', 'name', 'last_name']),
                 'provinces' => Province::query()
                     ->orderBy('name_dr')
-                    ->get(['id', 'name', 'name_dr']),
+                    ->get(['id', 'name_dr']),
                 'districts' => District::query()
                     ->orderBy('name_dr')
-                    ->get(['id', 'name', 'name_dr', 'province_id']),
+                    ->get(['id', 'name_dr', 'province_id']),
                 'relations' => Relation::query()
                     ->orderBy('name')
                     ->get(['id', 'name']),

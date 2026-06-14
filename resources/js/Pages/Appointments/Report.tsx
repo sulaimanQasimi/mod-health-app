@@ -456,7 +456,7 @@ export default function AppointmentsReport({
                                             { value: '', label: t('global.all') },
                                             ...filterOptions.provinces.map((province) => ({
                                                 value: String(province.id),
-                                                label: province.name_dr ?? province.name,
+                                                label: province.name_dr ?? `#${province.id}`,
                                             })),
                                         ]}
                                         placeholder={t('global.all')}
@@ -473,7 +473,7 @@ export default function AppointmentsReport({
                                             { value: '', label: t('global.all') },
                                             ...filteredDistricts.map((district) => ({
                                                 value: String(district.id),
-                                                label: district.name_dr ?? district.name,
+                                                label: district.name_dr ?? `#${district.id}`,
                                             })),
                                         ]}
                                         placeholder={t('global.all')}

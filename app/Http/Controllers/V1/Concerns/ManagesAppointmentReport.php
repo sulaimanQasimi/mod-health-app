@@ -56,8 +56,8 @@ trait ManagesAppointmentReport
             ->where('branch_id', $branchId)
             ->with([
                 'patient.relation:id,name',
-                'patient.province:id,name,name_dr',
-                'patient.district:id,name,name_dr',
+                'patient.province:id,name_dr',
+                'patient.district:id,name_dr',
                 'creator:id,name,last_name',
                 'doctor:id,name',
                 'processedBy:id,name,last_name',
@@ -202,8 +202,8 @@ trait ManagesAppointmentReport
             'gender' => $patient?->gender,
             'rank' => $patient?->rank,
             'relation_name' => $patient?->relation?->name,
-            'province_name' => $patient?->province?->name_dr ?? $patient?->province?->name,
-            'district_name' => $patient?->district?->name_dr ?? $patient?->district?->name,
+            'province_name' => $patient?->province?->name_dr,
+            'district_name' => $patient?->district?->name_dr,
             'is_completed' => (bool) $appointment->is_completed,
             'date' => $this->formatAppointmentReportDate($appointment->date),
             'time' => $appointment->time,

@@ -296,8 +296,8 @@ export interface AppointmentReportItem {
 export interface AppointmentReportFilterOptions {
     doctors: Array<{ id: number; name: string }>;
     users: Array<{ id: number; name: string; last_name?: string | null }>;
-    provinces: Array<{ id: number; name: string; name_dr?: string | null }>;
-    districts: Array<{ id: number; name: string; name_dr?: string | null; province_id: number }>;
+    provinces: Array<{ id: number; name_dr: string | null }>;
+    districts: Array<{ id: number; name_dr: string | null; province_id: number }>;
     relations: Array<{ id: number; name: string }>;
 }
 

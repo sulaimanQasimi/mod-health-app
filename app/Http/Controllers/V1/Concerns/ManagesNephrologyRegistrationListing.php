@@ -57,7 +57,7 @@ trait ManagesNephrologyRegistrationListing
             $query->where('status', $filters['status']);
         }
 
-        if (! empty($filters['branch_id'])) {
+        if (! empty($filters['branch_id']) && ! $request->user()->branch_id) {
             $query->where('branch_id', $filters['branch_id']);
         }
 

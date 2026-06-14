@@ -70,6 +70,11 @@ trait ManagesPrescriptionReport
             $query->whereIn('creator.clinic_type', [$viewerClinicType, 'both']);
         }
 
+        $branchId = auth()->user()?->branch_id;
+        if ($branchId) {
+            $query->where('a.branch_id', $branchId);
+        }
+
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%'.$request->patient_name.'%');
         }

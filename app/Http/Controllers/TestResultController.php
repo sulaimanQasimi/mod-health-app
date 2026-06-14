@@ -31,10 +31,12 @@ class TestResultController extends Controller
      */
     private function scopedRegistrationQuery($user)
     {
-        return PatientTestRegistration::query()->whereHas(
-            'labType',
-            fn ($query) => $query->where('department_id', $user->department_id)
-        );
+        return PatientTestRegistration::query()
+            ->when($user->branch_id, fn ($query) => $query->where('branch_id', $user->branch_id))
+            ->whereHas(
+                'labType',
+                fn ($query) => $query->where('department_id', $user->department_id)
+            );
     }
 
     /**

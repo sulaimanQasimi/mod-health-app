@@ -43,15 +43,25 @@ class DoctorPerformanceReportController extends Controller
                 if ($startDate > $endDate) {
                     $error = 'global.end_date_must_be_after_start_date';
                 } else {
+                    $branchId = $request->user()->branch_id;
+                    if (! empty($validated['doctorId']) && $branchId) {
+                        $doctor = Doctor::query()->find($validated['doctorId']);
+                        if (! $doctor || (int) $doctor->branch_id !== (int) $branchId) {
+                            abort(403);
+                        }
+                    }
+
                     $rows = DB::select('CALL sp_doctor_performance_dynamic(?, ?, ?)', [
                         $startDate,
                         $endDate,
                         $validated['doctorId'] ?? null,
                     ]);
 
+                    $rows = $this->filterPerformanceResultsByBranch($rows, $branchId);
+
                     $results = collect($rows)->map(function ($row) {
                         return [
-                            'user' => $row->User ?? null,
+                            'user' => $row->Doctor ?? $row->User ?? null,
                             'appointments' => (int) ($row->Appointments ?? 0),
                             'prescriptions' => (int) ($row->Prescriptions ?? 0),
                             'lab_tests' => (int) ($row->LabTests ?? 0),
@@ -97,6 +107,8 @@ class DoctorPerformanceReportController extends Controller
      */
     private function doctorsWithRelations(): array
     {
+        $branchId = auth()->user()?->branch_id;
+
         return Doctor::query()
             ->leftJoin('departments', 'doctors.department_id', '=', 'departments.id')
             ->select(
@@ -106,6 +118,7 @@ class DoctorPerformanceReportController extends Controller
                 'departments.name as department_name'
             )
             ->where('doctors.active_status', true)
+            ->when($branchId, fn ($query) => $query->where('doctors.branch_id', $branchId))
             ->orderBy('doctors.name')
             ->get()
             ->map(fn ($doctor) => [
@@ -115,5 +128,29 @@ class DoctorPerformanceReportController extends Controller
                 'department_name' => $doctor->department_name,
             ])
             ->all();
+    }
+
+    /**
+     * @param  array<int, object>  $rows
+     * @return array<int, object>
+     */
+    private function filterPerformanceResultsByBranch(array $rows, ?int $branchId): array
+    {
+        if (! $branchId) {
+            return $rows;
+        }
+
+        $allowedNames = Doctor::query()
+            ->where('branch_id', $branchId)
+            ->where('active_status', true)
+            ->pluck('name')
+            ->map(fn ($name) => mb_strtolower(trim((string) $name)))
+            ->all();
+
+        return array_values(array_filter($rows, function ($row) use ($allowedNames) {
+            $name = mb_strtolower(trim((string) ($row->Doctor ?? $row->User ?? '')));
+
+            return in_array($name, $allowedNames, true);
+        }));
     }
 }

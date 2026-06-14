@@ -68,11 +68,34 @@ class DoctorPerformanceReportController extends Controller
         }
         
         try {
+            $branchId = auth()->user()?->branch_id;
+            if (! empty($validated['doctorId']) && $branchId) {
+                $doctor = Doctor::query()->find($validated['doctorId']);
+                if (! $doctor || (int) $doctor->branch_id !== (int) $branchId) {
+                    abort(403);
+                }
+            }
+
             $results = DB::select('CALL sp_doctor_performance_dynamic(?, ?, ?)', [
                 $validated['startDate'],
                 $validated['endDate'],
                 $validated['doctorId'] ?? null
             ]);
+
+            if ($branchId) {
+                $allowedNames = Doctor::query()
+                    ->where('branch_id', $branchId)
+                    ->where('active_status', true)
+                    ->pluck('name')
+                    ->map(fn ($name) => mb_strtolower(trim((string) $name)))
+                    ->all();
+
+                $results = array_values(array_filter($results, function ($row) use ($allowedNames) {
+                    $name = mb_strtolower(trim((string) ($row->Doctor ?? $row->User ?? '')));
+
+                    return in_array($name, $allowedNames, true);
+                }));
+            }
 
             $doctors = $this->getDoctorsWithRelations();
 
@@ -107,6 +130,8 @@ class DoctorPerformanceReportController extends Controller
      */
     private function getDoctorsWithRelations()
     {
+        $branchId = auth()->user()?->branch_id;
+
         return Doctor::query()
             ->leftJoin('departments', 'doctors.department_id', '=', 'departments.id')
             ->select(
@@ -116,6 +141,7 @@ class DoctorPerformanceReportController extends Controller
                 'departments.name as department_name'
             )
             ->where('doctors.active_status', true)
+            ->when($branchId, fn ($query) => $query->where('doctors.branch_id', $branchId))
             ->orderBy('doctors.name')
             ->get();
     }

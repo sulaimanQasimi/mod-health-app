@@ -887,7 +887,9 @@ class LaboratoryController extends Controller
             $query->where('doctor_id', $request->doctor_id);
         }
 
-        if ($request->filled('branch_id')) {
+        if ($user->branch_id) {
+            $query->where('branch_id', $user->branch_id);
+        } elseif ($request->filled('branch_id')) {
             $query->where('branch_id', $request->branch_id);
         }
 

@@ -43,7 +43,7 @@ trait ManagesOperationListing
             });
         }
 
-        if ($request->filled('branch_id')) {
+        if ($request->filled('branch_id') && ! $this->operationBranchId()) {
             $query->where('branch_id', (int) $request->branch_id);
         }
 

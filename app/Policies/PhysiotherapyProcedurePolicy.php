@@ -32,7 +32,8 @@ class PhysiotherapyProcedurePolicy
      */
     public function view(User $user, PhysiotherapyProcedure $physiotherapyProcedure)
     {
-        return $user->can('show-physiotherapy-procedures');
+        return $user->can('show-physiotherapy-procedures')
+            && $this->belongsToUserBranch($user, $physiotherapyProcedure);
     }
 
     /**
@@ -55,7 +56,8 @@ class PhysiotherapyProcedurePolicy
      */
     public function update(User $user, PhysiotherapyProcedure $physiotherapyProcedure)
     {
-        return $user->can('edit-physiotherapy-procedures');
+        return $user->can('edit-physiotherapy-procedures')
+            && $this->belongsToUserBranch($user, $physiotherapyProcedure);
     }
 
     /**
@@ -67,6 +69,18 @@ class PhysiotherapyProcedurePolicy
      */
     public function delete(User $user, PhysiotherapyProcedure $physiotherapyProcedure)
     {
-        return $user->can('delete-physiotherapy-procedures');
+        return $user->can('delete-physiotherapy-procedures')
+            && $this->belongsToUserBranch($user, $physiotherapyProcedure);
+    }
+
+    private function belongsToUserBranch(User $user, PhysiotherapyProcedure $physiotherapyProcedure): bool
+    {
+        if (! $user->branch_id) {
+            return true;
+        }
+
+        $physiotherapyProcedure->loadMissing('appointment:id,branch_id');
+
+        return (int) $physiotherapyProcedure->appointment?->branch_id === (int) $user->branch_id;
     }
 }

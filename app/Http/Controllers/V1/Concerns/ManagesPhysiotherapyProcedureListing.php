@@ -264,6 +264,11 @@ trait ManagesPhysiotherapyProcedureListing
 
         if ($user->can('show-own-physiotherapy-procedures')) {
             abort_unless((int) ($procedure->doctor?->user_id ?? 0) === (int) $user->id, 403);
+            abort_unless(
+                ! $user->branch_id
+                    || (int) ($procedure->appointment?->branch_id ?? 0) === (int) $user->branch_id,
+                404
+            );
 
             return;
         }

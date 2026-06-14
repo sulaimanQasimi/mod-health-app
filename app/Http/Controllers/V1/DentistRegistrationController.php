@@ -25,10 +25,11 @@ class DentistRegistrationController extends Controller
         $this->authorizeAccess($request->user());
 
         $filters = $this->listFilters($request);
-        $query = $this->baseRegistrationQuery();
-        $filteredQuery = $this->applyRegistrationFilters(clone $query, $filters);
+        $user = $request->user();
+        $query = $this->scopedRegistrationQuery($request);
+        $filteredQuery = $this->applyRegistrationFilters(clone $query, $filters, $user->branch_id);
         $registrations = $this->paginateRegistrations($filteredQuery, $filters);
-        $stats = $this->registrationStats($this->applyRegistrationFilters(clone $query, $filters));
+        $stats = $this->registrationStats($this->applyRegistrationFilters(clone $query, $filters, $user->branch_id));
 
         return Inertia::render('DentistRegistrations/Index', [
             'registrations' => $registrations,
@@ -42,7 +43,7 @@ class DentistRegistrationController extends Controller
                 'sort_order' => 'desc',
                 'per_page' => '25',
             ], $filters),
-            'filterOptions' => $this->filterOptions(),
+            'filterOptions' => $this->filterOptions($request),
             'permissions' => $this->listPermissions($request->user()),
             'urls' => [
                 'current' => route('react.dentist-registrations.index'),
@@ -53,7 +54,7 @@ class DentistRegistrationController extends Controller
 
     public function show(Request $request, DentistRegistration $dentistRegistration): Response
     {
-        $this->authorizeAccess($request->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, $request->user());
 
         $dentistRegistration->load([
             'appointment.patient:id,name,last_name',
@@ -88,7 +89,7 @@ class DentistRegistrationController extends Controller
 
     public function update(Request $request, DentistRegistration $dentistRegistration): RedirectResponse
     {
-        $this->authorizeAccess($request->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, $request->user());
         abort_unless($this->showPermissions($request->user())['edit'], 403);
 
         $dentistIds = $this->dentistDoctorsForForm()->pluck('id')->all();
@@ -114,7 +115,7 @@ class DentistRegistrationController extends Controller
 
     public function destroy(DentistRegistration $dentistRegistration): RedirectResponse
     {
-        $this->authorizeAccess(request()->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, request()->user());
         abort_unless($this->showPermissions(request()->user())['delete'], 403);
 
         $dentistRegistration->delete();
@@ -126,7 +127,7 @@ class DentistRegistrationController extends Controller
 
     public function markCompleted(DentistRegistration $dentistRegistration): RedirectResponse
     {
-        $this->authorizeAccess(request()->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, request()->user());
         abort_unless($this->showPermissions(request()->user())['markStatus'], 403);
 
         $dentistRegistration->markCompleted();
@@ -136,7 +137,7 @@ class DentistRegistrationController extends Controller
 
     public function markInProgress(DentistRegistration $dentistRegistration): RedirectResponse
     {
-        $this->authorizeAccess(request()->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, request()->user());
         abort_unless($this->showPermissions(request()->user())['markStatus'], 403);
 
         $dentistRegistration->markInProgress();
@@ -146,7 +147,7 @@ class DentistRegistrationController extends Controller
 
     public function cancel(DentistRegistration $dentistRegistration): RedirectResponse
     {
-        $this->authorizeAccess(request()->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, request()->user());
         abort_unless($this->showPermissions(request()->user())['markStatus'], 403);
 
         $dentistRegistration->cancel();
@@ -156,7 +157,7 @@ class DentistRegistrationController extends Controller
 
     public function storeTreatment(Request $request, DentistRegistration $dentistRegistration): RedirectResponse
     {
-        $this->authorizeAccess($request->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, $request->user());
         abort_unless($this->showPermissions($request->user())['manageTreatments'], 403);
 
         $validated = $request->validate([
@@ -187,7 +188,7 @@ class DentistRegistrationController extends Controller
         DentistRegistration $dentistRegistration,
         DentalTreatment $dentalTreatment,
     ): RedirectResponse {
-        $this->authorizeAccess(request()->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, request()->user());
         abort_unless($this->showPermissions(request()->user())['manageTreatments'], 403);
         abort_unless((int) $dentalTreatment->dentist_registration_id === (int) $dentistRegistration->id, 404);
 
@@ -198,7 +199,7 @@ class DentistRegistrationController extends Controller
 
     public function storeXray(Request $request, DentistRegistration $dentistRegistration): RedirectResponse
     {
-        $this->authorizeAccess($request->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, $request->user());
         abort_unless($this->showPermissions($request->user())['manageXrays'], 403);
 
         $validated = $request->validate([
@@ -232,7 +233,7 @@ class DentistRegistrationController extends Controller
         DentistRegistration $dentistRegistration,
         DentalXray $dentalXray,
     ): RedirectResponse {
-        $this->authorizeAccess(request()->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, request()->user());
         abort_unless($this->showPermissions(request()->user())['manageXrays'], 403);
         abort_unless((int) $dentalXray->dentist_registration_id === (int) $dentistRegistration->id, 404);
 
@@ -247,7 +248,7 @@ class DentistRegistrationController extends Controller
 
     public function storeNote(Request $request, DentistRegistration $dentistRegistration): RedirectResponse
     {
-        $this->authorizeAccess($request->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, $request->user());
         abort_unless($this->showPermissions($request->user())['manageNotes'], 403);
 
         $validated = $request->validate([
@@ -270,7 +271,7 @@ class DentistRegistrationController extends Controller
         DentistRegistration $dentistRegistration,
         DentalNote $dentalNote,
     ): RedirectResponse {
-        $this->authorizeAccess(request()->user());
+        $this->authorizeRegistrationAccess($dentistRegistration, request()->user());
         abort_unless($this->showPermissions(request()->user())['manageNotes'], 403);
         abort_unless((int) $dentalNote->dentist_registration_id === (int) $dentistRegistration->id, 404);
 

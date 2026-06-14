@@ -6,6 +6,7 @@ use App\Models\Doctor;
 use App\Models\PhysiotherapyProcedure;
 use App\Models\PhysiotherapyType;
 use Hekmatinasser\Verta\Facades\Verta;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 trait ManagesPhysiotherapyReport
@@ -36,12 +37,22 @@ trait ManagesPhysiotherapyReport
             && $request->filled('end_date');
     }
 
+    protected function proceduresInUserBranchQuery(): Builder
+    {
+        return PhysiotherapyProcedure::query()->when(auth()->user()?->branch_id, function (Builder $query) {
+            $query->whereHas('appointment', function (Builder $appointmentQuery) {
+                $appointmentQuery->where('branch_id', auth()->user()->branch_id);
+            });
+        });
+    }
+
     /**
      * @return array<string, mixed>
      */
     protected function generatePhysiotherapySummaryReport(string $startDate, string $endDate): array
     {
-        $procedures = PhysiotherapyProcedure::whereBetween('start_date', [$startDate, $endDate])
+        $procedures = $this->proceduresInUserBranchQuery()
+            ->whereBetween('start_date', [$startDate, $endDate])
             ->with(['appointment.patient:id,name,last_name', 'physiotherapyType:id,name', 'doctor:id,name'])
             ->get();
 
@@ -69,7 +80,8 @@ trait ManagesPhysiotherapyReport
      */
     protected function generatePhysiotherapyDetailedReport(string $startDate, string $endDate): array
     {
-        return PhysiotherapyProcedure::whereBetween('start_date', [$startDate, $endDate])
+        return $this->proceduresInUserBranchQuery()
+            ->whereBetween('start_date', [$startDate, $endDate])
             ->with(['appointment.patient:id,name,last_name', 'physiotherapyType:id,name', 'doctor:id,name'])
             ->orderByDesc('start_date')
             ->get()
@@ -83,8 +95,13 @@ trait ManagesPhysiotherapyReport
      */
     protected function generatePhysiotherapyByTypeReport(string $startDate, string $endDate): array
     {
-        return PhysiotherapyType::with(['physiotherapyProcedures' => function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('start_date', [$startDate, $endDate]);
+        $branchProcedureIds = $this->proceduresInUserBranchQuery()
+            ->whereBetween('start_date', [$startDate, $endDate])
+            ->pluck('id');
+
+        return PhysiotherapyType::with(['physiotherapyProcedures' => function ($query) use ($startDate, $endDate, $branchProcedureIds) {
+            $query->whereIn('id', $branchProcedureIds)
+                ->whereBetween('start_date', [$startDate, $endDate]);
         }])
             ->get()
             ->map(function (PhysiotherapyType $type) {
@@ -118,13 +135,23 @@ trait ManagesPhysiotherapyReport
      */
     protected function generatePhysiotherapyByPhysiotherapistReport(string $startDate, string $endDate): array
     {
-        return Doctor::whereHas('physiotherapyProcedures', function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('start_date', [$startDate, $endDate]);
-        })
+        $branchId = auth()->user()?->branch_id;
+
+        return Doctor::query()
+            ->when($branchId, fn (Builder $q) => $q->where('branch_id', $branchId))
+            ->whereHas('physiotherapyProcedures', function ($query) use ($startDate, $endDate, $branchId) {
+                $query->whereBetween('start_date', [$startDate, $endDate]);
+                if ($branchId) {
+                    $query->whereHas('appointment', fn (Builder $appointmentQuery) => $appointmentQuery->where('branch_id', $branchId));
+                }
+            })
             ->with([
                 'user:id,email',
-                'physiotherapyProcedures' => function ($query) use ($startDate, $endDate) {
+                'physiotherapyProcedures' => function ($query) use ($startDate, $endDate, $branchId) {
                     $query->whereBetween('start_date', [$startDate, $endDate]);
+                    if ($branchId) {
+                        $query->whereHas('appointment', fn (Builder $appointmentQuery) => $appointmentQuery->where('branch_id', $branchId));
+                    }
                 },
             ])
             ->get()

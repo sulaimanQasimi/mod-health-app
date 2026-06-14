@@ -35,6 +35,7 @@ class PatientTestRegistrationController extends Controller
         $user = auth()->user();
 
         return PatientTestRegistration::query()
+            ->when($user->branch_id, fn ($query) => $query->where('branch_id', $user->branch_id))
             ->whereHas('labType', fn ($query) => $query->where('department_id', $user->department_id))
             ->visibleToClinicType($user->clinic_type);
     }
@@ -45,7 +46,9 @@ class PatientTestRegistrationController extends Controller
      */
     public function getTestList(Request $request)
     {
+        $user = auth()->user();
         $query = PatientTestRegistration::with(['testable.patient', 'labTest', 'doctor', 'branch'])
+            ->when($user->branch_id, fn ($q) => $q->where('branch_id', $user->branch_id))
             ->orderBy('id', 'desc');
 
         if ($request->filled('patient_id')) {

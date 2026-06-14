@@ -40,7 +40,18 @@ trait ManagesDentistRegistrationListing
         ]);
     }
 
-    protected function applyRegistrationFilters(Builder $query, array $filters): Builder
+    protected function scopedRegistrationQuery(Request $request): Builder
+    {
+        $query = $this->baseRegistrationQuery();
+
+        if ($request->user()->branch_id) {
+            $query->where('branch_id', $request->user()->branch_id);
+        }
+
+        return $query;
+    }
+
+    protected function applyRegistrationFilters(Builder $query, array $filters, ?int $userBranchId = null): Builder
     {
         if (! empty($filters['search'])) {
             $search = $filters['search'];
@@ -54,7 +65,7 @@ trait ManagesDentistRegistrationListing
             $query->where('status', $filters['status']);
         }
 
-        if (! empty($filters['branch_id'])) {
+        if (! empty($filters['branch_id']) && ! $userBranchId) {
             $query->where('branch_id', $filters['branch_id']);
         }
 
@@ -109,13 +120,18 @@ trait ManagesDentistRegistrationListing
         ];
     }
 
-    protected function filterOptions(): array
+    protected function filterOptions(Request $request): array
     {
+        $branchId = $request->user()->branch_id;
+
         return [
-            'branches' => Branch::query()->orderBy('name')->get(['id', 'name']),
+            'branches' => $branchId
+                ? Branch::query()->where('id', $branchId)->orderBy('name')->get(['id', 'name'])
+                : Branch::query()->orderBy('name')->get(['id', 'name']),
             'dentists' => Doctor::query()
                 ->where('active_status', true)
                 ->where('is_dentist', true)
+                ->when($branchId, fn (Builder $q) => $q->where('branch_id', $branchId))
                 ->orderBy('name')
                 ->get(['id', 'name']),
         ];
@@ -259,9 +275,12 @@ trait ManagesDentistRegistrationListing
 
     protected function dentistDoctorsForForm(): Collection
     {
+        $branchId = auth()->user()?->branch_id;
+
         return Doctor::query()
             ->where('active_status', true)
             ->where('is_dentist', true)
+            ->when($branchId, fn (Builder $q) => $q->where('branch_id', $branchId))
             ->orderBy('name')
             ->get(['id', 'name']);
     }
@@ -289,5 +308,15 @@ trait ManagesDentistRegistrationListing
     protected function authorizeAccess($user): void
     {
         abort_unless($user->can('access-dentist-registrations'), 403);
+    }
+
+    protected function authorizeRegistrationAccess(DentistRegistration $registration, $user): void
+    {
+        $this->authorizeAccess($user);
+
+        $branchId = $user->branch_id;
+        if ($branchId && (int) $registration->branch_id !== (int) $branchId) {
+            abort(404);
+        }
     }
 }

@@ -18,10 +18,12 @@ trait ManagesLaboratoryRegistrations
      */
     protected function scopedRegistrationQuery(User $user): Builder
     {
-        return PatientTestRegistration::query()->whereHas(
-            'labType',
-            fn (Builder $query) => $query->where('department_id', $user->department_id)
-        );
+        return PatientTestRegistration::query()
+            ->when($user->branch_id, fn (Builder $query) => $query->where('branch_id', $user->branch_id))
+            ->whereHas(
+                'labType',
+                fn (Builder $query) => $query->where('department_id', $user->department_id)
+            );
     }
 
     /**

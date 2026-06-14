@@ -17,13 +17,17 @@ class DentistRegistrationController extends Controller
     {
         $query = DentistRegistration::with(['appointment.patient', 'dentist', 'branch']);
 
+        if ($request->user()->branch_id) {
+            $query->where('branch_id', $request->user()->branch_id);
+        }
+
         // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Filter by branch
-        if ($request->filled('branch_id')) {
+        // Filter by branch (admins without a branch may filter explicitly)
+        if ($request->filled('branch_id') && ! $request->user()->branch_id) {
             $query->where('branch_id', $request->branch_id);
         }
 
@@ -41,9 +45,14 @@ class DentistRegistrationController extends Controller
         }
 
         $registrations = $query->latest()->paginate(25)->withQueryString();
-        $branches = Branch::all();
-        // Load all doctors (not just dentists)
-        $dentists = Doctor::where('active_status', true)->get();
+        $branchId = $request->user()->branch_id;
+        $branches = $branchId
+            ? Branch::query()->where('id', $branchId)->get()
+            : Branch::all();
+        $dentists = Doctor::query()
+            ->where('active_status', true)
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->get();
 
         return view('pages.dentist.registrations.index', compact('registrations', 'branches', 'dentists'));
     }
@@ -84,6 +93,7 @@ class DentistRegistrationController extends Controller
      */
     public function show(DentistRegistration $dentistRegistration)
     {
+        $this->ensureRegistrationInUserBranch($dentistRegistration);
         $dentistRegistration->load([
             'appointment.patient',
             'dentist',
@@ -125,8 +135,13 @@ class DentistRegistrationController extends Controller
      */
     public function edit(DentistRegistration $dentistRegistration)
     {
-        // Load all active doctors (not just dentists)
-        $dentists = Doctor::where('active_status', true)->get();
+        $this->ensureRegistrationInUserBranch($dentistRegistration);
+
+        $branchId = auth()->user()?->branch_id;
+        $dentists = Doctor::query()
+            ->where('active_status', true)
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->get();
 
         return view('pages.dentist.registrations.edit', compact('dentistRegistration', 'dentists'));
     }
@@ -136,6 +151,8 @@ class DentistRegistrationController extends Controller
      */
     public function update(Request $request, DentistRegistration $dentistRegistration)
     {
+        $this->ensureRegistrationInUserBranch($dentistRegistration);
+
         $validatedData = $request->validate([
             'dentist_id' => 'nullable|exists:doctors,id',
             'registration_date' => 'required|date',
@@ -154,6 +171,8 @@ class DentistRegistrationController extends Controller
      */
     public function destroy(DentistRegistration $dentistRegistration)
     {
+        $this->ensureRegistrationInUserBranch($dentistRegistration);
+
         $dentistRegistration->delete();
 
         return redirect()->route('dentist-registrations.index')
@@ -165,6 +184,8 @@ class DentistRegistrationController extends Controller
      */
     public function markCompleted(DentistRegistration $dentistRegistration)
     {
+        $this->ensureRegistrationInUserBranch($dentistRegistration);
+
         $dentistRegistration->markCompleted();
 
         return redirect()->back()->with('success', localize('global.registration_marked_completed'));
@@ -175,6 +196,8 @@ class DentistRegistrationController extends Controller
      */
     public function markInProgress(DentistRegistration $dentistRegistration)
     {
+        $this->ensureRegistrationInUserBranch($dentistRegistration);
+
         $dentistRegistration->markInProgress();
 
         return redirect()->back()->with('success', localize('global.registration_marked_in_progress'));
@@ -185,8 +208,18 @@ class DentistRegistrationController extends Controller
      */
     public function cancel(DentistRegistration $dentistRegistration)
     {
+        $this->ensureRegistrationInUserBranch($dentistRegistration);
+
         $dentistRegistration->cancel();
 
         return redirect()->back()->with('success', localize('global.registration_cancelled'));
+    }
+
+    private function ensureRegistrationInUserBranch(DentistRegistration $dentistRegistration): void
+    {
+        $branchId = auth()->user()?->branch_id;
+        if ($branchId && (int) $dentistRegistration->branch_id !== (int) $branchId) {
+            abort(404);
+        }
     }
 }

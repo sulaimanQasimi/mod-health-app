@@ -193,7 +193,7 @@
                                         <div class="d-flex flex-column gap-2">
                                             @foreach ($roles as $value)
                                                 <div class="form-check">
-                                                    {{ Form::checkbox('roles[]', $value->id, $user->roles->contains($value->id), ['class' => 'form-check-input role-checkbox', 'id' => 'role_'.$value->id]) }}
+                                                    <input type="checkbox" name="roles[]" value="{{ $value->id }}" class="form-check-input role-checkbox" id="role_{{ $value->id }}" @checked($user->roles->contains($value->id))>
                                                     <label class="form-check-label" for="role_{{ $value->id }}">
                                                         {{ $value->name_dr }}
                                                     </label>
@@ -212,7 +212,7 @@
                                         <div class="d-flex flex-column gap-2" style="max-height: 300px; overflow-y: auto;">
                                             @foreach ($permissions as $value)
                                                 <div class="form-check">
-                                                    {{ Form::checkbox('permissions[]', $value->id, $user->permissions->contains($value->id), ['class' => 'form-check-input permission-checkbox', 'id' => 'perm_'.$value->id]) }}
+                                                    <input type="checkbox" name="permissions[]" value="{{ $value->id }}" class="form-check-input permission-checkbox" id="perm_{{ $value->id }}" @checked($user->permissions->contains($value->id))>
                                                     <label class="form-check-label" for="perm_{{ $value->id }}">
                                                         {{ $value->name_dr }}
                                                     </label>

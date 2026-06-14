@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Depot;
 use App\Models\DepotRequest;
+use App\Models\DepotRequestItem;
 use App\Models\DepotTransaction;
 use App\Models\Medicine;
 use App\Models\Tool;
@@ -119,9 +120,14 @@ class DepotModuleTest extends TestCase
         $depotRequest = DepotRequest::create([
             'requesting_depot_id' => $child->id,
             'source_depot_id' => $source->id,
+            'status' => DepotRequest::STATUS_DRAFT,
+        ]);
+
+        DepotRequestItem::create([
+            'depot_request_id' => $depotRequest->id,
             'medicine_id' => $medicine->id,
             'quantity' => 15,
-            'status' => DepotRequest::STATUS_DRAFT,
+            'sort_order' => 0,
         ]);
 
         $service = app(DepotRequestService::class);
@@ -131,7 +137,7 @@ class DepotModuleTest extends TestCase
 
         $depotRequest->refresh();
         $this->assertSame(DepotRequest::STATUS_FULFILLED, $depotRequest->status);
-        $this->assertNotNull($depotRequest->depot_transaction_id);
+        $this->assertNotNull($depotRequest->items()->first()?->depot_transaction_id);
 
         $stockService = app(DepotStockService::class);
         $this->assertSame(25, $stockService->availableMedicineStock($source->id, $medicine->id));

@@ -1,9 +1,9 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { Badge, Button, Card, Label, Spinner, Tabs } from 'flowbite-react';
 import { FormEvent, useEffect, useState } from 'react';
-import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
-import PersianDateInput from '../../Components/ui/PersianDateInput';
+import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import SettingsPageHeader, { SettingsPageActions } from '../../../Components/Settings/SettingsPageHeader';
+import PersianDateInput from '../../../Components/ui/PersianDateInput';
 import {
     Table,
     TableBody,
@@ -11,10 +11,10 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '../../Components/ui/Table';
-import { useTranslation } from '../../hooks/useTranslation';
-import { SharedPageProps } from '../../types';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+} from '../../../Components/ui/Table';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { SharedPageProps } from '../../../types';
+import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 interface Summary {
     total_procedures: number;

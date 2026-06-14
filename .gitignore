@@ -4,8 +4,6 @@
 /public/storage
 /storage/*.key
 /vendor
-!/vendor/sulaimanqasimi
-!/vendor/sulaimanqasimi/**
 .env
 .env.backup
 .env.production

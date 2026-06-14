@@ -55,7 +55,7 @@
                                         @foreach ($permissions as $value)
                                             <div class="d-flex">
                                                 <div class="form-check me-lg-5">
-                                                    {{ Form::checkbox('permission[]', $value->id, false, ['class' => 'form-check-input']) }}
+                                                    <input type="checkbox" name="permission[]" value="{{ $value->id }}" class="form-check-input">
                                                     {{ $value->name_dr }}
                                                 </div>
                                             </div>

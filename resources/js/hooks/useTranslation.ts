@@ -19,7 +19,11 @@ function resolveTranslation(source: Record<string, unknown>, key: string): strin
 export function useTranslation() {
     const { translations, activityLogTranslations, locale, direction } = usePage<SharedPageProps>().props;
 
-    const t = (key: string): string => {
+    const t = (key: string | undefined | null): string => {
+        if (!key) {
+            return '';
+        }
+
         if (key.startsWith('activity_log.')) {
             return resolveTranslation(activityLogTranslations ?? {}, key.replace(/^activity_log\./, ''));
         }

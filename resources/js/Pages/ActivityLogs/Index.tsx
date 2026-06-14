@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Card, Label, Select, TextInput } from 'flowbite-react';
+import { Badge, Card, Label, Select, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
@@ -29,6 +29,13 @@ interface FilterOption {
     value: string;
     label: string;
 }
+
+const EMPTY_FILTERS = {
+    search: '',
+    event: '',
+    subject_type: '',
+    per_page: '20',
+};
 
 export default function ActivityLogsIndex({
     activities,
@@ -69,12 +76,18 @@ export default function ActivityLogsIndex({
         applyFilters(filters);
     };
 
+    const handleClear = () => {
+        const empty = { ...EMPTY_FILTERS, per_page: filters.per_page };
+        setFilters(empty);
+        applyFilters(empty);
+    };
+
     const summaryLabel = buildPaginationSummary(activities.meta, t);
 
     return (
         <DashboardLayout>
             <Head title={t('activity_log.title')} />
-            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.simple}`}>
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('activity_log.title')}
@@ -84,7 +97,7 @@ export default function ActivityLogsIndex({
                         backLabel={t('global.back')}
                     />
 
-                    <form onSubmit={handleSubmit} className="mb-6 grid gap-4 md:grid-cols-4">
+                    <form onSubmit={handleSubmit} className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                         <div>
                             <Label htmlFor="search">{t('global.search')}</Label>
                             <TextInput
@@ -124,52 +137,74 @@ export default function ActivityLogsIndex({
                                 ))}
                             </Select>
                         </div>
-                        <SettingsFilterActions processing={processing} onReset={() => applyFilters({ search: '', event: '', subject_type: '', per_page: filters.per_page })} />
+                        <div className="md:col-span-2 xl:col-span-3">
+                            <SettingsFilterActions processing={processing} showClear onClear={handleClear} />
+                        </div>
                     </form>
 
-                    {activities.data.length === 0 ? (
-                        <SettingsEmptyState message={t('activity_log.no_records')} />
-                    ) : (
+                    {activities.data.length > 0 ? (
                         <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>#</TableHead>
-                                    <TableHead>{t('activity_log.description')}</TableHead>
-                                    <TableHead>{t('activity_log.event')}</TableHead>
-                                    <TableHead>{t('activity_log.subject')}</TableHead>
-                                    <TableHead>{t('activity_log.causer')}</TableHead>
-                                    <TableHead>{t('activity_log.created_at')}</TableHead>
-                                    <TableHead>{t('global.actions')}</TableHead>
+                            <TableHead>
+                                <TableRow variant="header">
+                                    <TableHeader>#</TableHeader>
+                                    <TableHeader>{t('activity_log.description')}</TableHeader>
+                                    <TableHeader>{t('activity_log.event')}</TableHeader>
+                                    <TableHeader>{t('activity_log.subject')}</TableHeader>
+                                    <TableHeader>{t('activity_log.causer')}</TableHeader>
+                                    <TableHeader>{t('activity_log.created_at')}</TableHeader>
+                                    <TableHeader align="center">{t('global.actions')}</TableHeader>
                                 </TableRow>
-                            </TableHeader>
+                            </TableHead>
                             <TableBody>
-                                {activities.data.map((activity) => (
+                                {activities.data.map((activity, index) => (
                                     <TableRow key={activity.id}>
-                                        <TableCell>{activity.id}</TableCell>
-                                        <TableCell className="max-w-md truncate">{activity.description}</TableCell>
+                                        <TableCell>{(activities.meta.from ?? 1) + index}</TableCell>
+                                        <TableCell className="max-w-xs">
+                                            <Link
+                                                href={`${urls.show}/${activity.id}`}
+                                                className="line-clamp-2 font-medium text-blue-600 hover:underline dark:text-blue-400"
+                                                title={activity.description}
+                                            >
+                                                {activity.description}
+                                            </Link>
+                                        </TableCell>
                                         <TableCell>
                                             <Badge color="purple">{activity.event_label}</Badge>
                                         </TableCell>
-                                        <TableCell>
-                                            {activity.subject_type ? `${activity.subject_type} #${activity.subject_id}` : '—'}
+                                        <TableCell muted>
+                                            {activity.subject_type
+                                                ? `${activity.subject_type} #${activity.subject_id}`
+                                                : '—'}
                                         </TableCell>
-                                        <TableCell>{activity.causer?.name || t('activity_log.system')}</TableCell>
-                                        <TableCell>{activity.created_at}</TableCell>
+                                        <TableCell>
+                                            <div className="min-w-[140px]">
+                                                <div>{activity.causer?.name || t('activity_log.system')}</div>
+                                                {activity.causer?.email && (
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                        {activity.causer.email}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell muted className="whitespace-nowrap">
+                                            {activity.created_at ?? '—'}
+                                        </TableCell>
                                         <TableActionsCell>
                                             <TableActionButton
-                                                as={Link}
+                                                kind="view"
                                                 href={`${urls.show}/${activity.id}`}
-                                                icon="bx-show"
-                                                label={t('activity_log.view_details')}
+                                                title={t('activity_log.view_details')}
                                             />
                                         </TableActionsCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
+                    ) : (
+                        <SettingsEmptyState message={t('activity_log.no_records')} />
                     )}
 
-                    <SettingsPagination links={activities.links} className="mt-6" />
+                    <SettingsPagination links={activities.links} />
                 </Card>
             </div>
         </DashboardLayout>

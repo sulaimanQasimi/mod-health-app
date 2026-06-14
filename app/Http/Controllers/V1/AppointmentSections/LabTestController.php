@@ -24,6 +24,7 @@ class LabTestController extends Controller
             'success' => true,
             'data' => [
                 'lab_types' => $this->labTypesForBranch((int) $appointment->branch_id)
+                    ->get()
                     ->map(fn (LabType $labType) => [
                         'id' => $labType->id,
                         'name' => $labType->name,

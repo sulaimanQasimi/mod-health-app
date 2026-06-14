@@ -5,7 +5,7 @@ import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
 import { BLOOD_BANK_PANEL_ICON_CLASS } from '../../Components/BloodBanks/bloodBankUi';
 import IcuPanel from '../../Components/Icus/IcuPanel';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
-import StatCard, { StatCardProps } from '../../Components/ui/StatCard';
+import { LinkedStatCard, StatCardProps } from '../../Components/ui/StatCard';
 import { useTranslation } from '../../hooks/useTranslation';
 import { BloodBankListUrls } from '../../types/bloodBank';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
@@ -42,14 +42,6 @@ interface DashboardProps {
         urls: { show: string };
     }[];
     urls: BloodBankListUrls;
-}
-
-function LinkedStatCard({ href, ...props }: StatCardProps & { href: string }) {
-    return (
-        <Link href={href} className="block">
-            <StatCard {...props} />
-        </Link>
-    );
 }
 
 export default function BloodBanksDashboard({ stats, lowStockRows, expiringSoon, urls }: DashboardProps) {

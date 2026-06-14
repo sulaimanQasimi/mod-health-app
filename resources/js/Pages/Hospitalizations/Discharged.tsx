@@ -5,8 +5,8 @@ import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import HospitalizationDischargedFilters, {
     EMPTY_DISCHARGED_FILTERS,
 } from '../../Components/Hospitalizations/HospitalizationDischargedFilters';
+import HospitalizationDischargedStats from '../../Components/Hospitalizations/HospitalizationDischargedStats';
 import HospitalizationPanel from '../../Components/Hospitalizations/HospitalizationPanel';
-import HospitalizationStatsCards from '../../Components/Hospitalizations/HospitalizationStatsCards';
 import HospitalizationTable from '../../Components/Hospitalizations/HospitalizationTable';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
@@ -78,9 +78,8 @@ export default function HospitalizationsDischarged({
                     }
                 />
 
-                <HospitalizationStatsCards
+                <HospitalizationDischargedStats
                     stats={stats}
-                    variant="discharged"
                     dischargeStatusFilter={filters.discharge_status}
                     onDischargeStatusClick={(status) => {
                         const next = { ...filters, discharge_status: status };

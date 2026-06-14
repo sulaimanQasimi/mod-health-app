@@ -11,6 +11,7 @@ use App\Http\Requests\Depot\UpdateDepotRequestRequest;
 use App\Models\DepotRequest;
 use App\Models\DepotRequestItem;
 use App\Services\DepotRequestService;
+use App\Services\DepotRequestSourceResolver;
 use App\Support\DepotRolePermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,6 +33,7 @@ class DepotRequestController extends Controller
 
     public function __construct(
         private readonly DepotRequestService $requestService,
+        private readonly DepotRequestSourceResolver $sourceResolver,
     ) {}
 
     public function index(Request $request): Response
@@ -91,13 +93,22 @@ class DepotRequestController extends Controller
             $defaultPharmacyId = (string) ($user->activePharmacies->first()?->id ?? '');
         }
 
+        $hintedSourceDepotId = $this->validatedSourceDepotHint($request);
+
+        $previewData = [
+            'pharmacy_id' => $destination === 'pharmacy' ? ($defaultPharmacyId ?: null) : null,
+            'requesting_depot_id' => $destination !== 'pharmacy'
+                ? ($request->query('requesting_depot_id') ?: null)
+                : null,
+        ];
+
         return Inertia::render('Depots/Requests/Create', [
             'defaults' => [
                 'destination_type' => $destination === 'pharmacy' ? 'pharmacy' : 'depot',
                 'requesting_depot_id' => (string) $request->query('requesting_depot_id', ''),
-                'source_depot_id' => (string) $request->query('source_depot_id', ''),
                 'pharmacy_id' => $defaultPharmacyId,
             ],
+            'sourceDepot' => $this->sourceResolver->preview($previewData, $user, $hintedSourceDepotId),
             'formData' => $this->depotFormOptions(),
             'viewContext' => $this->isPharmacyRequestContext() ? 'pharmacy' : 'depot',
             'userPharmacies' => $user?->activePharmacies->map(fn ($pharmacy) => [
@@ -121,11 +132,15 @@ class DepotRequestController extends Controller
         $data = $request->validated();
         $this->authorizeNewDepotRequestData($data);
 
-        $depotRequest = DB::transaction(function () use ($data) {
+        $user = $request->user();
+        $hintedSourceDepotId = session()->pull('depot_request_source_hint');
+        $sourceDepotId = $this->sourceResolver->resolve($data, $user, $hintedSourceDepotId);
+
+        $depotRequest = DB::transaction(function () use ($data, $sourceDepotId) {
             $depotRequest = DepotRequest::create([
                 'requesting_depot_id' => $data['requesting_depot_id'] ?? null,
                 'pharmacy_id' => $data['pharmacy_id'] ?? null,
-                'source_depot_id' => $data['source_depot_id'],
+                'source_depot_id' => $sourceDepotId,
                 'notes' => $data['notes'] ?? null,
                 'status' => DepotRequest::STATUS_DRAFT,
                 'requested_by' => Auth::id(),
@@ -194,6 +209,7 @@ class DepotRequestController extends Controller
         abort_unless($depotRequest->status === DepotRequest::STATUS_DRAFT, 403);
 
         $depotRequest->load([
+            'sourceDepot:id,name',
             'items.medicine:id,name',
             'items.tool:id,name',
             'items.unit:id,name',
@@ -201,6 +217,10 @@ class DepotRequestController extends Controller
 
         return Inertia::render('Depots/Requests/Edit', [
             'request' => $this->transformDetail($depotRequest),
+            'sourceDepot' => [
+                'id' => (int) $depotRequest->source_depot_id,
+                'name' => $depotRequest->sourceDepot?->name ?? '',
+            ],
             'formData' => $this->depotFormOptions(),
             'viewContext' => $this->isPharmacyRequestContext() ? 'pharmacy' : 'depot',
             'userPharmacies' => request()->user()?->activePharmacies->map(fn ($pharmacy) => [
@@ -228,11 +248,17 @@ class DepotRequestController extends Controller
         $data = $request->validated();
         $this->authorizeNewDepotRequestData($data);
 
-        DB::transaction(function () use ($depotRequest, $data) {
+        $sourceDepotId = $this->sourceResolver->resolve(
+            $data,
+            $request->user(),
+            $depotRequest->source_depot_id,
+        );
+
+        DB::transaction(function () use ($depotRequest, $data, $sourceDepotId) {
             $depotRequest->update([
                 'requesting_depot_id' => $data['requesting_depot_id'] ?? null,
                 'pharmacy_id' => $data['pharmacy_id'] ?? null,
-                'source_depot_id' => $data['source_depot_id'],
+                'source_depot_id' => $sourceDepotId,
                 'notes' => $data['notes'] ?? null,
             ]);
 
@@ -543,5 +569,23 @@ class DepotRequestController extends Controller
                 'created_at' => $log->created_at?->format('Y-m-d H:i'),
             ])->values()->all(),
         ];
+    }
+
+    private function validatedSourceDepotHint(Request $request): ?int
+    {
+        if (! $request->filled('source_depot_id')) {
+            return null;
+        }
+
+        $sourceDepotId = (int) $request->query('source_depot_id');
+        $user = $request->user();
+
+        if ($user && ! $this->isDepotSystemAdmin($user)) {
+            abort_unless($user->hasDepotAccess($sourceDepotId), 403);
+        }
+
+        session(['depot_request_source_hint' => $sourceDepotId]);
+
+        return $sourceDepotId;
     }
 }

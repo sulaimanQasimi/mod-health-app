@@ -1,3 +1,5 @@
+import type { DepotActiveOption, DepotSourceOption } from '../../types/depot';
+
 export const DEPOT_CARD_CLASS =
     'rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800';
 
@@ -61,4 +63,29 @@ export function depotStockBarColor(level: DepotStockLevel): string {
     if (level === 'healthy') return 'bg-emerald-500';
     if (level === 'low_stock') return 'bg-amber-500';
     return 'bg-red-500';
+}
+
+export function resolveDepotRequestSourceDepot(
+    destinationType: 'depot' | 'pharmacy',
+    requestingDepotId: string,
+    pharmacyId: string,
+    activeDepots: DepotActiveOption[],
+    fallbackSourceDepot?: DepotSourceOption | null,
+): DepotSourceOption | null {
+    if (destinationType === 'pharmacy' && pharmacyId) {
+        const linkedDepot = activeDepots.find((depot) => depot.pharmacy_id === Number(pharmacyId));
+        return linkedDepot ? { id: linkedDepot.id, name: linkedDepot.name } : null;
+    }
+
+    if (destinationType === 'depot' && requestingDepotId) {
+        const requestingDepot = activeDepots.find((depot) => depot.id === Number(requestingDepotId));
+        if (requestingDepot?.parent_depot_id) {
+            const parentDepot = activeDepots.find((depot) => depot.id === requestingDepot.parent_depot_id);
+            if (parentDepot) {
+                return { id: parentDepot.id, name: parentDepot.name };
+            }
+        }
+    }
+
+    return fallbackSourceDepot ?? null;
 }

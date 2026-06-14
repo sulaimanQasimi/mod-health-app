@@ -57,10 +57,11 @@ trait ProvidesDepotFormData
                 'id' => $item->id,
                 'name' => $item->name,
             ])->values()->all(),
-            'activeDepots' => $activeDepotsQuery->get(['id', 'name', 'pharmacy_id'])->map(fn ($item) => [
+            'activeDepots' => $activeDepotsQuery->get(['id', 'name', 'pharmacy_id', 'parent_depot_id'])->map(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'pharmacy_id' => $item->pharmacy_id,
+                'parent_depot_id' => $item->parent_depot_id,
             ])->values()->all(),
             'medicines' => Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(['id', 'name'])->map(fn ($item) => [
                 'id' => $item->id,

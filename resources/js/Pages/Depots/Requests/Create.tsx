@@ -1,17 +1,17 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Button, Card, Checkbox, Label, Spinner, Textarea } from 'flowbite-react';
-import { FormEvent } from 'react';
+import { FormEvent, useMemo } from 'react';
 import DepotNavTabs from '../../../Components/Depots/DepotNavTabs';
 import DepotRequestItemsEditor, {
     DepotRequestLineItem,
     emptyRequestLine,
 } from '../../../Components/Depots/DepotRequestItemsEditor';
-import { DEPOT_PRIMARY_BTN_CLASS } from '../../../Components/Depots/depotUi';
+import { DEPOT_PRIMARY_BTN_CLASS, resolveDepotRequestSourceDepot } from '../../../Components/Depots/depotUi';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotFormData, DepotNavPermissions, DepotNavUrls } from '../../../types/depot';
+import { DepotFormData, DepotNavPermissions, DepotNavUrls, DepotSourceOption } from '../../../types/depot';
 import { OptionItem } from '../../../types/settings';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
@@ -20,6 +20,7 @@ type DestinationType = 'depot' | 'pharmacy';
 export default function CreateDepotRequest({
     defaults,
     formData,
+    sourceDepot: initialSourceDepot = null,
     navUrls,
     navPermissions,
     urls,
@@ -29,10 +30,10 @@ export default function CreateDepotRequest({
     defaults: {
         destination_type: DestinationType;
         requesting_depot_id: string;
-        source_depot_id: string;
         pharmacy_id: string;
     };
     formData: DepotFormData;
+    sourceDepot?: DepotSourceOption | null;
     navUrls: DepotNavUrls;
     navPermissions?: DepotNavPermissions;
     urls: { index: string; store: string; stockAvailable: string };
@@ -46,7 +47,6 @@ export default function CreateDepotRequest({
         destination_type: DestinationType;
         requesting_depot_id: string;
         pharmacy_id: string;
-        source_depot_id: string;
         notes: string;
         items: DepotRequestLineItem[];
         submit_now: boolean;
@@ -54,11 +54,27 @@ export default function CreateDepotRequest({
         destination_type: isPharmacyContext ? 'pharmacy' : defaults.destination_type,
         requesting_depot_id: defaults.requesting_depot_id,
         pharmacy_id: defaults.pharmacy_id,
-        source_depot_id: defaults.source_depot_id,
         notes: '',
         items: [emptyRequestLine()],
         submit_now: false,
     });
+
+    const resolvedSourceDepot = useMemo(
+        () => resolveDepotRequestSourceDepot(
+            data.destination_type,
+            data.requesting_depot_id,
+            data.pharmacy_id,
+            formData.activeDepots,
+            initialSourceDepot,
+        ),
+        [
+            data.destination_type,
+            data.requesting_depot_id,
+            data.pharmacy_id,
+            formData.activeDepots,
+            initialSourceDepot,
+        ],
+    );
 
     const isPharmacyDestination = data.destination_type === 'pharmacy';
     const pharmacyOptions = isPharmacyContext && userPharmacies.length > 0
@@ -164,18 +180,10 @@ export default function CreateDepotRequest({
                                 </div>
                             )}
                             <div>
-                                <Label>{t('global.depot.source_depot')} *</Label>
-                                <SearchableSelect
-                                    value={data.source_depot_id}
-                                    onChange={(value) => setData('source_depot_id', value)}
-                                    options={[
-                                        { value: '', label: t('global.select') },
-                                        ...formData.activeDepots.map((depot) => ({
-                                            value: String(depot.id),
-                                            label: depot.name,
-                                        })),
-                                    ]}
-                                />
+                                <Label>{t('global.depot.source_depot')}</Label>
+                                <div className="mt-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800/60 dark:text-gray-200">
+                                    {resolvedSourceDepot?.name ?? t('global.select')}
+                                </div>
                                 {errors.source_depot_id && (
                                     <p className="mt-1 text-sm text-red-600">{errors.source_depot_id}</p>
                                 )}
@@ -186,7 +194,7 @@ export default function CreateDepotRequest({
                             items={data.items}
                             onChange={(items) => setData('items', items)}
                             formData={formData}
-                            sourceDepotId={data.source_depot_id}
+                            sourceDepotId={resolvedSourceDepot ? String(resolvedSourceDepot.id) : ''}
                             stockUrl={urls.stockAvailable}
                             errors={errors as Record<string, string>}
                             medicinesOnly={isPharmacyDestination}

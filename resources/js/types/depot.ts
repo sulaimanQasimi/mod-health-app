@@ -58,6 +58,12 @@ export interface DepotDetail {
 
 export interface DepotActiveOption extends OptionItem {
     pharmacy_id?: number | null;
+    parent_depot_id?: number | null;
+}
+
+export interface DepotSourceOption {
+    id: number;
+    name: string;
 }
 
 export interface DepotFormData {

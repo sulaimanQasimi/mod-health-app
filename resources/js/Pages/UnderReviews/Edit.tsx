@@ -3,9 +3,11 @@ import { Button, Card, Label, Textarea } from 'flowbite-react';
 import { FormEvent, useMemo, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
     UnderReviewBedOption,
+    UnderReviewDepartmentOption,
     UnderReviewEditForm,
     UnderReviewRoomOption,
 } from '../../types/underReview';
@@ -13,23 +15,40 @@ import { SETTINGS_FORM_WIDTH } from '../../utils/settingsUi';
 
 interface EditProps {
     underReview: UnderReviewEditForm;
+    departments: UnderReviewDepartmentOption[];
     rooms: UnderReviewRoomOption[];
     beds: UnderReviewBedOption[];
     urls: { show: string; update: string };
 }
 
-const SELECT_CLASS =
-    'block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-slate-400 focus:ring-1 focus:ring-slate-400 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
-
-export default function UnderReviewsEdit({ underReview, rooms, beds, urls }: EditProps) {
+export default function UnderReviewsEdit({
+    underReview,
+    departments,
+    rooms,
+    beds,
+    urls,
+}: EditProps) {
     const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
     const [form, setForm] = useState({
         reason: underReview.reason,
         remarks: underReview.remarks,
+        department_id: underReview.department_id ? String(underReview.department_id) : '',
         room_id: String(underReview.room_id),
         bed_id: String(underReview.bed_id),
     });
+
+    const filteredRooms = useMemo(() => {
+        if (!form.department_id) {
+            return [];
+        }
+
+        const departmentId = Number(form.department_id);
+
+        return rooms.filter(
+            (room) => room.department_id === null || room.department_id === departmentId,
+        );
+    }, [rooms, form.department_id]);
 
     const filteredBeds = useMemo(
         () => beds.filter((bed) => String(bed.room_id) === form.room_id || String(bed.id) === form.bed_id),
@@ -90,45 +109,76 @@ export default function UnderReviewsEdit({ underReview, rooms, beds, urls }: Edi
                             </div>
                         </div>
 
+                        <div>
+                            <Label htmlFor="department_id">{t('global.department')}</Label>
+                            <SearchableSelect
+                                id="department_id"
+                                required
+                                value={form.department_id}
+                                onChange={(value) =>
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        department_id: value,
+                                        room_id: '',
+                                        bed_id: '',
+                                    }))
+                                }
+                                placeholder={t('global.select')}
+                            >
+                                <option value="">{t('global.select')}</option>
+                                {departments.map((department) => (
+                                    <option key={department.id} value={department.id}>
+                                        {department.name}
+                                    </option>
+                                ))}
+                            </SearchableSelect>
+                        </div>
+
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="room_id">{t('global.rooms')}</Label>
-                                <select
+                                <SearchableSelect
                                     id="room_id"
                                     required
-                                    className={SELECT_CLASS}
                                     value={form.room_id}
-                                    onChange={(e) =>
-                                        setForm((prev) => ({ ...prev, room_id: e.target.value, bed_id: '' }))
+                                    onChange={(value) =>
+                                        setForm((prev) => ({ ...prev, room_id: value, bed_id: '' }))
                                     }
+                                    placeholder={t('global.select')}
+                                    disabled={!form.department_id}
                                 >
                                     <option value="">{t('global.select')}</option>
-                                    {rooms.map((room) => (
+                                    {filteredRooms.map((room) => (
                                         <option key={room.id} value={room.id}>
                                             {room.name}
                                         </option>
                                     ))}
-                                </select>
+                                </SearchableSelect>
                             </div>
                             <div>
                                 <Label htmlFor="bed_id">{t('global.beds')}</Label>
-                                <select
+                                <SearchableSelect
                                     id="bed_id"
                                     required
-                                    className={SELECT_CLASS}
                                     value={form.bed_id}
-                                    onChange={(e) => setForm((prev) => ({ ...prev, bed_id: e.target.value }))}
+                                    onChange={(value) => setForm((prev) => ({ ...prev, bed_id: value }))}
+                                    placeholder={t('global.select')}
+                                    disabled={!form.room_id}
                                 >
                                     <option value="">{t('global.select')}</option>
                                     {filteredBeds.map((bed) => (
-                                        <option key={bed.id} value={bed.id} disabled={bed.is_occupied && String(bed.id) !== form.bed_id}>
+                                        <option
+                                            key={bed.id}
+                                            value={bed.id}
+                                            disabled={bed.is_occupied && String(bed.id) !== form.bed_id}
+                                        >
                                             {bed.number}
                                             {bed.is_occupied && String(bed.id) !== form.bed_id
                                                 ? ` (${t('global.occupied')})`
                                                 : ''}
                                         </option>
                                     ))}
-                                </select>
+                                </SearchableSelect>
                             </div>
                         </div>
 

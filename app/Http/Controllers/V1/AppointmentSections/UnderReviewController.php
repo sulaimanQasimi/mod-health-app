@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\AppointmentSections\Concerns\AuthorizesAppointmentAccess;
 use App\Models\Appointment;
 use App\Models\Bed;
+use App\Models\Department;
 use App\Models\Room;
 use App\Models\UnderReview;
 use Illuminate\Http\JsonResponse;
@@ -25,10 +26,15 @@ class UnderReviewController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'rooms' => Room::query()
+                'default_department_id' => $appointment->department_id,
+                'departments' => Department::query()
                     ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
                     ->orderBy('name')
                     ->get(['id', 'name']),
+                'rooms' => Room::query()
+                    ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'department_id']),
                 'beds' => Bed::query()
                     ->when($branchId, fn ($q) => $q->whereHas('room', fn ($room) => $room->where('branch_id', $branchId)))
                     ->orderBy('number')
@@ -47,13 +53,15 @@ class UnderReviewController extends Controller
         }
 
         $items = $appointment->under_reviews()
-            ->with(['room:id,name', 'bed:id,number'])
+            ->visibleForAuthUserDepartment()
+            ->with(['room:id,name', 'bed:id,number', 'department:id,name'])
             ->latest()
             ->get()
             ->map(fn (UnderReview $item) => [
                 'id' => $item->id,
                 'reason' => $item->reason,
                 'remarks' => $item->remarks,
+                'department_name' => $item->department?->name,
                 'room_name' => $item->room?->name,
                 'bed_number' => $item->bed?->number,
                 'is_active' => ! (bool) $item->is_discharged,
@@ -82,18 +90,27 @@ class UnderReviewController extends Controller
         $validated = $request->validate([
             'reason' => 'required|string',
             'remarks' => 'required|string',
+            'department_id' => 'required|exists:departments,id',
             'room_id' => 'required|exists:rooms,id',
             'bed_id' => 'required|exists:beds,id',
         ]);
 
+        $room = Room::findOrFail($validated['room_id']);
+        abort_unless(
+            $room->department_id === null || (int) $room->department_id === (int) $validated['department_id'],
+            422
+        );
+
         $bed = Bed::findOrFail($validated['bed_id']);
         abort_if((bool) $bed->is_occupied, 422);
+        abort_unless((int) $bed->room_id === (int) $validated['room_id'], 422);
 
         $bed->update(['is_occupied' => true]);
 
         UnderReview::create([
             'reason' => $validated['reason'],
             'remarks' => $validated['remarks'],
+            'department_id' => $validated['department_id'],
             'room_id' => $validated['room_id'],
             'bed_id' => $validated['bed_id'],
             'patient_id' => $appointment->patient_id,
@@ -111,6 +128,7 @@ class UnderReviewController extends Controller
         $this->authorizeAppointmentView($appointment);
         abort_unless(request()->user()->can('delete-under-reviews'), 403);
         abort_unless((int) $underReview->appointment_id === (int) $appointment->id, 404);
+        abort_unless($underReview->userCanView(request()->user()), 404);
         $underReview->delete();
 
         return response()->json(['success' => true]);

@@ -458,6 +458,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('under-reviews')->name('under-reviews.')->middleware('permission:show-under-review-menu')->group(function () {
         Route::get('/', [UnderReviewController::class, 'index'])->name('index');
+        Route::get('/pending', [UnderReviewController::class, 'pending'])->name('pending');
+        Route::get('/my-cases', [UnderReviewController::class, 'myCases'])->name('my-cases');
+        Route::get('/discharged', [UnderReviewController::class, 'discharged'])->name('discharged');
+        Route::post('/{underReview}/accept', [UnderReviewController::class, 'accept'])->name('accept');
         Route::get('/{underReview}/edit', [UnderReviewController::class, 'edit'])->name('edit');
         Route::get('/{underReview}', [UnderReviewController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/{underReview}', [UnderReviewController::class, 'update'])->name('update');

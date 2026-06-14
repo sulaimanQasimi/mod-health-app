@@ -22,19 +22,19 @@ import { useTranslation } from '../../hooks/useTranslation';
 import {
     PaginatedUnderReviews,
     UnderReviewFilterOptions,
-    UnderReviewFilters as Filters,
+    UnderReviewFilters,
     UnderReviewWorkflowUrls,
 } from '../../types/underReview';
 
-interface IndexProps {
+interface DischargedProps {
     underReviews: PaginatedUnderReviews;
-    activeTab: 'index';
-    filters: Filters;
+    activeTab: 'discharged';
+    filters: UnderReviewFilters;
     filterOptions: UnderReviewFilterOptions;
     urls: UnderReviewWorkflowUrls;
 }
 
-const EMPTY_FILTERS: Filters = {
+const EMPTY_FILTERS: UnderReviewFilters = {
     patient_name: '',
     id_card: '',
     father_name: '',
@@ -42,17 +42,17 @@ const EMPTY_FILTERS: Filters = {
     department_id: '',
 };
 
-function cleanFilters(filters: Filters): Record<string, string> {
+function cleanFilters(filters: UnderReviewFilters): Record<string, string> {
     return Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== ''));
 }
 
-export default function UnderReviewsIndex({
+export default function UnderReviewsDischarged({
     underReviews,
     activeTab,
     filters: serverFilters,
     filterOptions,
     urls,
-}: IndexProps) {
+}: DischargedProps) {
     const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
@@ -60,23 +60,23 @@ export default function UnderReviewsIndex({
     useEffect(() => setFilters(serverFilters), [serverFilters]);
 
     const applyFilters = useCallback(
-        (next: Filters) => {
+        (next: UnderReviewFilters) => {
             setProcessing(true);
-            router.get(urls.index, cleanFilters(next), {
+            router.get(urls.discharged, cleanFilters(next), {
                 preserveScroll: true,
                 preserveState: true,
                 replace: true,
                 onFinish: () => setProcessing(false),
             });
         },
-        [urls.index]
+        [urls.discharged]
     );
 
-    const updateFilter = (field: keyof Filters, value: string) => {
+    const updateFilter = (field: keyof UnderReviewFilters, value: string) => {
         setFilters((current) => ({ ...current, [field]: value }));
     };
 
-    const handleSelectChange = (field: keyof Filters, value: string) => {
+    const handleSelectChange = (field: keyof UnderReviewFilters, value: string) => {
         const nextFilters = { ...filters, [field]: value };
         setFilters(nextFilters);
         applyFilters(nextFilters);
@@ -92,24 +92,17 @@ export default function UnderReviewsIndex({
         applyFilters(EMPTY_FILTERS);
     };
 
-    const statusBadge = (item: PaginatedUnderReviews['data'][number]) => {
-        if (!item.is_accepted) {
-            return <Badge color="warning">{t('global.pending')}</Badge>;
-        }
-
-        return <Badge color="success">{t('global.active')}</Badge>;
-    };
-
     return (
         <DashboardLayout>
-            <Head title={t('global.under_review_patients')} />
+            <Head title={t('global.discharged')} />
 
             <div className="mx-auto max-w-[1600px]">
                 <Card className="shadow-sm">
                     <AppointmentPageHeader
                         title={t('global.under_review_patients')}
-                        subtitle={`${underReviews.meta.total} ${t('global.patients')}`}
-                        icon="bx-revision"
+                        subtitle={t('global.discharged')}
+                        icon="bx-check-circle"
+                        accent="from-violet-500 to-purple-600"
                     />
 
                     <UnderReviewNavTabs activeTab={activeTab} urls={urls} />
@@ -207,7 +200,7 @@ export default function UnderReviewsIndex({
                         </form>
                     </div>
 
-                    <Table id="under-reviews-table">
+                    <Table id="under-reviews-discharged-table">
                         <TableHead>
                             <TableRow variant="header">
                                 <TableHeader>{t('global.id')}</TableHeader>
@@ -219,14 +212,13 @@ export default function UnderReviewsIndex({
                                 <TableHeader>{t('global.bed')}</TableHeader>
                                 <TableHeader>{t('global.hospitalization_date')}</TableHeader>
                                 <TableHeader>{t('global.processed_by')}</TableHeader>
-                                <TableHeader>{t('global.status')}</TableHeader>
                                 <TableHeader align="center">{t('global.actions')}</TableHeader>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {underReviews.data.length === 0 ? (
                                 <TableRow className="hover:bg-transparent dark:hover:bg-transparent">
-                                    <TableCell colSpan={11} align="center" muted className="py-12 text-base">
+                                    <TableCell colSpan={10} align="center" muted className="py-12 text-base">
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
                                                 <i className="bx bx-user-x text-xl text-gray-400" />
@@ -238,11 +230,11 @@ export default function UnderReviewsIndex({
                             ) : (
                                 underReviews.data.map((item) => (
                                     <TableRow key={item.id}>
-                                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                        <TableCell className="font-medium text-gray-900 dark:text-white">
                                             {item.id}
                                         </TableCell>
                                         <TableCell>{item.patient_id_card ?? '—'}</TableCell>
-                                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                        <TableCell className="font-medium text-gray-900 dark:text-white">
                                             {item.patient_name ?? '—'}
                                         </TableCell>
                                         <TableCell>{item.father_name ?? '—'}</TableCell>
@@ -253,7 +245,6 @@ export default function UnderReviewsIndex({
                                             {item.admission_date ?? '—'}
                                         </TableCell>
                                         <TableCell muted>{item.processed_by ?? '—'}</TableCell>
-                                        <TableCell>{statusBadge(item)}</TableCell>
                                         <TableCell align="center">
                                             <AppointmentActionGroup>
                                                 <AppointmentIconLink

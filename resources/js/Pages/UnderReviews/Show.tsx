@@ -36,20 +36,14 @@ import {
     UnderReviewDetail,
     UnderReviewSectionPermissions,
     UnderReviewShowPermissions,
+    UnderReviewShowUrls,
 } from '../../types/underReview';
 
 interface ShowProps {
     underReview: UnderReviewDetail;
     permissions: UnderReviewShowPermissions;
     sectionPermissions: UnderReviewSectionPermissions;
-    urls: {
-        index: string;
-        edit: string;
-        discharge: string;
-        visit_store: string;
-        visit_update: string;
-        appointment: string | null;
-    };
+    urls: UnderReviewShowUrls;
 }
 
 export default function UnderReviewsShow({
@@ -87,6 +81,18 @@ export default function UnderReviewsShow({
         });
     };
 
+    const handleAccept = () => {
+        if (!window.confirm(t('global.are_you_sure_accept_appointment'))) {
+            return;
+        }
+
+        setProcessing(true);
+        router.post(urls.accept, {}, {
+            preserveScroll: true,
+            onFinish: () => setProcessing(false),
+        });
+    };
+
     const handleDischarge = (event: FormEvent) => {
         event.preventDefault();
         post(urls.discharge, { discharge_remark: dischargeRemark }, () => {
@@ -119,6 +125,15 @@ export default function UnderReviewsShow({
         { label: t('global.referred_to'), value: underReview.doctor_name, icon: 'bx-user-check' },
         { label: t('global.date'), value: underReview.admission_date, icon: 'bx-calendar' },
         { label: t('global.time'), value: underReview.admission_time, icon: 'bx-time' },
+        ...(underReview.is_accepted
+            ? [
+                  {
+                      label: t('global.processed_by'),
+                      value: underReview.processed_by_name,
+                      icon: 'bx-user-pin',
+                  },
+              ]
+            : []),
     ];
 
     return (
@@ -140,16 +155,24 @@ export default function UnderReviewsShow({
                         <div className="flex flex-wrap items-center gap-2">
                             {underReview.is_discharged ? (
                                 <Badge color="gray">{t('global.discharged')}</Badge>
-                            ) : (
+                            ) : underReview.is_accepted ? (
                                 <Badge color="success">{t('global.active')}</Badge>
+                            ) : (
+                                <Badge color="warning">{t('global.pending')}</Badge>
+                            )}
+                            {permissions.accept && (
+                                <Button size="sm" color="success" onClick={handleAccept} disabled={processing}>
+                                    <i className="bx bx-check me-2" />
+                                    {t('global.accept')}
+                                </Button>
                             )}
                             {permissions.discharge && (
                                 <Button size="sm" color="info" onClick={() => setDischargeOpen(true)}>
-                                    <i className="bx bx-log-out me-2" />
-                                    {t('global.discharge_patient')}
+                                    <i className="bx bx-check-shield me-2" />
+                                    {t('global.complete_appointment')}
                                 </Button>
                             )}
-                            <Button size="sm" color="light" as={Link} href={urls.index}>
+                            <Button size="sm" color="light" as={Link} href={urls.myCases}>
                                 <BackArrowIcon className="me-2" />
                                 {t('global.back')}
                             </Button>
@@ -186,6 +209,7 @@ export default function UnderReviewsShow({
                                 value: underReview.patient?.id_card,
                             },
                             { label: t('global.phone'), value: underReview.patient?.phone },
+                            { label: t('global.department'), value: underReview.department_name },
                             { label: t('global.room'), value: underReview.room_name },
                             {
                                 label: t('global.bed'),
@@ -234,7 +258,16 @@ export default function UnderReviewsShow({
                 </Card>
 
                 <div className="space-y-4">
-                    {hasAppointment ? (
+                    {!underReview.is_accepted && !underReview.is_discharged && (
+                        <Card className="border border-amber-200 bg-amber-50/80 !shadow-sm dark:border-amber-800 dark:bg-amber-900/20">
+                            <p className="flex items-center gap-2 text-sm text-amber-800 dark:text-amber-200">
+                                <i className="bx bx-info-circle text-lg" />
+                                {t('global.pending')} — {t('global.accept')}
+                            </p>
+                        </Card>
+                    )}
+
+                    {underReview.is_accepted && hasAppointment ? (
                         <>
                             {sectionPermissions.blood && (
                                 <BloodBankSection appointmentId={underReview.appointment_id!} />
@@ -255,10 +288,12 @@ export default function UnderReviewsShow({
                                 <HospitalizationSection appointmentId={underReview.appointment_id!} />
                             )}
                         </>
-                    ) : (
+                    ) : underReview.is_accepted ? (
                         <SectionEmptyState message={t('global.not_available')} />
-                    )}
+                    ) : null}
 
+                    {underReview.is_accepted && (
+                        <>
                     <AppointmentSectionAccordion
                         id="under-review-visits"
                         icon="bx-glasses"
@@ -446,12 +481,14 @@ export default function UnderReviewsShow({
                             </div>
                         </AppointmentSectionAccordion>
                     )}
+                        </>
+                    )}
                 </div>
             </div>
 
             <Modal show={dischargeOpen} onClose={() => !processing && setDischargeOpen(false)} size="md">
                 <form onSubmit={handleDischarge}>
-                    <ModalHeader>{t('global.discharge_patient')}</ModalHeader>
+                    <ModalHeader>{t('global.complete_appointment')}</ModalHeader>
                     <ModalBody>
                         <div>
                             <Label htmlFor="discharge-remark">{t('global.discharge_remark')}</Label>

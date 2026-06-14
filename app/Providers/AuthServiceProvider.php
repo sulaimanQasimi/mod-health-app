@@ -25,6 +25,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\Doctor::class => \App\Policies\DoctorPolicy::class,
         \App\Models\Patient::class => \App\Policies\PatientPolicy::class,
         \App\Models\Appointment::class => \App\Policies\AppointmentPolicy::class,
+        \App\Models\UnderReview::class => \App\Policies\UnderReviewPolicy::class,
         \App\Models\User::class => \App\Policies\UserPolicy::class,
         \App\Models\Recipient::class => \App\Policies\RecipientPolicy::class,
         \App\Models\Relation::class => \App\Policies\RelationPolicy::class,

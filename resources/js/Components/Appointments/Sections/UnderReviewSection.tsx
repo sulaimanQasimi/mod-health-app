@@ -18,6 +18,7 @@ import {
     TableHeader,
     TableRow,
 } from '../../ui/Table';
+import SearchableSelect from '../../ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
 import AppointmentSectionAccordion, {
@@ -38,15 +39,22 @@ interface UnderReviewListItem {
     id: number;
     reason: string | null;
     remarks: string | null;
+    department_name: string | null;
     room_name: string | null;
     bed_number: string | number | null;
     is_active: boolean;
     urls?: { show?: string; edit?: string };
 }
 
+interface DepartmentOption {
+    id: number;
+    name: string;
+}
+
 interface RoomOption {
     id: number;
     name: string;
+    department_id: number | null;
 }
 
 interface BedOption {
@@ -71,8 +79,13 @@ interface UnderReviewSectionData {
     };
 }
 
-const SELECT_CLASS =
-    'block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-slate-400 focus:ring-1 focus:ring-slate-400 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
+const EMPTY_FORM = {
+    reason: '',
+    remarks: '',
+    department_id: '',
+    room_id: '',
+    bed_id: '',
+};
 
 export default function UnderReviewSection({
     appointmentId,
@@ -88,14 +101,10 @@ export default function UnderReviewSection({
     const [submitting, setSubmitting] = useState(false);
     const [data, setData] = useState<UnderReviewSectionData | null>(null);
     const [createOpen, setCreateOpen] = useState(false);
+    const [departments, setDepartments] = useState<DepartmentOption[]>([]);
     const [rooms, setRooms] = useState<RoomOption[]>([]);
     const [beds, setBeds] = useState<BedOption[]>([]);
-    const [form, setForm] = useState({
-        reason: '',
-        remarks: '',
-        room_id: '',
-        bed_id: '',
-    });
+    const [form, setForm] = useState(EMPTY_FORM);
 
     const loadData = useCallback(async () => {
         setLoading(true);
@@ -118,8 +127,16 @@ export default function UnderReviewSection({
         });
         const payload = await response.json();
         if (payload.success) {
+            setDepartments(payload.data.departments ?? []);
             setRooms(payload.data.rooms ?? []);
             setBeds(payload.data.beds ?? []);
+            const defaultDepartmentId = payload.data.default_department_id
+                ? String(payload.data.default_department_id)
+                : '';
+            setForm((prev) => ({
+                ...prev,
+                department_id: prev.department_id || defaultDepartmentId,
+            }));
         }
     }, [baseUrl]);
 
@@ -133,9 +150,41 @@ export default function UnderReviewSection({
         }
     }, [createOpen, loadMeta]);
 
+    const filteredRooms = useMemo(() => {
+        if (!form.department_id) {
+            return [];
+        }
+
+        const departmentId = Number(form.department_id);
+
+        return rooms.filter(
+            (room) => room.department_id === null || room.department_id === departmentId,
+        );
+    }, [rooms, form.department_id]);
+
     const filteredBeds = useMemo(
         () => beds.filter((bed) => String(bed.room_id) === form.room_id || String(bed.id) === form.bed_id),
         [beds, form.room_id, form.bed_id]
+    );
+
+    const departmentOptions = useMemo(
+        () => departments.map((department) => ({ value: String(department.id), label: department.name })),
+        [departments],
+    );
+
+    const roomOptions = useMemo(
+        () => filteredRooms.map((room) => ({ value: String(room.id), label: room.name })),
+        [filteredRooms],
+    );
+
+    const bedOptions = useMemo(
+        () =>
+            filteredBeds.map((bed) => ({
+                value: String(bed.id),
+                label: `${bed.number}${bed.is_occupied ? ` (${t('global.occupied')})` : ''}`,
+                disabled: bed.is_occupied,
+            })),
+        [filteredBeds, t],
     );
 
     const handleCreate = async (event: FormEvent) => {
@@ -157,7 +206,7 @@ export default function UnderReviewSection({
                 return;
             }
             setCreateOpen(false);
-            setForm({ reason: '', remarks: '', room_id: '', bed_id: '' });
+            setForm(EMPTY_FORM);
             await loadData();
             onReferralSuccess?.();
         } finally {
@@ -219,6 +268,7 @@ export default function UnderReviewSection({
                                     <TableRow variant="header">
                                         <TableHeader>{t('global.reason')}</TableHeader>
                                         <TableHeader>{t('global.remarks')}</TableHeader>
+                                        <TableHeader>{t('global.department')}</TableHeader>
                                         <TableHeader>{t('global.room')}</TableHeader>
                                         <TableHeader>{t('global.bed')}</TableHeader>
                                         <TableHeader>{t('global.status')}</TableHeader>
@@ -230,6 +280,7 @@ export default function UnderReviewSection({
                                         <TableRow key={item.id}>
                                             <TableCell>{item.reason ?? '—'}</TableCell>
                                             <TableCell className="text-gray-600">{item.remarks ?? '—'}</TableCell>
+                                            <TableCell className="text-gray-600">{item.department_name ?? '—'}</TableCell>
                                             <TableCell className="text-gray-600">{item.room_name ?? '—'}</TableCell>
                                             <TableCell className="text-gray-600">{item.bed_number ?? '—'}</TableCell>
                                             <TableCell>
@@ -300,47 +351,50 @@ export default function UnderReviewSection({
                                 onChange={(e) => setForm((prev) => ({ ...prev, remarks: e.target.value }))}
                             />
                         </div>
+                        <div>
+                            <Label htmlFor="under-review-department">{t('global.department')}</Label>
+                            <SearchableSelect
+                                id="under-review-department"
+                                required
+                                value={form.department_id}
+                                onChange={(value) =>
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        department_id: value,
+                                        room_id: '',
+                                        bed_id: '',
+                                    }))
+                                }
+                                options={departmentOptions}
+                                placeholder={t('global.select')}
+                            />
+                        </div>
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="under-review-room">{t('global.rooms')}</Label>
-                                <select
+                                <SearchableSelect
                                     id="under-review-room"
                                     required
-                                    className={SELECT_CLASS}
                                     value={form.room_id}
-                                    onChange={(e) =>
-                                        setForm((prev) => ({ ...prev, room_id: e.target.value, bed_id: '' }))
+                                    onChange={(value) =>
+                                        setForm((prev) => ({ ...prev, room_id: value, bed_id: '' }))
                                     }
-                                >
-                                    <option value="">{t('global.select')}</option>
-                                    {rooms.map((room) => (
-                                        <option key={room.id} value={room.id}>
-                                            {room.name}
-                                        </option>
-                                    ))}
-                                </select>
+                                    options={roomOptions}
+                                    placeholder={t('global.select')}
+                                    disabled={!form.department_id}
+                                />
                             </div>
                             <div>
                                 <Label htmlFor="under-review-bed">{t('global.beds')}</Label>
-                                <select
+                                <SearchableSelect
                                     id="under-review-bed"
                                     required
-                                    className={SELECT_CLASS}
                                     value={form.bed_id}
-                                    onChange={(e) => setForm((prev) => ({ ...prev, bed_id: e.target.value }))}
-                                >
-                                    <option value="">{t('global.select')}</option>
-                                    {filteredBeds.map((bed) => (
-                                        <option
-                                            key={bed.id}
-                                            value={bed.id}
-                                            disabled={bed.is_occupied}
-                                        >
-                                            {bed.number}
-                                            {bed.is_occupied ? ` (${t('global.occupied')})` : ''}
-                                        </option>
-                                    ))}
-                                </select>
+                                    onChange={(value) => setForm((prev) => ({ ...prev, bed_id: value }))}
+                                    options={bedOptions}
+                                    placeholder={t('global.select')}
+                                    disabled={!form.room_id}
+                                />
                             </div>
                         </div>
                     </ModalBody>

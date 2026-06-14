@@ -166,7 +166,9 @@ class AppointmentController extends Controller
                 'id_card' => $patient?->id_card,
                 'doctor_id' => $appointment->doctor_id,
                 'doctor_name' => $appointment->doctor?->name,
+                'department_id' => $appointment->department_id,
                 'department_name' => $appointment->department?->name,
+                'can_change_doctor' => ! $appointment->is_completed && ! $appointment->processed_by,
                 'date' => $appointment->date ? verta($appointment->date)->format('Y-m-d') : null,
                 'time' => $appointment->time,
                 'is_completed' => (bool) $appointment->is_completed,
@@ -205,14 +207,48 @@ class AppointmentController extends Controller
                     || $request->user()->can('show-anesthesias-menu'),
                 'operations' => $request->user()->can('show-operations-menu'),
             ],
+            'formData' => [
+                'doctorsByDepartment' => url('/react/patients/doctors-by-department'),
+            ],
             'urls' => [
                 'index' => route('react.appointments.index'),
                 'edit' => route('react.appointments.edit', $appointment),
                 'printToken' => url("/appointments/{$appointment->id}/printToken"),
                 'complete' => route('react.appointments.complete', $appointment),
+                'assignDoctor' => route('react.appointments.assign-doctor', $appointment),
                 'legacyShow' => url("/appointments/show/{$appointment->id}"),
             ],
         ]);
+    }
+
+    public function assignDoctor(Request $request, Appointment $appointment): RedirectResponse
+    {
+        $this->authorize('update', $appointment);
+
+        if ($appointment->is_completed) {
+            throw ValidationException::withMessages([
+                'doctor_id' => [localize('global.appointment_completed')],
+            ]);
+        }
+
+        if ($appointment->processed_by) {
+            throw ValidationException::withMessages([
+                'doctor_id' => [localize('global.cannot_change_doctor_after_acceptance')],
+            ]);
+        }
+
+        $validated = $request->validate([
+            'doctor_id' => 'required|exists:doctors,id',
+        ]);
+
+        $appointment->update([
+            'doctor_id' => $validated['doctor_id'],
+            'processed_by' => $request->user()->id,
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', localize('global.doctor_assigned_successfully'));
     }
 
     public function complete(Request $request, Appointment $appointment): RedirectResponse

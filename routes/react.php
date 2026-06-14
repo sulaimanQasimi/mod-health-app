@@ -212,6 +212,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('prosthetics/referrals/{referral}', [AppointmentProstheticsController::class, 'showReferral'])->name('prosthetics.referrals.show');
         });
         Route::post('/{appointment}/accept', [AppointmentController::class, 'accept'])->name('accept');
+        Route::post('/{appointment}/assign-doctor', [AppointmentController::class, 'assignDoctor'])->name('assign-doctor');
         Route::put('/{appointment}/change-department', [AppointmentController::class, 'changeDepartment'])->name('change-department');
         Route::get('/{appointment}/edit', [AppointmentController::class, 'edit'])->name('edit');
         Route::match(['put', 'post'], '/{appointment}', [AppointmentController::class, 'update'])->name('update');

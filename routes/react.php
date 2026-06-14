@@ -80,6 +80,7 @@ use App\Http\Controllers\V1\PharmacyFulfillmentController;
 use App\Http\Controllers\V1\PhysiotherapyProcedureController;
 use App\Http\Controllers\V1\PhysiotherapyReportController;
 use App\Http\Controllers\V1\PhysiotherapyTypeController;
+use App\Http\Controllers\V1\ProfileController;
 use App\Http\Controllers\V1\PrescriptionController;
 use App\Http\Controllers\V1\PrescriptionStockController;
 use App\Http\Controllers\V1\ProcedureTypeController;
@@ -107,6 +108,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/data', [DashboardController::class, 'data'])->name('dashboard.data');
 
     Route::get('/scan-code', [ScanCodeController::class, 'index'])->name('scan-code');
+
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'show'])->name('show');
+        Route::match(['put', 'post'], '/', [ProfileController::class, 'update'])->name('update');
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('update-password');
+    });
 
     Route::prefix('patients')->name('patients.')->group(function () {
         Route::get('/', [PatientController::class, 'index'])->name('index');

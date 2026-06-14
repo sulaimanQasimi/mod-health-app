@@ -111,3 +111,25 @@ export interface UserFormUrls {
     update: string;
     back: string;
 }
+
+export interface UserProfile {
+    id: number;
+    name: string;
+    last_name: string;
+    email: string;
+    avatar_url: string;
+    status: number;
+    is_doctor: boolean;
+    clinic_type: string | null;
+    branch_name: string | null;
+    department_name: string | null;
+    section_name: string | null;
+    category_name: string | null;
+    roles: Array<{ id: number; name: string }>;
+    joined_at: string | null;
+}
+
+export interface ProfileUrls {
+    update: string;
+    updatePassword: string;
+}

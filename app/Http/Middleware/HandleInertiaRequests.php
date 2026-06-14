@@ -58,7 +58,7 @@ class HandleInertiaRequests extends Middleware
             'csrfToken' => csrf_token(),
             'urls' => [
                 'changeLanguage' => url('change_language'),
-                'profile' => route('users.profile'),
+                'profile' => route('react.profile.show'),
                 'logout' => route('logout'),
             ],
         ];

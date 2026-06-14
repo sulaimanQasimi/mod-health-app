@@ -7,6 +7,8 @@ use App\Models\DepotRequest;
 use App\Models\DepotRequestItem;
 use App\Models\DepotRequestStatusLog;
 use App\Models\DepotTransaction;
+use App\Models\PharmacyFulfillment;
+use App\Models\Unit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -54,7 +56,14 @@ class DepotRequestService
         }
 
         $requestingDepot = $request->requestingDepot;
-        if (! $requestingDepot || ! $requestingDepot->is_active) {
+        if ($request->isPharmacyRequest()) {
+            $pharmacy = $request->pharmacy;
+            if (! $pharmacy) {
+                throw ValidationException::withMessages([
+                    'pharmacy_id' => 'Destination pharmacy is required.',
+                ]);
+            }
+        } elseif (! $requestingDepot || ! $requestingDepot->is_active) {
             throw ValidationException::withMessages([
                 'requesting_depot_id' => 'Requesting depot must be active.',
             ]);
@@ -123,10 +132,19 @@ class DepotRequestService
 
         return DB::transaction(function () use ($request) {
             Depot::whereKey($request->source_depot_id)->lockForUpdate()->firstOrFail();
-            Depot::whereKey($request->requesting_depot_id)->lockForUpdate()->firstOrFail();
+
+            if (! $request->isPharmacyRequest()) {
+                Depot::whereKey($request->requesting_depot_id)->lockForUpdate()->firstOrFail();
+            }
 
             foreach ($request->items as $item) {
                 if ($item->depot_transaction_id) {
+                    continue;
+                }
+
+                if ($request->isPharmacyRequest()) {
+                    $this->fulfillPharmacyLine($request, $item);
+
                     continue;
                 }
 
@@ -165,6 +183,55 @@ class DepotRequestService
 
             return $this->transition($request, DepotRequest::STATUS_FULFILLED, 'Fulfilled with transfers');
         });
+    }
+
+    private function fulfillPharmacyLine(DepotRequest $request, DepotRequestItem $item): void
+    {
+        $medicineId = (int) $item->medicine_id;
+        $quantity = (int) $item->quantity;
+
+        $this->stockService->lockLedger((int) $request->source_depot_id, DepotTransaction::ITEM_MEDICINE, $medicineId);
+        $this->stockService->ensureAvailable(
+            DepotTransaction::ITEM_MEDICINE,
+            (int) $request->source_depot_id,
+            $medicineId,
+            $quantity
+        );
+
+        $transactionNumber = DepotTransaction::nextTransactionNumber();
+        $transactionDate = now()->toDateString();
+
+        $fulfillment = PharmacyFulfillment::create([
+            'medicine_id' => $medicineId,
+            'unit_type' => ! empty($item->unit_id) ? optional(Unit::find($item->unit_id))->name : null,
+            'amount' => (string) $quantity,
+            'form_no' => $transactionNumber,
+            'date' => $transactionDate,
+            'pharmacy_id' => $request->pharmacy_id,
+            'user_id' => Auth::id(),
+        ]);
+
+        $transaction = DepotTransaction::create([
+            'from_depot_id' => $request->source_depot_id,
+            'depot_id' => $request->source_depot_id,
+            'pharmacy_id' => $request->pharmacy_id,
+            'depot_request_id' => $request->id,
+            'medicine_id' => $medicineId,
+            'unit_id' => $item->unit_id,
+            'batch_number' => $item->batch_number,
+            'quantity' => $quantity,
+            'transaction_date' => $transactionDate,
+            'transaction_number' => $transactionNumber,
+            'type' => DepotTransaction::TYPE_DEPOT_TO_PHARMACY,
+            'transaction_type' => 'out',
+            'status' => DepotTransaction::STATUS_COMPLETED,
+            'notes' => $request->notes,
+            'user_id' => Auth::id(),
+            'transactionable_type' => PharmacyFulfillment::class,
+            'transactionable_id' => $fulfillment->id,
+        ]);
+
+        $item->update(['depot_transaction_id' => $transaction->id]);
     }
 
     public function cancel(DepotRequest $request): DepotRequest

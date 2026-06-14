@@ -1,56 +1,105 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Button, Card, Checkbox, Label, Spinner, Textarea } from 'flowbite-react';
-import { FormEvent } from 'react';
+import { FormEvent, useMemo } from 'react';
 import DepotNavTabs from '../../../Components/Depots/DepotNavTabs';
 import DepotRequestItemsEditor, {
     DepotRequestLineItem,
     emptyRequestLine,
 } from '../../../Components/Depots/DepotRequestItemsEditor';
-import { DEPOT_PRIMARY_BTN_CLASS } from '../../../Components/Depots/depotUi';
+import { DEPOT_PRIMARY_BTN_CLASS, resolveDepotRequestSourceDepot } from '../../../Components/Depots/depotUi';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotFormData, DepotNavUrls } from '../../../types/depot';
+import { DepotFormData, DepotNavPermissions, DepotNavUrls, DepotSourceOption } from '../../../types/depot';
+import { OptionItem } from '../../../types/settings';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
+
+type DestinationType = 'depot' | 'pharmacy';
 
 export default function CreateDepotRequest({
     defaults,
     formData,
+    sourceDepot: initialSourceDepot = null,
     navUrls,
+    navPermissions,
     urls,
+    viewContext = 'depot',
+    userPharmacies = [],
 }: {
-    defaults: { requesting_depot_id: string; source_depot_id: string };
+    defaults: {
+        destination_type: DestinationType;
+        requesting_depot_id: string;
+        pharmacy_id: string;
+    };
     formData: DepotFormData;
+    sourceDepot?: DepotSourceOption | null;
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: { index: string; store: string; stockAvailable: string };
+    viewContext?: 'depot' | 'pharmacy';
+    userPharmacies?: OptionItem[];
 }) {
     const { t } = useTranslation();
+    const isPharmacyContext = viewContext === 'pharmacy';
 
     const { data, setData, post, processing, errors } = useForm<{
+        destination_type: DestinationType;
         requesting_depot_id: string;
-        source_depot_id: string;
+        pharmacy_id: string;
         notes: string;
         items: DepotRequestLineItem[];
         submit_now: boolean;
     }>({
+        destination_type: isPharmacyContext ? 'pharmacy' : defaults.destination_type,
         requesting_depot_id: defaults.requesting_depot_id,
-        source_depot_id: defaults.source_depot_id,
+        pharmacy_id: defaults.pharmacy_id,
         notes: '',
         items: [emptyRequestLine()],
         submit_now: false,
     });
+
+    const resolvedSourceDepot = useMemo(
+        () => resolveDepotRequestSourceDepot(
+            data.destination_type,
+            data.requesting_depot_id,
+            data.pharmacy_id,
+            formData.activeDepots,
+            initialSourceDepot,
+        ),
+        [
+            data.destination_type,
+            data.requesting_depot_id,
+            data.pharmacy_id,
+            formData.activeDepots,
+            initialSourceDepot,
+        ],
+    );
+
+    const isPharmacyDestination = data.destination_type === 'pharmacy';
+    const pharmacyOptions = isPharmacyContext && userPharmacies.length > 0
+        ? userPharmacies
+        : formData.pharmacies;
 
     const submit = (event: FormEvent) => {
         event.preventDefault();
         post(urls.store, { preserveScroll: true });
     };
 
+    const setDestinationType = (destinationType: DestinationType) => {
+        setData((current) => ({
+            ...current,
+            destination_type: destinationType,
+            requesting_depot_id: destinationType === 'pharmacy' ? '' : current.requesting_depot_id,
+            pharmacy_id: destinationType === 'depot' ? '' : current.pharmacy_id,
+        }));
+    };
+
     return (
         <DashboardLayout>
             <Head title={t('global.depot.new_request')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="requests" urls={navUrls} />
+                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} permissions={navPermissions} />}
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.depot.new_request')}
@@ -62,37 +111,79 @@ export default function CreateDepotRequest({
                     />
 
                     <form onSubmit={submit} className="space-y-6">
-                        <div className="grid gap-4 md:grid-cols-2">
+                        {!isPharmacyContext && (
                             <div>
-                                <Label>{t('global.depot.requesting_depot')} *</Label>
-                                <SearchableSelect
-                                    value={data.requesting_depot_id}
-                                    onChange={(value) => setData('requesting_depot_id', value)}
-                                    options={[
-                                        { value: '', label: t('global.select') },
-                                        ...formData.activeDepots.map((depot) => ({
-                                            value: String(depot.id),
-                                            label: depot.name,
-                                        })),
-                                    ]}
-                                />
-                                {errors.requesting_depot_id && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.requesting_depot_id}</p>
-                                )}
+                                <Label>{t('global.depot.destination_type')} *</Label>
+                                <div className="mt-2 inline-flex rounded-lg border border-gray-200 p-0.5 dark:border-gray-600">
+                                    <button
+                                        type="button"
+                                        onClick={() => setDestinationType('depot')}
+                                        className={`rounded-md px-3 py-1.5 text-sm font-medium ${
+                                            !isPharmacyDestination
+                                                ? 'bg-violet-600 text-white'
+                                                : 'text-gray-600 dark:text-gray-300'
+                                        }`}
+                                    >
+                                        {t('global.depot.requesting_depot')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setDestinationType('pharmacy')}
+                                        className={`rounded-md px-3 py-1.5 text-sm font-medium ${
+                                            isPharmacyDestination
+                                                ? 'bg-violet-600 text-white'
+                                                : 'text-gray-600 dark:text-gray-300'
+                                        }`}
+                                    >
+                                        {t('global.pharmacy')}
+                                    </button>
+                                </div>
                             </div>
+                        )}
+
+                        <div className="grid gap-4 md:grid-cols-2">
+                            {isPharmacyDestination ? (
+                                <div>
+                                    <Label>{t('global.pharmacy')} *</Label>
+                                    <SearchableSelect
+                                        value={data.pharmacy_id}
+                                        onChange={(value) => setData('pharmacy_id', value)}
+                                        options={[
+                                            { value: '', label: t('global.select') },
+                                            ...pharmacyOptions.map((pharmacy) => ({
+                                                value: String(pharmacy.id),
+                                                label: pharmacy.name,
+                                            })),
+                                        ]}
+                                    />
+                                    {errors.pharmacy_id && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.pharmacy_id}</p>
+                                    )}
+                                </div>
+                            ) : (
+                                <div>
+                                    <Label>{t('global.depot.requesting_depot')} *</Label>
+                                    <SearchableSelect
+                                        value={data.requesting_depot_id}
+                                        onChange={(value) => setData('requesting_depot_id', value)}
+                                        options={[
+                                            { value: '', label: t('global.select') },
+                                            ...formData.activeDepots.map((depot) => ({
+                                                value: String(depot.id),
+                                                label: depot.name,
+                                            })),
+                                        ]}
+                                    />
+                                    {errors.requesting_depot_id && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.requesting_depot_id}</p>
+                                    )}
+                                </div>
+                            )}
                             <div>
-                                <Label>{t('global.depot.source_depot')} *</Label>
-                                <SearchableSelect
-                                    value={data.source_depot_id}
-                                    onChange={(value) => setData('source_depot_id', value)}
-                                    options={[
-                                        { value: '', label: t('global.select') },
-                                        ...formData.activeDepots.map((depot) => ({
-                                            value: String(depot.id),
-                                            label: depot.name,
-                                        })),
-                                    ]}
-                                />
+                                <Label>{t('global.depot.source_depot')}</Label>
+                                <div className="mt-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800/60 dark:text-gray-200">
+                                    {resolvedSourceDepot?.name ?? t('global.select')}
+                                </div>
                                 {errors.source_depot_id && (
                                     <p className="mt-1 text-sm text-red-600">{errors.source_depot_id}</p>
                                 )}
@@ -103,9 +194,10 @@ export default function CreateDepotRequest({
                             items={data.items}
                             onChange={(items) => setData('items', items)}
                             formData={formData}
-                            sourceDepotId={data.source_depot_id}
+                            sourceDepotId={resolvedSourceDepot ? String(resolvedSourceDepot.id) : ''}
                             stockUrl={urls.stockAvailable}
                             errors={errors as Record<string, string>}
+                            medicinesOnly={isPharmacyDestination}
                         />
 
                         <div>

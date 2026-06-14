@@ -5,7 +5,6 @@ export interface DepotNavUrls {
     transactions: string;
     requests: string;
     depotToDepot: string;
-    depotToPharmacy: string;
     reports: string;
     tools: string;
 }
@@ -59,6 +58,12 @@ export interface DepotDetail {
 
 export interface DepotActiveOption extends OptionItem {
     pharmacy_id?: number | null;
+    parent_depot_id?: number | null;
+}
+
+export interface DepotSourceOption {
+    id: number;
+    name: string;
 }
 
 export interface DepotFormData {
@@ -106,17 +111,21 @@ export interface DepotRequestListItem {
     id: number;
     request_number: string | null;
     status: string;
+    destination_type: 'depot' | 'pharmacy';
     items_count: number;
     total_quantity: number;
     items_summary: string;
     requesting_depot_name: string | null;
+    pharmacy_id: number | null;
+    pharmacy_name: string | null;
+    destination_name: string | null;
     source_depot_name: string | null;
     requested_by_name: string | null;
     created_at: string | null;
 }
 
 export interface DepotRequestDetail extends DepotRequestListItem {
-    requesting_depot_id: number;
+    requesting_depot_id: number | null;
     source_depot_id: number;
     notes: string | null;
     workflow_rank: number;
@@ -141,3 +150,5 @@ export type PaginatedDepotTransactions = PaginatedResult<DepotTransactionListIte
 export type PaginatedDepotRequests = PaginatedResult<DepotRequestListItem>;
 
 export type DepotCrudPermissions = SettingsPermissions;
+
+export type DepotNavPermissions = Partial<Record<'index' | 'transactions' | 'requests' | 'reports' | 'tools', boolean>>;

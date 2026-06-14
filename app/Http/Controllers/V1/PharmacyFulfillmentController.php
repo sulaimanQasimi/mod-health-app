@@ -7,12 +7,8 @@ use App\Http\Controllers\V1\Concerns\AuthorizesPharmacyStockAccess;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Models\Medicine;
 use App\Models\Pharmacy;
-use App\Models\PharmacyFulfillment;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,49 +17,9 @@ class PharmacyFulfillmentController extends Controller
     use AuthorizesPharmacyStockAccess;
     use PaginatesInertiaIndex;
 
-    private const INDEX_FILTER_KEYS = [
-        'search', 'medicine_id', 'unit_type', 'form_no', 'amount_from', 'amount_to',
-        'pharmacy_id', 'date_from', 'date_to', 'sort_by', 'sort_order', 'per_page',
-    ];
-
     private const STOCK_FILTER_KEYS = [
         'search', 'medicine_id', 'pharmacy_id', 'stock_status', 'sort_by', 'sort_order', 'per_page',
     ];
-
-    public function index(Request $request): Response
-    {
-        $user = $request->user();
-        $this->authorizePharmacyFulfillment($user);
-
-        $paginator = $this->paginateQuery(
-            $this->buildIndexQuery($request, $user),
-            $request,
-            15,
-        );
-
-        return Inertia::render('PharmacyFulfillments/Index', [
-            'fulfillments' => $this->paginationPayload($paginator, fn (PharmacyFulfillment $item) => [
-                'id' => $item->id,
-                'medicine_name' => $item->medicine?->name,
-                'unit_type' => $item->unit_type,
-                'amount' => $item->amount,
-                'form_no' => $item->form_no,
-                'date' => $item->date?->format('Y-m-d'),
-                'pharmacy_name' => $item->pharmacy?->name,
-                'user_name' => $item->user ? trim("{$item->user->name} {$item->user->last_name}") : null,
-                'created_by_name' => $item->createdBy ? trim("{$item->createdBy->name} {$item->createdBy->last_name}") : null,
-                'created_at' => $item->created_at?->format('Y-m-d H:i'),
-            ]),
-            'filters' => $this->collectFilters($request, self::INDEX_FILTER_KEYS),
-            'filterOptions' => $this->indexFilterOptions($user),
-            'userPharmacies' => $user->activePharmacies->map(fn (Pharmacy $pharmacy) => [
-                'id' => $pharmacy->id,
-                'name' => $pharmacy->name,
-            ])->values()->all(),
-            'permissions' => $this->fulfillmentPermissions($user),
-            'urls' => $this->indexUrls(),
-        ]);
-    }
 
     public function stock(Request $request): Response
     {
@@ -206,188 +162,6 @@ class PharmacyFulfillmentController extends Controller
         ));
     }
 
-    public function create(Request $request): Response|RedirectResponse
-    {
-        $this->authorizePharmacyFulfillment($request->user());
-
-        $userPharmacy = $request->user()->activePharmacies()->first();
-        if (! $userPharmacy && ! $this->isPharmacyAdmin($request->user())) {
-            return redirect()
-                ->route('react.pharmacy-fulfillments.index')
-                ->with('warning', localize('global.no_pharmacy_access'));
-        }
-
-        return Inertia::render('PharmacyFulfillments/Create', [
-            'formData' => $this->buildFormData($request->user()),
-            'userPharmacy' => $userPharmacy ? ['id' => $userPharmacy->id, 'name' => $userPharmacy->name] : null,
-            'urls' => $this->formUrls(),
-        ]);
-    }
-
-    public function store(Request $request): RedirectResponse
-    {
-        $this->authorizePharmacyFulfillment($request->user());
-
-        $user = $request->user();
-        $userPharmacy = $user->activePharmacies()->first();
-
-        if (! $userPharmacy && ! $this->isPharmacyAdmin($user)) {
-            return redirect()
-                ->route('react.pharmacy-fulfillments.index')
-                ->with('warning', localize('global.no_pharmacy_access'));
-        }
-
-        $data = $this->validateFulfillment($request);
-        $data['pharmacy_id'] = $userPharmacy?->id ?? $data['pharmacy_id'] ?? null;
-        $data['user_id'] = $user->id;
-
-        if ($request->hasFile('form')) {
-            $file = $request->file('form');
-            $filename = time().'_'.uniqid().'_'.$file->getClientOriginalName();
-            $data['form'] = $file->storeAs('pharmacy_fulfillments', $filename, 'public');
-        }
-
-        if (! empty($data['date'])) {
-            $data['date'] = $this->parseOptionalDate($data['date']);
-        }
-
-        PharmacyFulfillment::create($data);
-
-        return redirect()
-            ->route('react.pharmacy-fulfillments.index')
-            ->with('success', localize('global.pharmacy_fulfillment_created_successfully'));
-    }
-
-    public function show(Request $request, PharmacyFulfillment $pharmacyFulfillment): Response
-    {
-        $this->authorizeFulfillmentRecord($request->user(), $pharmacyFulfillment);
-        $pharmacyFulfillment->load(['medicine', 'pharmacy', 'user', 'createdBy', 'updatedBy']);
-
-        return Inertia::render('PharmacyFulfillments/Show', [
-            'fulfillment' => $this->transformFulfillment($pharmacyFulfillment),
-            'permissions' => $this->fulfillmentPermissions($request->user()),
-            'urls' => $this->recordUrls($pharmacyFulfillment),
-        ]);
-    }
-
-    public function edit(Request $request, PharmacyFulfillment $pharmacyFulfillment): Response
-    {
-        $this->authorizeFulfillmentRecord($request->user(), $pharmacyFulfillment);
-        $pharmacyFulfillment->load(['medicine', 'pharmacy']);
-
-        return Inertia::render('PharmacyFulfillments/Edit', [
-            'fulfillment' => [
-                'id' => $pharmacyFulfillment->id,
-                'medicine_id' => (string) $pharmacyFulfillment->medicine_id,
-                'unit_type' => $pharmacyFulfillment->unit_type ?? '',
-                'amount' => $pharmacyFulfillment->amount,
-                'form_no' => $pharmacyFulfillment->form_no,
-                'date' => $pharmacyFulfillment->date?->format('Y-m-d'),
-                'form_path' => $pharmacyFulfillment->form,
-                'pharmacy_name' => $pharmacyFulfillment->pharmacy?->name,
-            ],
-            'formData' => $this->buildFormData($request->user()),
-            'urls' => $this->formUrls($pharmacyFulfillment),
-        ]);
-    }
-
-    public function update(Request $request, PharmacyFulfillment $pharmacyFulfillment): RedirectResponse
-    {
-        $this->authorizeFulfillmentRecord($request->user(), $pharmacyFulfillment);
-
-        $data = $this->validateFulfillment($request, false);
-
-        if (! empty($data['date'])) {
-            $data['date'] = $this->parseOptionalDate($data['date']);
-        }
-
-        if ($request->hasFile('form')) {
-            if ($pharmacyFulfillment->form && Storage::disk('public')->exists($pharmacyFulfillment->form)) {
-                Storage::disk('public')->delete($pharmacyFulfillment->form);
-            }
-
-            $file = $request->file('form');
-            $filename = time().'_'.uniqid().'_'.$file->getClientOriginalName();
-            $data['form'] = $file->storeAs('pharmacy_fulfillments', $filename, 'public');
-        }
-
-        $pharmacyFulfillment->update($data);
-
-        return redirect()
-            ->route('react.pharmacy-fulfillments.index')
-            ->with('success', localize('global.pharmacy_fulfillment_updated_successfully'));
-    }
-
-    public function destroy(Request $request, PharmacyFulfillment $pharmacyFulfillment): RedirectResponse
-    {
-        $this->authorizeFulfillmentRecord($request->user(), $pharmacyFulfillment);
-        $pharmacyFulfillment->delete();
-
-        return redirect()
-            ->route('react.pharmacy-fulfillments.index')
-            ->with('success', localize('global.pharmacy_fulfillment_deleted_successfully'));
-    }
-
-    /**
-     * @return Builder<PharmacyFulfillment>
-     */
-    private function buildIndexQuery(Request $request, \App\Models\User $user): Builder
-    {
-        $query = PharmacyFulfillment::query()->with(['medicine', 'pharmacy', 'user', 'createdBy']);
-        $userPharmacies = $user->activePharmacies;
-
-        if ($userPharmacies->isNotEmpty() && ! $this->isPharmacyAdmin($user)) {
-            $query->whereIn('pharmacy_id', $userPharmacies->pluck('id'));
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($searchQuery) use ($search) {
-                $searchQuery->whereHas('medicine', fn ($medicineQuery) => $medicineQuery->where('name', 'like', "%{$search}%"))
-                    ->orWhere('form_no', 'like', "%{$search}%")
-                    ->orWhere('unit_type', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('medicine_id')) {
-            $query->where('medicine_id', $request->medicine_id);
-        }
-
-        if ($request->filled('unit_type')) {
-            $query->where('unit_type', 'like', '%'.$request->unit_type.'%');
-        }
-
-        if ($request->filled('form_no')) {
-            $query->where('form_no', 'like', '%'.$request->form_no.'%');
-        }
-
-        if ($request->filled('amount_from')) {
-            $query->where('amount', '>=', $request->amount_from);
-        }
-
-        if ($request->filled('amount_to')) {
-            $query->where('amount', '<=', $request->amount_to);
-        }
-
-        if ($request->filled('pharmacy_id') && $this->isPharmacyAdmin($user)) {
-            $query->where('pharmacy_id', $request->pharmacy_id);
-        }
-
-        if ($from = $this->parseOptionalDate($request->date_from)) {
-            $query->whereDate('date', '>=', $from);
-        }
-
-        if ($to = $this->parseOptionalDate($request->date_to)) {
-            $query->whereDate('date', '<=', $to);
-        }
-
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc') === 'asc' ? 'asc' : 'desc';
-        $query->orderBy($sortBy, $sortOrder);
-
-        return $query;
-    }
-
     /**
      * @return array<string, mixed>
      */
@@ -432,113 +206,10 @@ class PharmacyFulfillmentController extends Controller
                 'name' => $pharmacy->name,
             ])->values()->all(),
             'urls' => [
-                'index' => route('react.pharmacy-fulfillments.stock'),
-                'fulfillments' => route('react.pharmacy-fulfillments.index'),
+                'index' => route('react.pharmacy-stock.index'),
+                'requests' => route('react.depots.requests.index'),
                 'outcomes' => route('react.outcomes.index'),
             ],
         ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function indexFilterOptions(\App\Models\User $user): array
-    {
-        return [
-            'pharmacies' => $this->isPharmacyAdmin($user)
-                ? Pharmacy::query()->orderBy('name')->get(['id', 'name'])
-                : [],
-            'medicines' => Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(['id', 'name']),
-        ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function indexUrls(): array
-    {
-        return [
-            'index' => route('react.pharmacy-fulfillments.index'),
-            'create' => route('react.pharmacy-fulfillments.create'),
-            'show' => url('/react/pharmacy-fulfillments'),
-            'edit' => url('/react/pharmacy-fulfillments'),
-            'destroy' => url('/react/pharmacy-fulfillments'),
-            'stock' => route('react.pharmacy-fulfillments.stock'),
-        ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function formUrls(?PharmacyFulfillment $fulfillment = null): array
-    {
-        return [
-            'index' => route('react.pharmacy-fulfillments.index'),
-            'store' => route('react.pharmacy-fulfillments.store'),
-            'update' => $fulfillment ? route('react.pharmacy-fulfillments.update', $fulfillment) : '',
-            'back' => route('react.pharmacy-fulfillments.index'),
-        ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function recordUrls(PharmacyFulfillment $fulfillment): array
-    {
-        return [
-            'index' => route('react.pharmacy-fulfillments.index'),
-            'edit' => route('react.pharmacy-fulfillments.edit', $fulfillment),
-            'destroy' => route('react.pharmacy-fulfillments.destroy', $fulfillment),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function transformFulfillment(PharmacyFulfillment $fulfillment): array
-    {
-        return [
-            'id' => $fulfillment->id,
-            'medicine_name' => $fulfillment->medicine?->name,
-            'unit_type' => $fulfillment->unit_type,
-            'amount' => $fulfillment->amount,
-            'form_no' => $fulfillment->form_no,
-            'date' => $fulfillment->date?->format('Y-m-d'),
-            'form_url' => $fulfillment->form ? Storage::disk('public')->url($fulfillment->form) : null,
-            'pharmacy_name' => $fulfillment->pharmacy?->name,
-            'user_name' => $fulfillment->user ? trim("{$fulfillment->user->name} {$fulfillment->user->last_name}") : null,
-            'created_by_name' => $fulfillment->createdBy ? trim("{$fulfillment->createdBy->name} {$fulfillment->createdBy->last_name}") : null,
-            'updated_by_name' => $fulfillment->updatedBy ? trim("{$fulfillment->updatedBy->name} {$fulfillment->updatedBy->last_name}") : null,
-            'created_at' => $fulfillment->created_at?->format('Y-m-d H:i'),
-            'updated_at' => $fulfillment->updated_at?->format('Y-m-d H:i'),
-        ];
-    }
-
-    /**
-     * @return array{medicines: list<array{id: int, name: string}>}
-     */
-    private function buildFormData(\App\Models\User $user): array
-    {
-        return [
-            'medicines' => Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(['id', 'name'])
-                ->map(fn (Medicine $medicine) => ['id' => $medicine->id, 'name' => $medicine->name])
-                ->values()
-                ->all(),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function validateFulfillment(Request $request, bool $requireAll = true): array
-    {
-        return $request->validate([
-            'medicine_id' => ($requireAll ? 'required' : 'sometimes').'|exists:medicines,id',
-            'unit_type' => 'nullable|string|max:255',
-            'amount' => ($requireAll ? 'required' : 'sometimes').'|string|max:191',
-            'form_no' => ($requireAll ? 'required' : 'sometimes').'|string|max:191',
-            'date' => ($requireAll ? 'required' : 'sometimes').'|string',
-            'form' => 'nullable|file|mimes:pdf|max:10240',
-        ]);
     }
 }

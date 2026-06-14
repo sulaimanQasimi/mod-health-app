@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests\Depot;
 
+use App\Http\Requests\Depot\Concerns\ValidatesDepotRequestDestination;
 use App\Http\Requests\Depot\Concerns\ValidatesDepotRequestItems;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDepotRequestRequest extends FormRequest
 {
+    use ValidatesDepotRequestDestination;
     use ValidatesDepotRequestItems;
 
     public function authorize(): bool
@@ -17,8 +19,7 @@ class UpdateDepotRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'requesting_depot_id' => ['required', 'exists:depots,id', 'different:source_depot_id'],
-            'source_depot_id' => ['required', 'exists:depots,id'],
+            ...$this->depotRequestDestinationRules(),
             'notes' => ['nullable', 'string', 'max:2000'],
             ...$this->depotRequestItemRules(),
         ];

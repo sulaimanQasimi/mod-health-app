@@ -1,13 +1,14 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
 import { useState } from 'react';
+import DepotNavTabs from '../../Components/Depots/DepotNavTabs';
 import { DEPOT_CARD_CLASS, depotStatusBadgeColor, depotTypeLabel } from '../../Components/Depots/depotUi';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
-import { DepotCrudPermissions, DepotDetail, DepotNavUrls } from '../../types/depot';
-import { SETTINGS_WIDE_FORM_WIDTH } from '../../utils/settingsUi';
+import { DepotCrudPermissions, DepotDetail, DepotNavPermissions, DepotNavUrls } from '../../types/depot';
+import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface StockPreviewItem {
     item_type: string;
@@ -50,7 +51,8 @@ export default function ShowDepot({
     pendingOutgoingRequests,
     pendingIncomingRequests,
     permissions,
-    navUrls: _navUrls,
+    navUrls,
+    navPermissions,
     urls,
 }: {
     depot: DepotDetail;
@@ -66,6 +68,7 @@ export default function ShowDepot({
     pendingIncomingRequests: RequestPreview[];
     permissions: DepotShowPermissions;
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: {
         index: string;
         edit: string;
@@ -89,7 +92,8 @@ export default function ShowDepot({
     return (
         <DashboardLayout>
             <Head title={depot.name} />
-            <div className={`mx-auto ${SETTINGS_WIDE_FORM_WIDTH} space-y-6`}>
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
+                <DepotNavTabs active="index" urls={navUrls} permissions={navPermissions} />
                 <Card className="overflow-hidden shadow-sm">
                     <SettingsPageHeader
                         title={depot.name}

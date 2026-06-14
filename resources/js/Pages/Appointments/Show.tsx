@@ -25,6 +25,7 @@ import {
     UnderReviewSection,
 } from '../../Components/Appointments/Sections';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import AppointmentDoctorSelect from '../../Components/Appointments/AppointmentDoctorSelect';
 import AppointmentPageHeader from '../../Components/Appointments/AppointmentPageHeader';
 import BackLink from '../../Components/ui/BackLink';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -35,13 +36,16 @@ interface ShowAppointmentHeader {
     patient_name: string | null;
     patient_last_name: string | null;
     id_card: string | null;
+    doctor_id: number | null;
     doctor_name: string | null;
+    department_id: number | null;
     department_name: string | null;
     date: string | null;
     time: string | null;
     is_completed: boolean;
     is_processed: boolean;
     processed_by_id: number | null;
+    can_change_doctor: boolean;
 }
 
 interface PatientHistoryDiagnosis {
@@ -70,11 +74,15 @@ interface ShowAppointmentProps {
         anesthesia: boolean;
         operations: boolean;
     };
+    formData: {
+        doctorsByDepartment: string;
+    };
     urls: {
         index: string;
         edit: string;
         printToken: string;
         complete: string;
+        assignDoctor: string;
         legacyShow: string;
     };
 }
@@ -84,6 +92,7 @@ export default function ShowAppointment({
     patientHistory,
     permissions,
     sectionPermissions,
+    formData,
     urls,
 }: ShowAppointmentProps) {
     const { t } = useTranslation();
@@ -117,6 +126,15 @@ export default function ShowAppointment({
                         icon="bx-calendar-check"
                         action={
                             <>
+                                <AppointmentDoctorSelect
+                                    departmentId={appointment.department_id}
+                                    doctorId={appointment.doctor_id}
+                                    canChangeDoctor={appointment.can_change_doctor}
+                                    isCompleted={appointment.is_completed}
+                                    isProcessed={appointment.is_processed}
+                                    doctorsByDepartmentUrl={formData.doctorsByDepartment}
+                                    assignUrl={urls.assignDoctor}
+                                />
                                 {appointment.is_completed ? (
                                     <Badge color="success">{t('global.appointment_completed')}</Badge>
                                 ) : (

@@ -11,6 +11,7 @@ use App\Models\DepotRequest;
 use App\Models\DepotTransaction;
 use App\Models\User;
 use App\Services\DepotStockService;
+use App\Support\DepotRolePermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +38,8 @@ class DepotController extends Controller
         $this->authorizeDepotPermission('depot.view');
 
         $query = Depot::query()->with(['department:id,name', 'branch:id,name', 'pharmacy:id,name', 'parentDepot:id,name', 'activeUsers:id']);
+
+        $this->scopeQueryToUserDepots($query, $request->user());
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%'.$request->search.'%');
@@ -74,6 +77,7 @@ class DepotController extends Controller
             ],
             'permissions' => $this->depotCrudPermissions(),
             'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
                 'index' => route('react.depots.index'),
                 'create' => route('react.depots.create'),
@@ -87,11 +91,12 @@ class DepotController extends Controller
 
     public function create(): Response
     {
-        $this->authorizeDepotPermission('depot.create');
+        abort_unless($this->isDepotSystemAdmin(), 403);
 
         return Inertia::render('Depots/Create', [
             'formData' => $this->depotFormOptions(),
             'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
                 'index' => route('react.depots.index'),
                 'store' => route('react.depots.store'),
@@ -101,7 +106,7 @@ class DepotController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.create');
+        abort_unless($this->isDepotSystemAdmin(), 403);
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -138,7 +143,7 @@ class DepotController extends Controller
 
     public function show(Depot $depot): Response
     {
-        $this->authorizeDepotPermission('depot.view');
+        $this->authorizeDepotRecord($depot, DepotRolePermissions::ACTION_VIEW);
 
         $depot->load(['department:id,name', 'branch:id,name', 'pharmacy:id,name', 'parentDepot:id,name', 'activeUsers:id,name,last_name,email']);
 
@@ -193,11 +198,21 @@ class DepotController extends Controller
             'pendingOutgoingRequests' => $pendingOutgoing,
             'pendingIncomingRequests' => $pendingIncoming,
             'permissions' => array_merge($this->depotCrudPermissions(), [
-                'transaction_create' => $this->userCan('depot.transaction.create'),
-                'request_create' => $this->userCan('depot.request.create'),
-                'movement_pharmacy' => $this->userCan('depot.movement.depot_to_pharmacy') && (bool) $depot->pharmacy_id,
+                'transaction_create' => $this->userCanDepotAction(
+                    DepotRolePermissions::ACTION_TRANSACTION_CREATE,
+                    $depot->id,
+                ),
+                'request_create' => $this->userCanDepotAction(
+                    DepotRolePermissions::ACTION_REQUEST_CREATE,
+                    $depot->id,
+                ),
+                'movement_pharmacy' => $this->userCanDepotAction(
+                    DepotRolePermissions::ACTION_MOVEMENT_DEPOT_TO_PHARMACY,
+                    $depot->id,
+                ) && (bool) $depot->pharmacy_id,
             ]),
             'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
                 'index' => route('react.depots.index'),
                 'edit' => route('react.depots.edit', $depot),
@@ -215,31 +230,87 @@ class DepotController extends Controller
 
     public function stock(Request $request, Depot $depot): Response
     {
-        $this->authorizeDepotPermission('depot.view');
+        $this->authorizeDepotRecord($depot, DepotRolePermissions::ACTION_VIEW);
 
-        $itemType = $request->get('item_type');
-        $search = $request->get('search');
+        $itemType = $request->get('item_type') ?: null;
+        $search = $request->get('search') ?: null;
+        $stockStatus = $request->get('stock_status') ?: null;
+        $sortBy = $request->get('sort_by', 'name');
+        $sortOrder = $request->get('sort_order', 'asc');
 
-        $stockItems = $this->stockService->stockItemsForDepot($depot->id, $itemType, $search)->values()->all();
+        $stockItems = $this->stockService
+            ->stockItemsForDepot($depot->id, $itemType, $search, includeZero: true)
+            ->when(
+                ! $stockStatus,
+                fn ($items) => $items->where('available', '>', 0),
+            )
+            ->pipe(fn ($items) => $this->stockService->filterAndSortStockItems($items, $stockStatus, (string) $sortBy, (string) $sortOrder))
+            ->map(fn (array $item) => [
+                ...$item,
+                'stock_status' => $this->stockLevelForQuantity((int) $item['available']),
+            ])
+            ->values()
+            ->all();
+
+        $maxQuantity = collect($stockItems)->max('available') ?: 1;
 
         return Inertia::render('Depots/Stock', [
-            'depot' => ['id' => $depot->id, 'name' => $depot->name],
+            'depot' => [
+                'id' => $depot->id,
+                'name' => $depot->name,
+                'is_active' => (bool) $depot->is_active,
+            ],
             'stockItems' => $stockItems,
+            'stockStats' => $this->stockService->stockStatsForDepot($depot->id),
+            'maxQuantity' => (int) $maxQuantity,
             'filters' => [
                 'item_type' => (string) ($itemType ?? ''),
                 'search' => (string) ($search ?? ''),
+                'stock_status' => (string) ($stockStatus ?? ''),
+                'sort_by' => (string) $sortBy,
+                'sort_order' => (string) $sortOrder,
+            ],
+            'filterOptions' => [
+                'stockStatuses' => ['healthy', 'low_stock', 'out_of_stock'],
+                'sortFields' => ['name', 'quantity', 'item_type'],
             ],
             'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
                 'show' => route('react.depots.show', $depot),
                 'stock' => route('react.depots.stock', $depot),
+                'requestCreate' => route('react.depots.requests.create', ['source_depot_id' => $depot->id]),
+                'transactionCreate' => route('react.depots.transactions.create', ['depot_id' => $depot->id]),
+            ],
+            'permissions' => [
+                'request_create' => $this->userCanDepotAction(
+                    DepotRolePermissions::ACTION_REQUEST_CREATE,
+                    $depot->id,
+                ),
+                'transaction_create' => $this->userCanDepotAction(
+                    DepotRolePermissions::ACTION_TRANSACTION_CREATE,
+                    $depot->id,
+                ),
             ],
         ]);
     }
 
+    private function stockLevelForQuantity(int $quantity): string
+    {
+        if ($quantity <= 0) {
+            return 'out_of_stock';
+        }
+
+        if ($quantity <= DepotStockService::LOW_STOCK_THRESHOLD) {
+            return 'low_stock';
+        }
+
+        return 'healthy';
+    }
+
     public function edit(Depot $depot): Response
     {
-        $this->authorizeDepotPermission('depot.update');
+        abort_unless($this->isDepotSystemAdmin(), 403);
 
         $depot->load('activeUsers:id,name,last_name,email');
 
@@ -247,6 +318,7 @@ class DepotController extends Controller
             'depot' => $this->transformDetail($depot),
             'formData' => $this->depotFormOptions($depot),
             'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
                 'index' => route('react.depots.index'),
                 'show' => route('react.depots.show', $depot),
@@ -257,7 +329,7 @@ class DepotController extends Controller
 
     public function update(Request $request, Depot $depot): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.update');
+        abort_unless($this->isDepotSystemAdmin(), 403);
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -292,7 +364,7 @@ class DepotController extends Controller
 
     public function destroy(Depot $depot): RedirectResponse
     {
-        $this->authorizeDepotPermission('depot.delete');
+        abort_unless($this->isDepotSystemAdmin(), 403);
 
         $depot->delete();
 

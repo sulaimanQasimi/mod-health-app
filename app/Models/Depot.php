@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Support\DepotRolePermissions;
 
 class Depot extends Model
 {
@@ -122,6 +123,32 @@ class Depot extends Model
     public function activeUsers()
     {
         return $this->users()->wherePivot('is_active', true);
+    }
+
+    public function hasActiveUser(int $userId): bool
+    {
+        return $this->activeUsers()->where('users.id', $userId)->exists();
+    }
+
+    public function getUserRole(int $userId): ?string
+    {
+        $user = $this->activeUsers()->where('users.id', $userId)->first();
+
+        return $user?->pivot?->role;
+    }
+
+    public function userCanPerform(int $userId, string $action): bool
+    {
+        $role = $this->getUserRole($userId);
+
+        return DepotRolePermissions::roleCan($role, $action);
+    }
+
+    public function scopeAccessibleBy($query, int $userId)
+    {
+        return $query->whereHas('users', function ($q) use ($userId) {
+            $q->where('users.id', $userId)->where('depot_users.is_active', true);
+        });
     }
 
     public function addUser($userId, string $role = 'staff', ?array $permissions = null): DepotUser

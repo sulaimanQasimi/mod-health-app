@@ -57,8 +57,12 @@ class DepotStockService
     /**
      * @return Collection<int, array{item_type: string, item_id: int, name: string, available: int, unit: ?string}>
      */
-    public function stockItemsForDepot(int $depotId, ?string $itemType = null, ?string $search = null): Collection
-    {
+    public function stockItemsForDepot(
+        int $depotId,
+        ?string $itemType = null,
+        ?string $search = null,
+        bool $includeZero = false,
+    ): Collection {
         $items = collect();
 
         if ($itemType === null || $itemType === self::ITEM_MEDICINE) {
@@ -80,7 +84,7 @@ class DepotStockService
                 }
 
                 $available = $this->availableMedicineStock($depotId, (int) $medicineId);
-                if ($available <= 0) {
+                if (! $includeZero && $available <= 0) {
                     continue;
                 }
 
@@ -113,7 +117,7 @@ class DepotStockService
                 }
 
                 $available = $this->availableToolStock($depotId, (int) $toolId);
-                if ($available <= 0) {
+                if (! $includeZero && $available <= 0) {
                     continue;
                 }
 
@@ -128,6 +132,63 @@ class DepotStockService
         }
 
         return $items->sortBy('name')->values();
+    }
+
+    public const LOW_STOCK_THRESHOLD = 10;
+
+    /**
+     * @return array{
+     *     total_items: int,
+     *     total_quantity: int,
+     *     medicine_count: int,
+     *     tool_count: int,
+     *     total_low_stock: int,
+     *     total_out_of_stock: int,
+     *     total_healthy: int,
+     * }
+     */
+    public function stockStatsForDepot(int $depotId): array
+    {
+        $items = $this->stockItemsForDepot($depotId, includeZero: true);
+
+        return [
+            'total_items' => $items->count(),
+            'total_quantity' => (int) $items->sum('available'),
+            'medicine_count' => $items->where('item_type', self::ITEM_MEDICINE)->count(),
+            'tool_count' => $items->where('item_type', self::ITEM_TOOL)->count(),
+            'total_low_stock' => $items->filter(fn ($item) => $item['available'] > 0 && $item['available'] <= self::LOW_STOCK_THRESHOLD)->count(),
+            'total_out_of_stock' => $items->where('available', '<=', 0)->count(),
+            'total_healthy' => $items->where('available', '>', self::LOW_STOCK_THRESHOLD)->count(),
+        ];
+    }
+
+    /**
+     * @param  Collection<int, array{item_type: string, item_id: int, name: string, available: int, unit: ?string}>  $items
+     * @return Collection<int, array{item_type: string, item_id: int, name: string, available: int, unit: ?string}>
+     */
+    public function filterAndSortStockItems(
+        Collection $items,
+        ?string $stockStatus = null,
+        string $sortBy = 'name',
+        string $sortOrder = 'asc',
+    ): Collection {
+        if ($stockStatus === 'low_stock') {
+            $items = $items->filter(fn ($item) => $item['available'] > 0 && $item['available'] <= self::LOW_STOCK_THRESHOLD);
+        } elseif ($stockStatus === 'out_of_stock') {
+            $items = $items->where('available', '<=', 0);
+        } elseif ($stockStatus === 'healthy') {
+            $items = $items->where('available', '>', self::LOW_STOCK_THRESHOLD);
+        }
+
+        $descending = strtolower($sortOrder) === 'desc';
+
+        $sorted = match ($sortBy) {
+            'quantity' => $descending ? $items->sortByDesc('available') : $items->sortBy('available'),
+            'item_type' => $descending ? $items->sortByDesc('item_type') : $items->sortBy('item_type'),
+            default => $descending ? $items->sortByDesc('name') : $items->sortBy('name'),
+        };
+
+        return $sorted->values();
     }
 
     /**

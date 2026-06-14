@@ -21,7 +21,7 @@ import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader'
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../Components/ui/Table';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotNavUrls, DepotRequestDetail } from '../../../types/depot';
+import { DepotNavPermissions, DepotNavUrls, DepotRequestDetail } from '../../../types/depot';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 interface RequestActionPermissions {
@@ -38,12 +38,15 @@ export default function ShowDepotRequest({
     workflowSteps,
     permissions,
     navUrls,
+    navPermissions,
     urls,
+    viewContext = 'depot',
 }: {
     request: DepotRequestDetail;
     workflowSteps: string[];
     permissions: RequestActionPermissions;
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: {
         index: string;
         edit: string;
@@ -55,8 +58,10 @@ export default function ShowDepotRequest({
         transactions: string;
         transactionShow: string;
     };
+    viewContext?: 'depot' | 'pharmacy';
 }) {
     const { t } = useTranslation();
+    const isPharmacyContext = viewContext === 'pharmacy';
     const [rejectOpen, setRejectOpen] = useState(false);
     const [processing, setProcessing] = useState<string | null>(null);
 
@@ -68,7 +73,12 @@ export default function ShowDepotRequest({
     };
 
     const metaRows: Array<[string, string]> = [
-        [t('global.depot.requesting_depot'), depotRequest.requesting_depot_name ?? '—'],
+        [
+            depotRequest.destination_type === 'pharmacy'
+                ? t('global.pharmacy')
+                : t('global.depot.requesting_depot'),
+            depotRequest.destination_name ?? '—',
+        ],
         [t('global.depot.source_depot'), depotRequest.source_depot_name ?? '—'],
         [t('global.depot.transfer_lines'), depotRequest.items_count.toLocaleString()],
         [t('global.quantity'), depotRequest.total_quantity.toLocaleString()],
@@ -95,7 +105,7 @@ export default function ShowDepotRequest({
         <DashboardLayout>
             <Head title={depotRequest.request_number ?? t('global.depot.requests')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="requests" urls={navUrls} />
+                {!isPharmacyContext && <DepotNavTabs active="requests" urls={navUrls} permissions={navPermissions} />}
 
                 <Card className="shadow-sm">
                     <SettingsPageHeader

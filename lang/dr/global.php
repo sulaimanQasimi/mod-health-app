@@ -4460,6 +4460,13 @@ return [
     'rooms_swapped_successfully' => 'اطاق‌ها با موفقیت تعویض شدند.',
     'new' => 'جدید',
     "depot" => [
+        "stock_in" => "ورود موجودی",
+        "stock_out" => "خروج موجودی",
+        "stock_adjustment" => "تنظیم موجودی",
+        "stock_transfer" => "انتقال موجودی",
+        "stock_transfer_to_pharmacy" => "انتقال موجودی به دواخانه",
+        "stock_transfer_to_depot" => "انتقال موجودی به دیپو",
+        "stock_transfer_to_depot_pharmacy" => "انتقال موجودی به دیپو و دواخانه",
         "title" => "مدیریت دیپو ها",
         "list" => "لیست دیپو ها",
         "create" => "افزودن دیپو",

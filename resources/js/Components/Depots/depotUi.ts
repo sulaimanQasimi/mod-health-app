@@ -1,3 +1,5 @@
+import type { DepotActiveOption, DepotSourceOption } from '../../types/depot';
+
 export const DEPOT_CARD_CLASS =
     'rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800';
 
@@ -33,4 +35,57 @@ export function depotRequestStatusLabel(status: string, t: (key: string) => stri
     const translated = t(key);
     if (translated !== key) return translated;
     return status.replace(/_/g, ' ');
+}
+
+export type DepotStockLevel = 'healthy' | 'low_stock' | 'out_of_stock';
+
+export const DEPOT_LOW_STOCK_THRESHOLD = 10;
+
+export function depotStockLevel(quantity: number): DepotStockLevel {
+    if (quantity <= 0) return 'out_of_stock';
+    if (quantity <= DEPOT_LOW_STOCK_THRESHOLD) return 'low_stock';
+    return 'healthy';
+}
+
+export function depotStockLevelBadgeColor(level: DepotStockLevel): 'success' | 'warning' | 'failure' {
+    if (level === 'healthy') return 'success';
+    if (level === 'low_stock') return 'warning';
+    return 'failure';
+}
+
+export function depotStockLevelLabel(level: DepotStockLevel, t: (key: string) => string): string {
+    if (level === 'healthy') return t('global.in_stock');
+    if (level === 'low_stock') return t('global.low_stock');
+    return t('global.out_of_stock');
+}
+
+export function depotStockBarColor(level: DepotStockLevel): string {
+    if (level === 'healthy') return 'bg-emerald-500';
+    if (level === 'low_stock') return 'bg-amber-500';
+    return 'bg-red-500';
+}
+
+export function resolveDepotRequestSourceDepot(
+    destinationType: 'depot' | 'pharmacy',
+    requestingDepotId: string,
+    pharmacyId: string,
+    activeDepots: DepotActiveOption[],
+    fallbackSourceDepot?: DepotSourceOption | null,
+): DepotSourceOption | null {
+    if (destinationType === 'pharmacy' && pharmacyId) {
+        const linkedDepot = activeDepots.find((depot) => depot.pharmacy_id === Number(pharmacyId));
+        return linkedDepot ? { id: linkedDepot.id, name: linkedDepot.name } : null;
+    }
+
+    if (destinationType === 'depot' && requestingDepotId) {
+        const requestingDepot = activeDepots.find((depot) => depot.id === Number(requestingDepotId));
+        if (requestingDepot?.parent_depot_id) {
+            const parentDepot = activeDepots.find((depot) => depot.id === requestingDepot.parent_depot_id);
+            if (parentDepot) {
+                return { id: parentDepot.id, name: parentDepot.name };
+            }
+        }
+    }
+
+    return fallbackSourceDepot ?? null;
 }

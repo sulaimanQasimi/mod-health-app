@@ -66,7 +66,7 @@ export default function StockPharmacyFulfillments({
     filters: StockFilters;
     filterOptions: { pharmacies: OptionItem[]; medicines: OptionItem[]; stockStatuses: string[] };
     userPharmacies?: OptionItem[];
-    urls: { index: string; fulfillments: string; outcomes: string };
+    urls: { index: string; requests: string; outcomes: string };
 }) {
     const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
@@ -155,7 +155,7 @@ export default function StockPharmacyFulfillments({
                         subtitle={pharmacySubtitle}
                         icon="bx-box"
                         accent="from-emerald-500 to-green-600"
-                        backHref={urls.fulfillments}
+                        backHref={urls.requests}
                         backLabel={t('global.back')}
                         action={
                             <Button color="light" as={Link} href={urls.outcomes}>

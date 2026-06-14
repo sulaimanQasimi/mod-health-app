@@ -9,28 +9,32 @@ import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader'
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { DepotFormData, DepotNavUrls } from '../../../types/depot';
+import { DepotFormData, DepotNavPermissions, DepotNavUrls, DepotSourceOption } from '../../../types/depot';
 import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 export default function CreateDepotTransaction({
+    depot,
     defaults,
     formData,
     types,
     navUrls,
+    navPermissions,
     urls,
 }: {
-    defaults: { depot_id: string; type: string };
+    depot: DepotSourceOption | null;
+    defaults: { type: string };
     formData: DepotFormData;
     types: string[];
     navUrls: DepotNavUrls;
+    navPermissions?: DepotNavPermissions;
     urls: { index: string; store: string; stockAvailable: string };
 }) {
     const { t } = useTranslation();
     const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
     const [itemKind, setItemKind] = useState<'medicine' | 'tool'>('medicine');
+    const depotId = depot ? String(depot.id) : '';
 
     const { data, setData, post, processing, errors } = useForm({
-        depot_id: defaults.depot_id,
         medicine_id: '',
         tool_id: '',
         type: defaults.type,
@@ -46,7 +50,7 @@ export default function CreateDepotTransaction({
     const itemId = itemKind === 'medicine' ? data.medicine_id : data.tool_id;
     const { available, loading } = useAvailableStock(
         urls.stockAvailable,
-        data.depot_id,
+        depotId,
         itemKind,
         itemId,
     );
@@ -73,7 +77,7 @@ export default function CreateDepotTransaction({
         <DashboardLayout>
             <Head title={t('global.depot.new')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="transactions" urls={navUrls} />
+                <DepotNavTabs active="transactions" urls={navUrls} permissions={navPermissions} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.depot.new')}
@@ -87,18 +91,10 @@ export default function CreateDepotTransaction({
                     <form onSubmit={submit} className="space-y-4">
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
-                                <Label>{t('global.depot.name')} *</Label>
-                                <SearchableSelect
-                                    value={data.depot_id}
-                                    onChange={(value) => setData('depot_id', value)}
-                                    options={[
-                                        { value: '', label: t('global.select') },
-                                        ...formData.activeDepots.map((depot) => ({
-                                            value: String(depot.id),
-                                            label: depot.name,
-                                        })),
-                                    ]}
-                                />
+                                <Label>{t('global.depot.name')}</Label>
+                                <div className="mt-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800/60 dark:text-gray-200">
+                                    {depot?.name ?? t('global.select')}
+                                </div>
                                 {errors.depot_id && <p className="mt-1 text-sm text-red-600">{errors.depot_id}</p>}
                             </div>
                             <div>
@@ -174,7 +170,7 @@ export default function CreateDepotTransaction({
                             </div>
                         </div>
 
-                        {data.depot_id && itemId && (
+                        {depotId && itemId && (
                             <Alert color="info">
                                 {loading ? (
                                     <span className="flex items-center gap-2">
@@ -200,7 +196,7 @@ export default function CreateDepotTransaction({
                         </div>
 
                         <div className="flex gap-2">
-                            <button type="submit" className={DEPOT_PRIMARY_BTN_CLASS} disabled={processing}>
+                            <button type="submit" className={DEPOT_PRIMARY_BTN_CLASS} disabled={processing || !depot}>
                                 {processing && <Spinner size="sm" className="me-2" />}
                                 {t('global.save')}
                             </button>

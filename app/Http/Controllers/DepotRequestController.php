@@ -9,6 +9,7 @@ use App\Models\Medicine;
 use App\Models\Tool;
 use App\Models\Unit;
 use App\Services\DepotRequestService;
+use App\Services\DepotRequestSourceResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -16,7 +17,8 @@ use Illuminate\Validation\ValidationException;
 class DepotRequestController extends Controller
 {
     public function __construct(
-        private readonly DepotRequestService $requestService
+        private readonly DepotRequestService $requestService,
+        private readonly DepotRequestSourceResolver $sourceResolver,
     ) {
     }
 
@@ -79,11 +81,13 @@ class DepotRequestController extends Controller
     public function store(StoreDepotRequestRequest $request)
     {
         $data = $request->validated();
+        $sourceDepotId = $this->sourceResolver->resolve($data, $request->user());
 
-        $depotRequest = \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
+        $depotRequest = \Illuminate\Support\Facades\DB::transaction(function () use ($data, $sourceDepotId) {
             $depotRequest = DepotRequest::create([
-                'requesting_depot_id' => $data['requesting_depot_id'],
-                'source_depot_id' => $data['source_depot_id'],
+                'requesting_depot_id' => $data['requesting_depot_id'] ?? null,
+                'pharmacy_id' => $data['pharmacy_id'] ?? null,
+                'source_depot_id' => $sourceDepotId,
                 'notes' => $data['notes'] ?? null,
                 'status' => DepotRequest::STATUS_DRAFT,
                 'requested_by' => Auth::id(),

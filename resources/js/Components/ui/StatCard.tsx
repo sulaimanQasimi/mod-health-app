@@ -11,6 +11,8 @@ export interface StatCardProps {
     borderClass?: string;
     valueClass?: string;
     className?: string;
+    onClick?: () => void;
+    active?: boolean;
 }
 
 function mergeClasses(...classes: (string | false | null | undefined)[]) {
@@ -27,6 +29,8 @@ export default function StatCard({
     borderClass,
     valueClass,
     className,
+    onClick,
+    active = false,
 }: StatCardProps) {
     const iconElement = icon ?? (
         iconClass ? (
@@ -46,8 +50,11 @@ export default function StatCard({
             className={mergeClasses(
                 'border !shadow-sm',
                 borderClass ?? 'border-gray-200 dark:border-gray-700',
+                onClick && 'cursor-pointer transition hover:shadow-md',
+                active && 'ring-2 ring-offset-2 ring-gray-400 dark:ring-gray-500',
                 className,
             )}
+            onClick={onClick}
         >
             <div className="flex items-start justify-between gap-3">
                 <div>

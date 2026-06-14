@@ -43,6 +43,7 @@ export interface HospitalizationDischargedFilters {
     patient_id: string;
     room_id: string;
     doctor_id: string;
+    discharge_status: string;
     discharge_date_from: string;
     discharge_date_to: string;
 }

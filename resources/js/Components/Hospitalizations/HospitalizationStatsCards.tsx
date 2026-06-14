@@ -5,15 +5,18 @@ import { useTranslation } from '../../hooks/useTranslation';
 interface HospitalizationStatsCardsProps {
     stats: HospitalizationDashboardStats;
     variant?: 'active' | 'discharged';
+    dischargeStatusFilter?: string;
+    onDischargeStatusClick?: (status: '' | 'recovered' | 'moved' | 'died') => void;
 }
 
 interface StatCardConfig {
-    key: keyof HospitalizationDashboardStats | 'occupied_beds' | 'recovered' | 'moved';
+    key: keyof HospitalizationDashboardStats | 'occupied_beds' | 'recovered' | 'moved' | 'died';
     labelKey: string;
     iconClass: string;
     iconBgClass: string;
     borderClass: string;
     valueClass: string;
+    filterValue?: '' | 'recovered' | 'moved' | 'died';
 }
 
 const activeCards: StatCardConfig[] = [
@@ -59,14 +62,7 @@ const dischargedCards: StatCardConfig[] = [
         iconBgClass: 'bg-slate-600',
         borderClass: 'border-slate-200 dark:border-slate-700',
         valueClass: 'text-slate-700 dark:text-slate-300',
-    },
-    {
-        key: 'active',
-        labelKey: 'global.hospitalized_patients',
-        iconClass: 'bx bx-bed',
-        iconBgClass: 'bg-emerald-600',
-        borderClass: 'border-emerald-200 dark:border-emerald-800',
-        valueClass: 'text-emerald-700 dark:text-emerald-300',
+        filterValue: '',
     },
     {
         key: 'recovered',
@@ -75,6 +71,7 @@ const dischargedCards: StatCardConfig[] = [
         iconBgClass: 'bg-green-600',
         borderClass: 'border-green-200 dark:border-green-800',
         valueClass: 'text-green-700 dark:text-green-300',
+        filterValue: 'recovered',
     },
     {
         key: 'moved',
@@ -83,6 +80,16 @@ const dischargedCards: StatCardConfig[] = [
         iconBgClass: 'bg-cyan-600',
         borderClass: 'border-cyan-200 dark:border-cyan-800',
         valueClass: 'text-cyan-700 dark:text-cyan-300',
+        filterValue: 'moved',
+    },
+    {
+        key: 'died',
+        labelKey: 'global.died',
+        iconClass: 'bx bx-heart',
+        iconBgClass: 'bg-red-600',
+        borderClass: 'border-red-200 dark:border-red-800',
+        valueClass: 'text-red-700 dark:text-red-300',
+        filterValue: 'died',
     },
 ];
 
@@ -117,24 +124,38 @@ function formatStatSubtitle(
 export default function HospitalizationStatsCards({
     stats,
     variant = 'active',
+    dischargeStatusFilter = '',
+    onDischargeStatusClick,
 }: HospitalizationStatsCardsProps) {
     const { t } = useTranslation();
     const cards = variant === 'discharged' ? dischargedCards : activeCards;
 
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {cards.map((card) => (
-                <StatCard
-                    key={card.key}
-                    title={t(card.labelKey)}
-                    value={formatStatValue(card.key, stats)}
-                    subtitle={formatStatSubtitle(card.key, stats, t)}
-                    iconClass={card.iconClass}
-                    iconBgClass={card.iconBgClass}
-                    borderClass={card.borderClass}
-                    valueClass={card.valueClass}
-                />
-            ))}
+            {cards.map((card) => {
+                const isDischargeCard = variant === 'discharged' && card.filterValue !== undefined;
+                const isActive =
+                    isDischargeCard && (dischargeStatusFilter || '') === (card.filterValue ?? '');
+
+                return (
+                    <StatCard
+                        key={card.key}
+                        title={t(card.labelKey)}
+                        value={formatStatValue(card.key, stats)}
+                        subtitle={formatStatSubtitle(card.key, stats, t)}
+                        iconClass={card.iconClass}
+                        iconBgClass={card.iconBgClass}
+                        borderClass={card.borderClass}
+                        valueClass={card.valueClass}
+                        active={isActive}
+                        onClick={
+                            isDischargeCard && onDischargeStatusClick
+                                ? () => onDischargeStatusClick(card.filterValue ?? '')
+                                : undefined
+                        }
+                    />
+                );
+            })}
         </div>
     );
 }

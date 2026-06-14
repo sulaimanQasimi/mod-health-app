@@ -78,7 +78,16 @@ export default function HospitalizationsDischarged({
                     }
                 />
 
-                <HospitalizationStatsCards stats={stats} variant="discharged" />
+                <HospitalizationStatsCards
+                    stats={stats}
+                    variant="discharged"
+                    dischargeStatusFilter={filters.discharge_status}
+                    onDischargeStatusClick={(status) => {
+                        const next = { ...filters, discharge_status: status };
+                        setFilters(next);
+                        applyFilters(next);
+                    }}
+                />
 
                 <HospitalizationPanel
                     variant="filter"

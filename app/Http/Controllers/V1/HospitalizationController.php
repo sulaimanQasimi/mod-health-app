@@ -141,6 +141,7 @@ class HospitalizationController extends Controller
                 'patient_id',
                 'room_id',
                 'doctor_id',
+                'discharge_status',
                 'discharge_date_from',
                 'discharge_date_to',
             ]),
@@ -499,6 +500,10 @@ class HospitalizationController extends Controller
 
         if ($request->filled('doctor_id')) {
             $query->where('doctor_id', $request->doctor_id);
+        }
+
+        if ($request->filled('discharge_status')) {
+            $query->where('discharge_status', $request->discharge_status);
         }
 
         $this->applyDateRangeFilter($query, $request, 'discharged_at', 'discharge_date_from', 'discharge_date_to');

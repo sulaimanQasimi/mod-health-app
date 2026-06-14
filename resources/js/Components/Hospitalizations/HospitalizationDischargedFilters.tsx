@@ -12,6 +12,7 @@ export const EMPTY_DISCHARGED_FILTERS: Filters = {
     patient_id: '',
     room_id: '',
     doctor_id: '',
+    discharge_status: '',
     discharge_date_from: '',
     discharge_date_to: '',
 };
@@ -86,6 +87,21 @@ export default function HospitalizationDischargedFilters({
                     options={[
                         { value: '', label: t('global.all') },
                         ...doctors.map((doctor) => ({ value: String(doctor.id), label: doctor.name })),
+                    ]}
+                    placeholder={t('global.all')}
+                />
+            </div>
+            <div>
+                <Label htmlFor="discharged-status">{t('global.discharge_status')}</Label>
+                <SearchableSelect
+                    id="discharged-status"
+                    value={filters.discharge_status}
+                    onChange={(value) => onChange({ ...filters, discharge_status: value })}
+                    options={[
+                        { value: '', label: t('global.all') },
+                        { value: 'recovered', label: t('global.recovered') },
+                        { value: 'moved', label: t('global.moved') },
+                        { value: 'died', label: t('global.died') },
                     ]}
                     placeholder={t('global.all')}
                 />

@@ -85,6 +85,7 @@ export default function ProstheticsCatalogEdit({ item, urls }: EditProps) {
                                 <TextInput
                                     id="item_code"
                                     required
+                                    placeholder={t('global.prosthetics_catalog_item_code_placeholder')}
                                     value={form.item_code}
                                     onChange={(e) => setForm((prev) => ({ ...prev, item_code: e.target.value }))}
                                 />
@@ -94,6 +95,7 @@ export default function ProstheticsCatalogEdit({ item, urls }: EditProps) {
                                 <TextInput
                                     id="name"
                                     required
+                                    placeholder={t('global.prosthetics_catalog_name_placeholder')}
                                     value={form.name}
                                     onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
                                 />
@@ -104,6 +106,7 @@ export default function ProstheticsCatalogEdit({ item, urls }: EditProps) {
                                 <Label htmlFor="category" value={t('global.category')} />
                                 <TextInput
                                     id="category"
+                                    placeholder={t('global.prosthetics_catalog_category_placeholder')}
                                     value={form.category}
                                     onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))}
                                 />
@@ -112,6 +115,7 @@ export default function ProstheticsCatalogEdit({ item, urls }: EditProps) {
                                 <Label htmlFor="brand" value={t('global.brand')} />
                                 <TextInput
                                     id="brand"
+                                    placeholder={t('global.prosthetics_catalog_brand_placeholder')}
                                     value={form.brand}
                                     onChange={(e) => setForm((prev) => ({ ...prev, brand: e.target.value }))}
                                 />
@@ -125,6 +129,7 @@ export default function ProstheticsCatalogEdit({ item, urls }: EditProps) {
                                     type="number"
                                     step="0.01"
                                     min={0}
+                                    placeholder={t('global.prosthetics_catalog_cost_placeholder')}
                                     value={form.standard_cost}
                                     onChange={(e) => setForm((prev) => ({ ...prev, standard_cost: e.target.value }))}
                                 />
@@ -135,6 +140,7 @@ export default function ProstheticsCatalogEdit({ item, urls }: EditProps) {
                                     id="minimum_stock"
                                     type="number"
                                     min={0}
+                                    placeholder={t('global.prosthetics_catalog_minimum_stock_placeholder')}
                                     value={form.minimum_stock}
                                     onChange={(e) => setForm((prev) => ({ ...prev, minimum_stock: e.target.value }))}
                                 />

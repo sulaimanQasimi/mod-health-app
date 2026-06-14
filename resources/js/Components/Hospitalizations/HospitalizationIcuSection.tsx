@@ -317,7 +317,7 @@ export default function HospitalizationIcuSection({
                                                 {item.created_at ?? '—'}
                                             </TableCell>
                                             <TableCell align="right">
-                                                {item.urls?.edit && item.permissions?.edit && (
+                                                {item.urls?.edit && item.permissions?.edit && !isDischarged && (
                                                     <SectionActionButton
                                                         icon="bx-edit"
                                                         title={t('global.edit')}

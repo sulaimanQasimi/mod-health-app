@@ -61,7 +61,7 @@ class NutritionCareController extends Controller
             ->with(['nurse:id,first_name,last_name'])
             ->orderByDesc('created_at')
             ->get()
-            ->map(fn (NutritionCare $care) => $this->formatCare($care))
+            ->map(fn (NutritionCare $care) => $this->formatCare($care, $hospitalization))
             ->values()
             ->all();
 
@@ -107,7 +107,7 @@ class NutritionCareController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $this->formatCare($nutritionCare),
+            'data' => $this->formatCare($nutritionCare, $hospitalization),
         ]);
     }
 
@@ -137,6 +137,7 @@ class NutritionCareController extends Controller
     public function update(Request $request, Hospitalization $hospitalization, NutritionCare $nutritionCare): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         $this->ensureCareBelongsToHospitalization($hospitalization, $nutritionCare);
         $this->authorize('update', $nutritionCare);
 
@@ -150,6 +151,7 @@ class NutritionCareController extends Controller
     public function destroy(Hospitalization $hospitalization, NutritionCare $nutritionCare): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         $this->ensureCareBelongsToHospitalization($hospitalization, $nutritionCare);
         $this->authorize('delete', $nutritionCare);
 
@@ -226,9 +228,10 @@ class NutritionCareController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function formatCare(NutritionCare $care): array
+    private function formatCare(NutritionCare $care, Hospitalization $hospitalization): array
     {
         $user = request()->user();
+        $locked = (bool) $hospitalization->is_discharged;
         $data = [
             'id' => $care->id,
             'patient_name' => $care->patient_name,
@@ -236,8 +239,8 @@ class NutritionCareController extends Controller
             'recorded_at' => $care->created_at ? verta($care->created_at)->format('Y/m/d H:i') : null,
             'nutrition_care_full_note' => $care->nutrition_care_full_note,
             'permissions' => [
-                'edit' => $user->can('update', $care),
-                'delete' => $user->can('delete', $care),
+                'edit' => ! $locked && $user->can('update', $care),
+                'delete' => ! $locked && $user->can('delete', $care),
             ],
             'urls' => [
                 'print' => route('nutrition-cares.print', $care),

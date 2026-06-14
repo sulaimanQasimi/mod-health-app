@@ -97,7 +97,7 @@ export default function ProstheticReferralForm({
                 <TextInput
                     id="patient_search"
                     sizing="sm"
-                    placeholder={t('global.search')}
+                    placeholder={t('global.prosthetics_referral_patient_search_placeholder')}
                     value={patientQuery}
                     disabled={disabled}
                     onChange={(e) => setPatientQuery(e.target.value)}
@@ -135,6 +135,7 @@ export default function ProstheticReferralForm({
                         required
                         sizing="sm"
                         disabled={disabled}
+                        placeholder={t('global.prosthetics_referral_patient_id_placeholder')}
                         value={form.patient_id}
                         onChange={(e) => {
                             setForm((prev) => ({ ...prev, patient_id: e.target.value }));
@@ -165,6 +166,7 @@ export default function ProstheticReferralForm({
                     <TextInput
                         id="referring_facility"
                         disabled={disabled}
+                        placeholder={t('global.prosthetics_referral_facility_placeholder')}
                         value={form.referring_facility}
                         onChange={(e) => setForm((prev) => ({ ...prev, referring_facility: e.target.value }))}
                     />
@@ -174,6 +176,7 @@ export default function ProstheticReferralForm({
                     <TextInput
                         id="referring_doctor"
                         disabled={disabled}
+                        placeholder={t('global.prosthetics_referral_doctor_placeholder')}
                         value={form.referring_doctor}
                         onChange={(e) => setForm((prev) => ({ ...prev, referring_doctor: e.target.value }))}
                     />
@@ -186,7 +189,7 @@ export default function ProstheticReferralForm({
                     <TextInput
                         id="urgency"
                         disabled={disabled}
-                        placeholder="routine"
+                        placeholder={t('global.prosthetics_referral_urgency_placeholder')}
                         value={form.urgency}
                         onChange={(e) => setForm((prev) => ({ ...prev, urgency: e.target.value }))}
                     />
@@ -196,7 +199,7 @@ export default function ProstheticReferralForm({
                     <TextInput
                         id="requested_service_type"
                         disabled={disabled}
-                        placeholder="prosthetic / orthotic / assistive"
+                        placeholder={t('global.prosthetics_referral_service_type_placeholder')}
                         value={form.requested_service_type}
                         onChange={(e) =>
                             setForm((prev) => ({ ...prev, requested_service_type: e.target.value }))
@@ -211,6 +214,7 @@ export default function ProstheticReferralForm({
                     id="reason"
                     rows={2}
                     disabled={disabled}
+                    placeholder={t('global.prosthetics_referral_reason_placeholder')}
                     value={form.reason}
                     onChange={(e) => setForm((prev) => ({ ...prev, reason: e.target.value }))}
                 />
@@ -221,6 +225,7 @@ export default function ProstheticReferralForm({
                     id="diagnosis_summary"
                     rows={2}
                     disabled={disabled}
+                    placeholder={t('global.prosthetics_referral_diagnosis_placeholder')}
                     value={form.diagnosis_summary}
                     onChange={(e) => setForm((prev) => ({ ...prev, diagnosis_summary: e.target.value }))}
                 />
@@ -231,6 +236,7 @@ export default function ProstheticReferralForm({
                     id="notes"
                     rows={2}
                     disabled={disabled}
+                    placeholder={t('global.prosthetics_referral_notes_placeholder')}
                     value={form.notes}
                     onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
                 />

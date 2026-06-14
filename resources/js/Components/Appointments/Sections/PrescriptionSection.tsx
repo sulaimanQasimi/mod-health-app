@@ -34,6 +34,7 @@ interface PrescriptionSectionProps {
     appointmentId: number;
     underReviewId?: number;
     embedded?: boolean;
+    isDischarged?: boolean;
 }
 
 interface PrescriptionListItem {
@@ -110,6 +111,7 @@ export default function PrescriptionSection({
     appointmentId,
     underReviewId,
     embedded = false,
+    isDischarged = false,
 }: PrescriptionSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
@@ -386,7 +388,7 @@ export default function PrescriptionSection({
                 <SectionLoadingState />
             ) : (
                 <>
-                    <AccordionButton onClick={openCreate} permission={data?.permissions.create}>
+                    <AccordionButton onClick={openCreate} permission={!isDischarged && data?.permissions.create}>
                         {t('global.add')}
                     </AccordionButton>
 
@@ -422,7 +424,7 @@ export default function PrescriptionSection({
                                                     onClick={() => viewPrescription(item.id)}
                                                     colorClass="text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
                                                 />
-                                                {data.permissions.create && (
+                                                {data.permissions.create && !isDischarged && (
                                                     <>
                                                         <SectionActionButton
                                                             icon="bx-copy"
@@ -438,7 +440,7 @@ export default function PrescriptionSection({
                                                         />
                                                     </>
                                                 )}
-                                                {data.permissions.delete && (
+                                                {data.permissions.delete && !isDischarged && (
                                                     <SectionActionButton
                                                         icon="bx-trash"
                                                         title={t('global.delete')}
@@ -592,7 +594,7 @@ export default function PrescriptionSection({
                                         <TableHeader>{t('global.frequency')}</TableHeader>
                                         <TableHeader>{t('global.amount')}</TableHeader>
                                         <TableHeader>{t('global.status')}</TableHeader>
-                                        {data?.permissions.edit && (
+                                        {data?.permissions.edit && !isDischarged && (
                                             <TableHeader align="center">{t('global.actions')}</TableHeader>
                                         )}
                                     </TableRow>
@@ -612,7 +614,7 @@ export default function PrescriptionSection({
                                                         : t('global.not_delivered')}
                                                 </TableBadge>
                                             </TableCell>
-                                            {data?.permissions.edit && (
+                                            {data?.permissions.edit && !isDischarged && (
                                                 <TableCell align="center">
                                                     <div className="flex justify-center gap-1">
                                                         <SectionActionButton
@@ -650,7 +652,7 @@ export default function PrescriptionSection({
                     )}
                 </ModalBody>
                 <ModalFooter>
-                    {data?.permissions.create && selectedPrescription?.items.length ? (
+                    {data?.permissions.create && !isDischarged && selectedPrescription?.items.length ? (
                         <>
                             <Button
                                 color="cyan"

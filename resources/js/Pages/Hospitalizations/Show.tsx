@@ -194,17 +194,6 @@ export default function HospitalizationsShow({
                                     {t('global.discharge_patient')}
                                 </Button>
                             )}
-                            {urls.appointment && (
-                                <Button
-                                    as={Link}
-                                    href={urls.appointment}
-                                    size="sm"
-                                    className={settingsHeaderButtonClass.secondary}
-                                >
-                                    <i className="bx bx-calendar me-2" />
-                                    {t('global.appointment')}
-                                </Button>
-                            )}
                         </SettingsPageActions>
                     }
                 />
@@ -242,16 +231,28 @@ export default function HospitalizationsShow({
                 {hasAppointment && (
                     <div className="space-y-4">
                         {sectionPermissions.blood && (
-                            <BloodBankSection appointmentId={hospitalization.appointment_id!} />
+                            <BloodBankSection
+                                appointmentId={hospitalization.appointment_id!}
+                                isDischarged={hospitalization.is_discharged}
+                            />
                         )}
                         {sectionPermissions.prescription && (
-                            <PrescriptionSection appointmentId={hospitalization.appointment_id!} />
+                            <PrescriptionSection
+                                appointmentId={hospitalization.appointment_id!}
+                                isDischarged={hospitalization.is_discharged}
+                            />
                         )}
                         {sectionPermissions.lab && (
-                            <LabTestSection appointmentId={hospitalization.appointment_id!} />
+                            <LabTestSection
+                                appointmentId={hospitalization.appointment_id!}
+                                isDischarged={hospitalization.is_discharged}
+                            />
                         )}
                         {sectionPermissions.physiotherapy && (
-                            <PhysiotherapySection appointmentId={hospitalization.appointment_id!} />
+                            <PhysiotherapySection
+                                appointmentId={hospitalization.appointment_id!}
+                                isDischarged={hospitalization.is_discharged}
+                            />
                         )}
                         {sectionPermissions.underReview && (
                             <UnderReviewSection

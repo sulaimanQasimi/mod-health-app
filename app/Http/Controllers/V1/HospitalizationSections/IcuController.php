@@ -42,7 +42,16 @@ class IcuController extends Controller
             ->with(['patient:id,name'])
             ->latest()
             ->get()
-            ->map(fn (ICU $item) => IcuReferralService::formatListItem($item))
+            ->map(function (ICU $item) use ($hospitalization) {
+                $formatted = IcuReferralService::formatListItem($item);
+
+                if ((bool) $hospitalization->is_discharged) {
+                    $formatted['permissions']['edit'] = false;
+                    $formatted['permissions']['delete'] = false;
+                }
+
+                return $formatted;
+            })
             ->values()
             ->all();
 
@@ -117,6 +126,7 @@ class IcuController extends Controller
     public function destroy(Hospitalization $hospitalization, ICU $icu): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         abort_unless(request()->user()->can('delete-icus'), 403);
         abort_unless((int) $icu->hospitalization_id === (int) $hospitalization->id, 404);
 

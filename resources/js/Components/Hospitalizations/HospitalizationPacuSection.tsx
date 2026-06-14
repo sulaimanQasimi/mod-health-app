@@ -280,7 +280,7 @@ export default function HospitalizationPacuSection({
                                                 {item.created_at ?? '—'}
                                             </TableCell>
                                             <TableCell align="right">
-                                                {item.urls?.show && data?.permissions.edit && (
+                                                {item.urls?.show && data?.permissions.edit && !isDischarged && (
                                                     <SectionActionButton
                                                         icon="bx-show"
                                                         title={t('global.view')}

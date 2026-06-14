@@ -135,6 +135,7 @@ class DiabetesChartController extends Controller
     public function update(Request $request, Hospitalization $hospitalization, DiabetesChart $diabetesChart): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         $this->ensureChartBelongsToHospitalization($hospitalization, $diabetesChart);
         $this->authorize('update', $diabetesChart);
 
@@ -148,6 +149,7 @@ class DiabetesChartController extends Controller
     public function destroy(Hospitalization $hospitalization, DiabetesChart $diabetesChart): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         $this->ensureChartBelongsToHospitalization($hospitalization, $diabetesChart);
         $this->authorize('delete', $diabetesChart);
 
@@ -185,11 +187,15 @@ class DiabetesChartController extends Controller
         return [
             'view' => $this->canView($user),
             'create' => ! (bool) $hospitalization->is_discharged && $user->can('create', DiabetesChart::class),
-            'edit' => $user->can('create', DiabetesChart::class)
+            'edit' => ! (bool) $hospitalization->is_discharged && (
+                $user->can('create', DiabetesChart::class)
                 || $user->can('edit-diabetes-charts')
-                || $user->hasRole(['super_admin', 'admin', 'hr', 'nurse']),
-            'delete' => $user->can('delete-diabetes-charts')
-                || $user->hasRole(['super_admin', 'admin', 'hr', 'nurse']),
+                || $user->hasRole(['super_admin', 'admin', 'hr', 'nurse'])
+            ),
+            'delete' => ! (bool) $hospitalization->is_discharged && (
+                $user->can('delete-diabetes-charts')
+                || $user->hasRole(['super_admin', 'admin', 'hr', 'nurse'])
+            ),
         ];
     }
 

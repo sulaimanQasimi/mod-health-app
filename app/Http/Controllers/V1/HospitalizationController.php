@@ -195,7 +195,7 @@ class HospitalizationController extends Controller
         return Inertia::render('Hospitalizations/Show', [
             'hospitalization' => $this->transformDetail($hospitalization, $medicationRecords),
             'permissions' => [
-                'edit' => $user->can('edit-hospitalizations'),
+                'edit' => ! (bool) $hospitalization->is_discharged && $user->can('edit-hospitalizations'),
                 'discharge' => ! (bool) $hospitalization->is_discharged && $user->can('edit-hospitalizations'),
                 'change_room_bed' => ! (bool) $hospitalization->is_discharged && $this->canEditRooms($user),
             ],
@@ -236,6 +236,7 @@ class HospitalizationController extends Controller
         $this->authorizeMenu();
         $this->ensureAccessible($hospitalization);
         abort_unless(request()->user()->can('edit-hospitalizations'), 403);
+        abort_if((bool) $hospitalization->is_discharged, 403);
 
         $hospitalization->load(['appointment:id,patient_id']);
 
@@ -271,6 +272,7 @@ class HospitalizationController extends Controller
         $this->authorizeMenu();
         $this->ensureAccessible($hospitalization);
         abort_unless($request->user()->can('edit-hospitalizations'), 403);
+        abort_if((bool) $hospitalization->is_discharged, 403);
 
         $validated = $request->validate([
             'reason' => 'required|string',
@@ -862,10 +864,18 @@ class HospitalizationController extends Controller
         Bed::query()->whereKey($bedId)->update(['is_occupied' => 0]);
     }
 
-    private function formatDate(?\Illuminate\Support\Carbon $date): ?string
+    private function formatDate(\Illuminate\Support\Carbon|string|null $date): ?string
     {
         if (! $date) {
             return null;
+        }
+
+        if (! $date instanceof \Illuminate\Support\Carbon) {
+            try {
+                $date = \Illuminate\Support\Carbon::parse($date);
+            } catch (\Throwable) {
+                return is_string($date) && $date !== '' ? $date : null;
+            }
         }
 
         try {

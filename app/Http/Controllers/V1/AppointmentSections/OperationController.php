@@ -107,7 +107,7 @@ class OperationController extends Controller
 
     private function canCreate($user, Appointment $appointment): bool
     {
-        return ! $appointment->is_completed
+        return ! $this->appointmentMutationsLocked($appointment)
             && ($user?->can('show-operations-menu') ?? false);
     }
 

@@ -34,6 +34,7 @@ import { SectionActionButton } from './SimpleTableSection';
 interface LabTestSectionProps {
     appointmentId: number;
     embedded?: boolean;
+    isDischarged?: boolean;
 }
 
 interface LabTestListItem {
@@ -104,7 +105,11 @@ const PRIORITY_COLORS: Record<string, 'gray' | 'warning' | 'failure'> = {
     stat: 'failure',
 };
 
-export default function LabTestSection({ appointmentId, embedded = false }: LabTestSectionProps) {
+export default function LabTestSection({
+    appointmentId,
+    embedded = false,
+    isDischarged = false,
+}: LabTestSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
     const baseUrl = `/react/appointments/${appointmentId}/lab-tests`;
@@ -266,7 +271,7 @@ export default function LabTestSection({ appointmentId, embedded = false }: LabT
                 <SectionLoadingState />
             ) : (
                 <>
-                    <AccordionButton onClick={openCreate} permission={data?.permissions.create}>
+                    <AccordionButton onClick={openCreate} permission={!isDischarged && data?.permissions.create}>
                         {t('global.add_lab_test_registration')}
                     </AccordionButton>
 

@@ -64,6 +64,7 @@ export default function ProstheticsCatalogCreate({ urls }: CreateProps) {
                                 <TextInput
                                     id="item_code"
                                     required
+                                    placeholder={t('global.prosthetics_catalog_item_code_placeholder')}
                                     value={form.item_code}
                                     onChange={(e) => setForm((prev) => ({ ...prev, item_code: e.target.value }))}
                                 />
@@ -73,6 +74,7 @@ export default function ProstheticsCatalogCreate({ urls }: CreateProps) {
                                 <TextInput
                                     id="name"
                                     required
+                                    placeholder={t('global.prosthetics_catalog_name_placeholder')}
                                     value={form.name}
                                     onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
                                 />
@@ -81,6 +83,7 @@ export default function ProstheticsCatalogCreate({ urls }: CreateProps) {
                                 <Label htmlFor="category" value={t('global.category')} />
                                 <TextInput
                                     id="category"
+                                    placeholder={t('global.prosthetics_catalog_category_placeholder')}
                                     value={form.category}
                                     onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))}
                                 />
@@ -94,6 +97,7 @@ export default function ProstheticsCatalogCreate({ urls }: CreateProps) {
                                     type="number"
                                     step="0.01"
                                     min={0}
+                                    placeholder={t('global.prosthetics_catalog_cost_placeholder')}
                                     value={form.standard_cost}
                                     onChange={(e) => setForm((prev) => ({ ...prev, standard_cost: e.target.value }))}
                                 />

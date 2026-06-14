@@ -120,6 +120,7 @@ class PacuController extends Controller
     public function destroy(Hospitalization $hospitalization, PACU $pacu): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         abort_unless(request()->user()->can('show-pacu-menu'), 403);
         abort_unless((int) $pacu->hospitalization_id === (int) $hospitalization->id, 404);
 
@@ -152,8 +153,8 @@ class PacuController extends Controller
         return [
             'view' => $this->canView($user),
             'create' => $this->canCreate($user, $hospitalization),
-            'edit' => $user?->can('show-pacu-menu') ?? false,
-            'delete' => $user?->can('show-pacu-menu') ?? false,
+            'edit' => ! (bool) $hospitalization->is_discharged && ($user?->can('show-pacu-menu') ?? false),
+            'delete' => ! (bool) $hospitalization->is_discharged && ($user?->can('show-pacu-menu') ?? false),
         ];
     }
 

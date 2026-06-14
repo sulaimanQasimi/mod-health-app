@@ -75,9 +75,9 @@ class UnderReviewController extends Controller
 
         return $this->sectionIndexResponse($items, $appointment, [
             'view' => true,
-            'create' => ! $appointment->is_completed && $user->can('patient-under-review'),
-            'edit' => $user->can('edit-under-reviews'),
-            'delete' => $user->can('delete-under-reviews'),
+            'create' => $this->canMutateAppointment($appointment) && $user->can('patient-under-review'),
+            'edit' => $this->canMutateAppointment($appointment) && $user->can('edit-under-reviews'),
+            'delete' => $this->canMutateAppointment($appointment) && $user->can('delete-under-reviews'),
         ]);
     }
 
@@ -85,7 +85,7 @@ class UnderReviewController extends Controller
     {
         $this->authorizeAppointmentView($appointment);
         abort_unless($this->canOpenUnderReview($request->user()), 403);
-        abort_unless(! $appointment->is_completed && $request->user()->can('patient-under-review'), 403);
+        abort_unless($this->canMutateAppointment($appointment) && $request->user()->can('patient-under-review'), 403);
 
         $validated = $request->validate([
             'reason' => 'required|string',

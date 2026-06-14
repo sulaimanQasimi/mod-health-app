@@ -18,6 +18,7 @@ import { SectionActionButton } from './SimpleTableSection';
 interface BloodBankSectionProps {
     appointmentId: number;
     embedded?: boolean;
+    isDischarged?: boolean;
 }
 
 interface BloodBankItem {
@@ -42,7 +43,11 @@ const EMPTY_FORM = {
     quantity: '1',
 };
 
-export default function BloodBankSection({ appointmentId, embedded = false }: BloodBankSectionProps) {
+export default function BloodBankSection({
+    appointmentId,
+    embedded = false,
+    isDischarged = false,
+}: BloodBankSectionProps) {
     const { t } = useTranslation();
     const { loading, data, reload, post, destroy } = useAppointmentSection<BloodBankItem>(appointmentId, 'blood-bank');
     const [open, setOpen] = useState(false);
@@ -93,7 +98,10 @@ export default function BloodBankSection({ appointmentId, embedded = false }: Bl
                 <SectionLoadingState />
             ) : (
                 <>
-                    <AccordionButton onClick={() => setOpen(true)} permission={data?.permissions.create}>
+                    <AccordionButton
+                        onClick={() => setOpen(true)}
+                        permission={!isDischarged && data?.permissions.create}
+                    >
                         {t('global.add')}
                     </AccordionButton>
 
@@ -137,7 +145,7 @@ export default function BloodBankSection({ appointmentId, embedded = false }: Bl
                                                         colorClass="text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
                                                     />
                                                 )}
-                                                {data.permissions.delete && (
+                                                {data.permissions.delete && !isDischarged && (
                                                     <SectionActionButton
                                                         icon="bx-trash"
                                                         title={t('global.delete')}

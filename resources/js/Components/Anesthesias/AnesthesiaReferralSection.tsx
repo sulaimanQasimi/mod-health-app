@@ -434,7 +434,7 @@ export default function AnesthesiaReferralSection({
                                                     colorClass="text-violet-600 hover:bg-violet-50 dark:text-violet-400 dark:hover:bg-violet-900/30"
                                                 />
                                             )}
-                                            {item.urls?.edit && data?.permissions.edit && (
+                                            {item.urls?.edit && data?.permissions.edit && !isDischarged && (
                                                 <SectionActionButton
                                                     icon="bx-edit"
                                                     title={t('global.edit')}

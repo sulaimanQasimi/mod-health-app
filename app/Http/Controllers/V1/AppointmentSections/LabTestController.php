@@ -78,7 +78,7 @@ class LabTestController extends Controller
             ->all();
 
         return $this->sectionIndexResponse($items, $appointment, [
-            'create' => ! $appointment->is_completed && $user->can('register-patient-tests'),
+            'create' => $this->canMutateAppointment($appointment) && $user->can('register-patient-tests'),
         ]);
     }
 
@@ -154,7 +154,7 @@ class LabTestController extends Controller
     public function store(Request $request, Appointment $appointment): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
-        abort_if($appointment->is_completed, 403);
+        $this->assertAppointmentMutable($appointment);
         abort_unless($request->user()->can('register-patient-tests'), 403);
 
         $validated = $request->validate([

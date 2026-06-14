@@ -101,6 +101,7 @@ export default function ProstheticsCasesCreate({ prefill, formOptions, urls }: C
                                     type="number"
                                     min={1}
                                     required
+                                    placeholder={t('global.prosthetics_case_patient_id_placeholder')}
                                     value={form.patient_id}
                                     onChange={(e) => setForm((prev) => ({ ...prev, patient_id: e.target.value }))}
                                 />
@@ -158,6 +159,7 @@ export default function ProstheticsCasesCreate({ prefill, formOptions, urls }: C
                                 <Label htmlFor="body_region" value={t('global.prosthetics_body_region')} />
                                 <TextInput
                                     id="body_region"
+                                    placeholder={t('global.prosthetics_case_body_region_placeholder')}
                                     value={form.body_region}
                                     onChange={(e) => setForm((prev) => ({ ...prev, body_region: e.target.value }))}
                                 />
@@ -166,6 +168,7 @@ export default function ProstheticsCasesCreate({ prefill, formOptions, urls }: C
                                 <Label htmlFor="device_type" value={t('global.prosthetics_device_type')} />
                                 <TextInput
                                     id="device_type"
+                                    placeholder={t('global.prosthetics_case_device_type_placeholder')}
                                     value={form.device_type}
                                     onChange={(e) => setForm((prev) => ({ ...prev, device_type: e.target.value }))}
                                 />
@@ -177,6 +180,7 @@ export default function ProstheticsCasesCreate({ prefill, formOptions, urls }: C
                                 <Textarea
                                     id="primary_diagnosis"
                                     rows={3}
+                                    placeholder={t('global.prosthetics_case_diagnosis_placeholder')}
                                     value={form.primary_diagnosis}
                                     onChange={(e) => setForm((prev) => ({ ...prev, primary_diagnosis: e.target.value }))}
                                 />
@@ -186,6 +190,7 @@ export default function ProstheticsCasesCreate({ prefill, formOptions, urls }: C
                                 <Textarea
                                     id="cause_of_loss_notes"
                                     rows={3}
+                                    placeholder={t('global.prosthetics_case_cause_placeholder')}
                                     value={form.cause_of_loss_notes}
                                     onChange={(e) =>
                                         setForm((prev) => ({ ...prev, cause_of_loss_notes: e.target.value }))

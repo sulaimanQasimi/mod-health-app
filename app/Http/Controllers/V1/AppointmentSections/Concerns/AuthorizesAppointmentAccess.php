@@ -3,10 +3,33 @@
 namespace App\Http\Controllers\V1\AppointmentSections\Concerns;
 
 use App\Models\Appointment;
+use App\Models\Hospitalization;
 use App\Models\User;
 
 trait AuthorizesAppointmentAccess
 {
+    protected function appointmentMutationsLocked(Appointment $appointment): bool
+    {
+        if ((bool) $appointment->is_completed) {
+            return true;
+        }
+
+        return Hospitalization::query()
+            ->where('appointment_id', $appointment->id)
+            ->where('is_discharged', 1)
+            ->exists();
+    }
+
+    protected function canMutateAppointment(Appointment $appointment): bool
+    {
+        return ! $this->appointmentMutationsLocked($appointment);
+    }
+
+    protected function assertAppointmentMutable(Appointment $appointment): void
+    {
+        abort_if($this->appointmentMutationsLocked($appointment), 403);
+    }
+
     protected function authorizeAppointmentView(Appointment $appointment): void
     {
         $this->authorize('view', $appointment);

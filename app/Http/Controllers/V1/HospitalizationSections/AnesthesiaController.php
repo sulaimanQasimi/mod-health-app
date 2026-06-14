@@ -120,6 +120,7 @@ class AnesthesiaController extends Controller
     public function destroy(Hospitalization $hospitalization, Anesthesia $anesthesia): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         abort_unless(request()->user()->can('delete-anesthesias'), 403);
         abort_unless((int) $anesthesia->hospitalization_id === (int) $hospitalization->id, 404);
 
@@ -174,8 +175,8 @@ class AnesthesiaController extends Controller
         return [
             'view' => $this->canView($user),
             'create' => $this->canCreate($user, $hospitalization),
-            'edit' => $user?->can('edit-anesthesias') ?? false,
-            'delete' => $user?->can('delete-anesthesias') ?? false,
+            'edit' => ! (bool) $hospitalization->is_discharged && ($user?->can('edit-anesthesias') ?? false),
+            'delete' => ! (bool) $hospitalization->is_discharged && ($user?->can('delete-anesthesias') ?? false),
         ];
     }
 

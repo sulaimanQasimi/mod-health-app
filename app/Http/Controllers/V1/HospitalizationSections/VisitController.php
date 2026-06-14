@@ -101,6 +101,7 @@ class VisitController extends Controller
     public function update(Request $request, Hospitalization $hospitalization, Visit $visit): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         abort_unless($request->user()->can('edit-hospitalizations'), 403);
         abort_unless((int) $visit->hospitalization_id === (int) $hospitalization->id, 404);
 
@@ -114,6 +115,7 @@ class VisitController extends Controller
     public function destroy(Hospitalization $hospitalization, Visit $visit): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         abort_unless(request()->user()->can('delete-hospitalizations'), 403);
         abort_unless((int) $visit->hospitalization_id === (int) $hospitalization->id, 404);
 
@@ -140,8 +142,8 @@ class VisitController extends Controller
         return [
             'view' => $this->canView($user),
             'create' => ! (bool) $hospitalization->is_discharged,
-            'edit' => $user->can('edit-hospitalizations'),
-            'delete' => $user->can('delete-hospitalizations'),
+            'edit' => ! (bool) $hospitalization->is_discharged && $user->can('edit-hospitalizations'),
+            'delete' => ! (bool) $hospitalization->is_discharged && $user->can('delete-hospitalizations'),
         ];
     }
 

@@ -299,7 +299,7 @@ export default function UnderReviewSection({
                                                         colorClass="text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900/30"
                                                     />
                                                 )}
-                                                {data.permissions.edit && item.urls?.edit && (
+                                                {data.permissions.edit && !isDischarged && item.urls?.edit && (
                                                     <SectionActionButton
                                                         icon="bx-edit"
                                                         title={t('global.edit')}
@@ -307,7 +307,7 @@ export default function UnderReviewSection({
                                                         colorClass="text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30"
                                                     />
                                                 )}
-                                                {data.permissions.delete && (
+                                                {data.permissions.delete && !isDischarged && (
                                                     <SectionActionButton
                                                         icon="bx-trash"
                                                         title={t('global.delete')}

@@ -51,16 +51,16 @@ class AnesthesiaController extends Controller
 
         return $this->sectionIndexResponse($items, $appointment, [
             'view' => true,
-            'create' => ! $appointment->is_completed && $user->can('refer-to-anesthesia'),
-            'edit' => $user->can('edit-anesthesias'),
-            'delete' => $user->can('delete-anesthesias'),
+            'create' => $this->canMutateAppointment($appointment) && $user->can('refer-to-anesthesia'),
+            'edit' => $this->canMutateAppointment($appointment) && $user->can('edit-anesthesias'),
+            'delete' => $this->canMutateAppointment($appointment) && $user->can('delete-anesthesias'),
         ]);
     }
 
     public function meta(Appointment $appointment): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
-        abort_unless(! $appointment->is_completed && request()->user()->can('refer-to-anesthesia'), 403);
+        abort_unless($this->canMutateAppointment($appointment) && request()->user()->can('refer-to-anesthesia'), 403);
 
         $appointment->loadMissing('patient:id,name');
         $branchId = $appointment->branch_id ?? request()->user()->branch_id;
@@ -90,7 +90,7 @@ class AnesthesiaController extends Controller
     public function store(Request $request, Appointment $appointment): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
-        abort_unless(! $appointment->is_completed && $request->user()->can('refer-to-anesthesia'), 403);
+        abort_unless($this->canMutateAppointment($appointment) && $request->user()->can('refer-to-anesthesia'), 403);
 
         $this->anesthesiaReferralService->normalizeReferralInput($request);
 
@@ -133,6 +133,7 @@ class AnesthesiaController extends Controller
     {
         $this->authorizeAppointmentView($appointment);
         abort_unless(request()->user()->can('delete-anesthesias'), 403);
+        $this->assertAppointmentMutable($appointment);
         abort_unless((int) $anesthesia->appointment_id === (int) $appointment->id, 404);
         $anesthesia->delete();
 

@@ -91,7 +91,7 @@ class PhysiotherapyController extends Controller
 
         return $this->sectionIndexResponse($items, $appointment, [
             'view' => true,
-            'create' => ! $appointment->is_completed && $user->can('create-physiotherapy-procedures'),
+            'create' => $this->canMutateAppointment($appointment) && $user->can('create-physiotherapy-procedures'),
         ]);
     }
 
@@ -158,7 +158,7 @@ class PhysiotherapyController extends Controller
     public function store(Request $request, Appointment $appointment): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
-        abort_if($appointment->is_completed, 403);
+        $this->assertAppointmentMutable($appointment);
         $this->authorize('create', PhysiotherapyProcedure::class);
 
         $physiotherapistIds = $this->physiotherapistDoctors($appointment)->pluck('id')->all();

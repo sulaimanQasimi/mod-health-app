@@ -40,8 +40,8 @@ class BloodBankController extends Controller
         ])->values()->all();
 
         return $this->sectionIndexResponse($items, $appointment, [
-            'create' => ! $appointment->is_completed && $user->can('add-blood-request'),
-            'delete' => $user->can('delete-blood-request'),
+            'create' => $this->canMutateAppointment($appointment) && $user->can('add-blood-request'),
+            'delete' => $this->canMutateAppointment($appointment) && $user->can('delete-blood-request'),
         ]);
     }
 
@@ -49,7 +49,7 @@ class BloodBankController extends Controller
     {
         $this->authorizeAppointmentView($appointment);
         abort_unless($request->user()->can('add-blood-request'), 403);
-        abort_if($appointment->is_completed, 403);
+        $this->assertAppointmentMutable($appointment);
 
         $validated = $request->validate([
             'group' => ['nullable', 'string', Rule::in(['A', 'B', 'AB', 'O'])],
@@ -82,6 +82,7 @@ class BloodBankController extends Controller
     {
         $this->authorizeAppointmentView($appointment);
         abort_unless(request()->user()->can('delete-blood-request'), 403);
+        $this->assertAppointmentMutable($appointment);
         abort_unless((int) $bloodBank->appointment_id === (int) $appointment->id, 404);
         $bloodBank->delete();
 

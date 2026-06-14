@@ -41,16 +41,16 @@ class IcuController extends Controller
 
         return $this->sectionIndexResponse($items, $appointment, [
             'view' => true,
-            'create' => ! $appointment->is_completed && $user->can('refer-to-icu'),
-            'edit' => $user->can('edit-icus'),
-            'delete' => $user->can('delete-icus'),
+            'create' => $this->canMutateAppointment($appointment) && $user->can('refer-to-icu'),
+            'edit' => $this->canMutateAppointment($appointment) && $user->can('edit-icus'),
+            'delete' => $this->canMutateAppointment($appointment) && $user->can('delete-icus'),
         ]);
     }
 
     public function meta(Appointment $appointment): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
-        abort_unless(! $appointment->is_completed && request()->user()->can('refer-to-icu'), 403);
+        abort_unless($this->canMutateAppointment($appointment) && request()->user()->can('refer-to-icu'), 403);
 
         $appointment->loadMissing('patient:id,name');
         $branchId = $appointment->branch_id ?? request()->user()->branch_id;
@@ -70,7 +70,7 @@ class IcuController extends Controller
     public function store(Request $request, Appointment $appointment): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
-        abort_unless(! $appointment->is_completed && $request->user()->can('refer-to-icu'), 403);
+        abort_unless($this->canMutateAppointment($appointment) && $request->user()->can('refer-to-icu'), 403);
 
         $validated = $request->validate([
             'description' => 'required|string|max:2000',
@@ -103,6 +103,7 @@ class IcuController extends Controller
     {
         $this->authorizeAppointmentView($appointment);
         abort_unless(request()->user()->can('delete-icus'), 403);
+        $this->assertAppointmentMutable($appointment);
         abort_unless((int) $icu->appointment_id === (int) $appointment->id, 404);
         $icu->delete();
 

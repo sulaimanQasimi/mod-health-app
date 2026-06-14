@@ -72,9 +72,9 @@ class PrescriptionController extends Controller
             ->all();
 
         return $this->sectionIndexResponse($items, $appointment, [
-            'create' => ! $appointment->is_completed && $user->can('add-prescription'),
-            'edit' => $user->can('edit-prescriptions'),
-            'delete' => $user->can('delete-prescriptions'),
+            'create' => $this->canMutateAppointment($appointment) && $user->can('add-prescription'),
+            'edit' => $this->canMutateAppointment($appointment) && $user->can('edit-prescriptions'),
+            'delete' => $this->canMutateAppointment($appointment) && $user->can('delete-prescriptions'),
         ]);
     }
 
@@ -115,7 +115,7 @@ class PrescriptionController extends Controller
     public function store(Request $request, Appointment $appointment): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
-        abort_if($appointment->is_completed, 403);
+        $this->assertAppointmentMutable($appointment);
         abort_unless($request->user()->can('add-prescription'), 403);
 
         $validated = $request->validate([
@@ -178,6 +178,7 @@ class PrescriptionController extends Controller
     public function updateItemStatus(Request $request, Appointment $appointment, PrescriptionItem $prescriptionItem): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
+        $this->assertAppointmentMutable($appointment);
         abort_unless($request->user()->can('edit-prescriptions'), 403);
         $prescriptionItem->loadMissing('prescription');
         abort_unless((int) $prescriptionItem->prescription?->appointment_id === (int) $appointment->id, 404);
@@ -197,6 +198,7 @@ class PrescriptionController extends Controller
     public function destroyItem(Appointment $appointment, PrescriptionItem $prescriptionItem): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
+        $this->assertAppointmentMutable($appointment);
         abort_unless(request()->user()->can('edit-prescriptions'), 403);
         $prescriptionItem->loadMissing('prescription');
         abort_unless((int) $prescriptionItem->prescription?->appointment_id === (int) $appointment->id, 404);
@@ -213,6 +215,7 @@ class PrescriptionController extends Controller
     public function destroy(Appointment $appointment, Prescription $prescription): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
+        $this->assertAppointmentMutable($appointment);
         abort_unless(request()->user()->can('delete-prescriptions'), 403);
         abort_unless((int) $prescription->appointment_id === (int) $appointment->id, 404);
         $prescription->delete();

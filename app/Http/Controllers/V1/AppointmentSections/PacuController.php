@@ -35,16 +35,16 @@ class PacuController extends Controller
 
         return $this->sectionIndexResponse($items, $appointment, [
             'view' => true,
-            'create' => ! $appointment->is_completed && $user->can('refer-to-pacu'),
-            'edit' => $user->can('show-pacu-menu'),
-            'delete' => $user->can('show-pacu-menu'),
+            'create' => $this->canMutateAppointment($appointment) && $user->can('refer-to-pacu'),
+            'edit' => $this->canMutateAppointment($appointment) && $user->can('show-pacu-menu'),
+            'delete' => $this->canMutateAppointment($appointment) && $user->can('show-pacu-menu'),
         ]);
     }
 
     public function meta(Appointment $appointment): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
-        abort_unless(! $appointment->is_completed && request()->user()->can('refer-to-pacu'), 403);
+        abort_unless($this->canMutateAppointment($appointment) && request()->user()->can('refer-to-pacu'), 403);
 
         $appointment->loadMissing('patient:id,name');
         $branchId = $appointment->branch_id ?? request()->user()->branch_id;
@@ -62,7 +62,7 @@ class PacuController extends Controller
     public function store(Request $request, Appointment $appointment): JsonResponse
     {
         $this->authorizeAppointmentView($appointment);
-        abort_unless(! $appointment->is_completed && $request->user()->can('refer-to-pacu'), 403);
+        abort_unless($this->canMutateAppointment($appointment) && $request->user()->can('refer-to-pacu'), 403);
 
         $validated = $request->validate([
             'description' => 'required|string|max:2000',
@@ -96,6 +96,7 @@ class PacuController extends Controller
     {
         $this->authorizeAppointmentView($appointment);
         abort_unless(request()->user()->can('show-pacu-menu'), 403);
+        $this->assertAppointmentMutable($appointment);
         abort_unless((int) $pacu->appointment_id === (int) $appointment->id, 404);
 
         $pacu->delete();

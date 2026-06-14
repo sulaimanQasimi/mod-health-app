@@ -33,6 +33,7 @@ import { SectionActionButton } from './SimpleTableSection';
 
 interface PhysiotherapySectionProps {
     appointmentId: number;
+    isDischarged?: boolean;
 }
 
 interface LookupOption {
@@ -107,7 +108,10 @@ const EMPTY_FORM = {
     notes: '',
 };
 
-export default function PhysiotherapySection({ appointmentId }: PhysiotherapySectionProps) {
+export default function PhysiotherapySection({
+    appointmentId,
+    isDischarged = false,
+}: PhysiotherapySectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
     const baseUrl = `/react/appointments/${appointmentId}/physiotherapy`;
@@ -264,7 +268,7 @@ export default function PhysiotherapySection({ appointmentId }: PhysiotherapySec
                 <SectionLoadingState />
             ) : (
                 <>
-                    <AccordionButton onClick={openCreate} permission={data?.permissions.create}>
+                    <AccordionButton onClick={openCreate} permission={!isDischarged && data?.permissions.create}>
                         {t('global.add_physiotherapy_procedure')}
                     </AccordionButton>
 

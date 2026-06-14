@@ -149,6 +149,7 @@ class UnderReviewController extends Controller
     public function destroy(Hospitalization $hospitalization, UnderReview $underReview): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         abort_unless(request()->user()->can('delete-under-reviews'), 403);
         abort_unless((int) $underReview->hospitalization_id === (int) $hospitalization->id, 404);
         abort_unless($underReview->userCanView(request()->user()), 404);
@@ -198,8 +199,8 @@ class UnderReviewController extends Controller
         return [
             'view' => $this->canView($user),
             'create' => $this->canCreate($user, $hospitalization),
-            'edit' => $user?->can('edit-under-reviews') ?? false,
-            'delete' => $user?->can('delete-under-reviews') ?? false,
+            'edit' => ! (bool) $hospitalization->is_discharged && ($user?->can('edit-under-reviews') ?? false),
+            'delete' => ! (bool) $hospitalization->is_discharged && ($user?->can('delete-under-reviews') ?? false),
         ];
     }
 }

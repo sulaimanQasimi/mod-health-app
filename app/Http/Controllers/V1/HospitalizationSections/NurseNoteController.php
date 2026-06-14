@@ -131,6 +131,7 @@ class NurseNoteController extends Controller
     public function update(Request $request, Hospitalization $hospitalization, NurseNote $nurseNote): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         $this->ensureNoteBelongsToHospitalization($hospitalization, $nurseNote);
         $this->authorize('update', $nurseNote);
 
@@ -145,6 +146,7 @@ class NurseNoteController extends Controller
     public function destroy(Hospitalization $hospitalization, NurseNote $nurseNote): JsonResponse
     {
         $this->ensureAccessible($hospitalization);
+        abort_if((bool) $hospitalization->is_discharged, 403);
         $this->ensureNoteBelongsToHospitalization($hospitalization, $nurseNote);
         $this->authorize('delete', $nurseNote);
 
@@ -182,11 +184,15 @@ class NurseNoteController extends Controller
         return [
             'view' => $this->canView($user),
             'create' => ! (bool) $hospitalization->is_discharged && $user->can('create', NurseNote::class),
-            'edit' => $user->can('create', NurseNote::class)
+            'edit' => ! (bool) $hospitalization->is_discharged && (
+                $user->can('create', NurseNote::class)
                 || $user->hasPermissionTo('edit-nurse-notes')
-                || $user->hasRole(['super_admin', 'admin', 'hr', 'nurse']),
-            'delete' => $user->hasPermissionTo('delete-nurse-notes')
-                || $user->hasRole(['super_admin', 'admin', 'hr', 'nurse']),
+                || $user->hasRole(['super_admin', 'admin', 'hr', 'nurse'])
+            ),
+            'delete' => ! (bool) $hospitalization->is_discharged && (
+                $user->hasPermissionTo('delete-nurse-notes')
+                || $user->hasRole(['super_admin', 'admin', 'hr', 'nurse'])
+            ),
         ];
     }
 

@@ -115,26 +115,6 @@ export default function IcusShow({ icu, permissions, sectionPermissions, urls }:
                     backLabel={t('global.back')}
                     action={
                         <div className="flex flex-wrap gap-2">
-                            {permissions.approve && (
-                                <button
-                                    type="button"
-                                    className={ICU_APPROVE_BTN_CLASS}
-                                    onClick={() => setApproveOpen(true)}
-                                >
-                                    <i className="bx bx-check text-lg" />
-                                    {t('global.approve')}
-                                </button>
-                            )}
-                            {permissions.reject && (
-                                <button
-                                    type="button"
-                                    className={ICU_REJECT_BTN_CLASS}
-                                    onClick={() => setRejectOpen(true)}
-                                >
-                                    <i className="bx bx-x text-lg" />
-                                    {t('global.reject')}
-                                </button>
-                            )}
                             {permissions.discharge && (
                                 <button
                                     type="button"

@@ -135,7 +135,7 @@ interface TableHeaderProps extends ThHTMLAttributes<HTMLTableCellElement> {
 
 export function TableHeader({
     className = '',
-    align = 'left',
+    align = 'right',
     sortable = false,
     children,
     ...props
@@ -163,7 +163,7 @@ interface TableCellProps extends TdHTMLAttributes<HTMLTableCellElement> {
 
 export function TableCell({
     className = '',
-    align = 'left',
+    align = 'right',
     muted = false,
     children,
     ...props

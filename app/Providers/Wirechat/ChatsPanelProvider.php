@@ -15,6 +15,11 @@ class ChatsPanelProvider extends PanelProvider
             ->id('chats')
             ->path('chats')
             ->middleware(['web', 'auth'])
+            ->heading('Chats')
+            ->chatsSearch()
+            ->createChatAction()
+            ->createGroupAction()
+            ->attachments()
             ->searchableAttributes(['name', 'last_name', 'email'])
             ->searchUsersUsing(function (?string $needle): Collection {
                 $needle = trim((string) $needle);
@@ -38,6 +43,9 @@ class ChatsPanelProvider extends PanelProvider
                     ->limit(50)
                     ->get();
             })
+            ->redirectToHomeAction(url: url('/react'))
+            ->messagesQueue('messages')
+            ->eventsQueue('default')
             ->default();
     }
 }

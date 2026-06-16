@@ -16,7 +16,7 @@ RUN if [ -n "$GIT_REF" ]; then \
 ############################
 # Composer dependencies
 ############################
-FROM php:8.3-cli-bookworm AS vendor
+FROM php:8.4-cli-bookworm AS vendor
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
@@ -83,7 +83,7 @@ RUN npm run build
 ############################
 # Production PHP-FPM
 ############################
-FROM php:8.3-fpm-bookworm AS production-base
+FROM php:8.4-fpm-bookworm AS production-base
 
 ENV APP_ENV=production \
     APP_DEBUG=false \

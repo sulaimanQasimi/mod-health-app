@@ -70,11 +70,14 @@ RUN composer install \
 FROM node:22-bookworm-slim AS assets
 WORKDIR /app
 COPY --from=git-source /src/package.json /src/package-lock.json ./
+COPY --from=git-source /src/.flowbite-react ./.flowbite-react
 RUN echo "legacy-peer-deps=true" > .npmrc \
     && npm ci --no-audit --no-fund --legacy-peer-deps
 COPY --from=git-source /src/vite.config.js /src/tsconfig.json /src/tsconfig.node.json /src/postcss.config.js ./
 COPY --from=git-source /src/resources ./resources
 COPY --from=git-source /src/public ./public
+COPY --from=vendor /app/vendor ./vendor
+RUN mkdir -p storage/framework/views
 RUN npm run build
 
 ############################

@@ -1,21 +1,17 @@
 # Runtime git clone on server (alternative to build-time clone)
 #
-# 1. Place deploy key at ./docker/secrets/git_deploy_key (chmod 600)
-# 2. Set GIT_REPO_URL and GIT_BRANCH in .env
-# 3. docker compose -f docker-compose.yml -f docker-compose.git-runtime.yml up -d
+# 1. Set GIT_BRANCH in .env (optional)
+# 2. docker compose -f docker-compose.yml -f docker-compose.git-runtime.yml up -d
 
 services:
   app:
     build:
       target: production-base
     environment:
-      GIT_REPO_URL: ${GIT_REPO_URL:?Set GIT_REPO_URL}
+      GIT_REPO_URL: https://github.com/sulaimanQasimi/mod-health-app.git
       GIT_BRANCH: ${GIT_BRANCH:-main}
-      GIT_SSH_KEY_PATH: /run/secrets/git_ssh_key
       RUN_COMPOSER_INSTALL: "true"
       RUN_NPM_BUILD: "true"
-    secrets:
-      - git_ssh_key
     volumes:
       - app_code:/var/www/html
 
@@ -26,24 +22,17 @@ services:
 
   queue:
     environment:
-      GIT_REPO_URL: ${GIT_REPO_URL}
+      GIT_REPO_URL: https://github.com/sulaimanQasimi/mod-health-app.git
       GIT_BRANCH: ${GIT_BRANCH:-main}
-    secrets:
-      - git_ssh_key
     volumes:
       - app_code:/var/www/html
 
   scheduler:
     environment:
-      GIT_REPO_URL: ${GIT_REPO_URL}
-    secrets:
-      - git_ssh_key
+      GIT_REPO_URL: https://github.com/sulaimanQasimi/mod-health-app.git
+      GIT_BRANCH: ${GIT_BRANCH:-main}
     volumes:
       - app_code:/var/www/html
-
-secrets:
-  git_ssh_key:
-    file: ./docker/secrets/git_deploy_key
 
 volumes:
   app_code:

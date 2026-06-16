@@ -1,19 +1,13 @@
 # syntax=docker/dockerfile:1
 
 ############################
-# Git source (private repos: DOCKER_BUILDKIT=1 docker build --target from-git --ssh default \
-#   --build-arg GIT_REPO=git@github.com:org/mod-health-app.git -t mod-health-app .)
+# Clone public repository
 ############################
 FROM alpine/git AS git-source
-ARG GIT_REPO
+ARG GIT_REPO=https://github.com/sulaimanQasimi/mod-health-app.git
 ARG GIT_BRANCH=main
 ARG GIT_REF
-RUN test -n "$GIT_REPO"
-RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
-RUN --mount=type=ssh \
-    ssh-keyscan -H github.com gitlab.com bitbucket.org >> /root/.ssh/known_hosts 2>/dev/null || true
-RUN --mount=type=ssh \
-    if [ -n "$GIT_REF" ]; then \
+RUN if [ -n "$GIT_REF" ]; then \
         git clone "$GIT_REPO" /src && cd /src && git fetch --depth 1 origin "$GIT_REF" && git checkout "$GIT_REF"; \
     else \
         git clone --depth 1 --branch "$GIT_BRANCH" "$GIT_REPO" /src; \
@@ -22,26 +16,7 @@ RUN --mount=type=ssh \
 ############################
 # Composer dependencies
 ############################
-FROM composer:2 AS vendor-local
-WORKDIR /app
-COPY composer.json composer.lock ./
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --no-scripts \
-    --prefer-dist \
-    --optimize-autoloader \
-    --no-progress
-COPY . .
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --prefer-dist \
-    --optimize-autoloader \
-    --no-progress \
-    && composer dump-autoload --optimize
-
-FROM composer:2 AS vendor-git
+FROM composer:2 AS vendor
 WORKDIR /app
 COPY --from=git-source /src/composer.json /src/composer.lock ./
 RUN composer install \
@@ -63,16 +38,7 @@ RUN composer install \
 ############################
 # Frontend assets
 ############################
-FROM node:22-bookworm-slim AS assets-local
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
-COPY vite.config.js tsconfig.json tsconfig.node.json postcss.config.js ./
-COPY resources ./resources
-COPY public ./public
-RUN npm run build
-
-FROM node:22-bookworm-slim AS assets-git
+FROM node:22-bookworm-slim AS assets
 WORKDIR /app
 COPY --from=git-source /src/package.json /src/package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -126,8 +92,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-COPY docker/php/php.ini /usr/local/etc/php/conf.d/99-laravel.ini
-COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY --from=git-source /src/docker/php/php.ini /usr/local/etc/php/conf.d/99-laravel.ini
+COPY --from=git-source /src/docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 9000
@@ -135,15 +101,8 @@ ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
 
 FROM production-base AS production
-COPY --from=vendor-local --chown=www-data:www-data /app /opt/mod-health-app
-COPY --from=assets-local --chown=www-data:www-data /app/public/build /opt/mod-health-app/public/build
-RUN cp -a /opt/mod-health-app/. /var/www/html/ \
-    && mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache \
-    && chown -R www-data:www-data /var/www/html /opt/mod-health-app
-
-FROM production-base AS from-git
-COPY --from=vendor-git --chown=www-data:www-data /app /opt/mod-health-app
-COPY --from=assets-git --chown=www-data:www-data /app/public/build /opt/mod-health-app/public/build
+COPY --from=vendor --chown=www-data:www-data /app /opt/mod-health-app
+COPY --from=assets --chown=www-data:www-data /app/public/build /opt/mod-health-app/public/build
 RUN cp -a /opt/mod-health-app/. /var/www/html/ \
     && mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache \
     && chown -R www-data:www-data /var/www/html /opt/mod-health-app

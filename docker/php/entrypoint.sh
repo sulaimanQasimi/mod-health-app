@@ -130,7 +130,7 @@ prepare_laravel() {
 
     if [ "${APP_ENV:-production}" = "production" ]; then
         gosu www-data php artisan config:cache --no-interaction
-        gosu www-data php artisan route:cache --no-interaction
+        gosu www-data php artisan route:cache --no-interaction || echo "Warning: route cache skipped."
         gosu www-data php artisan view:cache --no-interaction
         gosu www-data php artisan event:cache --no-interaction 2>/dev/null || true
     fi

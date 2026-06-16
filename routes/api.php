@@ -19,12 +19,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Nurse Notes API Routes
+// Nurse Notes API Routes (JSON helpers only; CRUD lives in web + react routes)
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('nurse-notes', \App\Http\Controllers\NurseNoteController::class)
-        ->names('api.nurse-notes');
-    Route::get('nurse-notes/for-record', [\App\Http\Controllers\NurseNoteController::class, 'getNotesForRecord']);
-    Route::get('nurse-notes/by-date-range', [\App\Http\Controllers\NurseNoteController::class, 'getNotesByDateRange']);
+    Route::get('nurse-notes/for-record', [\App\Http\Controllers\NurseNoteController::class, 'getNotesForRecord'])
+        ->name('api.nurse-notes.for-record');
+    Route::get('nurse-notes/by-date-range', [\App\Http\Controllers\NurseNoteController::class, 'getNotesByDateRange'])
+        ->name('api.nurse-notes.by-date-range');
 });
 
 // Medication Administration Records API Routes

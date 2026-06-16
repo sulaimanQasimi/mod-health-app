@@ -487,12 +487,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{hospitalization}/diabetes-charts', [HospitalizationDiabetesChartController::class, 'store'])->name('diabetes-charts.store');
         Route::match(['put', 'post'], '/{hospitalization}/diabetes-charts/{diabetesChart}', [HospitalizationDiabetesChartController::class, 'update'])->name('diabetes-charts.update');
         Route::delete('/{hospitalization}/diabetes-charts/{diabetesChart}', [HospitalizationDiabetesChartController::class, 'destroy'])->name('diabetes-charts.destroy');
-        Route::get('/{hospitalization}/nurse-notes/meta', [HospitalizationNurseNoteController::class, 'meta'])->name('nurse-notes.meta');
-        Route::get('/{hospitalization}/nurse-notes/{nurseNote}', [HospitalizationNurseNoteController::class, 'show'])->name('nurse-notes.show');
-        Route::get('/{hospitalization}/nurse-notes', [HospitalizationNurseNoteController::class, 'index'])->name('nurse-notes.index');
-        Route::post('/{hospitalization}/nurse-notes', [HospitalizationNurseNoteController::class, 'store'])->name('nurse-notes.store');
-        Route::match(['put', 'post'], '/{hospitalization}/nurse-notes/{nurseNote}', [HospitalizationNurseNoteController::class, 'update'])->name('nurse-notes.update');
-        Route::delete('/{hospitalization}/nurse-notes/{nurseNote}', [HospitalizationNurseNoteController::class, 'destroy'])->name('nurse-notes.destroy');
+        Route::prefix('{hospitalization}/nurse-notes')->name('nurse-notes.')->group(function () {
+            Route::get('meta', [HospitalizationNurseNoteController::class, 'meta'])->name('meta');
+            Route::get('{nurseNote}', [HospitalizationNurseNoteController::class, 'show'])->name('show');
+            Route::get('/', [HospitalizationNurseNoteController::class, 'index'])->name('index');
+            Route::post('/', [HospitalizationNurseNoteController::class, 'store'])->name('store');
+            Route::match(['put', 'post'], '{nurseNote}', [HospitalizationNurseNoteController::class, 'update'])->name('update');
+            Route::delete('{nurseNote}', [HospitalizationNurseNoteController::class, 'destroy'])->name('destroy');
+        });
         Route::get('/{hospitalization}/nutrition-cares/meta', [HospitalizationNutritionCareController::class, 'meta'])->name('nutrition-cares.meta');
         Route::get('/{hospitalization}/nutrition-cares/{nutritionCare}', [HospitalizationNutritionCareController::class, 'show'])->name('nutrition-cares.show');
         Route::get('/{hospitalization}/nutrition-cares', [HospitalizationNutritionCareController::class, 'index'])->name('nutrition-cares.index');

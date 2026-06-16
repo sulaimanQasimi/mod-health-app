@@ -1,0 +1,149 @@
+# syntax=docker/dockerfile:1
+
+############################
+# Git source (private repos: DOCKER_BUILDKIT=1 docker build --target from-git --ssh default \
+#   --build-arg GIT_REPO=git@github.com:org/mod-health-app.git -t mod-health-app .)
+############################
+FROM alpine/git AS git-source
+ARG GIT_REPO
+ARG GIT_BRANCH=main
+ARG GIT_REF
+RUN test -n "$GIT_REPO"
+RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
+RUN --mount=type=ssh \
+    ssh-keyscan -H github.com gitlab.com bitbucket.org >> /root/.ssh/known_hosts 2>/dev/null || true
+RUN --mount=type=ssh \
+    if [ -n "$GIT_REF" ]; then \
+        git clone "$GIT_REPO" /src && cd /src && git fetch --depth 1 origin "$GIT_REF" && git checkout "$GIT_REF"; \
+    else \
+        git clone --depth 1 --branch "$GIT_BRANCH" "$GIT_REPO" /src; \
+    fi
+
+############################
+# Composer dependencies
+############################
+FROM composer:2 AS vendor-local
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-scripts \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-progress
+COPY . .
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-progress \
+    && composer dump-autoload --optimize
+
+FROM composer:2 AS vendor-git
+WORKDIR /app
+COPY --from=git-source /src/composer.json /src/composer.lock ./
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-scripts \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-progress
+COPY --from=git-source /src/ .
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-progress \
+    && composer dump-autoload --optimize
+
+############################
+# Frontend assets
+############################
+FROM node:22-bookworm-slim AS assets-local
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY vite.config.js tsconfig.json tsconfig.node.json postcss.config.js ./
+COPY resources ./resources
+COPY public ./public
+RUN npm run build
+
+FROM node:22-bookworm-slim AS assets-git
+WORKDIR /app
+COPY --from=git-source /src/package.json /src/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY --from=git-source /src/vite.config.js /src/tsconfig.json /src/tsconfig.node.json /src/postcss.config.js ./
+COPY --from=git-source /src/resources ./resources
+COPY --from=git-source /src/public ./public
+RUN npm run build
+
+############################
+# Production PHP-FPM
+############################
+FROM php:8.3-fpm-bookworm AS production-base
+
+ENV APP_ENV=production \
+    APP_DEBUG=false \
+    LOG_CHANNEL=stderr \
+    APP_SOURCE=/opt/mod-health-app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gosu \
+        git \
+        unzip \
+        curl \
+        nodejs \
+        npm \
+        libzip-dev \
+        libpng-dev \
+        libjpeg62-turbo-dev \
+        libfreetype6-dev \
+        libicu-dev \
+        libonig-dev \
+        libxml2-dev \
+        libcurl4-openssl-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j"$(nproc)" \
+        bcmath \
+        curl \
+        exif \
+        gd \
+        intl \
+        mbstring \
+        opcache \
+        pcntl \
+        pdo_mysql \
+        xml \
+        zip \
+    && apt-get purge -y --auto-remove \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/99-laravel.ini
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 9000
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["php-fpm"]
+
+FROM production-base AS production
+COPY --from=vendor-local --chown=www-data:www-data /app /opt/mod-health-app
+COPY --from=assets-local --chown=www-data:www-data /app/public/build /opt/mod-health-app/public/build
+RUN cp -a /opt/mod-health-app/. /var/www/html/ \
+    && mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html /opt/mod-health-app
+
+FROM production-base AS from-git
+COPY --from=vendor-git --chown=www-data:www-data /app /opt/mod-health-app
+COPY --from=assets-git --chown=www-data:www-data /app/public/build /opt/mod-health-app/public/build
+RUN cp -a /opt/mod-health-app/. /var/www/html/ \
+    && mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html /opt/mod-health-app

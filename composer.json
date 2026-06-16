@@ -16,6 +16,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
         "laravel/ui": "^4.4",
+        "livewire/livewire": "*",
         "maatwebsite/excel": "*",
         "mbezhanov/faker-provider-collection": "^2.0",
         "morilog/jalali": "^3.4",
@@ -23,7 +24,8 @@
         "spatie/laravel-activitylog": "^5.0",
         "spatie/laravel-backup": "^10.0",
         "spatie/laravel-html": "^3.2",
-        "spatie/laravel-permission": "^6.0"
+        "spatie/laravel-permission": "^6.0",
+        "wirechat/wirechat": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

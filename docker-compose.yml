@@ -1,0 +1,137 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: mod-health-app:latest
+    container_name: mod-health-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      RUN_MIGRATIONS: "true"
+      RUN_COMPOSER_INSTALL: "false"
+      RUN_NPM_BUILD: "false"
+    volumes:
+      - app_code:/var/www/html
+      - app_storage:/var/www/html/storage
+      - app_bootstrap_cache:/var/www/html/bootstrap/cache
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mod-health
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: mod-health-nginx
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - app_code:/var/www/html:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      app:
+        condition: service_started
+    networks:
+      - mod-health
+
+  mysql:
+    image: mysql:8.0
+    container_name: mod-health-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${DB_DATABASE:-mod_health_app}
+      MYSQL_USER: ${DB_USERNAME:-mod_health}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - mod-health
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: mod-health-app:latest
+    container_name: mod-health-queue
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      APP_ENV: production
+      DB_HOST: mysql
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
+      RUN_MIGRATIONS: "false"
+    command: ["queue"]
+    volumes:
+      - app_code:/var/www/html
+      - app_storage:/var/www/html/storage
+      - app_bootstrap_cache:/var/www/html/bootstrap/cache
+    depends_on:
+      mysql:
+        condition: service_healthy
+      app:
+        condition: service_started
+    networks:
+      - mod-health
+    profiles:
+      - workers
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: mod-health-app:latest
+    container_name: mod-health-scheduler
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      APP_ENV: production
+      DB_HOST: mysql
+      RUN_MIGRATIONS: "false"
+    command: ["scheduler"]
+    volumes:
+      - app_code:/var/www/html
+      - app_storage:/var/www/html/storage
+      - app_bootstrap_cache:/var/www/html/bootstrap/cache
+    depends_on:
+      mysql:
+        condition: service_healthy
+      app:
+        condition: service_started
+    networks:
+      - mod-health
+    profiles:
+      - workers
+
+volumes:
+  mysql_data:
+  app_code:
+  app_storage:
+  app_bootstrap_cache:
+
+networks:
+  mod-health:
+    driver: bridge

@@ -1,0 +1,48 @@
+# Build image from a private Git repository (SSH deploy key)
+#
+# 1. Start ssh-agent and add your deploy key:
+#    eval "$(ssh-agent -s)"
+#    ssh-add ~/.ssh/id_ed25519_deploy
+#
+# 2. Build:
+#    DOCKER_BUILDKIT=1 docker compose -f docker-compose.yml -f docker-compose.git.yml build --ssh default
+#
+# 3. Run:
+#    docker compose --env-file .env up -d
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: from-git
+      ssh:
+        - default
+      args:
+        GIT_REPO: ${GIT_REPO:?Set GIT_REPO in .env}
+        GIT_BRANCH: ${GIT_BRANCH:-main}
+        GIT_REF: ${GIT_REF:-}
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: from-git
+      ssh:
+        - default
+      args:
+        GIT_REPO: ${GIT_REPO}
+        GIT_BRANCH: ${GIT_BRANCH:-main}
+        GIT_REF: ${GIT_REF:-}
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: from-git
+      ssh:
+        - default
+      args:
+        GIT_REPO: ${GIT_REPO}
+        GIT_BRANCH: ${GIT_BRANCH:-main}
+        GIT_REF: ${GIT_REF:-}

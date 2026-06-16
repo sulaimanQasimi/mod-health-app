@@ -121,6 +121,25 @@
                                         </div>
                                     @endif
 
+                                    {{-- Attachment is audio --}}
+                                    @if (str()->startsWith($mediaItem->getMimeType(), 'audio/'))
+                                        <div class="relative min-w-[200px] max-w-xs">
+                                            <button wire:loading.attr="disabled"
+                                                class="disabled:cursor-progress absolute -top-2 -right-2 z-10 dark:text-gray-50"
+                                                @click="removeUpload('{{ $mediaItem->getFilename() }}')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                    <path
+                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                </svg>
+                                            </button>
+                                            <audio controls preload="metadata" class="w-full"
+                                                src="{{ $mediaItem->temporaryUrl() }}"></audio>
+                                        </div>
+                                    @endif
+
                                     {{-- Attachemnt is Video/ --}}
                                     @if (str()->startsWith($mediaItem->getMimeType(), 'video/'))
                                         <div class="relative h-24 sm:h-36 ">
@@ -449,6 +468,32 @@
                         </x-wirechat::popover>
                     @endif
 
+                    @if ($this->panel()->hasMediaAttachments())
+                        <div x-data="wirechatVoiceRecorder()" class="relative flex shrink-0 items-center">
+                            <button
+                                type="button"
+                                wire:loading.attr="disabled"
+                                wire:target="sendMessage"
+                                @click="toggle()"
+                                :class="recording ? 'text-red-500 animate-pulse' : 'text-gray-600 dark:text-gray-300'"
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-[var(--wc-light-secondary)] dark:hover:bg-[var(--wc-dark-primary)]"
+                                :title="recording ? @js(__('global.stop_recording')) : @js(__('global.record_voice'))"
+                                aria-label="{{ __('global.record_voice') }}"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6">
+                                    <path d="M8.25 4.5a3.75 3.75 0 1 1 7.5 0v8.25a3.75 3.75 0 1 1-7.5 0V4.5Z" />
+                                    <path d="M6 10.5a6 6 0 0 0 12 0v-1.5a.75.75 0 0 1 1.5 0V10.5a7.5 7.5 0 0 1-6.75 7.446V20.25a.75.75 0 0 1-1.5 0v-2.304A7.5 7.5 0 0 1 4.5 10.5V9a.75.75 0 0 1 1.5 0v1.5Z" />
+                                </svg>
+                            </button>
+                            <span
+                                x-cloak
+                                x-show="recording"
+                                x-text="formatTime()"
+                                class="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-red-500 px-2 py-0.5 text-xs font-medium text-white"
+                            ></span>
+                        </div>
+                    @endif
+
                     {{-- --------------- --}}
                     {{-- TextArea Input --}}
                     {{-- --------------- --}}
@@ -687,6 +732,164 @@
 
                             return Promise.resolve(validFiles); // Return valid files for further processing
                         }
+                    }));
+
+                    Alpine.data('wirechatVoiceRecorder', () => ({
+                        recording: false,
+                        seconds: 0,
+                        timer: null,
+                        mediaRecorder: null,
+                        stream: null,
+                        chunks: [],
+                        mimeType: 'audio/webm',
+
+                        resolveMimeType() {
+                            const candidates = [
+                                'audio/webm;codecs=opus',
+                                'audio/webm',
+                                'audio/ogg;codecs=opus',
+                                'audio/mp4',
+                            ];
+
+                            for (const candidate of candidates) {
+                                if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(candidate)) {
+                                    return candidate;
+                                }
+                            }
+
+                            return 'audio/webm';
+                        },
+
+                        extensionForMime(mimeType) {
+                            if (mimeType.includes('ogg')) {
+                                return 'ogg';
+                            }
+
+                            if (mimeType.includes('mp4')) {
+                                return 'm4a';
+                            }
+
+                            return 'webm';
+                        },
+
+                        formatTime() {
+                            const minutes = Math.floor(this.seconds / 60);
+                            const remaining = this.seconds % 60;
+
+                            return `${minutes}:${String(remaining).padStart(2, '0')}`;
+                        },
+
+                        async toggle() {
+                            if (this.recording) {
+                                this.stop();
+
+                                return;
+                            }
+
+                            await this.start();
+                        },
+
+                        async start() {
+                            if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+                                $dispatch('wirechat-toast', {
+                                    type: 'warning',
+                                    message: @js(__('global.voice_recording_not_supported')),
+                                });
+
+                                return;
+                            }
+
+                            try {
+                                this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                                this.mimeType = this.resolveMimeType();
+                                this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: this.mimeType });
+                                this.chunks = [];
+
+                                this.mediaRecorder.ondataavailable = (event) => {
+                                    if (event.data.size > 0) {
+                                        this.chunks.push(event.data);
+                                    }
+                                };
+
+                                this.mediaRecorder.onstop = () => this.uploadRecording();
+
+                                this.mediaRecorder.start();
+                                this.recording = true;
+                                this.seconds = 0;
+                                this.timer = setInterval(() => this.seconds++, 1000);
+                            } catch (error) {
+                                $dispatch('wirechat-toast', {
+                                    type: 'error',
+                                    message: @js(__('global.microphone_access_denied')),
+                                });
+                            }
+                        },
+
+                        stop() {
+                            if (!this.recording || !this.mediaRecorder) {
+                                return;
+                            }
+
+                            if (this.mediaRecorder.state !== 'inactive') {
+                                this.mediaRecorder.stop();
+                            }
+
+                            this.stream?.getTracks().forEach((track) => track.stop());
+                            clearInterval(this.timer);
+                            this.recording = false;
+                        },
+
+                        uploadRecording() {
+                            if (this.seconds < 1 || this.chunks.length === 0) {
+                                $dispatch('wirechat-toast', {
+                                    type: 'warning',
+                                    message: @js(__('global.voice_recording_too_short')),
+                                });
+
+                                return;
+                            }
+
+                            const blob = new Blob(this.chunks, { type: this.mimeType });
+                            const extension = this.extensionForMime(this.mimeType);
+                            const file = new File([blob], `voice-${Date.now()}.${extension}`, {
+                                type: this.mimeType,
+                            });
+
+                            const allowedTypes = @json($this->panel()->getMediaMimes());
+                            const maxSize = @json($this->panel()->getMediaMaxUploadSize()) * 1024;
+                            const fileType = extension.toLowerCase();
+
+                            if (!allowedTypes.includes(fileType)) {
+                                $dispatch('wirechat-toast', {
+                                    type: 'warning',
+                                    message: @js(__('global.voice_recording_format_not_allowed')),
+                                });
+
+                                return;
+                            }
+
+                            if (file.size > maxSize) {
+                                $dispatch('wirechat-toast', {
+                                    type: 'warning',
+                                    message: @js(__('global.voice_recording_too_large')),
+                                });
+
+                                return;
+                            }
+
+                            $wire.upload(
+                                'media',
+                                file,
+                                () => {},
+                                (error) => {
+                                    $dispatch('wirechat-toast', {
+                                        type: 'error',
+                                        message: error ?? @js(__('global.voice_recording_upload_failed')),
+                                    });
+                                },
+                                () => {},
+                            );
+                        },
                     }));
                 </script>
             @endscript

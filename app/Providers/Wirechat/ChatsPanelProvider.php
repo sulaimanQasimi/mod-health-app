@@ -20,6 +20,8 @@ class ChatsPanelProvider extends PanelProvider
             ->createChatAction()
             ->createGroupAction()
             ->attachments()
+            ->mediaMimes(['png', 'jpg', 'jpeg', 'gif', 'mov', 'mp4', 'webm', 'ogg', 'mp3', 'wav', 'm4a'])
+            ->mediaMaxUploadSize(8192)
             ->searchableAttributes(['name', 'last_name', 'email'])
             ->searchUsersUsing(function (?string $needle): Collection {
                 $needle = trim((string) $needle);

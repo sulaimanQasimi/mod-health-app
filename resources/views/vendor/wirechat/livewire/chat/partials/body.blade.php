@@ -449,8 +449,15 @@
                                             </div>
                                         @endif
 
+                                        {{-- Attachment is audio --}}
+                                        @if (str()->startsWith((string) $attachment->mime_type, 'audio/'))
+                                            @include('wirechat::livewire.chat.partials.audio', [
+                                                'attachment' => $attachment,
+                                                'belongsToAuth' => $belongsToAuth,
+                                            ])
+
                                         {{-- Attachemnt is Video/ --}}
-                                        @if ($attachment->isVideo())
+                                        @elseif ($attachment->isVideo())
                                             <x-wirechat::video height="max-h-[400px]" :cover="false" source="{{ $attachment?->url }}" />
 
                                         {{-- Attachemnt is image/ --}}

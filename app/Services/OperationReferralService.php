@@ -6,7 +6,7 @@ use App\Jobs\SendNewOperationNotification;
 use App\Models\Anesthesia;
 use App\Models\Appointment;
 use App\Models\Hospitalization;
-use HanifHefaz\Dcter\Dcter;
+use Hekmatinasser\Verta\Verta;
 use Illuminate\Support\Facades\DB;
 
 class OperationReferralService
@@ -26,7 +26,7 @@ class OperationReferralService
                 ->all();
 
             $data['operation_assistants_id'] = json_encode($data['operation_assistants_id'] ?? []);
-            $data['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($data['date']));
+            $data['date'] = Verta::parse($data['date'])->datetime()->format('Y-m-d');
             $data['status'] = 'approved';
             $data['is_referred_to_operation'] = true;
 

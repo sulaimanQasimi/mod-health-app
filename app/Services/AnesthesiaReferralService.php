@@ -8,7 +8,7 @@ use App\Models\Bed;
 use App\Models\Doctor;
 use App\Models\Hospitalization;
 use App\Models\User;
-use HanifHefaz\Dcter\Dcter;
+use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +25,7 @@ class AnesthesiaReferralService
                 ->all();
 
             $data['operation_assistants_id'] = json_encode($data['operation_assistants_id'] ?? []);
-            $data['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($data['date']));
+            $data['date'] = Verta::parse($data['date'])->datetime()->format('Y-m-d');
 
             $anesthesia = Anesthesia::create($data);
 

@@ -94,7 +94,7 @@ install_dependencies() {
 
     if [ ! -d public/build ] && [ "${RUN_NPM_BUILD:-false}" = "true" ]; then
         echo "Building frontend assets..."
-        npm ci --no-audit --no-fund
+        npm ci --no-audit --no-fund --legacy-peer-deps
         npm run build
         chown -R www-data:www-data public/build
     fi

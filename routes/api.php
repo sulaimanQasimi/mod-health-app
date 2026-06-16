@@ -21,14 +21,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Nurse Notes API Routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('nurse-notes', \App\Http\Controllers\NurseNoteController::class);
+    Route::apiResource('nurse-notes', \App\Http\Controllers\NurseNoteController::class)
+        ->names('api.nurse-notes');
     Route::get('nurse-notes/for-record', [\App\Http\Controllers\NurseNoteController::class, 'getNotesForRecord']);
     Route::get('nurse-notes/by-date-range', [\App\Http\Controllers\NurseNoteController::class, 'getNotesByDateRange']);
 });
 
 // Medication Administration Records API Routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('medication-administration-records', \App\Http\Controllers\MedicationAdministrationRecordController::class);
+    Route::apiResource('medication-administration-records', \App\Http\Controllers\MedicationAdministrationRecordController::class)
+        ->names('api.medication-administration-records');
     Route::get('medication-administration-records/for-morphable', [\App\Http\Controllers\MedicationAdministrationRecordController::class, 'getRecordsForMorphable']);
     Route::post('medication-administration-records/{medicationAdministrationRecord}/add-time', [\App\Http\Controllers\MedicationAdministrationRecordController::class, 'addAdministrationTime']);
     Route::delete('medication-administration-times/{administrationTime}', [\App\Http\Controllers\MedicationAdministrationRecordController::class, 'removeAdministrationTime']);
@@ -36,12 +38,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Vital Sign Types API Routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('vital-sign-types', \App\Http\Controllers\VitalSignTypeController::class);
+    Route::apiResource('vital-sign-types', \App\Http\Controllers\VitalSignTypeController::class)
+        ->names('api.vital-sign-types');
 });
 
 // Vital Signs API Routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('vital-signs', \App\Http\Controllers\VitalSignController::class);
+    Route::apiResource('vital-signs', \App\Http\Controllers\VitalSignController::class)
+        ->names('api.vital-signs');
     Route::get('vital-signs/for-morphable', [\App\Http\Controllers\VitalSignController::class, 'getVitalSignsForMorphable']);
 });
 

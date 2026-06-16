@@ -64,15 +64,17 @@
                     <ul class="overflow-auto flex flex-col">
 
                         @foreach ($users as $key => $user)
-                            <li wire:key="user-{{ $key }}"
-                                wire:click="createConversation({{ (int) $user['id'] }}, '{{ $user['type'] }}')"
-                                class="flex cursor-pointer group gap-2 items-center p-2">
+                            <li wire:key="user-{{ $key }}" class="flex cursor-pointer group gap-2 items-center p-2">
+                                <button
+                                    type="button"
+                                    wire:click.stop="startChatWithUser({{ (int) $user['id'] }})"
+                                    class="flex w-full cursor-pointer gap-2 items-center border-0 bg-transparent p-0 text-start text-inherit"
+                                >
+                                    <x-wirechat::avatar :src="$user['wirechat_avatar_url']" class="w-10 h-10"/>
 
-                                <x-wirechat::avatar :src="$user['wirechat_avatar_url']" class="w-10 h-10"/>
-
-                                <p class="group-hover:underline transition-all">
-                                    {{ $user['wirechat_name'] }}</p>
-
+                                    <p class="group-hover:underline transition-all">
+                                        {{ $user['wirechat_name'] }}</p>
+                                </button>
                             </li>
                         @endforeach
 

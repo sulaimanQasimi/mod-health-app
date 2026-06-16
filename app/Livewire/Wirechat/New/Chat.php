@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Wirechat\New;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Wirechat\Wirechat\Livewire\New\Chat as BaseChat;
@@ -18,6 +19,11 @@ class Chat extends BaseChat
         }
 
         $this->users = $this->panel()->searchUsers($this->search)->resolve();
+    }
+
+    public function startChatWithUser($userId): void
+    {
+        $this->createConversation($userId, User::class);
     }
 
     public function createConversation($id, string $class)
@@ -40,7 +46,7 @@ class Chat extends BaseChat
             redirectRoute: $this->panel()->chatRoute($createdConversation->id),
             events: [
                 WidgetsWirechat::class => ['open-chat', ['conversation' => $createdConversation->id]],
-            ]
+            ],
         );
     }
 

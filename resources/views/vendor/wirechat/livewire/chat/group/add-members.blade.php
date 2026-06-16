@@ -63,7 +63,7 @@
                         wire:key="selected-member-{{ $member->id }}">
                         {{ $member->wirechat_name }}
                         <button type="button"
-                            wire:click="toggleMember({{ (int) $member->id }}, '{{ $member->getMorphClass() }}')"
+                            wire:click.stop="toggleMemberByUserId({{ (int) $member->id }})"
                             class="flex items-center p-1 ms-2 text-sm text-gray-400 bg-transparent rounded-xs hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                             aria-label="Remove">
                             <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +102,7 @@
                         <label
                         {{-- The wire:click attribute is only rendered if $isAlreadyAParticipant is false. --}}
                          @if (!$isAlreadyAParticipant)
-                         wire:click="toggleMember({{ (int) $user['id'] }}, '{{ $user['type'] }}')"
+                         wire:click.stop="toggleMemberByUserId({{ (int) $user['id'] }})"
                          @endif
 
                             class="flex cursor-pointer gap-2 items-center w-full">

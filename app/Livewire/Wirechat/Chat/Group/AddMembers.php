@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Wirechat\Chat\Group;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Wirechat\Wirechat\Livewire\Chat\Group\AddMembers as BaseAddMembers;
@@ -28,6 +29,11 @@ class AddMembers extends BaseAddMembers
                     'belongsToConversation' => $model->belongsToConversation($this->conversation),
                 ];
             });
+    }
+
+    public function toggleMemberByUserId($userId): void
+    {
+        $this->toggleMember($userId, User::class);
     }
 
     public function toggleMember($id, string $class)

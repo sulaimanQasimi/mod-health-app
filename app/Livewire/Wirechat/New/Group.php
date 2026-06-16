@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Wirechat\New;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Wirechat\Wirechat\Livewire\New\Group as BaseGroup;
@@ -17,6 +18,11 @@ class Group extends BaseGroup
         }
 
         $this->users = $this->panel()->searchUsers($this->search)->resolve();
+    }
+
+    public function toggleMemberByUserId($userId): void
+    {
+        $this->toggleMember($userId, User::class);
     }
 
     public function toggleMember($id, string $class)

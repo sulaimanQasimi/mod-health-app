@@ -486,6 +486,7 @@ return [
     'new_users' => 'یوزر های جدید',
     'total_users' => 'همه یوزر ها',
     'my_profile' => 'نمایه من',
+    'chats' => 'گفتگوها',
     'my_account' => 'حساب من',
     'logout' => 'خارج شدن',
     'joined_at' => 'تاریخ عضویت',

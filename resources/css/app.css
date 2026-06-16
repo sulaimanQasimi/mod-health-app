@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../../vendor/wirechat/wirechat/resources/css/app.css";
 
 .laboratory-ck-editor .ck-editor__editable:not(.ck-editor__nested-editable) {
     min-height: 280px;
@@ -25,3 +26,5 @@
 @source "../../public/assets/js/**/*.{js,vue}";
 @source "../../node_modules/flowbite";
 @source "../../.flowbite-react/class-list.json";
+@source "../../vendor/wirechat/wirechat/resources/views/**/*.blade.php";
+@source "../../vendor/wirechat/wirechat/src/Livewire/**/*.php";

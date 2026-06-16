@@ -485,6 +485,7 @@ return [
 'new_users' => 'نوي کارنان',
 'total_users' => 'ټول کارنان',
 'my_profile' => 'زما پېژند',
+'chats' => 'خبرې اترې',
 'my_account' => 'زما حساب',
 'logout' => 'وتل',
 'joined_at' => 'د غړیتوب نېټه',

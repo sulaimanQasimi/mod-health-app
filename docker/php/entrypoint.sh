@@ -145,7 +145,7 @@ if [ "$1" = "php-fpm" ]; then
 fi
 
 if [ "$1" = "queue" ]; then
-    run_as_www_data php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    run_as_www_data php artisan queue:work --queue=messages,default --sleep=3 --tries=3 --max-time=3600
 fi
 
 if [ "$1" = "scheduler" ]; then

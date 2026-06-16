@@ -34,6 +34,19 @@ export default function Navbar({ onMenuToggle, sidebarOpen }: NavbarProps) {
                 </button>
 
                 <div className="ms-auto flex min-w-0 items-center justify-end gap-2 sm:gap-3">
+                    {user && (
+                        <a
+                            href={urls.chats}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
+                            aria-label={t('global.chats')}
+                            title={t('global.chats')}
+                        >
+                            <i className="bx bx-message-dots text-xl" />
+                        </a>
+                    )}
+
                     <ThemeToggle />
 
                     <Dropdown

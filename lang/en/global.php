@@ -283,6 +283,7 @@ return [
     'new_users' => 'New Users',
     'total_users' => 'Total Users',
     'my_profile' => 'My Profile',
+    'chats' => 'Chats',
     'my_account' => 'My account',
     'logout' => 'Logout',
     'joined_at' => 'Member since',

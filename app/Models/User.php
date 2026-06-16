@@ -8,10 +8,13 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Wirechat\Wirechat\Contracts\WirechatUser;
+use Wirechat\Wirechat\Panel;
+use Wirechat\Wirechat\Traits\InteractsWithWirechat;
 
-class User extends Authenticatable
+class User extends Authenticatable implements WirechatUser
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithWirechat;
 
     /**
      * The attributes that are mass assignable.
@@ -277,5 +280,36 @@ class User extends Authenticatable
         }
 
         return $this->section()->value('department_id');
+    }
+
+    public function canAccessWirechatPanel(Panel $panel): bool
+    {
+        return true;
+    }
+
+    public function canCreateChats(): bool
+    {
+        return true;
+    }
+
+    public function canCreateGroups(): bool
+    {
+        return true;
+    }
+
+    public function getDisplayNameAttribute(): ?string
+    {
+        $fullName = trim("{$this->name} {$this->last_name}");
+
+        return $fullName !== '' ? $fullName : ($this->name ?? 'User');
+    }
+
+    public function getWirechatAvatarUrlAttribute(): ?string
+    {
+        if ($this->avatar) {
+            return asset('storage/'.$this->avatar);
+        }
+
+        return asset('assets/img/avatars/1.png');
     }
 }

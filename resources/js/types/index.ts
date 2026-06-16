@@ -31,5 +31,6 @@ export interface SharedPageProps extends Record<string, unknown> {
         changeLanguage: string;
         profile: string;
         logout: string;
+        chats: string;
     };
 }

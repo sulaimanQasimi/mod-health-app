@@ -16,7 +16,36 @@ RUN if [ -n "$GIT_REF" ]; then \
 ############################
 # Composer dependencies
 ############################
-FROM composer:2 AS vendor
+FROM php:8.3-cli-bookworm AS vendor
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git \
+        unzip \
+        libzip-dev \
+        libpng-dev \
+        libjpeg62-turbo-dev \
+        libfreetype6-dev \
+        libicu-dev \
+        libonig-dev \
+        libxml2-dev \
+        libcurl4-openssl-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j"$(nproc)" \
+        bcmath \
+        curl \
+        exif \
+        gd \
+        intl \
+        mbstring \
+        pcntl \
+        pdo_mysql \
+        xml \
+        zip \
+    && apt-get purge -y --auto-remove \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 WORKDIR /app
 COPY --from=git-source /src/composer.json /src/composer.lock ./
 RUN composer install \

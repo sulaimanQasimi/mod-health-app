@@ -126,6 +126,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 COPY --from=git-source /src/docker/php/php.ini /usr/local/etc/php/conf.d/99-laravel.ini
+COPY --from=git-source /src/docker/php/zz-docker-fpm.conf /usr/local/etc/php-fpm.d/zz-docker-fpm.conf
 COPY --from=git-source /src/docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 

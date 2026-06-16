@@ -141,7 +141,8 @@ wait_for_database
 prepare_laravel
 
 if [ "$1" = "php-fpm" ]; then
-    run_as_www_data php-fpm
+    # PHP-FPM master must run as root; workers drop to www-data per pool config.
+    exec php-fpm
 fi
 
 if [ "$1" = "queue" ]; then

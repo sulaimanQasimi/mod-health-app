@@ -28,6 +28,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\UnderReview::class => \App\Policies\UnderReviewPolicy::class,
         \App\Models\User::class => \App\Policies\UserPolicy::class,
         \App\Models\Recipient::class => \App\Policies\RecipientPolicy::class,
+        \App\Models\RecipientPart::class => \App\Policies\RecipientPartPolicy::class,
         \App\Models\Relation::class => \App\Policies\RelationPolicy::class,
         \App\Models\Department::class => \App\Policies\DepartmentPolicy::class,
         \App\Models\Section::class => \App\Policies\SectionPolicy::class,

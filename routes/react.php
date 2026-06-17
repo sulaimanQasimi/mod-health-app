@@ -93,6 +93,7 @@ use App\Http\Controllers\V1\ProstheticStockController;
 use App\Http\Controllers\V1\ProstheticsDashboardController;
 use App\Http\Controllers\V1\ProstheticsReportController;
 use App\Http\Controllers\V1\RecipientController;
+use App\Http\Controllers\V1\RecipientPartController;
 use App\Http\Controllers\V1\RelationController;
 use App\Http\Controllers\V1\RoleController;
 use App\Http\Controllers\V1\RoomController;
@@ -122,6 +123,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/create', [PatientController::class, 'create'])->name('create');
         Route::post('/', [PatientController::class, 'store'])->name('store');
         Route::get('/districts/{provinceId}', [PatientController::class, 'districts'])->name('districts');
+        Route::get('/recipient-parts/{recipientId}', [PatientController::class, 'recipientParts'])->name('recipient-parts');
         Route::get('/doctors-by-department/{departmentId}', [PatientController::class, 'doctorsByDepartment'])->name('doctors-by-department');
         Route::get('/report', [PatientController::class, 'report'])->name('report');
         Route::get('/{patient}/edit', [PatientController::class, 'edit'])->name('edit');
@@ -681,6 +683,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{recipient}/edit', [RecipientController::class, 'edit'])->name('edit');
         Route::match(['put', 'post'], '/{recipient}', [RecipientController::class, 'update'])->name('update');
         Route::delete('/{recipient}', [RecipientController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('recipient-parts')->name('recipient-parts.')->group(function () {
+        Route::get('/', [RecipientPartController::class, 'index'])->name('index');
+        Route::get('/create', [RecipientPartController::class, 'create'])->name('create');
+        Route::post('/', [RecipientPartController::class, 'store'])->name('store');
+        Route::get('/{recipientPart}/edit', [RecipientPartController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{recipientPart}', [RecipientPartController::class, 'update'])->name('update');
+        Route::delete('/{recipientPart}', [RecipientPartController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('relations')->name('relations.')->group(function () {

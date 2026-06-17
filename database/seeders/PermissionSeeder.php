@@ -986,6 +986,42 @@ class PermissionSeeder extends Seeder
             ]
         );
 
+        Permission::updateOrCreate(
+            ['name' => 'show-recipient-parts-menu'],
+            [
+                'name_dr' => 'نمایش مینو جزوات مربوطه',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'create-recipient-parts'],
+            [
+                'name_dr' => 'ایجاد جزوات مربوطه',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'edit-recipient-parts'],
+            [
+                'name_dr' => 'تصحیح جزوات مربوطه',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'delete-recipient-parts'],
+            [
+                'name_dr' => 'حذف جزوات مربوطه',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
         // Categories Permissions
         Permission::updateOrCreate(
             ['name' => 'show-categories-menu'],

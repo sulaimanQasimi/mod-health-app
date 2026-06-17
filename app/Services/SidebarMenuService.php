@@ -297,6 +297,9 @@ class SidebarMenuService
             if ($user->can('show-recipients-menu')) {
                 $children[] = $this->item('recipients', 'global.recipients', null, 'react.recipients.index');
             }
+            if ($user->can('show-recipient-parts-menu')) {
+                $children[] = $this->item('recipient-parts', 'global.recipient_parts', null, 'react.recipient-parts.index');
+            }
             if ($user->can('show-relations-menu')) {
                 $children[] = $this->item('relations', 'global.relations', null, 'react.relations.index');
             }

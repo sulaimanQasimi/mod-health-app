@@ -10,8 +10,10 @@ use App\Http\Requests\Depot\StoreDepotRequestRequest;
 use App\Http\Requests\Depot\UpdateDepotRequestRequest;
 use App\Models\DepotRequest;
 use App\Models\DepotRequestItem;
+use App\Models\DepotTransaction;
 use App\Services\DepotRequestService;
 use App\Services\DepotRequestSourceResolver;
+use App\Support\DepotRequestContext;
 use App\Support\DepotRolePermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -93,21 +95,30 @@ class DepotRequestController extends Controller
             $defaultPharmacyId = (string) ($user->activePharmacies->first()?->id ?? '');
         }
 
+        $defaultRequestingDepotId = (string) $request->query('requesting_depot_id', '');
+        if ($destination !== 'pharmacy' && $defaultRequestingDepotId === '' && $user) {
+            $defaultRequestingDepotId = (string) ($user->activeDepots->first()?->id ?? '');
+        }
+
         $hintedSourceDepotId = $this->validatedSourceDepotHint($request);
 
         $previewData = [
             'pharmacy_id' => $destination === 'pharmacy' ? ($defaultPharmacyId ?: null) : null,
             'requesting_depot_id' => $destination !== 'pharmacy'
-                ? ($request->query('requesting_depot_id') ?: null)
+                ? ($defaultRequestingDepotId ?: null)
                 : null,
         ];
 
         return Inertia::render('Depots/Requests/Create', [
             'defaults' => [
                 'destination_type' => $destination === 'pharmacy' ? 'pharmacy' : 'depot',
-                'requesting_depot_id' => (string) $request->query('requesting_depot_id', ''),
+                'requesting_depot_id' => $defaultRequestingDepotId,
                 'pharmacy_id' => $defaultPharmacyId,
             ],
+            'currentUser' => $user ? [
+                'id' => $user->id,
+                'full_name' => DepotRequestContext::userDisplayName($user),
+            ] : null,
             'sourceDepot' => $this->sourceResolver->preview($previewData, $user, $hintedSourceDepotId),
             'formData' => $this->depotFormOptions(),
             'viewContext' => $this->isPharmacyRequestContext() ? 'pharmacy' : 'depot',
@@ -166,11 +177,13 @@ class DepotRequestController extends Controller
         abort_unless($this->userCanAccessDepotRequest($depotRequest), 403);
 
         $depotRequest->load([
-            'requestingDepot:id,name',
+            'requestingDepot.branch:id,name',
+            'requestingDepot.department:id,name',
+            'requestingDepot.pharmacy:id,name',
             'pharmacy:id,name',
             'sourceDepot:id,name',
             'items.medicine:id,name',
-            'items.tool:id,name',
+            'items.tool:id,name,code',
             'items.unit:id,name',
             'items.depotTransaction:id,transaction_number',
             'requestedBy:id,name,last_name',
@@ -190,6 +203,7 @@ class DepotRequestController extends Controller
             'urls' => [
                 'index' => route('react.depots.requests.index'),
                 'edit' => route('react.depots.requests.edit', $depotRequest),
+                'print' => route('react.depots.requests.print', $depotRequest),
                 'submit' => route('react.depots.requests.submit', $depotRequest),
                 'approve' => route('react.depots.requests.approve', $depotRequest),
                 'reject' => route('react.depots.requests.reject', $depotRequest),
@@ -198,6 +212,75 @@ class DepotRequestController extends Controller
                 'transactions' => route('react.depots.transactions.index'),
                 'transactionShow' => url('/react/depots/transactions'),
             ],
+        ]);
+    }
+
+    public function print(DepotRequest $depotRequest)
+    {
+        $this->authorizeDepotRequestView();
+        abort_unless($this->userCanAccessDepotRequest($depotRequest), 403);
+
+        $depotRequest->load([
+            'requestingDepot.branch:id,name',
+            'requestingDepot.department:id,name',
+            'requestingDepot.pharmacy:id,name',
+            'pharmacy:id,name',
+            'sourceDepot:id,name',
+            'items.medicine:id,name',
+            'items.tool:id,name,code',
+            'items.unit:id,name',
+            'requestedBy:id,name,last_name',
+        ]);
+
+        $context = DepotRequestContext::forRequest($depotRequest);
+        $unitDepotId = $depotRequest->isPharmacyRequest()
+            ? \App\Models\Depot::query()->where('pharmacy_id', $depotRequest->pharmacy_id)->value('id')
+            : $depotRequest->requesting_depot_id;
+
+        $lines = $depotRequest->items->map(function (DepotRequestItem $item) use ($depotRequest, $unitDepotId) {
+            $available = null;
+            if ($unitDepotId) {
+                if ($item->medicine_id) {
+                    $available = DepotTransaction::availableStock((int) $unitDepotId, (int) $item->medicine_id);
+                } elseif ($item->tool_id) {
+                    $available = DepotTransaction::availableToolStock((int) $unitDepotId, (int) $item->tool_id);
+                }
+            }
+
+            $partNumber = $item->batch_number;
+            if ($item->tool_id && $item->tool) {
+                $partNumber = trim(($item->tool->code ?? '') . ($item->batch_number ? ' / '.$item->batch_number : ''));
+            }
+
+            $isFulfilled = $depotRequest->status === DepotRequest::STATUS_FULFILLED;
+
+            return [
+                'item_name' => $item->itemName(),
+                'unit_name' => $item->unit?->name ?? '—',
+                'available_quantity' => $available,
+                'requested_quantity' => $item->quantity,
+                'delivery_date' => $depotRequest->fulfilled_at?->format('Y-m-d') ?? $depotRequest->created_at?->format('Y-m-d'),
+                'part_number' => $partNumber ?: '—',
+                'document_number' => $depotRequest->request_number,
+                'solar_date' => $depotRequest->created_at ? verta($depotRequest->created_at)->format('Y-m-d') : '—',
+                'cssk_unfilled' => $isFulfilled ? '' : $item->quantity,
+                'cssk_filled' => $isFulfilled ? $item->quantity : '',
+                'fsd_unfilled' => '',
+                'fsd_filled' => '',
+                'nsd_unfilled' => '',
+                'nsd_filled' => '',
+            ];
+        });
+
+        $emptyRows = max(0, 8 - $lines->count());
+
+        return view('pages.depots.requests.print_form14', [
+            'depotRequest' => $depotRequest,
+            'context' => $context,
+            'lines' => $lines,
+            'emptyRows' => $emptyRows,
+            'supportedUnit' => $depotRequest->sourceDepot?->name ?? '—',
+            'solarDate' => $depotRequest->created_at ? verta($depotRequest->created_at)->format('Y-m-d') : '—',
         ]);
     }
 
@@ -217,6 +300,10 @@ class DepotRequestController extends Controller
 
         return Inertia::render('Depots/Requests/Edit', [
             'request' => $this->transformDetail($depotRequest),
+            'currentUser' => request()->user() ? [
+                'id' => request()->user()->id,
+                'full_name' => DepotRequestContext::userDisplayName(request()->user()),
+            ] : null,
             'sourceDepot' => [
                 'id' => (int) $depotRequest->source_depot_id,
                 'name' => $depotRequest->sourceDepot?->name ?? '',
@@ -544,8 +631,11 @@ class DepotRequestController extends Controller
      */
     private function transformDetail(DepotRequest $item): array
     {
+        $context = DepotRequestContext::forRequest($item);
+
         return [
             ...$this->transformListItem($item),
+            ...$context,
             'requesting_depot_id' => $item->requesting_depot_id,
             'pharmacy_id' => $item->pharmacy_id,
             'source_depot_id' => $item->source_depot_id,

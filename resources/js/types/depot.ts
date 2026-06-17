@@ -59,6 +59,11 @@ export interface DepotDetail {
 export interface DepotActiveOption extends OptionItem {
     pharmacy_id?: number | null;
     parent_depot_id?: number | null;
+    branch_id?: number | null;
+    department_id?: number | null;
+    branch_name?: string | null;
+    department_name?: string | null;
+    pharmacy_name?: string | null;
 }
 
 export interface DepotSourceOption {
@@ -121,6 +126,10 @@ export interface DepotRequestListItem {
     destination_name: string | null;
     source_depot_name: string | null;
     requested_by_name: string | null;
+    branch_name: string | null;
+    department_name: string | null;
+    pharmacy_depot_label: string | null;
+    request_user_name: string | null;
     created_at: string | null;
 }
 

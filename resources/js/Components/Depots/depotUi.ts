@@ -89,3 +89,49 @@ export function resolveDepotRequestSourceDepot(
 
     return fallbackSourceDepot ?? null;
 }
+
+export interface DepotRequestContextInfo {
+    branch_name: string | null;
+    department_name: string | null;
+    pharmacy_depot_label: string | null;
+    request_user_name: string | null;
+}
+
+export function resolveDepotRequestContext(
+    destinationType: 'depot' | 'pharmacy',
+    requestingDepotId: string,
+    pharmacyId: string,
+    activeDepots: DepotActiveOption[],
+    pharmacies: Array<{ id: number; name: string }>,
+    requestUserName: string | null,
+): DepotRequestContextInfo {
+    if (destinationType === 'pharmacy' && pharmacyId) {
+        const linkedDepot = activeDepots.find((depot) => depot.pharmacy_id === Number(pharmacyId));
+        const pharmacy = pharmacies.find((item) => item.id === Number(pharmacyId));
+
+        return {
+            branch_name: linkedDepot?.branch_name ?? null,
+            department_name: linkedDepot?.department_name ?? null,
+            pharmacy_depot_label: pharmacy?.name ?? linkedDepot?.name ?? null,
+            request_user_name: requestUserName,
+        };
+    }
+
+    if (destinationType === 'depot' && requestingDepotId) {
+        const depot = activeDepots.find((item) => item.id === Number(requestingDepotId));
+
+        return {
+            branch_name: depot?.branch_name ?? null,
+            department_name: depot?.department_name ?? null,
+            pharmacy_depot_label: depot?.name ?? null,
+            request_user_name: requestUserName,
+        };
+    }
+
+    return {
+        branch_name: null,
+        department_name: null,
+        pharmacy_depot_label: null,
+        request_user_name: requestUserName,
+    };
+}

@@ -2,11 +2,12 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { Button, Card, Checkbox, Label, Spinner, Textarea } from 'flowbite-react';
 import { FormEvent, useMemo } from 'react';
 import DepotNavTabs from '../../../Components/Depots/DepotNavTabs';
+import DepotRequestContextPanel from '../../../Components/Depots/DepotRequestContextPanel';
 import DepotRequestItemsEditor, {
     DepotRequestLineItem,
     emptyRequestLine,
 } from '../../../Components/Depots/DepotRequestItemsEditor';
-import { DEPOT_PRIMARY_BTN_CLASS, resolveDepotRequestSourceDepot } from '../../../Components/Depots/depotUi';
+import { DEPOT_PRIMARY_BTN_CLASS, resolveDepotRequestContext, resolveDepotRequestSourceDepot } from '../../../Components/Depots/depotUi';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
@@ -26,6 +27,7 @@ export default function CreateDepotRequest({
     urls,
     viewContext = 'depot',
     userPharmacies = [],
+    currentUser = null,
 }: {
     defaults: {
         destination_type: DestinationType;
@@ -39,6 +41,7 @@ export default function CreateDepotRequest({
     urls: { index: string; store: string; stockAvailable: string };
     viewContext?: 'depot' | 'pharmacy';
     userPharmacies?: OptionItem[];
+    currentUser?: { id: number; full_name: string } | null;
 }) {
     const { t } = useTranslation();
     const isPharmacyContext = viewContext === 'pharmacy';
@@ -80,6 +83,25 @@ export default function CreateDepotRequest({
     const pharmacyOptions = isPharmacyContext && userPharmacies.length > 0
         ? userPharmacies
         : formData.pharmacies;
+
+    const requestContext = useMemo(
+        () => resolveDepotRequestContext(
+            data.destination_type,
+            data.requesting_depot_id,
+            data.pharmacy_id,
+            formData.activeDepots,
+            pharmacyOptions,
+            currentUser?.full_name ?? null,
+        ),
+        [
+            data.destination_type,
+            data.requesting_depot_id,
+            data.pharmacy_id,
+            formData.activeDepots,
+            pharmacyOptions,
+            currentUser?.full_name,
+        ],
+    );
 
     const submit = (event: FormEvent) => {
         event.preventDefault();
@@ -189,6 +211,8 @@ export default function CreateDepotRequest({
                                 )}
                             </div>
                         </div>
+
+                        <DepotRequestContextPanel context={requestContext} />
 
                         <DepotRequestItemsEditor
                             items={data.items}

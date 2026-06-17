@@ -50,6 +50,7 @@ export default function ShowDepotRequest({
     urls: {
         index: string;
         edit: string;
+        print: string;
         submit: string;
         approve: string;
         reject: string;
@@ -73,6 +74,10 @@ export default function ShowDepotRequest({
     };
 
     const metaRows: Array<[string, string]> = [
+        [t('global.depot.branch'), depotRequest.branch_name ?? '—'],
+        [t('global.depot.requesting_department'), depotRequest.department_name ?? '—'],
+        [t('global.depot.request_user'), depotRequest.request_user_name ?? depotRequest.requested_by_name ?? '—'],
+        [t('global.depot.pharmacy_depot'), depotRequest.pharmacy_depot_label ?? depotRequest.destination_name ?? '—'],
         [
             depotRequest.destination_type === 'pharmacy'
                 ? t('global.pharmacy')
@@ -150,6 +155,10 @@ export default function ShowDepotRequest({
                     </dl>
 
                     <div className="flex flex-wrap gap-2">
+                        <Button color="light" as="a" href={urls.print} target="_blank" rel="noreferrer">
+                            <i className="bx bx-printer me-1" />
+                            {t('global.depot.print_form_14')}
+                        </Button>
                         {permissions.edit && (
                             <Button color="light" as={Link} href={urls.edit}>
                                 <i className="bx bx-edit me-1" />

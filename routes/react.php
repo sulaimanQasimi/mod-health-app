@@ -350,6 +350,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/requests', [DepotRequestController::class, 'index'])->name('requests.index');
         Route::get('/requests/create', [DepotRequestController::class, 'create'])->name('requests.create');
         Route::post('/requests', [DepotRequestController::class, 'store'])->name('requests.store');
+        Route::get('/requests/{depotRequest}/print', [DepotRequestController::class, 'print'])->name('requests.print');
         Route::get('/requests/{depotRequest}', [DepotRequestController::class, 'show'])->name('requests.show');
         Route::get('/requests/{depotRequest}/edit', [DepotRequestController::class, 'edit'])->name('requests.edit');
         Route::put('/requests/{depotRequest}', [DepotRequestController::class, 'update'])->name('requests.update');

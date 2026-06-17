@@ -52,6 +52,53 @@ class DepotRequestSourceResolver
     }
 
     /**
+     * @return list<array{id: int, name: string}>
+     */
+    public function sourceOptionsFor(int $requestingDepotId, ?User $user = null): array
+    {
+        $requestingDepot = Depot::query()->find($requestingDepotId);
+
+        $query = Depot::query()
+            ->where('is_active', true)
+            ->whereKeyNot($requestingDepotId)
+            ->orderBy('name');
+
+        if ($user && ! $user->hasRole(['super_admin', 'admin'])) {
+            $allowedIds = $user->activeDepots->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+            if ($requestingDepot?->parent_depot_id) {
+                $allowedIds[] = (int) $requestingDepot->parent_depot_id;
+            }
+
+            $allowedIds = array_values(array_unique(array_filter($allowedIds)));
+            $query->whereIn('id', $allowedIds ?: [0]);
+        }
+
+        return $query->get(['id', 'name'])->map(fn (Depot $depot) => [
+            'id' => (int) $depot->id,
+            'name' => $depot->name,
+        ])->values()->all();
+    }
+
+    public function defaultSourceDepotId(int $requestingDepotId, ?User $user = null): ?int
+    {
+        $options = $this->sourceOptionsFor($requestingDepotId, $user);
+
+        if ($options === []) {
+            return null;
+        }
+
+        $requestingDepot = Depot::query()->find($requestingDepotId);
+        $parentId = $requestingDepot?->parent_depot_id ? (int) $requestingDepot->parent_depot_id : null;
+
+        if ($parentId && collect($options)->contains(fn (array $option) => $option['id'] === $parentId)) {
+            return $parentId;
+        }
+
+        return $options[0]['id'];
+    }
+
+    /**
      * @param  array<string, mixed>  $data
      * @return array{id: int, name: string}|null
      */
@@ -101,7 +148,11 @@ class DepotRequestSourceResolver
         }
 
         if ($user && ! $user->hasRole(['super_admin', 'admin'])) {
-            abort_unless($user->hasDepotAccess($sourceDepotId), 403);
+            $requestingDepot = Depot::query()->find($requestingDepotId);
+            $isParentSource = $requestingDepot
+                && (int) $requestingDepot->parent_depot_id === $sourceDepotId;
+
+            abort_unless($isParentSource || $user->hasDepotAccess($sourceDepotId), 403);
         }
     }
 }

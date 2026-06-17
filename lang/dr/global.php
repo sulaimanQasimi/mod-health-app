@@ -4578,6 +4578,7 @@ return [
         "move_stock_from_depot_to_pharmacy" => "انتقال موجودی از دیپو به دواخانه؟",
         "tools" => "ابزارها",
         "tool" => "ابزار",
+        "destination_type" => "نوع مقصد",
         "create_tool" => "افزودن ابزار",
         "edit_tool" => "ویرایش ابزار",
         "requesting_depot" => "دیپوی درخواست‌کننده",

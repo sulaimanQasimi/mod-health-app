@@ -1,0 +1,1 @@
+import{j as t}from"./app-CU3J5cyV.js";import{e as n}from"./Table-ezQ0eRxQ.js";function r({children:e,className:s}){return t.jsx("div",{className:s??"flex justify-center gap-1",children:e})}function l({children:e,className:s}){return t.jsx(n,{align:"center",className:s,children:t.jsx(r,{children:e})})}export{l as T,r as a};

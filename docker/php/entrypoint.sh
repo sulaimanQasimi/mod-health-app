@@ -25,6 +25,65 @@ run_as_www_data() {
     exec "$@"
 }
 
+read_app_key_from_dotenv() {
+    if [ ! -f .env ]; then
+        return 1
+    fi
+
+    key=$(grep -m1 '^APP_KEY=' .env | cut -d= -f2- | tr -d '\r' || true)
+
+    if [ -n "$key" ] && [ "$key" != "base64:" ]; then
+        export APP_KEY="$key"
+        return 0
+    fi
+
+    return 1
+}
+
+ensure_app_key() {
+    # Docker env_file may inject APP_KEY= (empty) and override Laravel's .env file.
+    if read_app_key_from_dotenv; then
+        return 0
+    fi
+
+    if [ -n "${APP_KEY:-}" ] && [ "${APP_KEY}" != "base64:" ]; then
+        return 0
+    fi
+
+    unset APP_KEY
+
+    if [ ! -f .env ] && [ -f .env.example ]; then
+        cp .env.example .env
+        chown www-data:www-data .env
+    fi
+
+    echo "Generating application encryption key..."
+    gosu www-data php artisan key:generate --force --no-interaction
+
+    if read_app_key_from_dotenv; then
+        echo "APP_KEY generated. Copy this into the host .env used by docker compose:"
+        echo "APP_KEY=${APP_KEY}"
+        return 0
+    fi
+
+    echo "Failed to generate APP_KEY."
+    exit 1
+}
+
+fix_storage_permissions() {
+    mkdir -p \
+        storage/framework/cache/data \
+        storage/framework/sessions \
+        storage/framework/views \
+        storage/logs \
+        bootstrap/cache
+
+    touch storage/logs/php-fpm.log storage/logs/laravel.log
+
+    chown -R www-data:www-data storage bootstrap/cache
+    chmod -R ug+rwx storage bootstrap/cache
+}
+
 wait_for_database() {
     if [ -z "${DB_HOST:-}" ]; then
         return 0
@@ -114,14 +173,8 @@ prepare_laravel() {
         chown www-data:www-data .env
     fi
 
-    if [ -z "${APP_KEY:-}" ] || [ "${APP_KEY}" = "base64:" ]; then
-        gosu www-data php artisan key:generate --force --no-interaction || true
-    fi
-
-    mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache
-    touch storage/logs/php-fpm.log
-    chown -R www-data:www-data storage bootstrap/cache
-    chmod -R ug+rwx storage bootstrap/cache
+    ensure_app_key
+    fix_storage_permissions
 
     gosu www-data php artisan storage:link --force --no-interaction 2>/dev/null || true
 
@@ -130,11 +183,14 @@ prepare_laravel() {
     fi
 
     if [ "${APP_ENV:-production}" = "production" ]; then
+        gosu www-data php artisan config:clear --no-interaction
         gosu www-data php artisan config:cache --no-interaction
         gosu www-data php artisan route:cache --no-interaction || echo "Warning: route cache skipped."
         gosu www-data php artisan view:cache --no-interaction
         gosu www-data php artisan event:cache --no-interaction 2>/dev/null || true
     fi
+
+    fix_storage_permissions
 }
 
 install_dependencies
@@ -143,15 +199,19 @@ prepare_laravel
 
 if [ "$1" = "php-fpm" ]; then
     # PHP-FPM master must run as root; workers drop to www-data per pool config.
+    read_app_key_from_dotenv || true
     exec php-fpm
 fi
 
 if [ "$1" = "queue" ]; then
+    read_app_key_from_dotenv || true
     run_as_www_data php artisan queue:work --queue=messages,default --sleep=3 --tries=3 --max-time=3600
 fi
 
 if [ "$1" = "scheduler" ]; then
+    read_app_key_from_dotenv || true
     run_as_www_data php artisan schedule:work
 fi
 
+read_app_key_from_dotenv || true
 run_as_www_data "$@"

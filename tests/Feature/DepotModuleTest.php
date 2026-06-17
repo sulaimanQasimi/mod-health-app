@@ -8,8 +8,11 @@ use App\Models\DepotRequestItem;
 use App\Models\DepotTransaction;
 use App\Models\Medicine;
 use App\Models\Tool;
+use App\Models\User;
 use App\Services\DepotRequestService;
 use App\Services\DepotStockService;
+use App\Support\DepotRequestAuthorization;
+use App\Support\DepotRolePermissions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
@@ -142,5 +145,41 @@ class DepotModuleTest extends TestCase
         $stockService = app(DepotStockService::class);
         $this->assertSame(25, $stockService->availableMedicineStock($source->id, $medicine->id));
         $this->assertSame(15, $stockService->availableMedicineStock($child->id, $medicine->id));
+    }
+
+    public function test_only_source_depot_users_can_process_submitted_requests(): void
+    {
+        $source = Depot::create(['name' => 'Source', 'is_active' => true, 'is_base' => true]);
+        $requesting = Depot::create(['name' => 'Requesting', 'is_active' => true, 'parent_depot_id' => $source->id]);
+
+        $requester = User::factory()->create();
+        $processor = User::factory()->create();
+
+        $requesting->addUser($requester->id, 'staff');
+        $source->addUser($processor->id, 'staff');
+
+        $depotRequest = DepotRequest::create([
+            'requesting_depot_id' => $requesting->id,
+            'source_depot_id' => $source->id,
+            'status' => DepotRequest::STATUS_PENDING,
+        ]);
+
+        $this->assertFalse(DepotRequestAuthorization::canProcess(
+            $requester,
+            $depotRequest,
+            DepotRolePermissions::ACTION_REQUEST_APPROVE,
+        ));
+
+        $this->assertTrue(DepotRequestAuthorization::canProcess(
+            $processor,
+            $depotRequest,
+            DepotRolePermissions::ACTION_REQUEST_APPROVE,
+        ));
+
+        $this->assertTrue(DepotRequestAuthorization::canProcess(
+            $processor,
+            $depotRequest,
+            DepotRolePermissions::ACTION_REQUEST_FULFILL,
+        ));
     }
 }

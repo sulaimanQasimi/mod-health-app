@@ -1,14 +1,5 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import {
-    Badge,
-    Button,
-    Card,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader,
-    Textarea,
-} from 'flowbite-react';
+import { Alert, Badge, Button, Card, Modal, ModalBody, ModalFooter, ModalHeader, Textarea } from 'flowbite-react';
 import { useState } from 'react';
 import DepotNavTabs from '../../../Components/Depots/DepotNavTabs';
 import DepotRequestWorkflowStepper from '../../../Components/Depots/DepotRequestWorkflowStepper';
@@ -106,6 +97,9 @@ export default function ShowDepotRequest({
         metaRows.push([t('global.notes'), depotRequest.notes]);
     }
 
+    const awaitingSourceProcessing = ['pending', 'approved'].includes(depotRequest.status);
+    const canProcessRequest = permissions.approve || permissions.reject || permissions.fulfill;
+
     return (
         <DashboardLayout>
             <Head title={depotRequest.request_number ?? t('global.depot.requests')} />
@@ -153,6 +147,17 @@ export default function ShowDepotRequest({
                             </div>
                         ))}
                     </dl>
+
+                    {awaitingSourceProcessing && !canProcessRequest && depotRequest.source_depot_name && (
+                        <Alert color="info" className="mb-6">
+                            <span className="text-sm">
+                                {t('global.depot.request_processing_by_source').replace(
+                                    ':depot',
+                                    depotRequest.source_depot_name,
+                                )}
+                            </span>
+                        </Alert>
+                    )}
 
                     <div className="flex flex-wrap gap-2">
                         <Button color="light" as="a" href={urls.print} target="_blank" rel="noreferrer">

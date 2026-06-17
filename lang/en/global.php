@@ -4496,6 +4496,7 @@ return [
         'form_14_supplier' => 'Supplier',
         'form_14_medical_machinery' => 'Medical machinery accounting',
         'form_14_medical_logistics' => 'Medical logistics management',
+        'request_processing_by_source' => 'After submission, only :depot staff can approve, reject, or fulfill this request.',
         'depot_created_successfully.' => 'Depot created successfully.',
         'depot_updated_successfully.' => 'Depot updated successfully.',
         'depot_deleted_successfully.' => 'Depot deleted successfully.',

@@ -4545,6 +4545,7 @@ return [
         "form_14_supplier" => "تأمین‌کننده",
         "form_14_medical_machinery" => "حسابداری ماشینری طبی",
         "form_14_medical_logistics" => "مدیریت لوژستیک طبی",
+        "request_processing_by_source" => "پس از ارسال، فقط کاربران دیپوی :depot می‌توانند این درخواست را تأیید، رد یا تکمیل کنند.",
         "requests" => "درخواست‌های انتقال",
         "new_request" => "درخواست انتقال جدید",
         "transfer_lines" => "خطوط انتقال",

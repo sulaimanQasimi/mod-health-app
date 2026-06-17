@@ -7,6 +7,7 @@ use App\Models\DepotRequest;
 use App\Models\DepotTransaction;
 use App\Models\Pharmacy;
 use App\Models\User;
+use App\Support\DepotRequestAuthorization;
 use App\Support\DepotRolePermissions;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -84,31 +85,27 @@ trait ManagesDepotAccess
 
     protected function authorizeDepotRequestRecord(DepotRequest $depotRequest, string $action): void
     {
-        if ($this->isDepotSystemAdmin()) {
+        $user = request()->user();
+        abort_unless($user, 403);
+
+        if (in_array($action, [
+            DepotRolePermissions::ACTION_REQUEST_APPROVE,
+            DepotRolePermissions::ACTION_REQUEST_FULFILL,
+        ], true)) {
+            abort_unless(DepotRequestAuthorization::canProcess($user, $depotRequest, $action), 403);
+
             return;
         }
 
-        $user = request()->user();
-        abort_unless($user, 403);
+        if ($this->isDepotSystemAdmin()) {
+            return;
+        }
 
         if ($depotRequest->isPharmacyRequest()) {
             if ($action === DepotRolePermissions::ACTION_REQUEST_CREATE) {
                 $allowedPharmacyIds = $this->allowedPharmacyIdsForRequests($user);
                 abort_unless(
                     $depotRequest->pharmacy_id && in_array((int) $depotRequest->pharmacy_id, $allowedPharmacyIds, true),
-                    403
-                );
-
-                return;
-            }
-
-            if (in_array($action, [
-                DepotRolePermissions::ACTION_REQUEST_APPROVE,
-                DepotRolePermissions::ACTION_REQUEST_FULFILL,
-            ], true)) {
-                abort_unless(
-                    $depotRequest->source_depot_id
-                        && $user->canPerformDepotAction((int) $depotRequest->source_depot_id, $action),
                     403
                 );
 
@@ -122,8 +119,6 @@ trait ManagesDepotAccess
 
         $requiredDepotId = match ($action) {
             DepotRolePermissions::ACTION_REQUEST_CREATE => $depotRequest->requesting_depot_id,
-            DepotRolePermissions::ACTION_REQUEST_APPROVE,
-            DepotRolePermissions::ACTION_REQUEST_FULFILL => $depotRequest->source_depot_id,
             default => null,
         };
 
@@ -134,6 +129,17 @@ trait ManagesDepotAccess
         }
 
         abort_unless($this->userCanAccessDepotRequest($depotRequest, $user), 403);
+    }
+
+    protected function userCanProcessDepotRequest(DepotRequest $depotRequest, string $action, ?User $user = null): bool
+    {
+        $user ??= request()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return DepotRequestAuthorization::canProcess($user, $depotRequest, $action);
     }
 
     protected function userCanAccessDepotRequest(DepotRequest $depotRequest, ?User $user = null): bool

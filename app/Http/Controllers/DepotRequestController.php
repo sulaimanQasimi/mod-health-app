@@ -10,6 +10,8 @@ use App\Models\Tool;
 use App\Models\Unit;
 use App\Services\DepotRequestService;
 use App\Services\DepotRequestSourceResolver;
+use App\Support\DepotRequestAuthorization;
+use App\Support\DepotRolePermissions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -127,6 +129,8 @@ class DepotRequestController extends Controller
 
     public function submit(DepotRequest $depotRequest)
     {
+        $this->authorizeRequestingDepotAction($depotRequest, DepotRolePermissions::ACTION_REQUEST_CREATE);
+
         try {
             $this->requestService->submit($depotRequest);
         } catch (ValidationException $e) {
@@ -139,6 +143,8 @@ class DepotRequestController extends Controller
 
     public function approve(DepotRequest $depotRequest)
     {
+        $this->authorizeProcessingDepotAction($depotRequest, DepotRolePermissions::ACTION_REQUEST_APPROVE);
+
         try {
             $this->requestService->approve($depotRequest);
         } catch (ValidationException $e) {
@@ -151,6 +157,8 @@ class DepotRequestController extends Controller
 
     public function reject(Request $request, DepotRequest $depotRequest)
     {
+        $this->authorizeProcessingDepotAction($depotRequest, DepotRolePermissions::ACTION_REQUEST_APPROVE);
+
         $data = $request->validate([
             'rejection_reason' => ['required', 'string', 'max:2000'],
         ]);
@@ -167,6 +175,8 @@ class DepotRequestController extends Controller
 
     public function fulfill(DepotRequest $depotRequest)
     {
+        $this->authorizeProcessingDepotAction($depotRequest, DepotRolePermissions::ACTION_REQUEST_FULFILL);
+
         try {
             $this->requestService->fulfill($depotRequest);
         } catch (ValidationException $e) {
@@ -179,6 +189,22 @@ class DepotRequestController extends Controller
 
     public function cancel(DepotRequest $depotRequest)
     {
+        $user = Auth::user();
+        abort_unless($user, 403);
+
+        $canCancel = match ($depotRequest->status) {
+            DepotRequest::STATUS_DRAFT => $depotRequest->requesting_depot_id
+                && $user->canPerformDepotAction((int) $depotRequest->requesting_depot_id, DepotRolePermissions::ACTION_REQUEST_CREATE),
+            DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED => DepotRequestAuthorization::canProcess(
+                $user,
+                $depotRequest,
+                DepotRolePermissions::ACTION_REQUEST_APPROVE,
+            ),
+            default => false,
+        };
+
+        abort_unless($canCancel, 403);
+
         try {
             $this->requestService->cancel($depotRequest);
         } catch (ValidationException $e) {
@@ -197,5 +223,27 @@ class DepotRequestController extends Controller
             'tools' => Tool::query()->where('is_active', true)->orderBy('name')->get(),
             'units' => Unit::query()->where('is_active', true)->orderBy('name')->get(),
         ];
+    }
+
+    private function authorizeProcessingDepotAction(DepotRequest $depotRequest, string $action): void
+    {
+        $user = Auth::user();
+        abort_unless($user && DepotRequestAuthorization::canProcess($user, $depotRequest, $action), 403);
+    }
+
+    private function authorizeRequestingDepotAction(DepotRequest $depotRequest, string $action): void
+    {
+        $user = Auth::user();
+        abort_unless($user, 403);
+
+        if ($depotRequest->isPharmacyRequest()) {
+            return;
+        }
+
+        abort_unless(
+            $depotRequest->requesting_depot_id
+                && $user->canPerformDepotAction((int) $depotRequest->requesting_depot_id, $action),
+            403
+        );
     }
 }

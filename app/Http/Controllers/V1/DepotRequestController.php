@@ -440,13 +440,24 @@ class DepotRequestController extends Controller
 
     public function cancel(DepotRequest $depotRequest): RedirectResponse
     {
-        abort_unless(
-            $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_CREATE, $depotRequest->requesting_depot_id)
-            || $this->userCanDepotAction(DepotRolePermissions::ACTION_REQUEST_APPROVE, $depotRequest->source_depot_id)
-            || ($depotRequest->isPharmacyRequest() && $this->canAccessPharmacyRequests()),
-            403
-        );
-        abort_unless($this->userCanAccessDepotRequest($depotRequest), 403);
+        $user = request()->user();
+        $canCancel = match ($depotRequest->status) {
+            DepotRequest::STATUS_DRAFT => $depotRequest->isPharmacyRequest()
+                ? $this->canAccessPharmacyRequests($user)
+                : $this->userCanDepotAction(
+                    DepotRolePermissions::ACTION_REQUEST_CREATE,
+                    $depotRequest->requesting_depot_id,
+                ),
+            DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED => $this->userCanProcessDepotRequest(
+                $depotRequest,
+                DepotRolePermissions::ACTION_REQUEST_APPROVE,
+                $user,
+            ),
+            default => false,
+        };
+
+        abort_unless($canCancel, 403);
+        abort_unless($this->userCanAccessDepotRequest($depotRequest, $user), 403);
 
         try {
             $this->requestService->cancel($depotRequest);
@@ -514,27 +525,15 @@ class DepotRequestController extends Controller
             'edit' => $status === DepotRequest::STATUS_DRAFT && $canCreate,
             'submit' => $status === DepotRequest::STATUS_DRAFT && $canCreate,
             'approve' => $status === DepotRequest::STATUS_PENDING
-                && $this->userCanDepotAction(
-                    DepotRolePermissions::ACTION_REQUEST_APPROVE,
-                    $depotRequest->source_depot_id,
-                ),
+                && $this->userCanProcessDepotRequest($depotRequest, DepotRolePermissions::ACTION_REQUEST_APPROVE),
             'reject' => $status === DepotRequest::STATUS_PENDING
-                && $this->userCanDepotAction(
-                    DepotRolePermissions::ACTION_REQUEST_APPROVE,
-                    $depotRequest->source_depot_id,
-                ),
+                && $this->userCanProcessDepotRequest($depotRequest, DepotRolePermissions::ACTION_REQUEST_APPROVE),
             'fulfill' => $status === DepotRequest::STATUS_APPROVED
-                && $this->userCanDepotAction(
-                    DepotRolePermissions::ACTION_REQUEST_FULFILL,
-                    $depotRequest->source_depot_id,
-                ),
-            'cancel' => in_array($status, [DepotRequest::STATUS_DRAFT, DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED], true)
-                && (
-                    $canCreate
-                    || $this->userCanDepotAction(
-                        DepotRolePermissions::ACTION_REQUEST_APPROVE,
-                        $depotRequest->source_depot_id,
-                    )
+                && $this->userCanProcessDepotRequest($depotRequest, DepotRolePermissions::ACTION_REQUEST_FULFILL),
+            'cancel' => ($status === DepotRequest::STATUS_DRAFT && $canCreate)
+                || (
+                    in_array($status, [DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED], true)
+                    && $this->userCanProcessDepotRequest($depotRequest, DepotRolePermissions::ACTION_REQUEST_APPROVE)
                 ),
         ];
     }

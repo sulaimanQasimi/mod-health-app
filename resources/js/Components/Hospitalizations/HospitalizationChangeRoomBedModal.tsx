@@ -39,7 +39,7 @@ interface HospitalizationChangeRoomBedModalProps {
     hospitalizationId: number;
     open: boolean;
     onClose: () => void;
-    onSuccess: () => void;
+    onSuccess: (message: string) => void;
 }
 
 function formatError(payload: { message?: string; errors?: Record<string, string | string[]> }): string {
@@ -209,7 +209,11 @@ export default function HospitalizationChangeRoomBedModal({
             }
 
             onClose();
-            onSuccess();
+            onSuccess(
+                typeof payload.message === 'string' && payload.message
+                    ? payload.message
+                    : t('global.room_and_bed_updated_successfully'),
+            );
         } finally {
             setSubmitting(false);
         }

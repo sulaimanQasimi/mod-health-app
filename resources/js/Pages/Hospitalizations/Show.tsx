@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea } from 'flowbite-react';
-import { FormEvent, useState } from 'react';
+import { Alert, Badge, Button, Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea } from 'flowbite-react';
+import { FormEvent, useEffect, useState } from 'react';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import BloodBankSection from '../../Components/Appointments/Sections/BloodBankSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
@@ -114,10 +114,21 @@ export default function HospitalizationsShow({
     const [processing, setProcessing] = useState(false);
     const [dischargeOpen, setDischargeOpen] = useState(false);
     const [changeRoomBedOpen, setChangeRoomBedOpen] = useState(false);
+    const [roomBedSuccessMessage, setRoomBedSuccessMessage] = useState<string | null>(null);
     const [dischargeRemark, setDischargeRemark] = useState('');
     const [dischargeStatus, setDischargeStatus] = useState('');
     const patientLabel = hospitalization.patient?.name ?? `#${hospitalization.id}`;
     const hasAppointment = Boolean(hospitalization.appointment_id);
+
+    useEffect(() => {
+        if (!roomBedSuccessMessage) {
+            return;
+        }
+
+        const timer = window.setTimeout(() => setRoomBedSuccessMessage(null), 5000);
+
+        return () => window.clearTimeout(timer);
+    }, [roomBedSuccessMessage]);
 
     const post = (url: string, data: Record<string, string>, onSuccess?: () => void) => {
         setProcessing(true);
@@ -144,6 +155,21 @@ export default function HospitalizationsShow({
     return (
         <DashboardLayout>
             <Head title={patientLabel} />
+
+            {roomBedSuccessMessage && (
+                <div className="fixed inset-x-4 top-20 z-50 flex justify-center sm:inset-x-auto sm:end-6 sm:justify-end">
+                    <Alert
+                        color="success"
+                        className="w-full max-w-md border border-green-200 shadow-lg dark:border-green-800"
+                        onDismiss={() => setRoomBedSuccessMessage(null)}
+                    >
+                        <span className="flex items-center gap-2">
+                            <i className="bx bx-check-circle text-lg" />
+                            {roomBedSuccessMessage}
+                        </span>
+                    </Alert>
+                </div>
+            )}
 
             <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <SettingsPageHeader
@@ -411,7 +437,14 @@ export default function HospitalizationsShow({
                 hospitalizationId={hospitalization.id}
                 open={changeRoomBedOpen}
                 onClose={() => setChangeRoomBedOpen(false)}
-                onSuccess={() => router.reload({ preserveScroll: true })}
+                onSuccess={(message) => {
+                    setRoomBedSuccessMessage(message);
+                    router.reload({
+                        preserveScroll: true,
+                        preserveState: true,
+                        only: ['hospitalization'],
+                    });
+                }}
             />
 
             <Modal show={dischargeOpen} onClose={() => setDischargeOpen(false)} size="md">

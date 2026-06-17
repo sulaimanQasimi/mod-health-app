@@ -119,6 +119,7 @@ prepare_laravel() {
     fi
 
     mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache
+    touch storage/logs/php-fpm.log
     chown -R www-data:www-data storage bootstrap/cache
     chmod -R ug+rwx storage bootstrap/cache
 

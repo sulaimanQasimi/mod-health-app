@@ -5,6 +5,11 @@ import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
 
+interface DepartmentOption {
+    id: number;
+    name: string;
+}
+
 interface RoomOption {
     id: number;
     name: string;
@@ -19,10 +24,13 @@ interface BedOption {
 }
 
 interface RoomBedMeta {
+    current_department_id: number | null;
+    current_department_name: string | null;
     current_room_id: number | null;
     current_bed_id: number | null;
     current_room_name: string | null;
     current_bed_number: string | number | null;
+    departments: DepartmentOption[];
     rooms: RoomOption[];
     beds: BedOption[];
 }
@@ -63,12 +71,14 @@ export default function HospitalizationChangeRoomBedModal({
     const [submitting, setSubmitting] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
     const [meta, setMeta] = useState<RoomBedMeta | null>(null);
+    const [departmentId, setDepartmentId] = useState('');
     const [roomId, setRoomId] = useState('');
     const [bedId, setBedId] = useState('');
 
     useEffect(() => {
         if (!open) {
             setMeta(null);
+            setDepartmentId('');
             setRoomId('');
             setBedId('');
             setFormError(null);
@@ -96,6 +106,9 @@ export default function HospitalizationChangeRoomBedModal({
 
                 const data = payload.data as RoomBedMeta;
                 setMeta(data);
+                setDepartmentId(
+                    data.current_department_id ? String(data.current_department_id) : '',
+                );
                 setRoomId(data.current_room_id ? String(data.current_room_id) : '');
                 setBedId(data.current_bed_id ? String(data.current_bed_id) : '');
             })
@@ -115,10 +128,29 @@ export default function HospitalizationChangeRoomBedModal({
         };
     }, [open, hospitalizationId]);
 
-    const roomOptions = useMemo(
-        () => (meta?.rooms ?? []).map((room) => ({ value: String(room.id), label: room.name })),
-        [meta?.rooms],
+    const departmentOptions = useMemo(
+        () =>
+            (meta?.departments ?? []).map((department) => ({
+                value: String(department.id),
+                label: department.name,
+            })),
+        [meta?.departments],
     );
+
+    const roomOptions = useMemo(() => {
+        if (!meta || !departmentId) {
+            return [];
+        }
+
+        const selectedDepartmentId = Number(departmentId);
+
+        return meta.rooms
+            .filter(
+                (room) =>
+                    room.department_id === null || room.department_id === selectedDepartmentId,
+            )
+            .map((room) => ({ value: String(room.id), label: room.name }));
+    }, [meta, departmentId]);
 
     const bedOptions = useMemo(() => {
         if (!meta || !roomId) {
@@ -134,6 +166,12 @@ export default function HospitalizationChangeRoomBedModal({
             .map((bed) => ({ value: String(bed.id), label: String(bed.number) }));
     }, [meta, roomId]);
 
+    const handleDepartmentChange = (value: string) => {
+        setDepartmentId(value);
+        setRoomId('');
+        setBedId('');
+    };
+
     const handleRoomChange = (value: string) => {
         setRoomId(value);
         setBedId('');
@@ -141,7 +179,7 @@ export default function HospitalizationChangeRoomBedModal({
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
-        if (!roomId || !bedId) {
+        if (!departmentId || !roomId || !bedId) {
             setFormError(t('global.request_failed'));
             return;
         }
@@ -159,6 +197,7 @@ export default function HospitalizationChangeRoomBedModal({
                     'X-CSRF-TOKEN': csrfToken,
                 },
                 body: JSON.stringify({
+                    department_id: Number(departmentId),
                     room_id: Number(roomId),
                     bed_id: Number(bedId),
                 }),
@@ -192,15 +231,28 @@ export default function HospitalizationChangeRoomBedModal({
                         </div>
                     ) : (
                         <>
-                            {meta?.current_room_name && (
+                            {(meta?.current_department_name || meta?.current_room_name) && (
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {t('global.current_room')}:{' '}
-                                    <span className="font-medium text-gray-900 dark:text-white">
-                                        {meta.current_room_name}
-                                        {meta.current_bed_number != null
-                                            ? ` / ${meta.current_bed_number}`
-                                            : ''}
-                                    </span>
+                                    {meta.current_department_name && (
+                                        <>
+                                            {t('global.department')}:{' '}
+                                            <span className="font-medium text-gray-900 dark:text-white">
+                                                {meta.current_department_name}
+                                            </span>
+                                            {meta.current_room_name ? ' · ' : ''}
+                                        </>
+                                    )}
+                                    {meta.current_room_name && (
+                                        <>
+                                            {t('global.current_room')}:{' '}
+                                            <span className="font-medium text-gray-900 dark:text-white">
+                                                {meta.current_room_name}
+                                                {meta.current_bed_number != null
+                                                    ? ` / ${meta.current_bed_number}`
+                                                    : ''}
+                                            </span>
+                                        </>
+                                    )}
                                 </p>
                             )}
                             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -212,6 +264,17 @@ export default function HospitalizationChangeRoomBedModal({
                                 </div>
                             )}
                             <div>
+                                <Label htmlFor="change-room-bed-department">{t('global.department')}</Label>
+                                <SearchableSelect
+                                    id="change-room-bed-department"
+                                    required
+                                    value={departmentId}
+                                    onChange={handleDepartmentChange}
+                                    options={departmentOptions}
+                                    placeholder={t('global.select_department')}
+                                />
+                            </div>
+                            <div>
                                 <Label htmlFor="change-room-bed-room">{t('global.room')}</Label>
                                 <SearchableSelect
                                     id="change-room-bed-room"
@@ -219,7 +282,8 @@ export default function HospitalizationChangeRoomBedModal({
                                     value={roomId}
                                     onChange={handleRoomChange}
                                     options={roomOptions}
-                                    placeholder={t('global.select_room_first')}
+                                    placeholder={t('global.select')}
+                                    disabled={!departmentId}
                                 />
                             </div>
                             <div>
@@ -230,7 +294,7 @@ export default function HospitalizationChangeRoomBedModal({
                                     value={bedId}
                                     onChange={setBedId}
                                     options={bedOptions}
-                                    placeholder={t('global.select_room_first')}
+                                    placeholder={t('global.select')}
                                     disabled={!roomId}
                                 />
                             </div>

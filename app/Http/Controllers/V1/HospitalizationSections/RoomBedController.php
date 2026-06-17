@@ -4,10 +4,12 @@ namespace App\Http\Controllers\V1\HospitalizationSections;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bed;
+use App\Models\Department;
 use App\Models\Hospitalization;
 use App\Models\Room;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class RoomBedController extends Controller
 {
@@ -18,19 +20,27 @@ class RoomBedController extends Controller
 
         $hospitalization->loadMissing([
             'appointment:id,department_id',
+            'department:id,name',
             'room:id,name,department_id',
             'bed:id,number,room_id,is_occupied',
         ]);
 
-        $departmentId = $this->currentDepartmentId($hospitalization);
+        $currentDepartmentId = $this->currentDepartmentId($hospitalization);
         $branchId = $hospitalization->branch_id ?? request()->user()->branch_id;
+
+        $departments = Department::query()
+            ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Department $department) => [
+                'id' => $department->id,
+                'name' => $department->name,
+            ])
+            ->values()
+            ->all();
 
         $rooms = Room::query()
             ->where('branch_id', $branchId)
-            ->when(
-                $departmentId,
-                fn ($query) => $query->where('department_id', $departmentId)
-            )
             ->whereHas('beds')
             ->orderBy('name')
             ->get(['id', 'name', 'department_id'])
@@ -57,14 +67,24 @@ class RoomBedController extends Controller
             ->values()
             ->all();
 
+        $currentDepartmentName = $hospitalization->department?->name;
+        if (! $currentDepartmentName && $currentDepartmentId) {
+            $matchedDepartment = collect($departments)->firstWhere('id', $currentDepartmentId);
+            $currentDepartmentName = is_array($matchedDepartment)
+                ? ($matchedDepartment['name'] ?? null)
+                : null;
+        }
+
         return response()->json([
             'success' => true,
             'data' => [
+                'current_department_id' => $currentDepartmentId,
+                'current_department_name' => $currentDepartmentName,
                 'current_room_id' => $hospitalization->room_id,
                 'current_bed_id' => $hospitalization->bed_id,
                 'current_room_name' => $hospitalization->room?->name,
                 'current_bed_number' => $hospitalization->bed?->number,
-                'department_id' => $departmentId,
+                'departments' => $departments,
                 'rooms' => $rooms,
                 'beds' => $beds,
             ],
@@ -77,12 +97,17 @@ class RoomBedController extends Controller
         abort_if((bool) $hospitalization->is_discharged, 403);
 
         $validated = $request->validate([
+            'department_id' => [
+                'required',
+                Rule::exists('departments', 'id')->where(
+                    fn ($query) => $query->where('branch_id', $hospitalization->branch_id)
+                ),
+            ],
             'room_id' => 'required|exists:rooms,id',
             'bed_id' => 'required|exists:beds,id',
         ]);
 
         $hospitalization->loadMissing('appointment:id,department_id');
-        $currentDeptId = $this->currentDepartmentId($hospitalization);
 
         $newRoom = Room::query()
             ->where('branch_id', $hospitalization->branch_id)
@@ -110,19 +135,30 @@ class RoomBedController extends Controller
             ], 422);
         }
 
-        if ($currentDeptId && (int) $newRoom->department_id !== (int) $currentDeptId) {
+        $selectedDepartmentId = (int) $validated['department_id'];
+        if (
+            $newRoom->department_id !== null
+            && (int) $newRoom->department_id !== $selectedDepartmentId
+        ) {
             return response()->json([
                 'success' => false,
-                'message' => localize('global.room_must_match_current_department'),
+                'message' => localize('global.room_must_match_selected_department'),
             ], 422);
         }
 
         $oldBed = $hospitalization->bed_id ? Bed::find($hospitalization->bed_id) : null;
 
         $hospitalization->update([
+            'department_id' => $selectedDepartmentId,
             'room_id' => $validated['room_id'],
             'bed_id' => $validated['bed_id'],
         ]);
+
+        if ($hospitalization->appointment) {
+            $hospitalization->appointment->update([
+                'department_id' => $selectedDepartmentId,
+            ]);
+        }
 
         if ($oldBed && (int) $oldBed->id !== (int) $newBed->id) {
             $oldBed->update(['is_occupied' => false]);
@@ -130,12 +166,13 @@ class RoomBedController extends Controller
 
         $newBed->update(['is_occupied' => true]);
 
-        $hospitalization->load(['room:id,name', 'bed:id,number']);
+        $hospitalization->load(['department:id,name', 'room:id,name', 'bed:id,number']);
 
         return response()->json([
             'success' => true,
             'message' => localize('global.room_and_bed_updated_successfully'),
             'data' => [
+                'department_name' => $hospitalization->department?->name,
                 'room_name' => $hospitalization->room?->name,
                 'bed_number' => $hospitalization->bed?->number,
             ],

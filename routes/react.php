@@ -51,6 +51,7 @@ use App\Http\Controllers\V1\HospitalizationSections\DiabetesChartController as H
 use App\Http\Controllers\V1\HospitalizationSections\AnesthesiaController as HospitalizationAnesthesiaController;
 use App\Http\Controllers\V1\HospitalizationSections\IcuController as HospitalizationIcuController;
 use App\Http\Controllers\V1\HospitalizationSections\PacuController as HospitalizationPacuController;
+use App\Http\Controllers\V1\HospitalizationSections\RoomBedController as HospitalizationRoomBedController;
 use App\Http\Controllers\V1\HospitalizationSections\UnderReviewController as HospitalizationUnderReviewController;
 use App\Http\Controllers\V1\HospitalizationSections\OperationController as HospitalizationOperationController;
 use App\Http\Controllers\V1\HospitalizationSections\NurseNoteController as HospitalizationNurseNoteController;
@@ -526,6 +527,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{hospitalization}/visits', [HospitalizationVisitController::class, 'store'])->name('visits.store');
         Route::match(['put', 'post'], '/{hospitalization}/visits/{visit}', [HospitalizationVisitController::class, 'update'])->name('visits.update');
         Route::delete('/{hospitalization}/visits/{visit}', [HospitalizationVisitController::class, 'destroy'])->name('visits.destroy');
+        Route::get('/{hospitalization}/room-bed/meta', [HospitalizationRoomBedController::class, 'meta'])->name('room-bed.meta');
+        Route::put('/{hospitalization}/room-bed', [HospitalizationRoomBedController::class, 'update'])->name('room-bed.update');
         Route::get('/{hospitalization}/edit', [HospitalizationController::class, 'edit'])->name('edit');
         Route::get('/{hospitalization}', [HospitalizationController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/{hospitalization}', [HospitalizationController::class, 'update'])->name('update');

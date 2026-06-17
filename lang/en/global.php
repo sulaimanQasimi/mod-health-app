@@ -4016,6 +4016,7 @@ return [
     'change_room_bed' => 'Change room/bed',
     'current_information' => 'Current information',
     'current_room' => 'Current room',
+    'current_bed_will_be_freed' => 'The current bed will be marked unoccupied and the hospitalization will be moved to the selected room and bed.',
     'current_bed' => 'Current bed',
     'anesthesia_clears_hospitalization_bed' => 'The current ward room and bed will be freed on this hospitalization when the anesthesia referral is saved.',
     'pacu_clears_hospitalization_bed' => 'The current ward room and bed will be freed on this hospitalization when the PACU referral is saved.',

@@ -8,6 +8,7 @@ import HospitalizationOperationSection from '../../Components/Hospitalizations/H
 import PhysiotherapySection from '../../Components/Appointments/Sections/PhysiotherapySection';
 import UnderReviewSection from '../../Components/Appointments/Sections/UnderReviewSection';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import HospitalizationChangeRoomBedModal from '../../Components/Hospitalizations/HospitalizationChangeRoomBedModal';
 import HospitalizationSummary from '../../Components/Hospitalizations/HospitalizationSummary';
 import HospitalizationDiabetesChartSection from '../../Components/Hospitalizations/HospitalizationDiabetesChartSection';
 import HospitalizationNurseNoteSection from '../../Components/Hospitalizations/HospitalizationNurseNoteSection';
@@ -60,7 +61,6 @@ interface ShowProps {
         edit: string;
         discharge: string;
         appointment: string | null;
-        change_room_bed: string;
     };
 }
 
@@ -113,6 +113,7 @@ export default function HospitalizationsShow({
     const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
     const [dischargeOpen, setDischargeOpen] = useState(false);
+    const [changeRoomBedOpen, setChangeRoomBedOpen] = useState(false);
     const [dischargeRemark, setDischargeRemark] = useState('');
     const [dischargeStatus, setDischargeStatus] = useState('');
     const patientLabel = hospitalization.patient?.name ?? `#${hospitalization.id}`;
@@ -175,9 +176,8 @@ export default function HospitalizationsShow({
                             )}
                             {permissions.change_room_bed && (
                                 <Button
-                                    as="a"
-                                    href={urls.change_room_bed}
                                     size="sm"
+                                    onClick={() => setChangeRoomBedOpen(true)}
                                     className={settingsHeaderButtonClass.warning}
                                 >
                                     <i className="bx bx-transfer me-2" />
@@ -406,6 +406,13 @@ export default function HospitalizationsShow({
                     )}
                 </div>
             </div>
+
+            <HospitalizationChangeRoomBedModal
+                hospitalizationId={hospitalization.id}
+                open={changeRoomBedOpen}
+                onClose={() => setChangeRoomBedOpen(false)}
+                onSuccess={() => router.reload({ preserveScroll: true })}
+            />
 
             <Modal show={dischargeOpen} onClose={() => setDischargeOpen(false)} size="md">
                 <form onSubmit={handleDischarge}>

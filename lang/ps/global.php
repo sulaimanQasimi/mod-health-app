@@ -4396,6 +4396,7 @@ return [
 'change_room_bed' => 'خونې/بستر بدلول',
 'current_information' => 'اوسني معلومات',
 'current_room' => 'اوسنۍ خونې',
+'current_bed_will_be_freed' => 'اوسنی بستر به خالي کېږي او ناروغ به ټاکل شوي خونې او بستر ته لیږدول کېږي.',
 'current_bed' => 'اوسنی بستر',
 'select_room' => 'خونې وټاکئ',
 'select_bed' => 'بستر وټاکئ',

@@ -198,7 +198,7 @@ class HospitalizationController extends Controller
             'permissions' => [
                 'edit' => ! (bool) $hospitalization->is_discharged && $user->can('edit-hospitalizations'),
                 'discharge' => ! (bool) $hospitalization->is_discharged && $user->can('edit-hospitalizations'),
-                'change_room_bed' => ! (bool) $hospitalization->is_discharged && $this->canEditRooms($user),
+                'change_room_bed' => ! (bool) $hospitalization->is_discharged,
             ],
             'sectionPermissions' => [
                 'prescription' => $user->can('show-prescriptions-menu'),
@@ -227,7 +227,6 @@ class HospitalizationController extends Controller
                 'appointment' => $hospitalization->appointment_id
                     ? route('react.appointments.show', $hospitalization->appointment_id)
                     : null,
-                'change_room_bed' => route('hospitalizations.changeRoomBed', $hospitalization),
             ],
         ]);
     }

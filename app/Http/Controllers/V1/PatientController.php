@@ -12,6 +12,7 @@ use App\Models\MiliteryType;
 use App\Models\Patient;
 use App\Models\Province;
 use App\Models\Recipient;
+use App\Models\RecipientPart;
 use App\Models\Relation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -136,6 +137,8 @@ class PatientController extends Controller
             'militeryType:id,name',
             'relation:id,name',
             'recipient:id,name',
+            'recipientPart:id,name,code,recipient_id',
+            'referralRecipientPart:id,name,code,recipient_id',
             'creator:id,name,last_name',
             'appointments.doctor:id,name',
             'diagnoses' => fn ($query) => $query->orderByDesc('created_at'),
@@ -330,6 +333,21 @@ class PatientController extends Controller
         ]);
     }
 
+    public function recipientParts(int $recipientId): JsonResponse
+    {
+        $this->authorize('viewAny', Patient::class);
+
+        $parts = RecipientPart::query()
+            ->where('recipient_id', $recipientId)
+            ->orderBy('name')
+            ->get(['id', 'name', 'code']);
+
+        return response()->json([
+            'success' => true,
+            'recipientParts' => $parts,
+        ]);
+    }
+
     public function doctorsByDepartment(int $departmentId, Request $request): JsonResponse
     {
         $this->authorize('viewAny', Patient::class);
@@ -439,6 +457,20 @@ class PatientController extends Controller
                 ->get(['id', 'name_dr'])
             : [];
 
+        $recipientParts = $patient?->referred_by
+            ? RecipientPart::query()
+                ->where('recipient_id', $patient->referred_by)
+                ->orderBy('name')
+                ->get(['id', 'name', 'code'])
+            : [];
+
+        $referralRecipientParts = $patient?->referral_recipient
+            ? RecipientPart::query()
+                ->where('recipient_id', $patient->referral_recipient)
+                ->orderBy('name')
+                ->get(['id', 'name', 'code'])
+            : [];
+
         return [
             'branchId' => $patient?->branch_id ?? $user->branch_id,
             'clinicType' => $user->clinic_type,
@@ -449,6 +481,8 @@ class PatientController extends Controller
             'militeryTypes' => MiliteryType::query()->orderBy('name')->get(['id', 'name']),
             'departments' => $departments,
             'districts' => $districts,
+            'recipientParts' => $recipientParts,
+            'referralRecipientParts' => $referralRecipientParts,
         ];
     }
 
@@ -459,6 +493,7 @@ class PatientController extends Controller
     {
         $urls = [
             'districts' => url('/react/patients/districts'),
+            'recipientParts' => url('/react/patients/recipient-parts'),
             'doctorsByDepartment' => url('/react/patients/doctors-by-department'),
             'back' => route('react.patients.index'),
         ];
@@ -499,6 +534,7 @@ class PatientController extends Controller
             'age_day' => $ageParts['day'],
             'gender' => $patient->gender !== null ? (string) $patient->gender : '',
             'referred_by' => $patient->referred_by ? (string) $patient->referred_by : '',
+            'recipient_part_id' => $patient->recipient_part_id ? (string) $patient->recipient_part_id : '',
             'province_id' => $patient->province_id ? (string) $patient->province_id : '',
             'district_id' => $patient->district_id ? (string) $patient->district_id : '',
             'referral_name' => $patient->referral_name ?? '',
@@ -508,6 +544,7 @@ class PatientController extends Controller
             'referral_id_card' => $patient->referral_id_card ?? '',
             'referral_phone' => $patient->referral_phone ?? '',
             'referral_recipient' => $patient->referral_recipient ? (string) $patient->referral_recipient : '',
+            'referral_recipient_part_id' => $patient->referral_recipient_part_id ? (string) $patient->referral_recipient_part_id : '',
             'relation_id' => $patient->relation_id ? (string) $patient->relation_id : '',
         ];
     }
@@ -540,7 +577,8 @@ class PatientController extends Controller
             'district' => $patient->district?->name_dr,
             'militery_type' => $patient->militeryType?->name,
             'relation' => $patient->relation?->name,
-            'referred_by' => $patient->recipient?->name ?? $patient->referral_name,
+            'referred_by' => $this->formatRecipientDisplay($patient),
+            'recipient_part' => $patient->recipientPart?->displayName(),
             'referral_name' => $patient->referral_name,
             'referral_last_name' => $patient->referral_last_name,
             'referral_father_name' => $patient->referral_father_name,
@@ -554,6 +592,19 @@ class PatientController extends Controller
             'created_by' => $createdBy,
             'image' => $patient->image ? asset($patient->image) : null,
         ];
+    }
+
+    private function formatRecipientDisplay(Patient $patient): ?string
+    {
+        if ($patient->recipientPart) {
+            $recipientName = $patient->recipient?->name;
+
+            return $recipientName
+                ? "{$recipientName} / {$patient->recipientPart->displayName()}"
+                : $patient->recipientPart->displayName();
+        }
+
+        return $patient->recipient?->name ?? $patient->referral_name;
     }
 
     /**

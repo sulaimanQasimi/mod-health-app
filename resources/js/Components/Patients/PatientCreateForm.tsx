@@ -49,6 +49,7 @@ interface FormState {
     age_day: string;
     gender: string;
     referred_by: string;
+    recipient_part_id: string;
     province_id: string;
     district_id: string;
     referral_name: string;
@@ -58,6 +59,7 @@ interface FormState {
     referral_id_card: string;
     referral_phone: string;
     referral_recipient: string;
+    referral_recipient_part_id: string;
     relation_id: string;
     appointment_clinic_type: string;
     appointment_department_id: string;
@@ -82,6 +84,7 @@ function createInitialState(patientType: PatientType, patient?: PatientFormValue
             age_day: patient.age_day,
             gender: patient.gender || (patientType === '2' ? '' : '0'),
             referred_by: patient.referred_by,
+            recipient_part_id: patient.recipient_part_id,
             province_id: patient.province_id,
             district_id: patient.district_id,
             referral_name: patient.referral_name,
@@ -91,6 +94,7 @@ function createInitialState(patientType: PatientType, patient?: PatientFormValue
             referral_id_card: patient.referral_id_card,
             referral_phone: patient.referral_phone,
             referral_recipient: patient.referral_recipient,
+            referral_recipient_part_id: patient.referral_recipient_part_id,
             relation_id: patient.relation_id,
             appointment_clinic_type: '',
             appointment_department_id: '',
@@ -114,6 +118,7 @@ function createInitialState(patientType: PatientType, patient?: PatientFormValue
         age_day: '',
         gender: patientType === '2' ? '' : '0',
         referred_by: '',
+        recipient_part_id: '',
         province_id: '',
         district_id: '',
         referral_name: '',
@@ -123,6 +128,7 @@ function createInitialState(patientType: PatientType, patient?: PatientFormValue
         referral_id_card: '',
         referral_phone: '',
         referral_recipient: '',
+        referral_recipient_part_id: '',
         relation_id: '',
         appointment_clinic_type: '',
         appointment_department_id: '',
@@ -144,7 +150,13 @@ export default function PatientCreateForm({
     const isEdit = mode === 'edit';
     const [form, setForm] = useState<FormState>(() => createInitialState(patientType, patient));
     const [districts, setDistricts] = useState<NamedOption[]>(formData.districts ?? []);
+    const [recipientParts, setRecipientParts] = useState<NamedOption[]>(formData.recipientParts ?? []);
+    const [referralRecipientParts, setReferralRecipientParts] = useState<NamedOption[]>(
+        formData.referralRecipientParts ?? [],
+    );
     const [loadingDistricts, setLoadingDistricts] = useState(false);
+    const [loadingRecipientParts, setLoadingRecipientParts] = useState(false);
+    const [loadingReferralRecipientParts, setLoadingReferralRecipientParts] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -208,9 +220,49 @@ export default function PatientCreateForm({
         }
     };
 
+    const loadRecipientParts = async (recipientId: string, field: 'referred_by' | 'referral_recipient') => {
+        if (field === 'referred_by') {
+            updateField('referred_by', recipientId);
+            updateField('recipient_part_id', '');
+        } else {
+            updateField('referral_recipient', recipientId);
+            updateField('referral_recipient_part_id', '');
+        }
+
+        if (!recipientId) {
+            if (field === 'referred_by') {
+                setRecipientParts([]);
+            } else {
+                setReferralRecipientParts([]);
+            }
+            return;
+        }
+
+        const setLoading = field === 'referred_by' ? setLoadingRecipientParts : setLoadingReferralRecipientParts;
+        const setParts = field === 'referred_by' ? setRecipientParts : setReferralRecipientParts;
+
+        setLoading(true);
+        try {
+            const response = await fetch(`${urls.recipientParts}/${recipientId}`, {
+                headers: {
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+            const payload = await response.json();
+            setParts(payload.recipientParts ?? []);
+        } catch {
+            setParts([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const resetForm = () => {
         setForm(createInitialState(patientType));
         setDistricts([]);
+        setRecipientParts([]);
+        setReferralRecipientParts([]);
         setErrors({});
     };
 
@@ -259,12 +311,18 @@ export default function PatientCreateForm({
             if (form.referred_by) {
                 payload.append('referred_by', form.referred_by);
             }
+            if (form.recipient_part_id) {
+                payload.append('recipient_part_id', form.recipient_part_id);
+            }
         }
 
         if (patientType === '1') {
             payload.append('job_category', form.job_category);
             payload.append('rank', form.rank);
             payload.append('referred_by', form.referred_by);
+            if (form.recipient_part_id) {
+                payload.append('recipient_part_id', form.recipient_part_id);
+            }
         }
 
         if (patientType === '2') {
@@ -275,6 +333,9 @@ export default function PatientCreateForm({
             payload.append('referral_id_card', form.referral_id_card);
             payload.append('referral_phone', form.referral_phone);
             payload.append('referral_recipient', form.referral_recipient);
+            if (form.referral_recipient_part_id) {
+                payload.append('referral_recipient_part_id', form.referral_recipient_part_id);
+            }
             payload.append('relation_id', form.relation_id);
         }
 
@@ -507,28 +568,55 @@ export default function PatientCreateForm({
                     </FormField>
 
                     {patientType !== '2' && (
-                        <FormField
-                            label={t('global.referred_by')}
-                            required={patientType === '1'}
-                            error={errors.referred_by}
-                            compact
-                        >
-                            <SearchableSelect
-                                id="referred_by"
-                                compact
+                        <>
+                            <FormField
+                                label={t('global.recipient')}
                                 required={patientType === '1'}
-                                value={form.referred_by}
-                                onChange={(value) => updateField('referred_by', value)}
-                                placeholder={t('global.select')}
+                                error={errors.referred_by}
+                                compact
                             >
-                                <option value="">{t('global.select')}</option>
-                                {formData.recipients.map((recipient) => (
-                                    <option key={recipient.id} value={recipient.id}>
-                                        {recipient.name}
+                                <SearchableSelect
+                                    id="referred_by"
+                                    compact
+                                    required={patientType === '1'}
+                                    value={form.referred_by}
+                                    onChange={(value) => loadRecipientParts(value, 'referred_by')}
+                                    placeholder={t('global.select')}
+                                >
+                                    <option value="">{t('global.select')}</option>
+                                    {formData.recipients.map((recipient) => (
+                                        <option key={recipient.id} value={recipient.id}>
+                                            {recipient.name}
+                                        </option>
+                                    ))}
+                                </SearchableSelect>
+                            </FormField>
+                            <FormField
+                                label={t('global.recipient_parts')}
+                                error={errors.recipient_part_id}
+                                compact
+                            >
+                                <SearchableSelect
+                                    id="recipient_part_id"
+                                    compact
+                                    disabled={!form.referred_by || loadingRecipientParts}
+                                    value={form.recipient_part_id}
+                                    onChange={(value) => updateField('recipient_part_id', value)}
+                                    placeholder={
+                                        loadingRecipientParts ? `${t('global.loading')}...` : t('global.select')
+                                    }
+                                >
+                                    <option value="">
+                                        {loadingRecipientParts ? `${t('global.loading')}...` : t('global.select')}
                                     </option>
-                                ))}
-                            </SearchableSelect>
-                        </FormField>
+                                    {recipientParts.map((part) => (
+                                        <option key={part.id} value={part.id}>
+                                            {part.name} ({part.code})
+                                        </option>
+                                    ))}
+                                </SearchableSelect>
+                            </FormField>
+                        </>
                     )}
 
                     <FormField label={t('global.province')} required error={errors.province_id} compact>
@@ -647,19 +735,48 @@ export default function PatientCreateForm({
                                     onChange={(e) => updateField('referral_phone', e.target.value)}
                                 />
                             </FormField>
-                            <FormField label={t('global.referred_by')} required error={errors.referral_recipient} compact>
+                            <FormField label={t('global.recipient')} required error={errors.referral_recipient} compact>
                                 <SearchableSelect
                                     id="referral_recipient"
                                     compact
                                     required
                                     value={form.referral_recipient}
-                                    onChange={(value) => updateField('referral_recipient', value)}
+                                    onChange={(value) => loadRecipientParts(value, 'referral_recipient')}
                                     placeholder={t('global.select')}
                                 >
                                     <option value="">{t('global.select')}</option>
                                     {formData.recipients.map((recipient) => (
                                         <option key={recipient.id} value={recipient.id}>
                                             {recipient.name}
+                                        </option>
+                                    ))}
+                                </SearchableSelect>
+                            </FormField>
+                            <FormField
+                                label={t('global.recipient_parts')}
+                                error={errors.referral_recipient_part_id}
+                                compact
+                            >
+                                <SearchableSelect
+                                    id="referral_recipient_part_id"
+                                    compact
+                                    disabled={!form.referral_recipient || loadingReferralRecipientParts}
+                                    value={form.referral_recipient_part_id}
+                                    onChange={(value) => updateField('referral_recipient_part_id', value)}
+                                    placeholder={
+                                        loadingReferralRecipientParts
+                                            ? `${t('global.loading')}...`
+                                            : t('global.select')
+                                    }
+                                >
+                                    <option value="">
+                                        {loadingReferralRecipientParts
+                                            ? `${t('global.loading')}...`
+                                            : t('global.select')}
+                                    </option>
+                                    {referralRecipientParts.map((part) => (
+                                        <option key={part.id} value={part.id}>
+                                            {part.name} ({part.code})
                                         </option>
                                     ))}
                                 </SearchableSelect>

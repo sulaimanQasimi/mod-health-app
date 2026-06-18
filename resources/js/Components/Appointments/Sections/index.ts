@@ -12,6 +12,7 @@ export { default as HospitalizationSection } from './HospitalizationSection';
 export { default as IcuReferralSection } from './IcuReferralSection';
 export { default as PacuReferralSection } from './PacuReferralSection';
 export { default as OperationSection } from './OperationSection';
+export { default as ReferDepartmentSection } from './ReferDepartmentSection';
 export {
     AnesthesiaSection,
     ConsultationSection,
@@ -19,6 +20,5 @@ export {
     HospitalizationVisitsSection,
     IcuSection,
     IcuVisitsSection,
-    ReferDepartmentSection,
     RelatedVisitsSection,
 } from './OtherSections';

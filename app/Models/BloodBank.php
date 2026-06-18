@@ -12,7 +12,7 @@ class BloodBank extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['group','branch_id', 'appointment_id', 'patient_id', 'rh', 'type', 'under_review_id', 'operation_id','i_c_u_id','anesthesia_id','hospitalization_id','status','quantity','department_id','receiver_department_id','receiver_nurse_id','reject_reason','created_by','updated_by','deleted_by'];
+    protected $fillable = ['group','branch_id', 'appointment_id', 'patient_id', 'rh', 'type', 'under_review_id', 'operation_id','i_c_u_id','anesthesia_id','hospitalization_id','status','quantity','hemoglobin','hematocrit','factor','department_id','receiver_department_id','receiver_nurse_id','reject_reason','created_by','updated_by','deleted_by'];
 
     public static function boot()
     {

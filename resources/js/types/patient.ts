@@ -2,6 +2,7 @@ export interface NamedOption {
     id: number;
     name?: string;
     name_dr?: string;
+    code?: string;
 }
 
 export interface PatientFormData {
@@ -14,6 +15,8 @@ export interface PatientFormData {
     militeryTypes: NamedOption[];
     departments: NamedOption[];
     districts?: NamedOption[];
+    recipientParts?: NamedOption[];
+    referralRecipientParts?: NamedOption[];
 }
 
 export interface PatientFormUrls {
@@ -22,6 +25,7 @@ export interface PatientFormUrls {
     show?: string;
     destroy?: string;
     districts: string;
+    recipientParts: string;
     doctorsByDepartment: string;
     back: string;
 }
@@ -51,6 +55,7 @@ export interface PatientFormValues {
     age_day: string;
     gender: string;
     referred_by: string;
+    recipient_part_id: string;
     province_id: string;
     district_id: string;
     referral_name: string;
@@ -60,6 +65,7 @@ export interface PatientFormValues {
     referral_id_card: string;
     referral_phone: string;
     referral_recipient: string;
+    referral_recipient_part_id: string;
     relation_id: string;
 }
 
@@ -134,6 +140,7 @@ export interface PatientDetail {
     militery_type: string | null;
     relation: string | null;
     referred_by: string | null;
+    recipient_part: string | null;
     referral_name: string | null;
     referral_last_name: string | null;
     referral_father_name: string | null;

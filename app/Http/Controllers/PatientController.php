@@ -146,10 +146,12 @@ class PatientController extends Controller
             'referral_id_card' => 'nullable',
             'referral_phone' => 'nullable',
             'referral_recipient' => 'nullable',
+            'referral_recipient_part_id' => 'nullable|exists:recipient_parts,id',
             'type' => 'nullable',
             'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
+            'recipient_part_id' => 'nullable|exists:recipient_parts,id',
             // Appointment validation
             'appointment_doctor_id' => 'nullable|exists:doctors,id',
             'appointment_department_id' => 'required_with:appointment_doctor_id|exists:departments,id'
@@ -353,10 +355,12 @@ class PatientController extends Controller
             'referral_id_card' => 'nullable',
             'referral_phone' => 'nullable',
             'referral_recipient' => 'nullable',
+            'referral_recipient_part_id' => 'nullable|exists:recipient_parts,id',
             'type' => 'nullable',
             'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
+            'recipient_part_id' => 'nullable|exists:recipient_parts,id',
         ]);
 
         // Format age from dropdowns if provided (priority: year > month > day)

@@ -61,6 +61,9 @@ export interface BloodRequestDetail {
     rh: string | null;
     type: string | null;
     quantity: number | null;
+    hemoglobin: number | null;
+    hematocrit: number | null;
+    factor: string | null;
     reject_reason: string | null;
     created_at: string | null;
     patient: {

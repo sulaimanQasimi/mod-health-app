@@ -30,11 +30,13 @@
                         <!-- Doctor Selection Dropdown - Hidden when appointment is completed or already processed -->
                         @if ($appointment->is_completed == 0)
                         <div class="me-2">
-                            <select id="appointment_doctor_select" class="form-select form-select-sm" style="min-width: 200px;" {{ $appointment->processed_by ? 'disabled' : '' }}>
+                            <select id="appointment_doctor_select" class="form-select form-select-sm" style="min-width: 200px;" {{ $appointment->canChangeDoctor() ? '' : 'disabled' }}>
                                 <option value="">{{ localize('global.select_doctor') }}</option>
                             </select>
-                            @if($appointment->processed_by)
-                                <small class="text-muted d-block mt-1">{{ localize('global.appointment_already_accepted') }}</small>
+                            @if($appointment->doctor_reassigned)
+                                <small class="text-muted d-block mt-1">{{ localize('global.doctor_can_only_be_changed_once') }}</small>
+                            @elseif($appointment->processed_by)
+                                <small class="text-warning d-block mt-1">{{ localize('global.doctor_change_once_hint') }}</small>
                             @endif
                         </div>
                         @endif

@@ -40,6 +40,8 @@ class Patient extends Model
         'id_card',
         'job_category',
         'referred_by',
+        'recipient_part_id',
+        'referral_recipient_part_id',
         'registration_date',
         'militery_type_id',
     ];
@@ -153,6 +155,16 @@ class Patient extends Model
     public function recipient()
     {
         return $this->belongsTo(Recipient::class, 'referred_by');
+    }
+
+    public function recipientPart()
+    {
+        return $this->belongsTo(RecipientPart::class, 'recipient_part_id');
+    }
+
+    public function referralRecipientPart()
+    {
+        return $this->belongsTo(RecipientPart::class, 'referral_recipient_part_id');
     }
 
     public function consultations()

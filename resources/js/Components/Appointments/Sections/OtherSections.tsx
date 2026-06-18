@@ -1,8 +1,6 @@
 import AnesthesiaReferralSection from '../../Anesthesias/AnesthesiaReferralSection';
 import { useTranslation } from '../../../hooks/useTranslation';
 import SimpleTableSection, { SectionActionButton } from './SimpleTableSection';
-import AppointmentSectionAccordion, { SectionLoadingState } from './AppointmentSectionAccordion';
-import { useAppointmentSection } from '../../../hooks/useAppointmentSection';
 
 interface SectionProps {
     appointmentId: number;
@@ -60,43 +58,6 @@ export function ConsultationSection({ appointmentId }: SectionProps) {
                 ) : null
             }
         />
-    );
-}
-
-export function ReferDepartmentSection({ appointmentId }: SectionProps) {
-    const { t } = useTranslation();
-    const { loading, data } = useAppointmentSection(appointmentId, 'refer-department');
-
-    return (
-        <AppointmentSectionAccordion
-            id={`refer-dept-${appointmentId}`}
-            icon="bx-transfer"
-            iconClassName="text-red-500"
-            title={t('global.refer_to_another_department')}
-            count={data?.count}
-            badgeColor="failure"
-        >
-            {loading ? (
-                <SectionLoadingState />
-            ) : (
-                <div className="space-y-3">
-                    {data?.referral_remarks ? (
-                        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm dark:border-emerald-900/40 dark:bg-emerald-900/20">
-                            <strong>{t('global.referral_remarks')}:</strong> {data.referral_remarks}
-                        </div>
-                    ) : (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{t('global.no_records_found')}</p>
-                    )}
-                    {data?.permissions.create && data.urls?.legacy && (
-                        <div className="flex justify-end">
-                            <a href={data.urls.legacy} className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700">
-                                {t('global.refer_patient')}
-                            </a>
-                        </div>
-                    )}
-                </div>
-            )}
-        </AppointmentSectionAccordion>
     );
 }
 

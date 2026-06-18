@@ -192,11 +192,14 @@ class AppointmentController extends Controller
 
     public function update(Request $request, Appointment $appointment)
     {
-        // Prevent changing doctor if appointment is already processed
-        if ($appointment->processed_by && $request->doctor_id != $appointment->doctor_id) {
+        if (
+            $appointment->doctor_id
+            && $request->doctor_id != $appointment->doctor_id
+            && ! $appointment->canChangeDoctor()
+        ) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', localize('global.cannot_change_doctor_after_acceptance'));
+                ->with('error', localize('global.doctor_can_only_be_changed_once'));
         }
 
         // Validate the input
@@ -214,11 +217,13 @@ class AppointmentController extends Controller
         }
         $validatedData = $request->validate($rules);
 
-        // If appointment is processed, preserve the original doctor_id
-        if ($appointment->processed_by) {
-            $validatedData['doctor_id'] = $appointment->doctor_id;
+        if (
+            $appointment->doctor_id
+            && $validatedData['doctor_id'] != $appointment->doctor_id
+        ) {
+            $validatedData['doctor_reassigned'] = true;
         }
-        
+
         // Update the appointment
         $appointment->update($validatedData);
 
@@ -555,23 +560,57 @@ class AppointmentController extends Controller
 
     public function assignDoctor(Request $request, Appointment $appointment)
     {
-       
-        // Validate doctor_id is provided
         $request->validate([
-            'doctor_id' => 'required|exists:doctors,id'
+            'doctor_id' => 'required|exists:doctors,id',
         ]);
 
-        // Update appointment with doctor and set processed_by to current user
-        $appointment->update([
-            'doctor_id' => $request->doctor_id,
-            'processed_by' => auth()->id()
-        ]);
+        if ($appointment->is_completed) {
+            $message = localize('global.appointment_completed');
 
-        // Return JSON response for AJAX requests
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+
+            return redirect()->back()->with('error', $message);
+        }
+
+        $newDoctorId = (int) $request->doctor_id;
+        $currentDoctorId = $appointment->doctor_id ? (int) $appointment->doctor_id : null;
+
+        if ($currentDoctorId === $newDoctorId) {
+            if ($request->ajax()) {
+                return response()->json(['success' => true]);
+            }
+
+            return redirect()->back();
+        }
+
+        if ($currentDoctorId !== null) {
+            if ($appointment->doctor_reassigned) {
+                $message = localize('global.doctor_can_only_be_changed_once');
+
+                if ($request->ajax()) {
+                    return response()->json(['success' => false, 'message' => $message], 422);
+                }
+
+                return redirect()->back()->with('error', $message);
+            }
+
+            $appointment->update([
+                'doctor_id' => $newDoctorId,
+                'doctor_reassigned' => true,
+            ]);
+        } else {
+            $appointment->update([
+                'doctor_id' => $newDoctorId,
+                'processed_by' => $appointment->processed_by ?? auth()->id(),
+            ]);
+        }
+
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => localize('global.doctor_assigned_successfully')
+                'message' => localize('global.doctor_assigned_successfully'),
             ]);
         }
 

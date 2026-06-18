@@ -53,6 +53,7 @@ export interface AppointmentFormValues {
     refferal_remarks: string;
     is_completed: boolean;
     processed_by: boolean;
+    doctor_reassigned: boolean;
     can_change_doctor: boolean;
 }
 

@@ -168,7 +168,8 @@ class AppointmentController extends Controller
                 'doctor_name' => $appointment->doctor?->name,
                 'department_id' => $appointment->department_id,
                 'department_name' => $appointment->department?->name,
-                'can_change_doctor' => ! $appointment->is_completed && ! $appointment->processed_by,
+                'can_change_doctor' => $appointment->canChangeDoctor(),
+                'doctor_reassigned' => (bool) $appointment->doctor_reassigned,
                 'date' => $appointment->date ? verta($appointment->date)->format('Y-m-d') : null,
                 'time' => $appointment->time,
                 'is_completed' => (bool) $appointment->is_completed,
@@ -231,20 +232,34 @@ class AppointmentController extends Controller
             ]);
         }
 
-        if ($appointment->processed_by) {
-            throw ValidationException::withMessages([
-                'doctor_id' => [localize('global.cannot_change_doctor_after_acceptance')],
-            ]);
-        }
-
         $validated = $request->validate([
             'doctor_id' => 'required|exists:doctors,id',
         ]);
 
-        $appointment->update([
-            'doctor_id' => $validated['doctor_id'],
-            'processed_by' => $request->user()->id,
-        ]);
+        $newDoctorId = (int) $validated['doctor_id'];
+        $currentDoctorId = $appointment->doctor_id ? (int) $appointment->doctor_id : null;
+
+        if ($currentDoctorId === $newDoctorId) {
+            return redirect()->back();
+        }
+
+        if ($currentDoctorId !== null) {
+            if ($appointment->doctor_reassigned) {
+                throw ValidationException::withMessages([
+                    'doctor_id' => [localize('global.doctor_can_only_be_changed_once')],
+                ]);
+            }
+
+            $appointment->update([
+                'doctor_id' => $newDoctorId,
+                'doctor_reassigned' => true,
+            ]);
+        } else {
+            $appointment->update([
+                'doctor_id' => $newDoctorId,
+                'processed_by' => $appointment->processed_by ?? $request->user()->id,
+            ]);
+        }
 
         return redirect()
             ->back()
@@ -303,9 +318,13 @@ class AppointmentController extends Controller
     {
         $this->authorize('update', $appointment);
 
-        if ($appointment->processed_by && $request->doctor_id != $appointment->doctor_id) {
+        if (
+            $appointment->doctor_id
+            && $request->doctor_id != $appointment->doctor_id
+            && ! $appointment->canChangeDoctor()
+        ) {
             throw ValidationException::withMessages([
-                'doctor_id' => [localize('global.cannot_change_doctor_after_acceptance')],
+                'doctor_id' => [localize('global.doctor_can_only_be_changed_once')],
             ]);
         }
 
@@ -328,8 +347,11 @@ class AppointmentController extends Controller
 
         $validatedData['date'] = verta()->parse($validatedData['date'])->datetime()->format('Y-m-d');
 
-        if ($appointment->processed_by) {
-            $validatedData['doctor_id'] = $appointment->doctor_id;
+        $newDoctorId = $validatedData['doctor_id'] ?? null;
+        $currentDoctorId = $appointment->doctor_id;
+
+        if ($newDoctorId && $currentDoctorId && (int) $newDoctorId !== (int) $currentDoctorId) {
+            $validatedData['doctor_reassigned'] = true;
         }
 
         if ($user->clinic_type && $user->clinic_type !== 'both') {
@@ -478,7 +500,8 @@ class AppointmentController extends Controller
             'refferal_remarks' => $appointment->refferal_remarks ?? '',
             'is_completed' => (bool) $appointment->is_completed,
             'processed_by' => (bool) $appointment->processed_by,
-            'can_change_doctor' => ! $appointment->processed_by,
+            'doctor_reassigned' => (bool) $appointment->doctor_reassigned,
+            'can_change_doctor' => $appointment->canChangeDoctor(),
         ];
     }
 
@@ -970,7 +993,11 @@ class AppointmentController extends Controller
             'permissions' => [
                 'accept' => $user->can('accept', $appointment),
                 'changeDepartment' => $user->can('changeDepartment', $appointment),
-                'view' => $user->can('view', $appointment),
+                'view' => $user->can('view', $appointment)
+                    && (
+                        $appointment->processed_by
+                        || $user->hasRole(['super_admin', 'admin'])
+                    ),
                 'history' => $patient && $user->can('view', $patient),
             ],
         ];

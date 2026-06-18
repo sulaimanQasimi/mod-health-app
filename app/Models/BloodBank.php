@@ -106,6 +106,11 @@ class BloodBank extends Model
         return $this->hasMany(BloodPatientSample::class)->orderByDesc('created_at');
     }
 
+    public function tests()
+    {
+        return $this->hasMany(BloodBankTest::class)->orderBy('id');
+    }
+
     public function crossmatches()
     {
         return $this->hasMany(BloodCrossmatch::class)->orderByDesc('updated_at');

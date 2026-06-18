@@ -407,6 +407,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{bloodBank}/deliver', [BloodBankController::class, 'deliver'])->name('deliver');
         Route::middleware('permission:receive-blood-units|manage-blood-inventory')->group(function () {
             Route::post('/{bloodBank}/blood-check', [BloodBankController::class, 'storeBloodCheck'])->name('blood-check.store');
+            Route::post('/{bloodBank}/tests/{bloodBankTest}/fill', [BloodBankController::class, 'fillBloodBankTest'])->name('tests.fill');
             Route::post('/{bloodBank}/crossmatch/samples', [BloodBankController::class, 'storePatientSample'])->name('crossmatch.samples.store');
             Route::post('/{bloodBank}/crossmatch/units/{bloodUnit}', [BloodBankController::class, 'saveCrossmatch'])->name('crossmatch.save');
             Route::post('/{bloodBank}/crossmatch/{crossmatch}/override', [BloodBankController::class, 'overrideCrossmatch'])->name('crossmatch.override');

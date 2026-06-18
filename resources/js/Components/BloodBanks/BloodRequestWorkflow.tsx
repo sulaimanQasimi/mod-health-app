@@ -3,6 +3,7 @@ import { Alert, Badge, Button, Checkbox, Label, Modal, ModalBody, ModalFooter, M
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 import BloodFormSegmented from './BloodFormSegmented';
 import BloodCrossmatchResultSegmented from './BloodCrossmatchResultSegmented';
+import BloodTestResultSegmented from './BloodTestResultSegmented';
 import BloodUnitDetailTile from './BloodUnitDetailTile';
 import {
     BLOOD_BANK_PRIMARY_BTN_CLASS,
@@ -31,7 +32,18 @@ import {
     BloodRequestWorkflowData,
 } from '../../types/bloodBank';
 
-const STEP_CARD_BASE = 'overflow-hidden rounded-2xl border bg-white shadow-sm transition dark:bg-gray-900';
+const BLOOD_REQUEST_TEST_RESULT_OPTIONS = ['negative', 'positive'] as const;
+
+function testResultLabel(result: string | null, t: (key: string) => string): string {
+    if (result === 'positive') {
+        return t('global.positive');
+    }
+    if (result === 'negative') {
+        return t('global.negative');
+    }
+
+    return '—';
+}
 const STEP_CARD_CURRENT = 'border-rose-500 shadow-md ring-1 ring-rose-200 dark:border-rose-700 dark:ring-rose-900/50';
 const STEP_CARD_DEFAULT = 'border-gray-200 dark:border-gray-700';
 
@@ -384,6 +396,66 @@ export default function BloodRequestWorkflow({
                     <BloodUnitDetailTile icon="bx-calendar" label={t('global.created_at')}>
                         <span dir="ltr">{bloodRequest.created_at ?? '—'}</span>
                     </BloodUnitDetailTile>
+                </div>
+
+                <div className="mt-5">
+                    <h4 className="mb-3 text-sm font-semibold text-gray-800 dark:text-gray-100">
+                        {t('global.blood_bank_requested_tests')}
+                    </h4>
+                    {bloodRequest.tests.length === 0 ? (
+                        <p className="rounded-xl border border-dashed border-gray-200 px-4 py-3 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                            {t('global.blood_bank_tests_empty')}
+                        </p>
+                    ) : (
+                        <div className="space-y-4">
+                            {bloodRequest.tests.some((test) => test.result) && (
+                                <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+                                    <Table embedded>
+                                        <TableHead>
+                                            <TableRow variant="header">
+                                                <TableHeader>{t('global.test_name')}</TableHeader>
+                                                <TableHeader>{t('global.result')}</TableHeader>
+                                                <TableHeader>{t('global.notes')}</TableHeader>
+                                                <TableHeader>{t('global.filled_test_by')}</TableHeader>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {bloodRequest.tests
+                                                .filter((test) => test.result)
+                                                .map((test) => (
+                                                    <TableRow key={test.id}>
+                                                        <TableCell>{test.test_name}</TableCell>
+                                                        <TableCell>{testResultLabel(test.result, t)}</TableCell>
+                                                        <TableCell>{test.notes ?? '—'}</TableCell>
+                                                        <TableCell>
+                                                            <div>{test.filled_test_by_name ?? '—'}</div>
+                                                            {test.filled_at && (
+                                                                <div className="text-xs text-gray-400" dir="ltr">
+                                                                    {test.filled_at}
+                                                                </div>
+                                                            )}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            )}
+
+                            {permissions.manageCrossmatch &&
+                                bloodRequest.tests
+                                    .filter((test) => !test.result)
+                                    .map((test) => (
+                                        <BloodBankTestFillForm
+                                            key={test.id}
+                                            test={test}
+                                            processing={processing}
+                                            onSubmit={(data) => post(test.urls.fill, data)}
+                                            t={t}
+                                        />
+                                    ))}
+                        </div>
+                    )}
                 </div>
             </WorkflowStepCard>
 
@@ -1093,5 +1165,66 @@ function CrossmatchUnitCard({
                 </form>
             )}
         </div>
+    );
+}
+
+function BloodBankTestFillForm({
+    test,
+    processing,
+    onSubmit,
+    t,
+}: {
+    test: BloodRequestDetail['tests'][number];
+    processing: boolean;
+    onSubmit: (data: { result: string; notes: string }) => void;
+    t: (key: string) => string;
+}) {
+    const [result, setResult] = useState('');
+    const [notes, setNotes] = useState('');
+
+    const handleSubmit = (event: FormEvent) => {
+        event.preventDefault();
+        if (!result) {
+            return;
+        }
+
+        onSubmit({ result, notes });
+    };
+
+    return (
+        <form
+            onSubmit={handleSubmit}
+            className="space-y-4 rounded-xl border border-gray-200 bg-gray-50/70 p-4 dark:border-gray-700 dark:bg-gray-800/40"
+        >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{test.test_name}</p>
+                <Badge color="warning" className="font-normal">
+                    {t('global.pending')}
+                </Badge>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+                <WorkflowFormField label={t('global.result')} icon="bx-test-tube">
+                    <BloodTestResultSegmented
+                        value={result}
+                        onChange={setResult}
+                        options={BLOOD_REQUEST_TEST_RESULT_OPTIONS}
+                    />
+                </WorkflowFormField>
+                <WorkflowFormField label={t('global.notes')} icon="bx-note">
+                    <TextInput
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        className="rounded-xl"
+                        placeholder={t('global.optional')}
+                    />
+                </WorkflowFormField>
+            </div>
+            <div className="flex justify-end">
+                <Button type="submit" className={BLOOD_BANK_PRIMARY_BTN_CLASS} disabled={processing || !result}>
+                    {processing ? <Spinner size="sm" /> : null}
+                    {t('global.fill_test')}
+                </Button>
+            </div>
+        </form>
     );
 }

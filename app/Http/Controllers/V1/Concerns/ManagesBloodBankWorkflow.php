@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Concerns;
 use App\Models\BloodBank;
 use App\Models\BloodCheckRecord;
 use App\Models\BloodCrossmatch;
+use App\Models\BloodBankTest;
 use App\Models\BloodPatientSample;
 use App\Models\BloodUnit;
 use App\Services\BloodCrossmatchService;
@@ -136,6 +137,38 @@ trait ManagesBloodBankWorkflow
         return redirect()
             ->route('react.blood-banks.show', $bloodBank)
             ->with('success', localize('global.blood_check_saved'));
+    }
+
+    public function fillBloodBankTest(Request $request, BloodBank $bloodBank, BloodBankTest $bloodBankTest): RedirectResponse
+    {
+        $this->authorizeBloodBankMenu();
+        $this->ensureBloodRequestBranch($bloodBank);
+        $this->ensureCanManageCrossmatch($request);
+
+        if ((int) $bloodBankTest->blood_bank_id !== (int) $bloodBank->id) {
+            abort(404);
+        }
+
+        if ($bloodBank->status !== 'approved') {
+            return redirect()
+                ->route('react.blood-banks.show', $bloodBank)
+                ->with('error', localize('global.blood_bank_tests_only_when_approved'));
+        }
+
+        $validated = $request->validate([
+            'result' => ['required', Rule::in(BloodBankTest::RESULT_VALUES)],
+            'notes' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $bloodBankTest->update([
+            'result' => $validated['result'],
+            'notes' => $validated['notes'] ?? null,
+            'filled_test_by' => $request->user()->id,
+        ]);
+
+        return redirect()
+            ->route('react.blood-banks.show', $bloodBank)
+            ->with('success', localize('global.blood_bank_test_saved'));
     }
 
     public function saveCrossmatch(Request $request, BloodBank $bloodBank, BloodUnit $bloodUnit): RedirectResponse

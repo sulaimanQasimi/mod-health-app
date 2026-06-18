@@ -21,6 +21,12 @@ interface BloodBankSectionProps {
     isDischarged?: boolean;
 }
 
+interface BloodBankTestItem {
+    id: number;
+    test_name: string;
+    result: string | null;
+}
+
 interface BloodBankItem {
     id: number;
     group: string | null;
@@ -30,6 +36,7 @@ interface BloodBankItem {
     hemoglobin: number | null;
     hematocrit: number | null;
     factor: string | null;
+    tests: BloodBankTestItem[];
     status: string;
     created_at: string | null;
     urls?: { show?: string };
@@ -47,6 +54,7 @@ const EMPTY_FORM = {
     hemoglobin: '',
     hematocrit: '',
     factor: '',
+    tests: [] as string[],
 };
 
 function formatOptionalNumber(value: number | null | undefined): string {
@@ -55,6 +63,14 @@ function formatOptionalNumber(value: number | null | undefined): string {
     }
 
     return String(value);
+}
+
+function formatTestsSummary(tests: BloodBankTestItem[]): string {
+    if (tests.length === 0) {
+        return '—';
+    }
+
+    return tests.map((test) => test.test_name).join(', ');
 }
 
 export default function BloodBankSection({
@@ -70,10 +86,33 @@ export default function BloodBankSection({
 
     const resetForm = () => setForm(EMPTY_FORM);
 
+    const addTestRow = () => {
+        setForm((prev) => ({ ...prev, tests: [...prev.tests, ''] }));
+    };
+
+    const updateTestRow = (index: number, value: string) => {
+        setForm((prev) => ({
+            ...prev,
+            tests: prev.tests.map((row, rowIndex) => (rowIndex === index ? value : row)),
+        }));
+    };
+
+    const removeTestRow = (index: number) => {
+        setForm((prev) => ({
+            ...prev,
+            tests: prev.tests.filter((_, rowIndex) => rowIndex !== index),
+        }));
+    };
+
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
         setSubmitting(true);
         try {
+            const tests = form.tests
+                .map((testName) => testName.trim())
+                .filter(Boolean)
+                .map((test_name) => ({ test_name }));
+
             await post({
                 group: form.group || null,
                 rh: form.rh || null,
@@ -82,6 +121,7 @@ export default function BloodBankSection({
                 hemoglobin: form.hemoglobin ? Number(form.hemoglobin) : null,
                 hematocrit: form.hematocrit ? Number(form.hematocrit) : null,
                 factor: form.factor || null,
+                tests,
             });
             setOpen(false);
             resetForm();
@@ -134,6 +174,7 @@ export default function BloodBankSection({
                                     <TableHeader>{t('global.hemoglobin')}</TableHeader>
                                     <TableHeader>{t('global.hematocrit')}</TableHeader>
                                     <TableHeader>{t('global.clotting_factor')}</TableHeader>
+                                    <TableHeader>{t('global.tests')}</TableHeader>
                                     <TableHeader>{t('global.status')}</TableHeader>
                                     <TableHeader>{t('global.created_at')}</TableHeader>
                                     <TableHeader align="center">{t('global.actions')}</TableHeader>
@@ -150,6 +191,7 @@ export default function BloodBankSection({
                                         <TableCell>{formatOptionalNumber(item.hemoglobin)}</TableCell>
                                         <TableCell>{formatOptionalNumber(item.hematocrit)}</TableCell>
                                         <TableCell>{item.factor ?? '—'}</TableCell>
+                                        <TableCell>{formatTestsSummary(item.tests ?? [])}</TableCell>
                                         <TableCell>
                                             <TableBadge color={bloodStatusBadgeColor(item.status)}>
                                                 {statusLabel(item.status)}
@@ -300,6 +342,46 @@ export default function BloodBankSection({
                                 onChange={(e) => setForm((prev) => ({ ...prev, factor: e.target.value }))}
                                 className="rounded-xl"
                             />
+                        </div>
+                        <div>
+                            <div className="mb-2 flex items-center justify-between gap-2">
+                                <Label className="block">
+                                    {t('global.tests')}
+                                    <span className="ms-1 text-xs font-normal text-gray-400">({t('global.optional')})</span>
+                                </Label>
+                                <Button type="button" size="xs" color="light" onClick={addTestRow}>
+                                    <i className="bx bx-plus me-1" />
+                                    {t('global.add_test')}
+                                </Button>
+                            </div>
+                            {form.tests.length === 0 ? (
+                                <p className="rounded-xl border border-dashed border-gray-200 px-3 py-4 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                                    {t('global.blood_bank_tests_empty')}
+                                </p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {form.tests.map((testName, index) => (
+                                        <div key={index} className="flex items-center gap-2">
+                                            <TextInput
+                                                type="text"
+                                                value={testName}
+                                                onChange={(e) => updateTestRow(index, e.target.value)}
+                                                className="rounded-xl"
+                                                placeholder={t('global.test_name')}
+                                            />
+                                            <Button
+                                                type="button"
+                                                color="light"
+                                                size="sm"
+                                                onClick={() => removeTestRow(index)}
+                                                aria-label={t('global.delete')}
+                                            >
+                                                <i className="bx bx-trash text-red-500" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </ModalBody>
                     <ModalFooter>

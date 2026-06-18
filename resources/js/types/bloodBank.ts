@@ -114,6 +114,15 @@ export interface BloodRequestDetail {
         collected_by_name: string | null;
         notes: string | null;
     }[];
+    tests: {
+        id: number;
+        test_name: string;
+        result: string | null;
+        notes: string | null;
+        filled_test_by_name: string | null;
+        filled_at: string | null;
+        urls: { fill: string };
+    }[];
     crossmatches: {
         id: number;
         blood_unit_id: number;

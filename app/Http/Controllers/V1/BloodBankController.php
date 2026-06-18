@@ -251,6 +251,7 @@ class BloodBankController extends Controller
             'bloodUnits',
             'appointment:id',
             'patientSamples.collectedBy:id,name',
+            'tests.filledTestBy:id,name',
             'crossmatches.bloodUnit:id,bag_number,expires_at,status',
             'crossmatches.patientSample:id,sample_id',
             'crossmatches.testedBy:id,name',
@@ -711,6 +712,17 @@ class BloodBankController extends Controller
                 'collected_by_name' => $sample->collectedBy?->name,
                 'notes' => $sample->notes,
             ])->values()->all(),
+            'tests' => $bloodBank->tests->map(fn ($test) => [
+                'id' => $test->id,
+                'test_name' => $test->test_name,
+                'result' => $test->result,
+                'notes' => $test->notes,
+                'filled_test_by_name' => $test->filledTestBy?->name,
+                'filled_at' => $test->updated_at && $test->result ? verta($test->updated_at)->format('Y-m-d H:i') : null,
+                'urls' => [
+                    'fill' => route('react.blood-banks.tests.fill', [$bloodBank, $test]),
+                ],
+            ])->values()->all(),
             'crossmatches' => $bloodBank->crossmatches->map(fn ($cx) => [
                 'id' => $cx->id,
                 'blood_unit_id' => $cx->blood_unit_id,
@@ -820,12 +832,14 @@ class BloodBankController extends Controller
             return ['current_step' => null, 'steps' => []];
         }
 
-        $step1Done = true;
+        $step1Done = $bloodBank->tests->every(fn ($test) => $test->result !== null);
         $step2Done = $bloodBank->patientSamples->isNotEmpty();
         $step3Done = $remainingVolumeMl < 1 || $reservedCompatibleVolumeMl >= $remainingVolumeMl;
         $currentStep = null;
 
-        if (! $step2Done) {
+        if (! $step1Done) {
+            $currentStep = 1;
+        } elseif (! $step2Done) {
             $currentStep = 2;
         } elseif (! $step3Done) {
             $currentStep = 3;

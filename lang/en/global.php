@@ -3567,6 +3567,8 @@ return [
     'blood_sugar' => 'Blood Sugar',
     'cholesterol' => 'Cholesterol',
     'hemoglobin' => 'Hemoglobin',
+    'hematocrit' => 'Hematocrit',
+    'clotting_factor' => 'Clotting Factor',
     'white_blood_cells' => 'White Blood Cells',
     'red_blood_cells' => 'Red Blood Cells',
     'platelets' => 'Platelets',

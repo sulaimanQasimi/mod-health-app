@@ -3363,6 +3363,8 @@ return [
 "blood_sugar" => "د وینې شکر",
 "cholesterol" => "کلسترول",
 "hemoglobin" => "هموګلوبین",
+"hematocrit" => "هیموټوکریټ",
+"clotting_factor" => "د انجماد فاکتور",
 "white_blood_cells" => "سپینې وینې حجرې",
 "red_blood_cells" => "سورې وینې حجرې",
 "platelets" => "پلاټلیټونه",

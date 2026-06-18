@@ -26,7 +26,10 @@ interface BloodBankItem {
     group: string | null;
     rh: string | null;
     type: string;
-    quantity: number;
+    quantity: number | null;
+    hemoglobin: number | null;
+    hematocrit: number | null;
+    factor: string | null;
     status: string;
     created_at: string | null;
     urls?: { show?: string };
@@ -39,9 +42,20 @@ const BLOOD_COMPONENT_TYPES = ['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'W
 const EMPTY_FORM = {
     group: '',
     rh: '',
-    type: 'Fresh',
-    quantity: '1',
+    type: '',
+    quantity: '',
+    hemoglobin: '',
+    hematocrit: '',
+    factor: '',
 };
+
+function formatOptionalNumber(value: number | null | undefined): string {
+    if (value == null) {
+        return '—';
+    }
+
+    return String(value);
+}
 
 export default function BloodBankSection({
     appointmentId,
@@ -63,8 +77,11 @@ export default function BloodBankSection({
             await post({
                 group: form.group || null,
                 rh: form.rh || null,
-                type: form.type,
-                quantity: Number(form.quantity),
+                type: form.type || null,
+                quantity: form.quantity ? Number(form.quantity) : null,
+                hemoglobin: form.hemoglobin ? Number(form.hemoglobin) : null,
+                hematocrit: form.hematocrit ? Number(form.hematocrit) : null,
+                factor: form.factor || null,
             });
             setOpen(false);
             resetForm();
@@ -114,6 +131,9 @@ export default function BloodBankSection({
                                     <TableHeader>{t('global.rh')}</TableHeader>
                                     <TableHeader>{t('global.blood_type')}</TableHeader>
                                     <TableHeader>{t('global.quantity')}</TableHeader>
+                                    <TableHeader>{t('global.hemoglobin')}</TableHeader>
+                                    <TableHeader>{t('global.hematocrit')}</TableHeader>
+                                    <TableHeader>{t('global.clotting_factor')}</TableHeader>
                                     <TableHeader>{t('global.status')}</TableHeader>
                                     <TableHeader>{t('global.created_at')}</TableHeader>
                                     <TableHeader align="center">{t('global.actions')}</TableHeader>
@@ -125,8 +145,11 @@ export default function BloodBankSection({
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{item.group ?? '—'}</TableCell>
                                         <TableCell>{item.rh ?? '—'}</TableCell>
-                                        <TableCell>{item.type}</TableCell>
-                                        <TableCell>{item.quantity}</TableCell>
+                                        <TableCell>{item.type ?? '—'}</TableCell>
+                                        <TableCell>{item.quantity ?? '—'}</TableCell>
+                                        <TableCell>{formatOptionalNumber(item.hemoglobin)}</TableCell>
+                                        <TableCell>{formatOptionalNumber(item.hematocrit)}</TableCell>
+                                        <TableCell>{item.factor ?? '—'}</TableCell>
                                         <TableCell>
                                             <TableBadge color={bloodStatusBadgeColor(item.status)}>
                                                 {statusLabel(item.status)}
@@ -206,7 +229,10 @@ export default function BloodBankSection({
                             />
                         </div>
                         <div>
-                            <Label className="mb-2 block">{t('global.blood_type')}</Label>
+                            <Label className="mb-2 block">
+                                {t('global.blood_type')}
+                                <span className="ms-1 text-xs font-normal text-gray-400">({t('global.optional')})</span>
+                            </Label>
                             <SearchableSelect
                                 value={form.type}
                                 onChange={(value) => setForm((prev) => ({ ...prev, type: value }))}
@@ -215,17 +241,63 @@ export default function BloodBankSection({
                                     label: type,
                                 }))}
                                 placeholder={t('global.select')}
-                                required
                             />
                         </div>
                         <div>
-                            <Label className="mb-2 block">{t('global.quantity')}</Label>
+                            <Label className="mb-2 block">
+                                {t('global.quantity')}
+                                <span className="ms-1 text-xs font-normal text-gray-400">({t('global.optional')})</span>
+                            </Label>
                             <TextInput
                                 type="number"
                                 min={1}
-                                required
                                 value={form.quantity}
                                 onChange={(e) => setForm((prev) => ({ ...prev, quantity: e.target.value }))}
+                                className="rounded-xl"
+                            />
+                        </div>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <Label className="mb-2 block">
+                                    {t('global.hemoglobin')}
+                                    <span className="ms-1 text-xs font-normal text-gray-400">({t('global.optional')})</span>
+                                </Label>
+                                <TextInput
+                                    type="number"
+                                    min={0}
+                                    step="0.1"
+                                    value={form.hemoglobin}
+                                    onChange={(e) => setForm((prev) => ({ ...prev, hemoglobin: e.target.value }))}
+                                    className="rounded-xl"
+                                    placeholder="g/dL"
+                                />
+                            </div>
+                            <div>
+                                <Label className="mb-2 block">
+                                    {t('global.hematocrit')}
+                                    <span className="ms-1 text-xs font-normal text-gray-400">({t('global.optional')})</span>
+                                </Label>
+                                <TextInput
+                                    type="number"
+                                    min={0}
+                                    max={100}
+                                    step="0.1"
+                                    value={form.hematocrit}
+                                    onChange={(e) => setForm((prev) => ({ ...prev, hematocrit: e.target.value }))}
+                                    className="rounded-xl"
+                                    placeholder="%"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <Label className="mb-2 block">
+                                {t('global.clotting_factor')}
+                                <span className="ms-1 text-xs font-normal text-gray-400">({t('global.optional')})</span>
+                            </Label>
+                            <TextInput
+                                type="text"
+                                value={form.factor}
+                                onChange={(e) => setForm((prev) => ({ ...prev, factor: e.target.value }))}
                                 className="rounded-xl"
                             />
                         </div>

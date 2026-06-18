@@ -665,6 +665,9 @@ class BloodBankController extends Controller
             'rh' => $bloodBank->rh,
             'type' => $bloodBank->type,
             'quantity' => $bloodBank->quantity,
+            'hemoglobin' => $bloodBank->hemoglobin,
+            'hematocrit' => $bloodBank->hematocrit,
+            'factor' => $bloodBank->factor,
             'reject_reason' => $bloodBank->reject_reason,
             'created_at' => $bloodBank->created_at ? verta($bloodBank->created_at)->format('Y-m-d H:i') : null,
             'patient' => [

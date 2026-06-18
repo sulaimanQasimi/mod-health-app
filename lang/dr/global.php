@@ -3621,6 +3621,8 @@ return [
     "blood_sugar" => "قند خون",
     "cholesterol" => "کلسترول",
     "hemoglobin" => "هموگلوبین",
+    "hematocrit" => "هموتوکرایت",
+    "clotting_factor" => "فاکتور انعقاد",
     "white_blood_cells" => "گلبول‌های سفید",
     "red_blood_cells" => "گلبول‌های قرمز",
     "platelets" => "پلاکت‌ها",

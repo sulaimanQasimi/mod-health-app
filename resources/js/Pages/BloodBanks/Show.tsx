@@ -292,6 +292,9 @@ export default function BloodBanksShow({
                                 <BloodUnitDetailTile icon="bx-plus-medical" label={t('global.rh')} value={bloodRhLabel(bloodRequest.rh)} />
                                 <BloodUnitDetailTile icon="bx-cylinder" label={t('global.blood_type')} value={bloodRequest.type ?? '—'} />
                                 <BloodUnitDetailTile icon="bx-hash" label={t('global.quantity')} value={formatOrderQuantity(bloodRequest)} />
+                                <BloodUnitDetailTile icon="bx-test-tube" label={t('global.hemoglobin')} value={bloodRequest.hemoglobin != null ? String(bloodRequest.hemoglobin) : '—'} />
+                                <BloodUnitDetailTile icon="bx-test-tube" label={t('global.hematocrit')} value={bloodRequest.hematocrit != null ? String(bloodRequest.hematocrit) : '—'} />
+                                <BloodUnitDetailTile icon="bx-injection" label={t('global.clotting_factor')} value={bloodRequest.factor ?? '—'} />
                                 <BloodUnitDetailTile icon="bx-calendar" label={t('global.date')}>
                                     <span dir="ltr">{bloodRequest.created_at ?? '—'}</span>
                                 </BloodUnitDetailTile>

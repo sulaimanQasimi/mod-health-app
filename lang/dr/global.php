@@ -4,6 +4,8 @@ return [
     'loading_dashboard' => 'در حال بارگذاری...',
     'appointment_already_accepted' => 'نوبت قبلاً پذیرفته شده است',
     'cannot_change_doctor_after_acceptance' => 'نمی‌توانید پزشک را پس از پذیرش تغییر دهید',
+    'doctor_can_only_be_changed_once' => 'پزشک فقط یک بار قابل تغییر است',
+    'doctor_change_once_hint' => 'می‌توانید پزشک را فقط یک بار تغییر دهید',
     'export_report' => 'گزارش خروجی',
     'select_export_format' => 'انتخاب فرمت خروجی',
     'patient_records' => 'مریضان',

@@ -11,7 +11,7 @@ class Appointment extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['patient_id','doctor_id','department_id','branch_id','date','time','is_completed','status_remark','refferal_remarks','clinic_type','processed_by'];
+    protected $fillable = ['patient_id','doctor_id','department_id','branch_id','date','time','is_completed','status_remark','refferal_remarks','clinic_type','processed_by','doctor_reassigned'];
 
     public static function boot()
     {
@@ -176,5 +176,10 @@ class Appointment extends Model
     public function bloodBanks()
     {
         return $this->hasMany(BloodBank::class, 'appointment_id');
+    }
+
+    public function canChangeDoctor(): bool
+    {
+        return ! (bool) $this->is_completed && ! (bool) $this->doctor_reassigned;
     }
 }

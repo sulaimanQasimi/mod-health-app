@@ -3,6 +3,8 @@ return [
    'loading_dashboard' => 'په بارولو بوخت دی...',
 'appointment_already_accepted' => 'وخت مخکې له مخکې منل شوی دی',
 'cannot_change_doctor_after_acceptance' => 'له منلو وروسته ډاکټر نشئ بدلولی',
+'doctor_can_only_be_changed_once' => 'ډاکټر یوازې یو ځل بدلیدلی شي',
+'doctor_change_once_hint' => 'تاسو کولی شئ ډاکټر یوازې یو ځل بدل کړئ',
 'export_report' => 'راپور صادرول',
 'select_export_format' => 'د صادرولو بڼه وټاکئ',
 'patient_records' => 'ناروغان',

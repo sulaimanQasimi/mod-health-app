@@ -3992,6 +3992,8 @@ return [
     'loading_dashboard' => 'Loading dashboard...',
     'appointment_already_accepted' => 'Appointment has already been accepted',
     'cannot_change_doctor_after_acceptance' => 'You cannot change the doctor after acceptance',
+    'doctor_can_only_be_changed_once' => 'Doctor can only be changed once',
+    'doctor_change_once_hint' => 'You can change the doctor only one time',
     'export_report' => 'Export report',
     'select_export_format' => 'Select export format',
     'patient_records' => 'Patients',

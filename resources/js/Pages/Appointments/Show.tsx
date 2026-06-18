@@ -45,6 +45,7 @@ interface ShowAppointmentHeader {
     is_completed: boolean;
     is_processed: boolean;
     processed_by_id: number | null;
+    doctor_reassigned: boolean;
     can_change_doctor: boolean;
 }
 
@@ -132,6 +133,7 @@ export default function ShowAppointment({
                                     canChangeDoctor={appointment.can_change_doctor}
                                     isCompleted={appointment.is_completed}
                                     isProcessed={appointment.is_processed}
+                                    doctorReassigned={appointment.doctor_reassigned}
                                     doctorsByDepartmentUrl={formData.doctorsByDepartment}
                                     assignUrl={urls.assignDoctor}
                                 />

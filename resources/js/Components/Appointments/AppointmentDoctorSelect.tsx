@@ -10,6 +10,7 @@ interface AppointmentDoctorSelectProps {
     canChangeDoctor: boolean;
     isCompleted: boolean;
     isProcessed: boolean;
+    doctorReassigned: boolean;
     doctorsByDepartmentUrl: string;
     assignUrl: string;
 }
@@ -20,6 +21,7 @@ export default function AppointmentDoctorSelect({
     canChangeDoctor,
     isCompleted,
     isProcessed,
+    doctorReassigned,
     doctorsByDepartmentUrl,
     assignUrl,
 }: AppointmentDoctorSelectProps) {
@@ -54,7 +56,7 @@ export default function AppointmentDoctorSelect({
         return null;
     }
 
-    const disabled = !canChangeDoctor || isProcessed || loadingDoctors || assigning;
+    const disabled = !canChangeDoctor || loadingDoctors || assigning;
 
     const handleChange = (value: string) => {
         if (!value || disabled) {
@@ -102,9 +104,14 @@ export default function AppointmentDoctorSelect({
                     </div>
                 )}
             </div>
-            {isProcessed && (
+            {doctorReassigned && (
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    {t('global.appointment_already_accepted')}
+                    {t('global.doctor_can_only_be_changed_once')}
+                </p>
+            )}
+            {isProcessed && !doctorReassigned && canChangeDoctor && (
+                <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                    {t('global.doctor_change_once_hint')}
                 </p>
             )}
         </div>

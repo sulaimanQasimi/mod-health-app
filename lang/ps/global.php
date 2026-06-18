@@ -3204,6 +3204,8 @@ return [
 "medicine_usage_type_name." => "د درملو د استعمال نوم",
 "introduced_by" => "د ډاکټر لخوا معرفي شوی",
 "refer_to_another_department" => "بلې څانګې ته معرفي کول",
+"refere_patient_to_department" => "ناروغ بلې څانګې ته معرفي کول",
+"patient_referred_successfully" => "ناروغ په بریالیتوب سره بلې څانګې ته معرفي شو",
 "search_by_patient_name" => "د مریض د نوم له مخې لټون",
 "alternatives_for" => "د … لپاره بدیلونه",
 "enter_category_name" => "د کتګورۍ نوم ولیکئ",

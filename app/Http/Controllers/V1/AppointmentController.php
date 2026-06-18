@@ -970,7 +970,11 @@ class AppointmentController extends Controller
             'permissions' => [
                 'accept' => $user->can('accept', $appointment),
                 'changeDepartment' => $user->can('changeDepartment', $appointment),
-                'view' => $user->can('view', $appointment),
+                'view' => $user->can('view', $appointment)
+                    && (
+                        $appointment->processed_by
+                        || $user->hasRole(['super_admin', 'admin'])
+                    ),
                 'history' => $patient && $user->can('view', $patient),
             ],
         ];

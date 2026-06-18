@@ -3462,6 +3462,8 @@ return [
     ],
     'introduced_by' => 'Introduced By',
     'refer_to_another_department' => 'Refer To Another Department',
+    'refere_patient_to_department' => 'Refer Patient To Department',
+    'patient_referred_successfully' => 'Patient referred to department successfully',
     'search_by_patient_name' => 'Search By Patient Name',
     'enter_category_name' => 'Enter Category Name',
     'no_file' => 'No File',

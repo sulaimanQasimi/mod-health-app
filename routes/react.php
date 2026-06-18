@@ -172,7 +172,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('hospitalization-checkups', [HospitalizationCheckupController::class, 'index'])->name('hospitalization-checkups.index');
             Route::get('consultations', [AppointmentConsultationController::class, 'index'])->name('consultations.index');
             Route::delete('consultations/{consultation}', [AppointmentConsultationController::class, 'destroy'])->name('consultations.destroy');
+            Route::get('refer-department/meta', [ReferDepartmentController::class, 'meta'])->name('refer-department.meta');
             Route::get('refer-department', [ReferDepartmentController::class, 'index'])->name('refer-department.index');
+            Route::post('refer-department', [ReferDepartmentController::class, 'store'])->name('refer-department.store');
             Route::get('under-review/meta', [AppointmentUnderReviewController::class, 'meta'])->name('under-review.meta');
             Route::get('under-review', [AppointmentUnderReviewController::class, 'index'])->name('under-review.index');
             Route::post('under-review', [AppointmentUnderReviewController::class, 'store'])->name('under-review.store');

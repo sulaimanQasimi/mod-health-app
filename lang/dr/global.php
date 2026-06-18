@@ -3454,6 +3454,8 @@ return [
     "medicine_usage_type_name." => "نام نوع استفاده از ادویه",
     "introduced_by" => "معرف شده توسط دکتر",
     "refer_to_another_department" => "معرفی به بخش دیگر",
+    "refere_patient_to_department" => "معرفی مریض به بخش دیگر",
+    "patient_referred_successfully" => "مریض موفقانه به بخش دیگر معرفی شد",
     "search_by_patient_name" => "جستجو بر اساس نام مریض",
     "alternatives_for" => "جاگزینی برای",
     "enter_category_name" => "نام کتگوری را وارد کنید",

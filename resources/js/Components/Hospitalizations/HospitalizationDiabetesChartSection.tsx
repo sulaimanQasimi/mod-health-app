@@ -244,6 +244,7 @@ export default function HospitalizationDiabetesChartSection({
     const [editingChartId, setEditingChartId] = useState<number | null>(null);
     const [selectedChart, setSelectedChart] = useState<DiabetesChartListItem | null>(null);
     const [form, setForm] = useState<ChartFormState>(EMPTY_FORM);
+    const [formError, setFormError] = useState<string | null>(null);
 
     const loadData = useCallback(async () => {
         setLoading(true);
@@ -288,8 +289,7 @@ export default function HospitalizationDiabetesChartSection({
 
     useEffect(() => {
         loadData();
-        loadMeta();
-    }, [loadData, loadMeta]);
+    }, [loadData]);
 
     const postJson = async (url: string, method: string, body?: Record<string, unknown>) => {
         setSubmitting(true);
@@ -306,8 +306,14 @@ export default function HospitalizationDiabetesChartSection({
             });
             const payload = await response.json();
             if (!response.ok || !payload.success) {
+                setFormError(
+                    typeof payload.message === 'string'
+                        ? payload.message
+                        : t('global.request_failed'),
+                );
                 return false;
             }
+            setFormError(null);
             await loadData();
             return true;
         } finally {
@@ -316,7 +322,11 @@ export default function HospitalizationDiabetesChartSection({
     };
 
     const openCreate = async () => {
+        setFormError(null);
         const meta = await loadMeta();
+        if (!meta) {
+            return;
+        }
         setEditingChartId(null);
         setForm({
             ...EMPTY_FORM,
@@ -345,6 +355,7 @@ export default function HospitalizationDiabetesChartSection({
         setFormOpen(false);
         setEditingChartId(null);
         setForm(EMPTY_FORM);
+        setFormError(null);
     };
 
     const resolveFormDate = () => {
@@ -538,7 +549,12 @@ export default function HospitalizationDiabetesChartSection({
                     <ModalHeader>
                         {editingChartId ? t('global.edit_diabetes_chart') : t('global.add_diabetes_chart')}
                     </ModalHeader>
-                    <ModalBody>
+                    <ModalBody className="space-y-4">
+                        {formError && (
+                            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
+                                {formError}
+                            </div>
+                        )}
                         <ChartFormFields
                             form={form}
                             setForm={setForm}

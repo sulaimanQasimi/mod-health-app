@@ -72,16 +72,9 @@ class DiabetesChartController extends Controller
         $this->ensureAccessible($hospitalization);
 
         $user = request()->user();
-        abort_unless(
-            $this->canView($user) && (
-                $user->can('create', DiabetesChart::class)
-                || $user->hasPermissionTo('edit-diabetes-charts')
-                || $user->hasRole(['super_admin', 'admin', 'hr', 'nurse'])
-            ),
-            403,
-        );
+        abort_unless($this->canCreate($user, $hospitalization), 403);
 
-        $nurse = request()->user()->nurse;
+        $nurse = $user->nurse;
 
         return response()->json([
             'success' => true,
@@ -115,10 +108,9 @@ class DiabetesChartController extends Controller
     {
         $this->ensureAccessible($hospitalization);
         abort_if((bool) $hospitalization->is_discharged, 403);
-        $this->authorize('create', DiabetesChart::class);
+        abort_unless($this->canCreate($request->user(), $hospitalization), 403);
 
         $nurse = $request->user()->nurse;
-        abort_unless($nurse, 403);
 
         $validated = $request->validate($this->validationRules());
         $validated['date'] = Verta::parse($validated['date'])->toCarbon();
@@ -179,6 +171,13 @@ class DiabetesChartController extends Controller
         return $user?->can('viewAny', DiabetesChart::class) ?? false;
     }
 
+    private function canCreate($user, Hospitalization $hospitalization): bool
+    {
+        return ! (bool) $hospitalization->is_discharged
+            && $user?->can('create', DiabetesChart::class)
+            && $user->nurse !== null;
+    }
+
     /**
      * @return array{view: bool, create: bool, edit: bool, delete: bool}
      */
@@ -186,7 +185,7 @@ class DiabetesChartController extends Controller
     {
         return [
             'view' => $this->canView($user),
-            'create' => ! (bool) $hospitalization->is_discharged && $user->can('create', DiabetesChart::class),
+            'create' => $this->canCreate($user, $hospitalization),
             'edit' => ! (bool) $hospitalization->is_discharged && (
                 $user->can('create', DiabetesChart::class)
                 || $user->can('edit-diabetes-charts')

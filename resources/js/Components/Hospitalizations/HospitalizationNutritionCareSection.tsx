@@ -342,8 +342,7 @@ export default function HospitalizationNutritionCareSection({
 
     useEffect(() => {
         loadData();
-        loadMeta();
-    }, [loadData, loadMeta]);
+    }, [loadData]);
 
     const postJson = async (url: string, method: string, body?: Record<string, unknown>) => {
         setSubmitting(true);

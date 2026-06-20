@@ -201,8 +201,7 @@ export default function HospitalizationNurseNoteSection({
 
     useEffect(() => {
         loadData();
-        loadMeta();
-    }, [loadData, loadMeta]);
+    }, [loadData]);
 
     const postJson = async (url: string, method: string, body?: Record<string, unknown>) => {
         setSubmitting(true);

@@ -321,8 +321,15 @@ export default function HospitalizationVisitSection({
 
     useEffect(() => {
         loadData();
-        loadMeta();
-    }, [loadData, loadMeta]);
+    }, [loadData]);
+
+    const ensureMetaLoaded = async () => {
+        if (foodTypes.length > 0) {
+            return;
+        }
+
+        await loadMeta();
+    };
 
     const postJson = async (url: string, method: string, body?: Record<string, unknown>) => {
         setSubmitting(true);
@@ -348,13 +355,15 @@ export default function HospitalizationVisitSection({
         }
     };
 
-    const openCreate = () => {
+    const openCreate = async () => {
+        await ensureMetaLoaded();
         setEditingVisitId(null);
         setForm(EMPTY_FORM);
         setFormOpen(true);
     };
 
-    const openEdit = (visit: VisitListItem) => {
+    const openEdit = async (visit: VisitListItem) => {
+        await ensureMetaLoaded();
         setEditingVisitId(visit.id);
         setForm({
             description: visit.description ?? '',

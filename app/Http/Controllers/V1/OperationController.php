@@ -15,7 +15,6 @@ use App\Models\Hospitalization;
 use App\Models\Nurse;
 use App\Models\OperationType;
 use App\Models\Room;
-use HanifHefaz\Dcter\Dcter;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -148,7 +147,7 @@ class OperationController extends Controller
         ]);
 
         if (! empty($data['date'])) {
-            $data['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($data['date']));
+            $data['date'] = Verta::parse($data['date'])->datetime()->format('Y-m-d');
         }
 
         foreach (['operation_scrub_nurse_id', 'operation_circulation_nurse_id'] as $key) {

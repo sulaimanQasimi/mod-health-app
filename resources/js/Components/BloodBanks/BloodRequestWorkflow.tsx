@@ -44,6 +44,8 @@ function testResultLabel(result: string | null, t: (key: string) => string): str
 
     return '—';
 }
+
+const STEP_CARD_BASE = 'overflow-hidden rounded-2xl border bg-white shadow-sm transition dark:bg-gray-900';
 const STEP_CARD_CURRENT = 'border-rose-500 shadow-md ring-1 ring-rose-200 dark:border-rose-700 dark:ring-rose-900/50';
 const STEP_CARD_DEFAULT = 'border-gray-200 dark:border-gray-700';
 

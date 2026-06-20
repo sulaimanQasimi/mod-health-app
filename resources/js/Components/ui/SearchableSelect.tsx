@@ -41,6 +41,35 @@ function mergeClasses(...classes: (string | false | null | undefined)[]) {
     return classes.filter(Boolean).join(' ');
 }
 
+const DROPDOWN_GAP = 4;
+const SEARCH_HEADER_HEIGHT = 52;
+const PREFERRED_LIST_HEIGHT = 224;
+
+function computeDropdownPosition(trigger: HTMLElement) {
+    const rect = trigger.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const spaceBelow = viewportHeight - rect.bottom - DROPDOWN_GAP;
+    const spaceAbove = rect.top - DROPDOWN_GAP;
+    const preferredTotalHeight = SEARCH_HEADER_HEIGHT + PREFERRED_LIST_HEIGHT;
+    const openAbove = spaceBelow < preferredTotalHeight && spaceAbove > spaceBelow;
+    const availableSpace = openAbove ? spaceAbove : spaceBelow;
+    const totalHeight = Math.min(preferredTotalHeight, availableSpace);
+    const listMaxHeight = Math.max(80, totalHeight - SEARCH_HEADER_HEIGHT);
+
+    return {
+        style: {
+            position: 'fixed' as const,
+            top: openAbove
+                ? rect.top - DROPDOWN_GAP - totalHeight
+                : rect.bottom + DROPDOWN_GAP,
+            left: rect.left,
+            width: rect.width,
+            zIndex: 9999,
+        },
+        listMaxHeight,
+    };
+}
+
 export function optionsFromChildren(children: ReactNode): SearchableSelectOption[] {
     const options: SearchableSelectOption[] = [];
 
@@ -96,8 +125,11 @@ export default function SearchableSelect({
         onOpenChange?.(next);
     };
     const [searchQuery, setSearchQuery] = useState('');
-    const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
-    const [listMaxHeight, setListMaxHeight] = useState(224);
+    const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>(() => ({
+        position: 'fixed',
+        zIndex: 9999,
+    }));
+    const [listMaxHeight, setListMaxHeight] = useState(PREFERRED_LIST_HEIGHT);
 
     const options = useMemo(
         () => optionsProp ?? optionsFromChildren(children),
@@ -163,38 +195,16 @@ export default function SearchableSelect({
             return;
         }
 
-        const DROPDOWN_GAP = 4;
-        const SEARCH_HEADER_HEIGHT = 52;
-        const PREFERRED_LIST_HEIGHT = 224;
-
         const updatePosition = () => {
             if (!triggerRef.current) {
                 return;
             }
 
-            const rect = triggerRef.current.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            const spaceBelow = viewportHeight - rect.bottom - DROPDOWN_GAP;
-            const spaceAbove = rect.top - DROPDOWN_GAP;
-            const preferredTotalHeight = SEARCH_HEADER_HEIGHT + PREFERRED_LIST_HEIGHT;
-            const measuredHeight =
-                dropdownRef.current?.offsetHeight ?? preferredTotalHeight;
-            const openAbove =
-                spaceBelow < measuredHeight && spaceAbove > spaceBelow;
-            const availableSpace = openAbove ? spaceAbove : spaceBelow;
-            const totalHeight = Math.min(measuredHeight, availableSpace);
-            const nextListMaxHeight = Math.max(80, totalHeight - SEARCH_HEADER_HEIGHT);
-
+            const { style, listMaxHeight: nextListMaxHeight } = computeDropdownPosition(
+                triggerRef.current,
+            );
+            setDropdownStyle(style);
             setListMaxHeight(nextListMaxHeight);
-            setDropdownStyle({
-                position: 'fixed',
-                top: openAbove
-                    ? rect.top - DROPDOWN_GAP - totalHeight
-                    : rect.bottom + DROPDOWN_GAP,
-                left: rect.left,
-                width: rect.width,
-                zIndex: 9999,
-            });
         };
 
         updatePosition();
@@ -202,24 +212,11 @@ export default function SearchableSelect({
         window.addEventListener('scroll', updatePosition, true);
         window.addEventListener('resize', updatePosition);
 
-        let resizeObserver: ResizeObserver | undefined;
-        const rafId = requestAnimationFrame(() => {
-            updatePosition();
-            if (!dropdownRef.current) {
-                return;
-            }
-
-            resizeObserver = new ResizeObserver(updatePosition);
-            resizeObserver.observe(dropdownRef.current);
-        });
-
         return () => {
-            cancelAnimationFrame(rafId);
             window.removeEventListener('scroll', updatePosition, true);
             window.removeEventListener('resize', updatePosition);
-            resizeObserver?.disconnect();
         };
-    }, [isOpen, filteredOptions.length]);
+    }, [isOpen]);
 
     const handleSelect = (optionValue: string) => {
         onChange(optionValue);
@@ -234,8 +231,19 @@ export default function SearchableSelect({
         }
         if (isOpen) {
             setSearchQuery('');
+            setOpen(false);
+            return;
         }
-        setOpen(!isOpen);
+
+        if (triggerRef.current) {
+            const { style, listMaxHeight: nextListMaxHeight } = computeDropdownPosition(
+                triggerRef.current,
+            );
+            setDropdownStyle(style);
+            setListMaxHeight(nextListMaxHeight);
+        }
+
+        setOpen(true);
     };
 
     const triggerPadding = compact ? 'px-3 py-2' : 'px-3.5 py-2.5';
@@ -272,7 +280,7 @@ export default function SearchableSelect({
                 </span>
                 <i
                     className={mergeClasses(
-                        'bx bx-chevron-down shrink-0 text-lg text-gray-400 transition-transform',
+                        'bx bx-chevron-down shrink-0 text-lg text-gray-400',
                         isOpen && 'rotate-180',
                         isRtl ? 'me-2' : 'ms-2',
                     )}
@@ -334,7 +342,7 @@ export default function SearchableSelect({
                         <ul
                             id={listboxId}
                             role="listbox"
-                            style={{ maxHeight: listMaxHeight }}
+                            style={{ maxHeight: listMaxHeight, scrollBehavior: 'auto' }}
                             className={mergeClasses(
                                 'overflow-y-auto py-1',
                                 isRtl ? 'text-right' : 'text-left',

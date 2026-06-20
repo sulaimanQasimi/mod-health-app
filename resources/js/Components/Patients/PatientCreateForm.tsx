@@ -177,10 +177,6 @@ export default function PatientCreateForm({
         }
 
         setPendingDistrictOpen(false);
-        document.getElementById('district_id')?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-        });
         setDistrictSelectOpen(true);
     }, [pendingDistrictOpen, loadingDistricts, form.province_id]);
 

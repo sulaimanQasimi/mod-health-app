@@ -65,6 +65,18 @@ class AppointmentController extends Controller
          if ($request->filled('is_completed')) {
              $query->where('is_completed', $request->is_completed);
          }
+
+        if ($request->filled('father_name')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('father_name', 'like', '%'.$request->father_name.'%');
+            });
+        }
+
+        if ($request->filled('phone')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('phone', 'like', '%'.$request->phone.'%');
+            });
+        }
      
         // Filter by date range
         if ($request->filled('date_from')) {

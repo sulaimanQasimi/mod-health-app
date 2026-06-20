@@ -70,6 +70,16 @@
                             <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" id="date_to" name="date_to" 
                                 value="{{ request('date_to') }}">
                         </div>
+                        <div class="col-md-2">
+                            <label for="father_name" class="form-label">{{ localize('global.father_name') }}</label>
+                            <input type="text" class="form-control" id="father_name" name="father_name"
+                                value="{{ request('father_name') }}" placeholder="{{ localize('global.search_by_father_name') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="phone" class="form-label">{{ localize('global.phone') }}</label>
+                            <input type="text" class="form-control" id="phone" name="phone"
+                                value="{{ request('phone') }}" placeholder="{{ localize('global.phone') }}">
+                        </div>
                         <div class="col-md-12 d-flex justify-content-end gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bx bx-search"></i> {{ localize('global.search') }}
@@ -98,6 +108,7 @@
                                 <th>{{ localize('global.department') }}</th>
                                 <th>{{ localize('global.date') }}</th>
                                 <th>{{ localize('global.time') }}</th>
+                                <th>{{ localize('global.phone') }}</th>
                                 <th>{{ localize('global.status') }}</th>
                                 <th>{{ localize('global.processed_by') }}</th>
                                 <th>{{ localize('global.actions') }}</th>
@@ -114,6 +125,7 @@
                                     <td>{{ $appointment->department->name ?? '-' }}</td>
                                     <td>{{ $appointment->jalali_date ?? '-' }}</td>
                                     <td>{{ $appointment->time ?? '-' }}</td>
+                                    <td>{{ $appointment->patient->phone ?? '-' }}</td>
                                     <td>
                                         @if($appointment->is_completed == 1)
                                             <span class="badge bg-success">{{ localize('global.completed') }}</span>
@@ -139,7 +151,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="11" class="text-center">{{ localize('global.no_records_found') }}</td>
+                                    <td colspan="12" class="text-center">{{ localize('global.no_records_found') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

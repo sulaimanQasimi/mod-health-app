@@ -29,6 +29,8 @@ class AppointmentController extends Controller
         'patient_name',
         'id_card',
         'patient_id',
+        'father_name',
+        'phone',
         'doctor_id',
         'department_id',
         'is_completed',
@@ -45,7 +47,7 @@ class AppointmentController extends Controller
         $query = Appointment::query()
             ->where('branch_id', $user->branch_id)
             ->with([
-                'patient:id,name,last_name,father_name,id_card',
+                'patient:id,name,last_name,father_name,id_card,phone',
                 'doctor:id,name',
                 'department:id,name',
                 'processedBy:id,name,last_name',
@@ -66,6 +68,18 @@ class AppointmentController extends Controller
 
         if ($request->filled('patient_id')) {
             $query->where('patient_id', $request->patient_id);
+        }
+
+        if ($request->filled('father_name')) {
+            $query->whereHas('patient', function ($patientQuery) use ($request) {
+                $patientQuery->where('father_name', 'like', '%'.$request->father_name.'%');
+            });
+        }
+
+        if ($request->filled('phone')) {
+            $query->whereHas('patient', function ($patientQuery) use ($request) {
+                $patientQuery->where('phone', 'like', '%'.$request->phone.'%');
+            });
         }
 
         if ($request->filled('doctor_id')) {
@@ -1048,6 +1062,7 @@ class AppointmentController extends Controller
             'id_card' => $appointment->patient?->id_card,
             'patient_name' => $appointment->patient?->name,
             'father_name' => $appointment->patient?->father_name,
+            'phone' => $appointment->patient?->phone,
             'doctor_name' => $appointment->doctor?->name,
             'department_name' => $appointment->department?->name,
             'date' => $appointment->date ? verta($appointment->date)->format('Y-m-d') : null,

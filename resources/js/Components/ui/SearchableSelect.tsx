@@ -33,6 +33,8 @@ interface SearchableSelectProps {
     compact?: boolean;
     className?: string;
     dir?: 'ltr' | 'rtl';
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 function mergeClasses(...classes: (string | false | null | undefined)[]) {
@@ -73,6 +75,8 @@ export default function SearchableSelect({
     compact = false,
     className = '',
     dir: dirProp,
+    open: openProp,
+    onOpenChange,
 }: SearchableSelectProps) {
     const { t, direction } = useTranslation();
     const dir = dirProp ?? direction;
@@ -82,7 +86,15 @@ export default function SearchableSelect({
     const triggerRef = useRef<HTMLButtonElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLInputElement>(null);
-    const [isOpen, setIsOpen] = useState(false);
+    const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+    const isOpen = openProp ?? uncontrolledOpen;
+
+    const setOpen = (next: boolean) => {
+        if (openProp === undefined) {
+            setUncontrolledOpen(next);
+        }
+        onOpenChange?.(next);
+    };
     const [searchQuery, setSearchQuery] = useState('');
     const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
     const [listMaxHeight, setListMaxHeight] = useState(224);
@@ -105,6 +117,13 @@ export default function SearchableSelect({
     }, [options, searchQuery]);
 
     useEffect(() => {
+        if (disabled && isOpen) {
+            setOpen(false);
+            setSearchQuery('');
+        }
+    }, [disabled, isOpen]);
+
+    useEffect(() => {
         if (!isOpen) {
             return;
         }
@@ -119,13 +138,13 @@ export default function SearchableSelect({
                 return;
             }
 
-            setIsOpen(false);
+            setOpen(false);
             setSearchQuery('');
         };
 
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                setIsOpen(false);
+                setOpen(false);
                 setSearchQuery('');
             }
         };
@@ -204,7 +223,7 @@ export default function SearchableSelect({
 
     const handleSelect = (optionValue: string) => {
         onChange(optionValue);
-        setIsOpen(false);
+        setOpen(false);
         setSearchQuery('');
         triggerRef.current?.focus({ preventScroll: true });
     };
@@ -213,10 +232,10 @@ export default function SearchableSelect({
         if (disabled) {
             return;
         }
-        setIsOpen((current) => !current);
         if (isOpen) {
             setSearchQuery('');
         }
+        setOpen(!isOpen);
     };
 
     const triggerPadding = compact ? 'px-3 py-2' : 'px-3.5 py-2.5';

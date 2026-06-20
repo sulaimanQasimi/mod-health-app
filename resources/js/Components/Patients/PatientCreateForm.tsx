@@ -1,5 +1,5 @@
 import { Alert, Button, Spinner, TextInput } from 'flowbite-react';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
@@ -155,6 +155,8 @@ export default function PatientCreateForm({
         formData.referralRecipientParts ?? [],
     );
     const [loadingDistricts, setLoadingDistricts] = useState(false);
+    const [districtSelectOpen, setDistrictSelectOpen] = useState(false);
+    const [pendingDistrictOpen, setPendingDistrictOpen] = useState(false);
     const [loadingRecipientParts, setLoadingRecipientParts] = useState(false);
     const [loadingReferralRecipientParts, setLoadingReferralRecipientParts] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -168,6 +170,15 @@ export default function PatientCreateForm({
         () => buildAgeValue(form.age_year, form.age_month, form.age_day),
         [form.age_day, form.age_month, form.age_year],
     );
+
+    useEffect(() => {
+        if (!pendingDistrictOpen || loadingDistricts || !form.province_id) {
+            return;
+        }
+
+        setPendingDistrictOpen(false);
+        setDistrictSelectOpen(true);
+    }, [pendingDistrictOpen, loadingDistricts, form.province_id]);
 
     const showMilitaryFields = patientType !== '2' && form.job_category === '0';
     const showRankField = patientType === '1' || (patientType === '0' && form.job_category === '1');
@@ -197,6 +208,7 @@ export default function PatientCreateForm({
     const loadDistricts = async (provinceId: string) => {
         updateField('province_id', provinceId);
         updateField('district_id', '');
+        setDistrictSelectOpen(false);
 
         if (!provinceId) {
             setDistricts([]);
@@ -217,6 +229,9 @@ export default function PatientCreateForm({
             setDistricts([]);
         } finally {
             setLoadingDistricts(false);
+            if (provinceId) {
+                setPendingDistrictOpen(true);
+            }
         }
     };
 
@@ -643,6 +658,8 @@ export default function PatientCreateForm({
                             compact
                             required
                             disabled={!form.province_id || loadingDistricts}
+                            open={districtSelectOpen}
+                            onOpenChange={setDistrictSelectOpen}
                             value={form.district_id}
                             onChange={(value) => updateField('district_id', value)}
                             placeholder={loadingDistricts ? `${t('global.loading')}...` : t('global.select')}

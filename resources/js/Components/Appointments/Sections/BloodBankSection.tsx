@@ -15,6 +15,8 @@ import {
 } from './AppointmentSectionAccordion';
 import { SectionActionButton } from './SimpleTableSection';
 
+const MODAL_BODY_CLASS = 'max-h-[min(72vh,760px)] space-y-4 overflow-y-auto';
+
 interface BloodBankSectionProps {
     appointmentId: number;
     embedded?: boolean;
@@ -235,9 +237,9 @@ export default function BloodBankSection({
             )}
 
             <Modal show={open} onClose={() => setOpen(false)} size="lg">
-                <ModalHeader>{t('global.request_blood')}</ModalHeader>
                 <form onSubmit={handleSubmit}>
-                    <ModalBody className="space-y-4">
+                    <ModalHeader>{t('global.request_blood')}</ModalHeader>
+                    <ModalBody className={MODAL_BODY_CLASS}>
                         <div>
                             <Label className="mb-2 block">
                                 {t('global.blood_group')}

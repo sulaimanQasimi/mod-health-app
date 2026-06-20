@@ -1,12 +1,12 @@
 import {
     Children,
-    CSSProperties,
     ReactNode,
     isValidElement,
     useEffect,
     useId,
     useLayoutEffect,
     useMemo,
+    useReducer,
     useRef,
     useState,
 } from 'react';
@@ -33,10 +33,56 @@ interface SearchableSelectProps {
     compact?: boolean;
     className?: string;
     dir?: 'ltr' | 'rtl';
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 function mergeClasses(...classes: (string | false | null | undefined)[]) {
     return classes.filter(Boolean).join(' ');
+}
+
+const DROPDOWN_GAP = 4;
+const SEARCH_HEADER_HEIGHT = 52;
+const PREFERRED_LIST_HEIGHT = 224;
+
+function getScrollParents(element: HTMLElement | null): HTMLElement[] {
+    const parents: HTMLElement[] = [];
+    let parent = element?.parentElement ?? null;
+
+    while (parent) {
+        const style = window.getComputedStyle(parent);
+        if (/(auto|scroll|overlay)/.test(style.overflow + style.overflowY)) {
+            parents.push(parent);
+        }
+        parent = parent.parentElement;
+    }
+
+    return parents;
+}
+
+function computeDropdownPosition(trigger: HTMLElement) {
+    const rect = trigger.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const spaceBelow = viewportHeight - rect.bottom - DROPDOWN_GAP;
+    const spaceAbove = rect.top - DROPDOWN_GAP;
+    const preferredTotalHeight = SEARCH_HEADER_HEIGHT + PREFERRED_LIST_HEIGHT;
+    const openAbove = spaceBelow < preferredTotalHeight && spaceAbove > spaceBelow;
+    const availableSpace = openAbove ? spaceAbove : spaceBelow;
+    const totalHeight = Math.min(preferredTotalHeight, availableSpace);
+    const listMaxHeight = Math.max(80, totalHeight - SEARCH_HEADER_HEIGHT);
+
+    return {
+        style: {
+            position: 'fixed' as const,
+            top: openAbove
+                ? rect.top - DROPDOWN_GAP - totalHeight
+                : rect.bottom + DROPDOWN_GAP,
+            left: rect.left,
+            width: rect.width,
+            zIndex: 9999,
+        },
+        listMaxHeight,
+    };
 }
 
 export function optionsFromChildren(children: ReactNode): SearchableSelectOption[] {
@@ -73,6 +119,8 @@ export default function SearchableSelect({
     compact = false,
     className = '',
     dir: dirProp,
+    open: openProp,
+    onOpenChange,
 }: SearchableSelectProps) {
     const { t, direction } = useTranslation();
     const dir = dirProp ?? direction;
@@ -82,9 +130,17 @@ export default function SearchableSelect({
     const triggerRef = useRef<HTMLButtonElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLInputElement>(null);
-    const [isOpen, setIsOpen] = useState(false);
+    const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+    const isOpen = openProp ?? uncontrolledOpen;
+
+    const setOpen = (next: boolean) => {
+        if (openProp === undefined) {
+            setUncontrolledOpen(next);
+        }
+        onOpenChange?.(next);
+    };
     const [searchQuery, setSearchQuery] = useState('');
-    const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
+    const [, bumpPosition] = useReducer((version: number) => version + 1, 0);
 
     const options = useMemo(
         () => optionsProp ?? optionsFromChildren(children),
@@ -103,6 +159,18 @@ export default function SearchableSelect({
         return options.filter((option) => option.label.toLowerCase().includes(query));
     }, [options, searchQuery]);
 
+    const dropdownLayout =
+        isOpen && triggerRef.current
+            ? computeDropdownPosition(triggerRef.current)
+            : null;
+
+    useEffect(() => {
+        if (disabled && isOpen) {
+            setOpen(false);
+            setSearchQuery('');
+        }
+    }, [disabled, isOpen]);
+
     useEffect(() => {
         if (!isOpen) {
             return;
@@ -118,13 +186,13 @@ export default function SearchableSelect({
                 return;
             }
 
-            setIsOpen(false);
+            setOpen(false);
             setSearchQuery('');
         };
 
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                setIsOpen(false);
+                setOpen(false);
                 setSearchQuery('');
             }
         };
@@ -144,35 +212,31 @@ export default function SearchableSelect({
         }
 
         const updatePosition = () => {
-            if (!triggerRef.current) {
-                return;
-            }
-
-            const rect = triggerRef.current.getBoundingClientRect();
-
-            setDropdownStyle({
-                position: 'fixed',
-                top: rect.bottom + 4,
-                left: rect.left,
-                width: rect.width,
-                zIndex: 9999,
-            });
+            bumpPosition();
         };
 
         updatePosition();
         searchRef.current?.focus({ preventScroll: true });
+
+        const scrollParents = getScrollParents(triggerRef.current);
         window.addEventListener('scroll', updatePosition, true);
         window.addEventListener('resize', updatePosition);
+        scrollParents.forEach((parent) => {
+            parent.addEventListener('scroll', updatePosition, { passive: true });
+        });
 
         return () => {
             window.removeEventListener('scroll', updatePosition, true);
             window.removeEventListener('resize', updatePosition);
+            scrollParents.forEach((parent) => {
+                parent.removeEventListener('scroll', updatePosition);
+            });
         };
     }, [isOpen]);
 
     const handleSelect = (optionValue: string) => {
         onChange(optionValue);
-        setIsOpen(false);
+        setOpen(false);
         setSearchQuery('');
         triggerRef.current?.focus({ preventScroll: true });
     };
@@ -181,10 +245,13 @@ export default function SearchableSelect({
         if (disabled) {
             return;
         }
-        setIsOpen((current) => !current);
         if (isOpen) {
             setSearchQuery('');
+            setOpen(false);
+            return;
         }
+
+        setOpen(true);
     };
 
     const triggerPadding = compact ? 'px-3 py-2' : 'px-3.5 py-2.5';
@@ -221,7 +288,7 @@ export default function SearchableSelect({
                 </span>
                 <i
                     className={mergeClasses(
-                        'bx bx-chevron-down shrink-0 text-lg text-gray-400 transition-transform',
+                        'bx bx-chevron-down shrink-0 text-lg text-gray-400',
                         isOpen && 'rotate-180',
                         isRtl ? 'me-2' : 'ms-2',
                     )}
@@ -244,11 +311,11 @@ export default function SearchableSelect({
                 ))}
             </select>
 
-            {isOpen &&
+            {dropdownLayout &&
                 createPortal(
                     <div
                         ref={dropdownRef}
-                        style={dropdownStyle}
+                        style={dropdownLayout.style}
                         dir={dir}
                         className={mergeClasses(
                             'overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg',
@@ -283,8 +350,12 @@ export default function SearchableSelect({
                         <ul
                             id={listboxId}
                             role="listbox"
+                            style={{
+                                maxHeight: dropdownLayout.listMaxHeight,
+                                scrollBehavior: 'auto',
+                            }}
                             className={mergeClasses(
-                                'max-h-56 overflow-y-auto py-1',
+                                'overflow-y-auto py-1',
                                 isRtl ? 'text-right' : 'text-left',
                             )}
                         >

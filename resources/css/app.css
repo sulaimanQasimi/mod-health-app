@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "../../vendor/wirechat/wirechat/resources/css/app.css";
 
+html,
+body {
+    scroll-behavior: auto;
+}
+
 .laboratory-ck-editor .ck-editor__editable:not(.ck-editor__nested-editable) {
     min-height: 280px;
 }

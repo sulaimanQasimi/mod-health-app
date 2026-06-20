@@ -39,6 +39,8 @@ const EMPTY_FILTERS: AppointmentIndexFilters = {
     patient_name: '',
     id_card: '',
     patient_id: '',
+    father_name: '',
+    phone: '',
     doctor_id: '',
     department_id: '',
     is_completed: '',
@@ -313,6 +315,24 @@ export default function IndexAppointment({
                                         onChange={(event) => updateFilter('date_to', event.target.value)}
                                     />
                                 </div>
+                                <div>
+                                    <Label htmlFor="filter-father-name">{t('global.father_name')}</Label>
+                                    <TextInput
+                                        id="filter-father-name"
+                                        value={filters.father_name}
+                                        placeholder={t('global.search_by_father_name')}
+                                        onChange={(event) => updateFilter('father_name', event.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="filter-phone">{t('global.phone')}</Label>
+                                    <TextInput
+                                        id="filter-phone"
+                                        value={filters.phone}
+                                        placeholder={t('global.phone')}
+                                        onChange={(event) => updateFilter('phone', event.target.value)}
+                                    />
+                                </div>
                             </div>
                             <div className="mt-4 flex flex-wrap justify-end gap-2">
                                 <Button type="submit" color="blue" disabled={processing}>
@@ -347,6 +367,7 @@ export default function IndexAppointment({
                                 <TableHeader>{t('global.department')}</TableHeader>
                                 <TableHeader>{t('global.date')}</TableHeader>
                                 <TableHeader>{t('global.time')}</TableHeader>
+                                <TableHeader>{t('global.phone')}</TableHeader>
                                 <TableHeader>{t('global.status')}</TableHeader>
                                 <TableHeader>{t('global.processed_by')}</TableHeader>
                                 <TableHeader align="center">{t('global.actions')}</TableHeader>
@@ -356,7 +377,7 @@ export default function IndexAppointment({
                             {appointments.data.length === 0 ? (
                                 <TableRow className="hover:bg-transparent dark:hover:bg-transparent">
                                     <TableCell
-                                        colSpan={11}
+                                        colSpan={12}
                                         align="center"
                                         muted
                                         className="py-12 text-base"
@@ -384,6 +405,7 @@ export default function IndexAppointment({
                                         <TableCell>{appointment.department_name ?? '—'}</TableCell>
                                         <TableCell muted>{appointment.date ?? '—'}</TableCell>
                                         <TableCell muted>{appointment.time ?? '—'}</TableCell>
+                                        <TableCell muted>{appointment.phone ?? '—'}</TableCell>
                                         <TableCell>
                                             <Badge color={appointment.is_completed ? 'success' : 'warning'}>
                                                 {appointment.is_completed

@@ -6,6 +6,7 @@ export interface AppointmentListItem {
     id_card: string | null;
     patient_name: string | null;
     father_name: string | null;
+    phone: string | null;
     doctor_name: string | null;
     department_name: string | null;
     date: string | null;
@@ -109,6 +110,8 @@ export interface AppointmentIndexFilters {
     patient_name: string;
     id_card: string;
     patient_id: string;
+    father_name: string;
+    phone: string;
     doctor_id: string;
     department_id: string;
     is_completed: string;

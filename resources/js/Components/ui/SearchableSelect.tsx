@@ -85,6 +85,7 @@ export default function SearchableSelect({
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
+    const [listMaxHeight, setListMaxHeight] = useState(224);
 
     const options = useMemo(
         () => optionsProp ?? optionsFromChildren(children),
@@ -143,16 +144,34 @@ export default function SearchableSelect({
             return;
         }
 
+        const DROPDOWN_GAP = 4;
+        const SEARCH_HEADER_HEIGHT = 52;
+        const PREFERRED_LIST_HEIGHT = 224;
+
         const updatePosition = () => {
             if (!triggerRef.current) {
                 return;
             }
 
             const rect = triggerRef.current.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const spaceBelow = viewportHeight - rect.bottom - DROPDOWN_GAP;
+            const spaceAbove = rect.top - DROPDOWN_GAP;
+            const preferredTotalHeight = SEARCH_HEADER_HEIGHT + PREFERRED_LIST_HEIGHT;
+            const measuredHeight =
+                dropdownRef.current?.offsetHeight ?? preferredTotalHeight;
+            const openAbove =
+                spaceBelow < measuredHeight && spaceAbove > spaceBelow;
+            const availableSpace = openAbove ? spaceAbove : spaceBelow;
+            const totalHeight = Math.min(measuredHeight, availableSpace);
+            const nextListMaxHeight = Math.max(80, totalHeight - SEARCH_HEADER_HEIGHT);
 
+            setListMaxHeight(nextListMaxHeight);
             setDropdownStyle({
                 position: 'fixed',
-                top: rect.bottom + 4,
+                top: openAbove
+                    ? rect.top - DROPDOWN_GAP - totalHeight
+                    : rect.bottom + DROPDOWN_GAP,
                 left: rect.left,
                 width: rect.width,
                 zIndex: 9999,
@@ -164,11 +183,24 @@ export default function SearchableSelect({
         window.addEventListener('scroll', updatePosition, true);
         window.addEventListener('resize', updatePosition);
 
+        let resizeObserver: ResizeObserver | undefined;
+        const rafId = requestAnimationFrame(() => {
+            updatePosition();
+            if (!dropdownRef.current) {
+                return;
+            }
+
+            resizeObserver = new ResizeObserver(updatePosition);
+            resizeObserver.observe(dropdownRef.current);
+        });
+
         return () => {
+            cancelAnimationFrame(rafId);
             window.removeEventListener('scroll', updatePosition, true);
             window.removeEventListener('resize', updatePosition);
+            resizeObserver?.disconnect();
         };
-    }, [isOpen]);
+    }, [isOpen, filteredOptions.length]);
 
     const handleSelect = (optionValue: string) => {
         onChange(optionValue);
@@ -283,8 +315,9 @@ export default function SearchableSelect({
                         <ul
                             id={listboxId}
                             role="listbox"
+                            style={{ maxHeight: listMaxHeight }}
                             className={mergeClasses(
-                                'max-h-56 overflow-y-auto py-1',
+                                'overflow-y-auto py-1',
                                 isRtl ? 'text-right' : 'text-left',
                             )}
                         >

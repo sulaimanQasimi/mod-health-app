@@ -3,6 +3,7 @@ import { Badge, Button, Card, Label, Spinner, TextInput, ToggleSwitch } from 'fl
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
+import StatCard from '../../Components/ui/StatCard';
 import {
     Table,
     TableBody,
@@ -184,53 +185,63 @@ export default function IndexUsers({
         return '—';
     };
 
+    const statCards = [
+        {
+            title: t('global.active_users'),
+            value: stats.active,
+            icon: 'bx-group',
+            color: 'from-emerald-500 to-green-600',
+            borderClass: 'border-emerald-200 dark:border-emerald-800',
+            valueClass: 'text-emerald-700 dark:text-emerald-300',
+        },
+        {
+            title: t('global.deactive_users'),
+            value: stats.inactive,
+            icon: 'bx-user-x',
+            color: 'from-rose-500 to-red-600',
+            borderClass: 'border-rose-200 dark:border-rose-800',
+            valueClass: 'text-rose-700 dark:text-rose-300',
+        },
+        {
+            title: t('global.total_users'),
+            value: stats.total,
+            icon: 'bx-group',
+            color: 'from-blue-500 to-indigo-600',
+            borderClass: 'border-blue-200 dark:border-blue-800',
+            valueClass: 'text-blue-700 dark:text-blue-300',
+        },
+        {
+            title: t('global.new_users'),
+            value: stats.new_this_month,
+            icon: 'bx-user-plus',
+            color: 'from-cyan-500 to-sky-600',
+            borderClass: 'border-cyan-200 dark:border-cyan-800',
+            valueClass: 'text-cyan-700 dark:text-cyan-300',
+        },
+    ];
+
     return (
         <DashboardLayout>
             <Head title={t('global.users')} />
 
             <div className="mx-auto max-w-[1600px] space-y-6">
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    {[
-                        {
-                            label: t('global.active_users'),
-                            value: stats.active,
-                            icon: 'bx-group',
-                            color: 'from-emerald-500 to-green-600',
-                        },
-                        {
-                            label: t('global.deactive_users'),
-                            value: stats.inactive,
-                            icon: 'bx-user-x',
-                            color: 'from-rose-500 to-red-600',
-                        },
-                        {
-                            label: t('global.total_users'),
-                            value: stats.total,
-                            icon: 'bx-group',
-                            color: 'from-blue-500 to-indigo-600',
-                        },
-                        {
-                            label: t('global.new_users'),
-                            value: stats.new_this_month,
-                            icon: 'bx-user-plus',
-                            color: 'from-cyan-500 to-sky-600',
-                        },
-                    ].map((card) => (
-                        <Card key={card.label} className="shadow-sm">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{card.label}</p>
-                                    <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
-                                        {card.value}
-                                    </p>
-                                </div>
-                                <div
-                                    className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${card.color} text-white shadow-md`}
+                    {statCards.map((card) => (
+                        <StatCard
+                            key={card.title}
+                            title={card.title}
+                            value={card.value}
+                            subtitle=""
+                            borderClass={card.borderClass}
+                            valueClass={card.valueClass}
+                            icon={
+                                <span
+                                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${card.color} text-white shadow-md`}
                                 >
                                     <i className={`bx ${card.icon} text-xl`} />
-                                </div>
-                            </div>
-                        </Card>
+                                </span>
+                            }
+                        />
                     ))}
                 </div>
 

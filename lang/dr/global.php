@@ -418,7 +418,7 @@ return [
     'recipient_parent' => 'تحت اداره',
     'recipient_type' => 'نوعیت اداره',
     'recipients' => 'ادارات',
-    'recipient_parts' => 'جزوات مربوطه',
+    'recipient_parts' => 'جزوتام مربوطه',
     'recipient_part_created_successfully.' => 'جزوه مربوطه موفقانه اضافه شد',
     'recipient_part_updated_successfully.' => 'جزوه مربوطه موفقانه تصحیح شد',
     'recipient_part_deleted_successfully.' => 'جزوه مربوطه موفقانه حذف شد',

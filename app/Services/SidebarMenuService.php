@@ -130,7 +130,6 @@ class SidebarMenuService
             if ($children) {
                 $items[] = $this->group('pharmacy-stock', 'global.prescription_stocks', 'bx-package', [
                     'react.prescription-stocks.*',
-                    'react.depots.requests.*',
                     'react.pharmacy-stock.*',
                     'react.pharmacies.*',
                     'react.incomes.*',
@@ -148,9 +147,9 @@ class SidebarMenuService
             if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_TRANSACTION_VIEW)) {
                 $depotChildren[] = $this->item('depot-transactions', 'global.depot.transactions', null, 'react.depots.transactions.index', ['global.depot', 'transactions']);
             }
-            if ($this->canSeeDepotRequestsMenu($user)) {
-                $depotChildren[] = $this->item('depot-requests', 'global.depot.requests', null, 'react.depots.requests.index', ['global.depot', 'requests']);
-            }
+            // if ($this->canSeeDepotRequestsMenu($user)) {
+            //     $depotChildren[] = $this->item('depot-requests', 'global.depot.requests', null, 'react.depots.requests.index', ['global.depot', 'requests']);
+            // }
             if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_MOVEMENT_DEPOT_TO_DEPOT)) {
                 $depotChildren[] = $this->item('depot-to-depot', 'global.depot.depot_to_depot', null, 'react.depots.movements.depot-to-depot', ['global.depot', 'depot_to_depot']);
             }

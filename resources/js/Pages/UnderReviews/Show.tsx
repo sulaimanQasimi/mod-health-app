@@ -125,6 +125,15 @@ export default function UnderReviewsShow({
         { label: t('global.referred_to'), value: underReview.doctor_name, icon: 'bx-user-check' },
         { label: t('global.date'), value: underReview.admission_date, icon: 'bx-calendar' },
         { label: t('global.time'), value: underReview.admission_time, icon: 'bx-time' },
+        { label: t('global.card_number'), value: underReview.patient?.id_card, icon: 'bx-id-card' },
+        { label: t('global.phone'), value: underReview.patient?.phone, icon: 'bx-phone' },
+        { label: t('global.department'), value: underReview.department_name, icon: 'bx-category' },
+        { label: t('global.room'), value: underReview.room_name, icon: 'bx-building' },
+        {
+            label: t('global.bed'),
+            value: underReview.bed_number ? String(underReview.bed_number) : null,
+            icon: 'bx-bed',
+        },
         ...(underReview.is_accepted
             ? [
                   {
@@ -141,7 +150,7 @@ export default function UnderReviewsShow({
             <Head title={patientLabel} />
 
             <div className="mx-auto max-w-6xl space-y-6">
-                <Card className="border !shadow-sm">
+                <Card className="border !shadow-sm [&>div]:h-auto [&>div]:justify-start">
                     <div className="flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-700 lg:flex-row lg:items-center lg:justify-between">
                         <div>
                             <h1 className="flex items-center gap-2 text-xl text-gray-900 dark:text-white">
@@ -179,82 +188,54 @@ export default function UnderReviewsShow({
                         </div>
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                        {summaryFields.map((field) => (
-                            <div
-                                key={field.label}
-                                className="rounded-xl border border-gray-100 bg-gray-50/80 p-4 text-center dark:border-gray-700/60 dark:bg-gray-800/40"
-                            >
-                                <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                    {field.label}
-                                </p>
-                                <p className="mt-2 flex items-center justify-center gap-1 text-sm text-gray-900 dark:text-white">
-                                    <i className={`bx ${field.icon} text-cyan-500`} />
-                                    {field.value ?? '—'}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </Card>
+                    <div className="space-y-4 pt-6">
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            {summaryFields.map((field) => (
+                                <div
+                                    key={field.label}
+                                    className="rounded-xl border border-gray-100 bg-gray-50/80 px-3.5 py-3 dark:border-gray-700/60 dark:bg-gray-800/40"
+                                >
+                                    <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                        <i className={`bx ${field.icon} text-sm text-cyan-500/80`} />
+                                        {field.label}
+                                    </p>
+                                    <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                        {field.value ?? '—'}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
 
-                <Card className="border !shadow-sm">
-                    <h2 className="mb-4 flex items-center gap-2 text-sm text-gray-900 dark:text-white">
-                        <i className="bx bx-info-circle text-cyan-500" />
-                        {t('global.details')}
-                    </h2>
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                        {[
-                            {
-                                label: t('global.card_number'),
-                                value: underReview.patient?.id_card,
-                            },
-                            { label: t('global.phone'), value: underReview.patient?.phone },
-                            { label: t('global.department'), value: underReview.department_name },
-                            { label: t('global.room'), value: underReview.room_name },
-                            {
-                                label: t('global.bed'),
-                                value: underReview.bed_number ? String(underReview.bed_number) : null,
-                            },
-                        ].map((field) => (
-                            <div
-                                key={field.label}
-                                className="rounded-xl border border-gray-100 bg-gray-50/80 p-4 text-center dark:border-gray-700/60 dark:bg-gray-800/40"
-                            >
-                                <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                    {field.label}
+                        <div className="grid gap-3 lg:grid-cols-2">
+                            <div className="rounded-xl border border-amber-200/80 bg-amber-50/50 px-3.5 py-3 dark:border-amber-900/50 dark:bg-amber-950/20">
+                                <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                                    <i className="bx bx-info-circle text-sm" />
+                                    {t('global.reason')}
                                 </p>
-                                <p className="mt-2 text-sm text-gray-900 dark:text-white">
-                                    {field.value ?? '—'}
+                                <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                    {underReview.reason || '—'}
                                 </p>
                             </div>
-                        ))}
+                            <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/50 px-3.5 py-3 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+                                <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                                    <i className="bx bx-note text-sm" />
+                                    {t('global.remarks')}
+                                </p>
+                                <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                    {underReview.remarks || '—'}
+                                </p>
+                            </div>
+                        </div>
+
+                        {underReview.is_discharged && underReview.discharge_remark && (
+                            <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-300">
+                                <p className="font-medium text-gray-900 dark:text-white">
+                                    {t('global.discharge_remark')}
+                                </p>
+                                <p className="mt-1">{underReview.discharge_remark}</p>
+                            </div>
+                        )}
                     </div>
-                    <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                        <div>
-                            <h3 className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-center text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
-                                {t('global.reason')}
-                            </h3>
-                            <p className="rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/50 dark:text-gray-300">
-                                {underReview.reason || '—'}
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
-                                {t('global.remarks')}
-                            </h3>
-                            <p className="rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/50 dark:text-gray-300">
-                                {underReview.remarks || '—'}
-                            </p>
-                        </div>
-                    </div>
-                    {underReview.is_discharged && underReview.discharge_remark && (
-                        <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-300">
-                            <p className="font-medium text-gray-900 dark:text-white">
-                                {t('global.discharge_remark')}
-                            </p>
-                            <p className="mt-1">{underReview.discharge_remark}</p>
-                        </div>
-                    )}
                 </Card>
 
                 <div className="space-y-4">
@@ -301,7 +282,6 @@ export default function UnderReviewsShow({
                         title={t('global.visits')}
                         count={underReview.visits.length}
                         badgeColor="info"
-                        defaultOpen
                     >
                         {permissions.store_visit && (
                             <form onSubmit={handleAddVisit} className="mb-4 space-y-3">

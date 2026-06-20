@@ -22,6 +22,7 @@ import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
 import {
+    AccordionButton,
     SectionEmptyState,
     SectionLoadingState,
     SectionShell,
@@ -279,14 +280,12 @@ export default function HospitalizationIcuSection({
                     <SectionLoadingState />
                 ) : (
                     <>
-                        {data?.permissions.create && !isDischarged && (
-                            <div className="mb-4 flex justify-end">
-                                <Button size="sm" color="info" onClick={openCreate}>
-                                    <i className="bx bx-plus me-2" />
-                                    {t('global.refere_to_icu')}
-                                </Button>
-                            </div>
-                        )}
+                        <AccordionButton
+                            onClick={openCreate}
+                            permission={Boolean(data?.permissions.create && !isDischarged)}
+                        >
+                            {t('global.refere_to_icu')}
+                        </AccordionButton>
 
                         {(data?.items.length ?? 0) > 0 ? (
                             <Table embedded className="min-w-[900px]">

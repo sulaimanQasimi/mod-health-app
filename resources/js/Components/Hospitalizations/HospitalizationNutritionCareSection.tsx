@@ -23,6 +23,7 @@ import {
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
 import {
+    AccordionButton,
     SectionEmptyState,
     SectionLoadingState,
     SectionShell,
@@ -475,14 +476,12 @@ export default function HospitalizationNutritionCareSection({
                     <SectionLoadingState />
                 ) : (
                     <>
-                        {data?.permissions.create && !isDischarged && (
-                            <div className="mb-4 flex justify-end">
-                                <Button size="sm" color="success" onClick={openCreate}>
-                                    <i className="bx bx-plus me-2" />
-                                    {t('global.create_nutrition_care')}
-                                </Button>
-                            </div>
-                        )}
+                        <AccordionButton
+                            onClick={openCreate}
+                            permission={Boolean(data?.permissions.create && !isDischarged)}
+                        >
+                            {t('global.create_nutrition_care')}
+                        </AccordionButton>
 
                         {(data?.items.length ?? 0) > 0 ? (
                             <Table embedded className="min-w-[1100px]">

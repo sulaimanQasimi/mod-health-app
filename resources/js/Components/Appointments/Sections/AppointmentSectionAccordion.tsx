@@ -6,29 +6,36 @@ interface AccordionButtonProps {
     children: ReactNode;
     /** When false the button is not rendered. Defaults to true. */
     permission?: boolean;
+    /** When true, render only the button (for use inside AccordionActionBar). */
+    bare?: boolean;
 }
 
 export function AccordionButton({
     onClick,
     children,
     permission = true,
+    bare = false,
 }: AccordionButtonProps) {
     if (!permission) {
         return null;
     }
 
-    return (
-        <div className="mb-4 flex justify-end">
-            <Button size="sm" color="blue" onClick={onClick}>
-                <i className="bx bx-plus me-2 text-lg" />
-                {children}
-            </Button>
-        </div>
+    const button = (
+        <Button size="sm" color="blue" onClick={onClick}>
+            <i className="bx bx-plus me-2 text-lg" />
+            {children}
+        </Button>
     );
+
+    if (bare) {
+        return button;
+    }
+
+    return <div className="mb-4 flex justify-end">{button}</div>;
 }
 
 export function AccordionActionBar({ children }: { children: ReactNode }) {
-    return <div className="mb-4 flex justify-end">{children}</div>;
+    return <div className="mb-4 flex flex-wrap justify-end gap-2">{children}</div>;
 }
 
 interface AppointmentSectionAccordionProps {

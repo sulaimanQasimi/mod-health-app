@@ -23,6 +23,7 @@ import TableBadge from '../ui/TableBadge';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
 import {
+    AccordionButton,
     SectionEmptyState,
     SectionLoadingState,
     SectionShell,
@@ -240,14 +241,12 @@ export default function HospitalizationPacuSection({
                     <SectionLoadingState />
                 ) : (
                     <>
-                        {data?.permissions.create && !isDischarged && (
-                            <div className="mb-4 flex justify-end">
-                                <Button size="sm" color="info" onClick={openCreate}>
-                                    <i className="bx bx-plus me-2" />
-                                    {t('global.refere_to_pacu')}
-                                </Button>
-                            </div>
-                        )}
+                        <AccordionButton
+                            onClick={openCreate}
+                            permission={Boolean(data?.permissions.create && !isDischarged)}
+                        >
+                            {t('global.refere_to_pacu')}
+                        </AccordionButton>
 
                         {(data?.items.length ?? 0) > 0 ? (
                             <Table embedded className="min-w-[760px]">

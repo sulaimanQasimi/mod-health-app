@@ -23,6 +23,8 @@ import PersianDateInput from '../ui/PersianDateInput';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
 import {
+    AccordionActionBar,
+    AccordionButton,
     SectionEmptyState,
     SectionLoadingState,
     SectionShell,
@@ -330,27 +332,30 @@ export default function HospitalizationNurseNoteSection({
                     <SectionLoadingState />
                 ) : (
                     <>
-                        <div className="mb-4 flex flex-wrap justify-end gap-2">
-                            {data?.urls?.print && (
-                                <Button
-                                    as="a"
-                                    href={data.urls.print}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    size="sm"
-                                    color="info"
+                        {(data?.urls?.print || (data?.permissions.create && !isDischarged)) && (
+                            <AccordionActionBar>
+                                {data?.urls?.print && (
+                                    <Button
+                                        as="a"
+                                        href={data.urls.print}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        size="sm"
+                                        color="info"
+                                    >
+                                        <i className="bx bx-printer me-2" />
+                                        {t('global.print_notes')}
+                                    </Button>
+                                )}
+                                <AccordionButton
+                                    bare
+                                    onClick={openCreate}
+                                    permission={Boolean(data?.permissions.create && !isDischarged)}
                                 >
-                                    <i className="bx bx-printer me-2" />
-                                    {t('global.print_notes')}
-                                </Button>
-                            )}
-                            {data?.permissions.create && !isDischarged && (
-                                <Button size="sm" color="success" onClick={openCreate}>
-                                    <i className="bx bx-plus me-2" />
                                     {t('global.add_nurse_note')}
-                                </Button>
-                            )}
-                        </div>
+                                </AccordionButton>
+                            </AccordionActionBar>
+                        )}
 
                         {(data?.items.length ?? 0) > 0 ? (
                             <Table embedded className="min-w-[960px]">

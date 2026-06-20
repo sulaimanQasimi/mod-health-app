@@ -24,6 +24,8 @@ import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
 import {
+    AccordionActionBar,
+    AccordionButton,
     SectionEmptyState,
     SectionLoadingState,
     SectionShell,
@@ -318,27 +320,30 @@ export default function HospitalizationVitalSignSection({
                     <SectionLoadingState />
                 ) : (
                     <>
-                        <div className="mb-4 flex flex-wrap justify-end gap-2">
-                            {data?.urls?.print && (
-                                <Button
-                                    as="a"
-                                    href={data.urls.print}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    size="sm"
-                                    color="light"
+                        {(data?.urls?.print || (data?.permissions.manage && !isDischarged)) && (
+                            <AccordionActionBar>
+                                {data?.urls?.print && (
+                                    <Button
+                                        as="a"
+                                        href={data.urls.print}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        size="sm"
+                                        color="light"
+                                    >
+                                        <i className="bx bx-printer me-2" />
+                                        {t('global.print_vital_signs_chart')}
+                                    </Button>
+                                )}
+                                <AccordionButton
+                                    bare
+                                    onClick={() => openManageForDate()}
+                                    permission={Boolean(data?.permissions.manage && !isDischarged)}
                                 >
-                                    <i className="bx bx-printer me-2" />
-                                    {t('global.print_vital_signs_chart')}
-                                </Button>
-                            )}
-                            {data?.permissions.manage && !isDischarged && (
-                                <Button size="sm" color="failure" onClick={() => openManageForDate()}>
-                                    <i className="bx bx-plus me-2" />
                                     {t('global.manage_vital_signs')}
-                                </Button>
-                            )}
-                        </div>
+                                </AccordionButton>
+                            </AccordionActionBar>
+                        )}
 
                         {dayGroups.length > 0 ? (
                             <Table>

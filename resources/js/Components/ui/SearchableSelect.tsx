@@ -1,12 +1,12 @@
 import {
     Children,
-    CSSProperties,
     ReactNode,
     isValidElement,
     useEffect,
     useId,
     useLayoutEffect,
     useMemo,
+    useReducer,
     useRef,
     useState,
 } from 'react';
@@ -44,6 +44,21 @@ function mergeClasses(...classes: (string | false | null | undefined)[]) {
 const DROPDOWN_GAP = 4;
 const SEARCH_HEADER_HEIGHT = 52;
 const PREFERRED_LIST_HEIGHT = 224;
+
+function getScrollParents(element: HTMLElement | null): HTMLElement[] {
+    const parents: HTMLElement[] = [];
+    let parent = element?.parentElement ?? null;
+
+    while (parent) {
+        const style = window.getComputedStyle(parent);
+        if (/(auto|scroll|overlay)/.test(style.overflow + style.overflowY)) {
+            parents.push(parent);
+        }
+        parent = parent.parentElement;
+    }
+
+    return parents;
+}
 
 function computeDropdownPosition(trigger: HTMLElement) {
     const rect = trigger.getBoundingClientRect();
@@ -125,11 +140,7 @@ export default function SearchableSelect({
         onOpenChange?.(next);
     };
     const [searchQuery, setSearchQuery] = useState('');
-    const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>(() => ({
-        position: 'fixed',
-        zIndex: 9999,
-    }));
-    const [listMaxHeight, setListMaxHeight] = useState(PREFERRED_LIST_HEIGHT);
+    const [, bumpPosition] = useReducer((version: number) => version + 1, 0);
 
     const options = useMemo(
         () => optionsProp ?? optionsFromChildren(children),
@@ -147,6 +158,11 @@ export default function SearchableSelect({
 
         return options.filter((option) => option.label.toLowerCase().includes(query));
     }, [options, searchQuery]);
+
+    const dropdownLayout =
+        isOpen && triggerRef.current
+            ? computeDropdownPosition(triggerRef.current)
+            : null;
 
     useEffect(() => {
         if (disabled && isOpen) {
@@ -196,25 +212,25 @@ export default function SearchableSelect({
         }
 
         const updatePosition = () => {
-            if (!triggerRef.current) {
-                return;
-            }
-
-            const { style, listMaxHeight: nextListMaxHeight } = computeDropdownPosition(
-                triggerRef.current,
-            );
-            setDropdownStyle(style);
-            setListMaxHeight(nextListMaxHeight);
+            bumpPosition();
         };
 
         updatePosition();
         searchRef.current?.focus({ preventScroll: true });
+
+        const scrollParents = getScrollParents(triggerRef.current);
         window.addEventListener('scroll', updatePosition, true);
         window.addEventListener('resize', updatePosition);
+        scrollParents.forEach((parent) => {
+            parent.addEventListener('scroll', updatePosition, { passive: true });
+        });
 
         return () => {
             window.removeEventListener('scroll', updatePosition, true);
             window.removeEventListener('resize', updatePosition);
+            scrollParents.forEach((parent) => {
+                parent.removeEventListener('scroll', updatePosition);
+            });
         };
     }, [isOpen]);
 
@@ -233,14 +249,6 @@ export default function SearchableSelect({
             setSearchQuery('');
             setOpen(false);
             return;
-        }
-
-        if (triggerRef.current) {
-            const { style, listMaxHeight: nextListMaxHeight } = computeDropdownPosition(
-                triggerRef.current,
-            );
-            setDropdownStyle(style);
-            setListMaxHeight(nextListMaxHeight);
         }
 
         setOpen(true);
@@ -303,11 +311,11 @@ export default function SearchableSelect({
                 ))}
             </select>
 
-            {isOpen &&
+            {dropdownLayout &&
                 createPortal(
                     <div
                         ref={dropdownRef}
-                        style={dropdownStyle}
+                        style={dropdownLayout.style}
                         dir={dir}
                         className={mergeClasses(
                             'overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg',
@@ -342,7 +350,10 @@ export default function SearchableSelect({
                         <ul
                             id={listboxId}
                             role="listbox"
-                            style={{ maxHeight: listMaxHeight, scrollBehavior: 'auto' }}
+                            style={{
+                                maxHeight: dropdownLayout.listMaxHeight,
+                                scrollBehavior: 'auto',
+                            }}
                             className={mergeClasses(
                                 'overflow-y-auto py-1',
                                 isRtl ? 'text-right' : 'text-left',

@@ -1143,6 +1143,8 @@ return [
 'mod' => 'د ملي دفاع وزارت',
 'recipient' => 'نورې ادارې',
 'family' => 'د فامیل غړي او نور',
+'extraordinary' => 'فوق العاده',
+'commanded_by' => 'فرمانده',
 'add_advice' => 'توصیه اضافه کول',
 'no_item_is_found' => 'هیڅ توکی ونه موندل شو',
 'between_two_date' => 'د دوو نیټو تر منځ',

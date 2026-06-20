@@ -1762,6 +1762,8 @@ return [
     'advice' => 'Advice',
     'mod' => 'Mod',
     'family' => 'Family',
+    'extraordinary' => 'Extraordinary',
+    'commanded_by' => 'Commanded By',
     'add_advice' => 'Add Advice',
     'no_item_is_found' => 'No Item Is Found',
     'between_two_date' => 'Between Two Date',

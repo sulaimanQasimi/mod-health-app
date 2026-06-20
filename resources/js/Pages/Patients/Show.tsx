@@ -254,6 +254,7 @@ export default function ShowPatient({
                                 <DetailField label={t('global.province')} value={patient.province} icon="bx-map" />
                                 <DetailField label={t('global.district')} value={patient.district} icon="bx-map-pin" />
                                 <DetailField label={t('global.referred_by')} value={patient.referred_by} icon="bx-user-plus" />
+                                <DetailField label={t('global.commanded_by')} value={patient.commanded_by} icon="bx-user-voice" />
                                 <DetailField label={t('global.creation_date')} value={patient.created_at} icon="bx-time" />
                                 <DetailField label={t('global.created_by')} value={patient.created_by} icon="bx-user-check" />
                             </div>

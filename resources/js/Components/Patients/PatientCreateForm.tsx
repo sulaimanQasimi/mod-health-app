@@ -49,6 +49,7 @@ interface FormState {
     age_day: string;
     gender: string;
     referred_by: string;
+    commanded_by: string;
     recipient_part_id: string;
     province_id: string;
     district_id: string;
@@ -84,6 +85,7 @@ function createInitialState(patientType: PatientType, patient?: PatientFormValue
             age_day: patient.age_day,
             gender: patient.gender || (patientType === '2' ? '' : '0'),
             referred_by: patient.referred_by,
+            commanded_by: patient.commanded_by,
             recipient_part_id: patient.recipient_part_id,
             province_id: patient.province_id,
             district_id: patient.district_id,
@@ -118,6 +120,7 @@ function createInitialState(patientType: PatientType, patient?: PatientFormValue
         age_day: '',
         gender: patientType === '2' ? '' : '0',
         referred_by: '',
+        commanded_by: '',
         recipient_part_id: '',
         province_id: '',
         district_id: '',
@@ -181,8 +184,15 @@ export default function PatientCreateForm({
     }, [pendingDistrictOpen, loadingDistricts, form.province_id]);
 
     const showMilitaryFields = patientType !== '2' && form.job_category === '0';
-    const showRankField = patientType === '1' || (patientType === '0' && form.job_category === '1');
-    const rankLabel = patientType === '1' && form.job_category === '1' ? t('global.bast') : t('global.rank');
+    const showRankField =
+        patientType === '1' ||
+        patientType === '3' ||
+        (patientType === '0' && form.job_category === '1');
+    const rankLabel =
+        (patientType === '1' || patientType === '3') && form.job_category === '1'
+            ? t('global.bast')
+            : t('global.rank');
+    const showRecipientFields = patientType === '0' || patientType === '1';
     const jobLabel = patientType === '2' ? t('global.job2') : t('global.job');
 
     const updateField = (field: keyof FormState | string, value: string) => {
@@ -337,6 +347,14 @@ export default function PatientCreateForm({
             payload.append('referred_by', form.referred_by);
             if (form.recipient_part_id) {
                 payload.append('recipient_part_id', form.recipient_part_id);
+            }
+        }
+
+        if (patientType === '3') {
+            payload.append('job_category', form.job_category);
+            payload.append('rank', form.rank);
+            if (form.commanded_by) {
+                payload.append('commanded_by', form.commanded_by);
             }
         }
 
@@ -582,7 +600,7 @@ export default function PatientCreateForm({
                         </SearchableSelect>
                     </FormField>
 
-                    {patientType !== '2' && (
+                    {showRecipientFields && (
                         <>
                             <FormField
                                 label={t('global.recipient')}
@@ -632,6 +650,17 @@ export default function PatientCreateForm({
                                 </SearchableSelect>
                             </FormField>
                         </>
+                    )}
+
+                    {patientType === '3' && (
+                        <FormField label={t('global.commanded_by')} error={errors.commanded_by} compact>
+                            <TextInput
+                                id="commanded_by"
+                                sizing="sm"
+                                value={form.commanded_by}
+                                onChange={(e) => updateField('commanded_by', e.target.value)}
+                            />
+                        </FormField>
                     )}
 
                     <FormField label={t('global.province')} required error={errors.province_id} compact>

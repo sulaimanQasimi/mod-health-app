@@ -1146,6 +1146,8 @@ return [
     'mod' => 'وزارت دفاع ملی',
     'recipient' => 'سایر ادارات',
     'family' => 'اعضای فامیل و سایرین',
+    'extraordinary' => 'فوقالعاده',
+    'commanded_by' => 'فرمانده',
     'add_advice' => 'اضافه نمودن توصیه',
     'no_item_is_found' => 'هیچ موردی پیدا نشد',
     'between_two_date' => 'بین دو تاریخ',

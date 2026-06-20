@@ -40,6 +40,7 @@ class Patient extends Model
         'id_card',
         'job_category',
         'referred_by',
+        'commanded_by',
         'recipient_part_id',
         'referral_recipient_part_id',
         'registration_date',

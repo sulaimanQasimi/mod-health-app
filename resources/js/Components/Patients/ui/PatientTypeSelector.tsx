@@ -9,6 +9,7 @@ interface PatientTypeSelectorProps {
 const patientTypes: { type: PatientType; labelKey: string }[] = [
     { type: '0', labelKey: 'global.mod' },
     { type: '1', labelKey: 'global.recipient' },
+    { type: '3', labelKey: 'global.extraordinary' },
     { type: '2', labelKey: 'global.family' },
 ];
 
@@ -17,7 +18,7 @@ export default function PatientTypeSelector({ value, onChange }: PatientTypeSele
 
     return (
         <div className="nav-align-top mb-6">
-            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3" role="tablist">
+            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 sm:gap-3" role="tablist">
                 {patientTypes.map((item) => {
                     const selected = value === item.type;
 

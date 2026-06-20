@@ -151,6 +151,7 @@ class PatientController extends Controller
             'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
+            'commanded_by' => 'nullable|string|max:255',
             'recipient_part_id' => 'nullable|exists:recipient_parts,id',
             // Appointment validation
             'appointment_doctor_id' => 'nullable|exists:doctors,id',
@@ -360,6 +361,7 @@ class PatientController extends Controller
             'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
+            'commanded_by' => 'nullable|string|max:255',
             'recipient_part_id' => 'nullable|exists:recipient_parts,id',
         ]);
 

@@ -33,7 +33,7 @@ export interface PatientFormUrls {
 /** @deprecated Use PatientFormUrls */
 export type PatientCreateUrls = PatientFormUrls;
 
-export type PatientType = '0' | '1' | '2';
+export type PatientType = '0' | '1' | '2' | '3';
 
 export type PatientFormMode = 'create' | 'edit';
 
@@ -55,6 +55,7 @@ export interface PatientFormValues {
     age_day: string;
     gender: string;
     referred_by: string;
+    commanded_by: string;
     recipient_part_id: string;
     province_id: string;
     district_id: string;
@@ -140,6 +141,7 @@ export interface PatientDetail {
     militery_type: string | null;
     relation: string | null;
     referred_by: string | null;
+    commanded_by: string | null;
     recipient_part: string | null;
     referral_name: string | null;
     referral_last_name: string | null;

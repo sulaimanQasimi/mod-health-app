@@ -3,8 +3,9 @@ import { ReactNode } from 'react';
 
 export interface StatCardProps {
     title: string;
-    value: number | string;
+    value: number | string | ReactNode;
     subtitle: string;
+    variant?: 'stat' | 'info';
     icon?: ReactNode;
     iconClass?: string;
     iconBgClass?: string;
@@ -23,6 +24,7 @@ export default function StatCard({
     title,
     value,
     subtitle,
+    variant = 'stat',
     icon,
     iconClass,
     iconBgClass,
@@ -61,15 +63,25 @@ export default function StatCard({
         >
             <div className="flex items-start justify-between gap-3 p-4">
                 <div className="min-w-0">
-                    <h4 className="text-sm text-gray-700 dark:text-gray-300">{title}</h4>
-                    <p
+                    <h4
                         className={mergeClasses(
-                            'mt-2 text-3xl font-semibold tabular-nums',
-                            valueClass ?? 'text-gray-900 dark:text-white',
+                            variant === 'info'
+                                ? 'text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400'
+                                : 'text-sm text-gray-700 dark:text-gray-300',
+                        )}
+                    >
+                        {title}
+                    </h4>
+                    <div
+                        className={mergeClasses(
+                            variant === 'info'
+                                ? 'mt-1 truncate text-base font-semibold text-gray-900 dark:text-white'
+                                : 'mt-2 text-3xl font-semibold tabular-nums text-gray-900 dark:text-white',
+                            valueClass,
                         )}
                     >
                         {value}
-                    </p>
+                    </div>
                     {subtitle ? (
                         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
                     ) : null}

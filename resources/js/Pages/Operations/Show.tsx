@@ -204,24 +204,6 @@ export default function OperationsShow({
                     backLabel={t('global.back')}
                     action={
                         <SettingsPageActions>
-                            {canApprove && (
-                                <Button type="button" color="success" onClick={() => setApproveOpen(true)}>
-                                    <i className="bx bx-check me-2" />
-                                    {t('global.operation_approval')}
-                                </Button>
-                            )}
-                            {canComplete && (
-                                <Button type="button" color="blue" onClick={openComplete}>
-                                    <i className="bx bx-check-double me-2" />
-                                    {t('global.complete_operation')}
-                                </Button>
-                            )}
-                            {canReserve && (
-                                <Button type="button" color="warning" onClick={() => setReserveOpen(true)}>
-                                    <i className="bx bx-calendar-check me-2" />
-                                    {t('global.reserve_operation')}
-                                </Button>
-                            )}
                             {canUnreserve && (
                                 <Button type="button" color="gray" onClick={handleUnreserve} disabled={processing}>
                                     <i className="bx bx-transfer me-2" />

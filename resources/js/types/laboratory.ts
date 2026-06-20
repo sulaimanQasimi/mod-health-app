@@ -194,7 +194,7 @@ export interface LaboratoryResultShowPatient {
     age: string | number | null;
     phone: string | null;
     id_card: string | null;
-    gender: string | null;
+    gender: string | number | null;
 }
 
 export interface LaboratoryResultShowRegistration {
@@ -215,7 +215,7 @@ export interface LaboratoryPrintPatient {
     father_name: string | null;
     age: string | number | null;
     phone: string | null;
-    gender: string | null;
+    gender: string | number | null;
     id_number: string | null;
     date_of_birth: string | null;
     email: string | null;

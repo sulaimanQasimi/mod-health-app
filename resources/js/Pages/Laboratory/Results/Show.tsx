@@ -6,6 +6,7 @@ import LaboratoryPriorityBadge from '../../../Components/Laboratory/LaboratoryPr
 import LaboratoryRichTextEditor from '../../../Components/Laboratory/LaboratoryRichTextEditor';
 import LaboratoryStatusBadge from '../../../Components/Laboratory/LaboratoryStatusBadge';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import StatCard from '../../../Components/ui/StatCard';
 import {
     Table,
     TableBody,
@@ -52,6 +53,22 @@ const patientInfoCards = [
     { key: 'id_card', labelKey: 'global.id_card', icon: 'bx-id-card', accent: 'from-slate-600 to-gray-700' },
     { key: 'gender', labelKey: 'global.gender', icon: 'bx-user-circle', accent: 'from-violet-500 to-purple-600' },
 ] as const;
+
+function formatGender(gender: string | number | null | undefined, t: (key: string) => string) {
+    if (gender === null || gender === undefined || gender === '') {
+        return '—';
+    }
+
+    if (gender === 0 || gender === '0' || gender === 'male') {
+        return t('global.male');
+    }
+
+    if (gender === 1 || gender === '1' || gender === 'female') {
+        return t('global.female');
+    }
+
+    return String(gender);
+}
 
 export default function Show({
     registration,
@@ -114,12 +131,19 @@ export default function Show({
 
     const getPatientValue = (key: (typeof patientInfoCards)[number]['key']) => {
         const value = patient[key];
-        if (key === 'age' && value != null) {
-            return `${value} ${t('global.years') || ''}`.trim();
+
+        if (key === 'gender') {
+            return formatGender(value, t);
         }
+
+        if (key === 'age') {
+            return value != null && value !== '' ? String(value) : '—';
+        }
+
         if (key === 'name') {
             return patient.name;
         }
+
         return value ?? '—';
     };
 
@@ -156,47 +180,39 @@ export default function Show({
 
             <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {patientInfoCards.map((card) => (
-                    <Card key={card.key} className="shadow-sm">
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                                <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                                    {t(card.labelKey)}
-                                </p>
-                                <p className="mt-1 truncate font-semibold text-gray-900 dark:text-white">
-                                    {getPatientValue(card.key)}
-                                </p>
-                            </div>
-                            <div
+                    <StatCard
+                        key={card.key}
+                        variant="info"
+                        title={t(card.labelKey)}
+                        value={getPatientValue(card.key)}
+                        subtitle=""
+                        icon={
+                            <span
                                 className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${card.accent} text-white`}
                             >
                                 <i className={`bx ${card.icon}`} />
-                            </div>
-                        </div>
-                    </Card>
+                            </span>
+                        }
+                    />
                 ))}
-                <Card className="shadow-sm">
-                    <div className="flex items-start justify-between gap-3">
-                        <div>
-                            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                                {t('global.status')}
-                            </p>
-                            <div className="mt-2">
-                                <LaboratoryStatusBadge status={registration.status} />
-                            </div>
-                        </div>
-                        <LaboratoryPriorityBadge priority={registration.priority} />
-                    </div>
-                </Card>
-                <Card className="shadow-sm">
-                    <div>
-                        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                            {t('global.assigned_to')}
-                        </p>
-                        <p className="mt-1 font-semibold text-gray-900 dark:text-white">
-                            {registration.assigned_to_name ?? '—'}
-                        </p>
-                    </div>
-                </Card>
+                <StatCard
+                    variant="info"
+                    title={t('global.status')}
+                    value={<LaboratoryStatusBadge status={registration.status} />}
+                    subtitle=""
+                    icon={<LaboratoryPriorityBadge priority={registration.priority} />}
+                />
+                <StatCard
+                    variant="info"
+                    title={t('global.assigned_to')}
+                    value={registration.assigned_to_name ?? '—'}
+                    subtitle=""
+                    icon={
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-slate-600 to-gray-700 text-white">
+                            <i className="bx bx-user-check" />
+                        </span>
+                    }
+                />
             </div>
 
             <Card className="shadow-sm">

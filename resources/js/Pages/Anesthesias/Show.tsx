@@ -159,20 +159,8 @@ export default function AnesthesiasShow({
                     backHref={urls.back}
                     backLabel={t('global.back')}
                     action={
-                        <SettingsPageActions>
-                            {permissions.approve && anesthesia.status === 'new' && (
-                                <button type="button" className={ANESTHESIA_APPROVE_BTN_CLASS} onClick={openApprove}>
-                                    <i className="bx bx-check text-lg" />
-                                    {t('global.approve')}
-                                </button>
-                            )}
-                            {permissions.reject && anesthesia.status === 'new' && (
-                                <button type="button" className={ANESTHESIA_REJECT_BTN_CLASS} onClick={openReject}>
-                                    <i className="bx bx-x text-lg" />
-                                    {t('global.reject')}
-                                </button>
-                            )}
-                            {showReferToOperation && (
+                        showReferToOperation ? (
+                            <SettingsPageActions>
                                 <button
                                     type="button"
                                     className={ANESTHESIA_APPLY_BTN_CLASS}
@@ -182,8 +170,8 @@ export default function AnesthesiasShow({
                                     <i className="bx bx-cut text-lg" />
                                     {t('global.refere_to_operation')}
                                 </button>
-                            )}
-                        </SettingsPageActions>
+                            </SettingsPageActions>
+                        ) : undefined
                     }
                 />
 

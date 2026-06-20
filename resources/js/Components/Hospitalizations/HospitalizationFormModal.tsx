@@ -8,6 +8,8 @@ import {
     HospitalizationMeta,
 } from './hospitalizationFormTypes';
 
+const MODAL_BODY_CLASS = 'max-h-[min(72vh,760px)] overflow-y-auto';
+
 interface HospitalizationFormModalProps {
     show: boolean;
     onClose: () => void;
@@ -80,7 +82,7 @@ export default function HospitalizationFormModal({
         <Modal show={show} onClose={() => !submitting && onClose()} size="lg">
             <form onSubmit={handleSubmit}>
                 <ModalHeader>{title ?? t('global.hospitalize_patient')}</ModalHeader>
-                <ModalBody>
+                <ModalBody className={MODAL_BODY_CLASS}>
                     <HospitalizationFormFields
                         form={form}
                         onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}

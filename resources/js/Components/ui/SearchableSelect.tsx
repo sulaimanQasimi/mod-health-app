@@ -63,21 +63,41 @@ function getScrollParents(element: HTMLElement | null): HTMLElement[] {
 function computeDropdownPosition(trigger: HTMLElement) {
     const rect = trigger.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
     const spaceBelow = viewportHeight - rect.bottom - DROPDOWN_GAP;
     const spaceAbove = rect.top - DROPDOWN_GAP;
-    const preferredTotalHeight = SEARCH_HEADER_HEIGHT + PREFERRED_LIST_HEIGHT;
-    const openAbove = spaceBelow < preferredTotalHeight && spaceAbove > spaceBelow;
-    const availableSpace = openAbove ? spaceAbove : spaceBelow;
-    const totalHeight = Math.min(preferredTotalHeight, availableSpace);
-    const listMaxHeight = Math.max(80, totalHeight - SEARCH_HEADER_HEIGHT);
+    const minVisibleHeight = SEARCH_HEADER_HEIGHT + 80;
+    const openAbove = spaceBelow < minVisibleHeight && spaceAbove > spaceBelow;
+    const left = Math.max(DROPDOWN_GAP, Math.min(rect.left, viewportWidth - rect.width - DROPDOWN_GAP));
+
+    if (openAbove) {
+        const listMaxHeight = Math.max(
+            80,
+            Math.min(PREFERRED_LIST_HEIGHT, spaceAbove - SEARCH_HEADER_HEIGHT),
+        );
+
+        return {
+            style: {
+                position: 'fixed' as const,
+                bottom: viewportHeight - rect.top + DROPDOWN_GAP,
+                left,
+                width: rect.width,
+                zIndex: 9999,
+            },
+            listMaxHeight,
+        };
+    }
+
+    const listMaxHeight = Math.max(
+        80,
+        Math.min(PREFERRED_LIST_HEIGHT, spaceBelow - SEARCH_HEADER_HEIGHT),
+    );
 
     return {
         style: {
             position: 'fixed' as const,
-            top: openAbove
-                ? rect.top - DROPDOWN_GAP - totalHeight
-                : rect.bottom + DROPDOWN_GAP,
-            left: rect.left,
+            top: rect.bottom + DROPDOWN_GAP,
+            left,
             width: rect.width,
             zIndex: 9999,
         },

@@ -228,7 +228,7 @@ export default function HospitalizationChangeRoomBedModal({
                         {t('global.change_room_and_bed')}
                     </span>
                 </ModalHeader>
-                <ModalBody className="space-y-4">
+                <ModalBody className="max-h-[min(72vh,760px)] space-y-4 overflow-y-auto">
                     {loading ? (
                         <div className="flex justify-center py-8">
                             <Spinner size="lg" />

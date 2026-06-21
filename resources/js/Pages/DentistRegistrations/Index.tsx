@@ -17,7 +17,6 @@ import {
 } from '../../types/dentistRegistration';
 import { buildPaginationSummary } from '../../utils/pagination';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
-
 interface IndexDentistRegistrationsProps {
     registrations: PaginatedDentistRegistrations;
     stats: Stats;

@@ -310,7 +310,7 @@ export default function ShowDentistRegistration({
                     )}
 
                     {permissions.markStatus && (
-                        <div className="mt-4 flex flex-wrap justify-center gap-2">
+                        <div className="mt-4 flex flex-wrap justify-end dark:text-white gap-2">
                             {registration.status !== 'completed' && (
                                 <Button size="sm" color="success" onClick={() => postStatus(urls.markCompleted!)}>
                                     {t('global.mark_completed')}

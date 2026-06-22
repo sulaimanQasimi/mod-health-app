@@ -20,8 +20,8 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Head, router } from '@inertiajs/react';
-import { Button, Card, Label, Spinner } from 'flowbite-react';
-import { FormEvent, ReactNode, useEffect, useState } from 'react';
+import { Badge, Button, Card, Label, Spinner } from 'flowbite-react';
+import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
@@ -118,18 +118,26 @@ function createSlot(): Slot {
     };
 }
 
+function createInitialCanvasState(): { slots: Slot[]; widgetsBySlot: Record<string, PlacedWidget[]> } {
+    const firstSlot = createSlot();
+    return {
+        slots: [firstSlot],
+        widgetsBySlot: { [firstSlot.id]: [] },
+    };
+}
+
 function slotColSpanClass(colSpan: Slot['colSpan']): string {
     switch (colSpan) {
         case 1:
-            return 'col-span-1';
+            return 'col-span-1 xl:col-span-1';
         case 2:
-            return 'col-span-2';
+            return 'col-span-1 xl:col-span-2';
         case 3:
-            return 'col-span-3';
+            return 'col-span-1 xl:col-span-3';
         case 4:
-            return 'col-span-4';
+            return 'col-span-1 xl:col-span-4';
         default:
-            return 'col-span-1';
+            return 'col-span-1 xl:col-span-1';
     }
 }
 
@@ -138,39 +146,64 @@ function PaletteItem({
     label,
     icon,
     onAdd,
+    isPlaced,
+    addedLabel,
 }: {
     type: ReportWidgetType;
     label: string;
     icon: string;
     onAdd: (type: ReportWidgetType) => void;
+    isPlaced: boolean;
+    addedLabel: string;
 }) {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id: `palette-${type}`,
         data: { source: 'palette', type },
+        disabled: isPlaced,
     });
 
     const style = transform ? { transform: CSS.Translate.toString(transform) } : undefined;
 
     return (
-        <div className="flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2 text-start text-sm font-medium text-gray-800 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/30">
+        <div
+            className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-start text-sm font-medium shadow-sm transition ${
+                isPlaced
+                    ? 'border-emerald-200 bg-emerald-50/80 text-gray-600 dark:border-emerald-900 dark:bg-emerald-950/20 dark:text-gray-300'
+                    : 'border-gray-200 bg-white text-gray-800 hover:border-indigo-300 hover:bg-indigo-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/30'
+            }`}
+        >
             <button
                 type="button"
                 onClick={() => onAdd(type)}
-                className="flex min-w-0 flex-1 items-center gap-3"
+                disabled={isPlaced}
+                className="flex min-w-0 flex-1 items-center gap-3 disabled:cursor-not-allowed"
             >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-white">
-                    <i className={`bx ${icon} text-lg`} />
+                <span
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white ${
+                        isPlaced
+                            ? 'bg-emerald-500'
+                            : 'bg-gradient-to-br from-indigo-500 to-violet-600'
+                    }`}
+                >
+                    <i className={`bx ${isPlaced ? 'bx-check' : icon} text-lg`} />
                 </span>
                 <span className="flex-1">{label}</span>
-                <i className="bx bx-plus text-lg text-indigo-500" />
+                {isPlaced ? (
+                    <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">{addedLabel}</span>
+                ) : (
+                    <i className="bx bx-plus text-lg text-indigo-500" />
+                )}
             </button>
             <button
                 ref={setNodeRef}
                 style={style}
                 type="button"
-                className={`flex h-9 w-9 shrink-0 cursor-grab items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 active:cursor-grabbing dark:border-gray-700 dark:hover:bg-gray-800 ${
-                    isDragging ? 'opacity-50' : ''
-                }`}
+                disabled={isPlaced}
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-400 dark:border-gray-700 ${
+                    isPlaced
+                        ? 'cursor-not-allowed opacity-40'
+                        : 'cursor-grab hover:bg-gray-50 active:cursor-grabbing dark:hover:bg-gray-800'
+                } ${isDragging ? 'opacity-50' : ''}`}
                 aria-label={`Drag ${label}`}
                 {...listeners}
                 {...attributes}
@@ -223,6 +256,10 @@ function ReportSlot({
     slot,
     index,
     canRemove,
+    widgetCount,
+    slotLabel,
+    widthLabel,
+    removeLabel,
     onRemove,
     onColSpanChange,
     children,
@@ -230,18 +267,32 @@ function ReportSlot({
     slot: Slot;
     index: number;
     canRemove: boolean;
+    widgetCount: number;
+    slotLabel: string;
+    widthLabel: string;
+    removeLabel: string;
     onRemove: (slotId: string) => void;
     onColSpanChange: (slotId: string, colSpan: Slot['colSpan']) => void;
     children: ReactNode;
 }) {
     return (
         <div className={`flex min-w-0 flex-col ${slotColSpanClass(slot.colSpan)}`}>
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-800">
-                <p className="text-sm font-semibold text-gray-900 dark:text-white">Slot {index + 1}</p>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800">
+                <div className="flex min-w-0 items-center gap-2">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                        {index + 1}
+                    </span>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{slotLabel}</p>
+                    {widgetCount > 0 && (
+                        <Badge color="indigo" size="sm">
+                            {widgetCount}
+                        </Badge>
+                    )}
+                </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Width:</span>
-                    <div className="flex items-center gap-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{widthLabel}</span>
+                    <div className="flex items-center gap-1 rounded-lg bg-gray-50 p-0.5 dark:bg-gray-900/60">
                         {SLOT_COL_SPAN_OPTIONS.map((span) => (
                             <Button
                                 key={span}
@@ -249,24 +300,24 @@ function ReportSlot({
                                 size="xs"
                                 color={slot.colSpan === span ? 'blue' : 'light'}
                                 onClick={() => onColSpanChange(slot.id, span)}
-                                title={`Span ${span} column${span > 1 ? 's' : ''}`}
+                                title={`${widthLabel} ${span}`}
+                                className="!min-w-8"
                             >
                                 {span}
                             </Button>
                         ))}
                     </div>
+                    <Button
+                        type="button"
+                        color="light"
+                        size="xs"
+                        onClick={() => onRemove(slot.id)}
+                        disabled={!canRemove}
+                    >
+                        <i className="bx bx-trash me-1" />
+                        {removeLabel}
+                    </Button>
                 </div>
-
-                <Button
-                    type="button"
-                    color="light"
-                    size="xs"
-                    onClick={() => onRemove(slot.id)}
-                    disabled={!canRemove}
-                >
-                    <i className="bx bx-trash me-1" />
-                    Remove
-                </Button>
             </div>
 
             <div className="min-h-0 flex-1">{children}</div>
@@ -278,18 +329,20 @@ function SortableWidgetCard({
     widget,
     slotId,
     title,
+    removeLabel,
     onRemove,
     children,
 }: {
     widget: PlacedWidget;
     slotId: string;
     title: string;
+    removeLabel: string;
     onRemove: (id: string) => void;
     children: ReactNode;
 }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: widget.id,
-        data: { source: 'canvas', type: widget.type, slotId },
+        data: { source: 'canvas', type: widget.type, slotId, widgetId: widget.id },
     });
 
     const style = {
@@ -316,11 +369,25 @@ function SortableWidgetCard({
                     </div>
                     <Button type="button" color="light" size="sm" onClick={() => onRemove(widget.id)}>
                         <i className="bx bx-trash me-1" />
-                        Remove
+                        {removeLabel}
                     </Button>
                 </div>
                 {children}
             </Card>
+        </div>
+    );
+}
+
+function WidgetSearchPrompt({ title, message }: { title: string; message: string }) {
+    return (
+        <div className="flex min-h-[180px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-amber-200 bg-amber-50/60 px-6 py-8 text-center dark:border-amber-900/60 dark:bg-amber-950/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/40">
+                <i className="bx bx-filter-alt text-2xl text-amber-600 dark:text-amber-400" />
+            </div>
+            <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{title}</p>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{message}</p>
+            </div>
         </div>
     );
 }
@@ -336,8 +403,9 @@ export default function GeneralReport({
     const [hasSearch, setHasSearch] = useState(serverHasSearch);
     const [processing, setProcessing] = useState(false);
     const [filtersOpen, setFiltersOpen] = useState(true);
-    const [slots, setSlots] = useState<Slot[]>(() => [createSlot()]);
-    const [widgetsBySlot, setWidgetsBySlot] = useState<Record<string, PlacedWidget[]>>(() => ({}));
+    const [initialCanvas] = useState(createInitialCanvasState);
+    const [slots, setSlots] = useState<Slot[]>(initialCanvas.slots);
+    const [widgetsBySlot, setWidgetsBySlot] = useState<Record<string, PlacedWidget[]>>(initialCanvas.widgetsBySlot);
     const [activeDragType, setActiveDragType] = useState<ReportWidgetType | null>(null);
 
     const sensors = useSensors(
@@ -353,20 +421,36 @@ export default function GeneralReport({
 
     const appliedFilters = hasSearch ? filters : EMPTY_FILTERS;
 
-    const ensureSlotInitialized = (slotId: string) => {
-        setWidgetsBySlot((current) => (current[slotId] ? current : { ...current, [slotId]: [] }));
-    };
+    const placedWidgetTypes = useMemo(() => {
+        const types = new Set<ReportWidgetType>();
+        Object.values(widgetsBySlot).forEach((list) => {
+            list.forEach((widget) => types.add(widget.type));
+        });
+        return types;
+    }, [widgetsBySlot]);
 
-    useEffect(() => {
-        // Ensure state exists for all slots (e.g. on first render)
-        slots.forEach((slot) => ensureSlotInitialized(slot.id));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [slots]);
+    const totalWidgetCount = useMemo(
+        () => Object.values(widgetsBySlot).reduce((sum, list) => sum + list.length, 0),
+        [widgetsBySlot],
+    );
+
+    const branchLabel = useMemo(() => {
+        if (!filters.branch_id) {
+            return t('global.all');
+        }
+        return filterOptions.branches.find((branch) => String(branch.id) === filters.branch_id)?.name ?? filters.branch_id;
+    }, [filterOptions.branches, filters.branch_id, t]);
 
     const hasWidgetTypeInAnySlot = (type: ReportWidgetType, current: Record<string, PlacedWidget[]>) =>
         Object.values(current).some((list) => list.some((w) => w.type === type));
 
+    const resolveTargetSlotId = () => slots[slots.length - 1]?.id;
+
     const addWidgetToSlot = (type: ReportWidgetType, slotId: string) => {
+        if (!slotId) {
+            return;
+        }
+
         setWidgetsBySlot((current) => {
             const next = { ...current };
             const list = next[slotId] ? [...next[slotId]] : [];
@@ -392,7 +476,9 @@ export default function GeneralReport({
     };
 
     const addSlot = () => {
-        setSlots((current) => [createSlot(), ...current]);
+        const newSlot = createSlot();
+        setSlots((current) => [newSlot, ...current]);
+        setWidgetsBySlot((current) => ({ ...current, [newSlot.id]: [] }));
     };
 
     const removeSlot = (slotId: string) => {
@@ -436,6 +522,7 @@ export default function GeneralReport({
 
     const handleReset = () => {
         setFilters(EMPTY_FILTERS);
+        setHasSearch(false);
         setProcessing(true);
         router.get(urls.current, {}, {
             preserveScroll: true,
@@ -461,13 +548,21 @@ export default function GeneralReport({
             type?: ReportWidgetType;
             slotId?: string;
         };
+        const overData = over.data.current as {
+            source?: string;
+            slotId?: string;
+            widgetId?: string;
+        } | undefined;
+
         const overId = String(over.id);
+        const isSlotDrop = overId.startsWith('slot-');
+        const isCanvasDrop = overData?.source === 'canvas';
 
         if (activeData?.source === 'palette' && activeData.type) {
-            if (overId.startsWith('slot-')) addWidgetToSlot(activeData.type, overId);
-            if (overId.startsWith('widget-')) {
-                const targetSlot = over.data.current?.slotId as string | undefined;
-                if (targetSlot) addWidgetToSlot(activeData.type, targetSlot);
+            if (isSlotDrop) {
+                addWidgetToSlot(activeData.type, overId);
+            } else if (isCanvasDrop && overData?.slotId) {
+                addWidgetToSlot(activeData.type, overData.slotId);
             }
 
             return;
@@ -475,18 +570,23 @@ export default function GeneralReport({
 
         if (activeData?.source === 'canvas' && active.id !== over.id) {
             const fromSlot = activeData.slotId;
-            if (!fromSlot) return;
+            if (!fromSlot) {
+                return;
+            }
 
-            // Dropped on an empty slot
-            if (overId.startsWith('slot-')) {
+            if (isSlotDrop) {
                 const toSlot = overId;
-                if (toSlot === fromSlot) return;
+                if (toSlot === fromSlot) {
+                    return;
+                }
 
                 setWidgetsBySlot((current) => {
                     const fromList = current[fromSlot] ?? [];
                     const toList = current[toSlot] ?? [];
                     const moving = fromList.find((w) => w.id === active.id);
-                    if (!moving) return current;
+                    if (!moving) {
+                        return current;
+                    }
 
                     return {
                         ...current,
@@ -498,17 +598,17 @@ export default function GeneralReport({
                 return;
             }
 
-            // Dropped on another widget card
-            if (overId.startsWith('widget-')) {
-                const toSlot = over.data.current?.slotId as string | undefined;
-                const overWidgetId = over.data.current?.widgetId as string | undefined;
-                if (!toSlot || !overWidgetId) return;
+            if (isCanvasDrop && overData?.slotId) {
+                const toSlot = overData.slotId;
+                const overWidgetId = overData.widgetId ?? overId;
 
                 setWidgetsBySlot((current) => {
                     const fromList = current[fromSlot] ?? [];
                     const toList = current[toSlot] ?? [];
                     const moving = fromList.find((w) => w.id === active.id);
-                    if (!moving) return current;
+                    if (!moving) {
+                        return current;
+                    }
 
                     const withoutMoving = fromList.filter((w) => w.id !== active.id);
 
@@ -521,7 +621,9 @@ export default function GeneralReport({
                     if (fromSlot === toSlot) {
                         const oldIndex = toList.findIndex((w) => w.id === active.id);
                         const newIndex = toList.findIndex((w) => w.id === overWidgetId);
-                        if (oldIndex === -1 || newIndex === -1) return current;
+                        if (oldIndex === -1 || newIndex === -1) {
+                            return current;
+                        }
                         return { ...current, [toSlot]: arrayMove(toList, oldIndex, newIndex) };
                     }
 
@@ -567,6 +669,45 @@ export default function GeneralReport({
                         accent="from-indigo-600 to-violet-700"
                         backLabel={t('global.back')}
                     />
+
+                    {hasSearch && (
+                        <Card className="!shadow-sm">
+                            <div className="flex flex-wrap items-center gap-3">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white">
+                                    <i className="bx bx-check-shield text-lg" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                        {t('global.advanced_filters')}
+                                    </p>
+                                    <div className="mt-2 flex flex-wrap gap-2">
+                                        <Badge color="indigo">
+                                            {t('global.branch')}: {branchLabel}
+                                        </Badge>
+                                        {filters.date_from && (
+                                            <Badge color="gray">
+                                                {t('global.from')}: {filters.date_from}
+                                            </Badge>
+                                        )}
+                                        {filters.date_to && (
+                                            <Badge color="gray">
+                                                {t('global.to')}: {filters.date_to}
+                                            </Badge>
+                                        )}
+                                        {!filters.date_from && !filters.date_to && (
+                                            <Badge color="gray">{t('global.all')}</Badge>
+                                        )}
+                                    </div>
+                                </div>
+                                {totalWidgetCount > 0 && (
+                                    <div className="text-end">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('global.total')}</p>
+                                        <p className="text-lg font-bold text-gray-900 dark:text-white">{totalWidgetCount}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </Card>
+                    )}
 
                     <Card className="!shadow-sm">
                         <button
@@ -645,19 +786,35 @@ export default function GeneralReport({
 
                     <Card className="!shadow-sm">
                         <div className="mb-4 border-b border-gray-100 pb-4 dark:border-gray-700">
-                            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Report Components</h2>
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                Click or drag a component into any slot below.
-                            </p>
+                            <div className="flex items-start gap-3">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/40">
+                                    <i className="bx bx-widget text-xl text-indigo-600 dark:text-indigo-400" />
+                                </div>
+                                <div>
+                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+                                        {t('global.reports')}
+                                    </h2>
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        {t('global.general')} — click or drag a component into any slot below.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <div className="grid gap-3 sm:grid-cols-2">
                             {(Object.keys(WIDGET_CATALOG) as ReportWidgetType[]).map((type) => (
                                 <PaletteItem
                                     key={type}
                                     type={type}
                                     label={t(WIDGET_CATALOG[type].labelKey)}
                                     icon={WIDGET_CATALOG[type].icon}
-                                    onAdd={(widgetType) => addWidgetToSlot(widgetType, slots[0]?.id)}
+                                    isPlaced={placedWidgetTypes.has(type)}
+                                    addedLabel="Added"
+                                    onAdd={(widgetType) => {
+                                        const targetSlotId = resolveTargetSlotId();
+                                        if (targetSlotId) {
+                                            addWidgetToSlot(widgetType, targetSlotId);
+                                        }
+                                    }}
                                 />
                             ))}
                         </div>
@@ -665,19 +822,26 @@ export default function GeneralReport({
 
                     <Card className="!shadow-sm">
                         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
-                            <div>
-                                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Report Slots</h2>
-                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    New slots are added at the top. Use width buttons to span 1–4 columns.
-                                </p>
+                            <div className="flex items-start gap-3">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-950/40">
+                                    <i className="bx bx-layout text-xl text-violet-600 dark:text-violet-400" />
+                                </div>
+                                <div>
+                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+                                        {t('global.general')}
+                                    </h2>
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        New slots appear at the top. Adjust width to span 1–4 columns on large screens.
+                                    </p>
+                                </div>
                             </div>
                             <Button type="button" color="blue" size="sm" onClick={addSlot}>
                                 <i className="bx bx-plus me-1" />
-                                Add Slot
+                                {t('global.add')} Slot
                             </Button>
                         </div>
 
-                        <div className="grid grid-cols-4 gap-4 ">
+                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
                             {slots.map((slot, index) => {
                                 const widgets = widgetsBySlot[slot.id] ?? [];
                                 const widgetIds = widgets.map((w) => w.id);
@@ -688,13 +852,17 @@ export default function GeneralReport({
                                         slot={slot}
                                         index={index}
                                         canRemove={slots.length > 1}
+                                        widgetCount={widgets.length}
+                                        slotLabel={`Slot ${index + 1}`}
+                                        widthLabel="Width"
+                                        removeLabel={t('global.remove')}
                                         onRemove={removeSlot}
                                         onColSpanChange={setSlotColSpan}
                                     >
                                         <SlotCanvas
                                             slotId={slot.id}
                                             isEmpty={widgets.length === 0}
-                                            emptyLabel="Drop here"
+                                            emptyLabel="Drop components here"
                                         >
                                             <SortableContext items={widgetIds} strategy={verticalListSortingStrategy}>
                                                 {widgets.map((widget) => (
@@ -703,9 +871,17 @@ export default function GeneralReport({
                                                             widget={widget}
                                                             slotId={slot.id}
                                                             title={t(WIDGET_CATALOG[widget.type].labelKey)}
+                                                            removeLabel={t('global.remove')}
                                                             onRemove={removeWidget}
                                                         >
-                                                            {renderWidget(widget)}
+                                                            {hasSearch ? (
+                                                                renderWidget(widget)
+                                                            ) : (
+                                                                <WidgetSearchPrompt
+                                                                    title={t('global.search')}
+                                                                    message="Set your filters above and click Search to load report data."
+                                                                />
+                                                            )}
                                                         </SortableWidgetCard>
                                                     </div>
                                                 ))}

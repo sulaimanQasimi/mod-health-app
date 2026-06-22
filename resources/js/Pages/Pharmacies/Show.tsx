@@ -1,10 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
 import { useState } from 'react';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
-import { SETTINGS_WIDE_FORM_WIDTH } from '../../utils/settingsUi';
+import { SETTINGS_WIDE_FORM_WIDTH, settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface PharmacyUser {
     id: number;
@@ -70,23 +70,34 @@ export default function ShowPharmacy({
                         backHref={urls.index}
                         backLabel={t('global.back')}
                         action={
-                            <div className="flex flex-wrap gap-2">
+                            <SettingsPageActions>
                                 {permissions.manage_users && (
-                                    <Button color="light" as={Link} href={urls.manageUsers}>
+                                    <Button
+                                        as={Link}
+                                        href={urls.manageUsers}
+                                        size="sm"
+                                        className={settingsHeaderButtonClass.secondary}
+                                    >
                                         <i className="bx bx-user-plus me-2" />
                                         {t('global.manage_users')}
                                     </Button>
                                 )}
                                 {permissions.edit && (
-                                    <Button color="warning" as={Link} href={urls.edit}>
+                                    <Button
+                                        as={Link}
+                                        href={urls.edit}
+                                        size="sm"
+                                        className={settingsHeaderButtonClass.warning}
+                                    >
                                         <i className="bx bx-edit me-2" />
                                         {t('global.edit')}
                                     </Button>
                                 )}
                                 {permissions.delete && (
                                     <Button
-                                        color="failure"
+                                        size="sm"
                                         disabled={deleting}
+                                        className={settingsHeaderButtonClass.danger}
                                         onClick={() => {
                                             if (window.confirm(t('global.are_you_sure_delete_pharmacy'))) {
                                                 setDeleting(true);
@@ -100,7 +111,7 @@ export default function ShowPharmacy({
                                         {t('global.delete')}
                                     </Button>
                                 )}
-                            </div>
+                            </SettingsPageActions>
                         }
                     />
 

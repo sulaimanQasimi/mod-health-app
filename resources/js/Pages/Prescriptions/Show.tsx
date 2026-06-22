@@ -4,7 +4,7 @@ import { useState } from 'react';
 import AlternativesModal from '../../Components/Prescriptions/AlternativesModal';
 import PrescriptionItemsTable from '../../Components/Prescriptions/PrescriptionItemsTable';
 import PrescriptionShowStats from '../../Components/Prescriptions/PrescriptionShowStats';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
@@ -14,7 +14,7 @@ import {
     PrescriptionShowPermissions,
     PrescriptionShowUrls,
 } from '../../types/prescription';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH, settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface ShowPrescriptionProps {
     prescription: PrescriptionDetail;
@@ -131,13 +131,13 @@ export default function ShowPrescription({
                             backHref={urls.index}
                             backLabel={t('global.back')}
                             action={
-                                <div className="flex flex-wrap gap-2">
+                                <SettingsPageActions>
                                     <Button
-                                        color="light"
                                         as="a"
                                         href={urls.thermalReceipt}
                                         target="_blank"
-                                        className="border border-emerald-200 bg-white hover:bg-emerald-50 dark:border-emerald-800 dark:bg-gray-800"
+                                        size="sm"
+                                        className={settingsHeaderButtonClass.secondary}
                                     >
                                         <i className="bx bx-printer me-2" />
                                         {t('global.thermal_print')}
@@ -145,17 +145,19 @@ export default function ShowPrescription({
                                     {!readonly && permissions.edit && (
                                         <>
                                             <Button
-                                                color="warning"
+                                                size="sm"
                                                 onClick={markAllDelivered}
                                                 disabled={processing}
+                                                className={settingsHeaderButtonClass.warning}
                                             >
                                                 <i className="bx bx-check-double me-2" />
                                                 {t('global.mark_delivered')}
                                             </Button>
                                             <Button
-                                                color="success"
+                                                size="sm"
                                                 onClick={completePrescription}
                                                 disabled={processing}
+                                                className={settingsHeaderButtonClass.success}
                                             >
                                                 <i className="bx bx-badge-check me-2" />
                                                 {t('global.complete_prescription')}
@@ -163,12 +165,17 @@ export default function ShowPrescription({
                                         </>
                                     )}
                                     {permissions.delete && (
-                                        <Button color="failure" outline onClick={handleDelete} disabled={processing}>
+                                        <Button
+                                            size="sm"
+                                            onClick={handleDelete}
+                                            disabled={processing}
+                                            className={settingsHeaderButtonClass.danger}
+                                        >
                                             <i className="bx bx-trash me-2" />
                                             {t('global.delete')}
                                         </Button>
                                     )}
-                                </div>
+                                </SettingsPageActions>
                             }
                         />
                     </div>

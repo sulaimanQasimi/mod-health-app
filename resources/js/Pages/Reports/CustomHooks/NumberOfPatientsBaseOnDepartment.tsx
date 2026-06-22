@@ -59,6 +59,9 @@ const BREAKDOWN_CONFIGS: BreakdownConfig[] = [
 const getItemKey = (item: BreakdownItem): string =>
     item.key === null || item.key === undefined || item.key === '' ? 'unknown' : String(item.key);
 
+const isStringLabel = (label: BreakdownItem['label']): label is string =>
+    typeof label === 'string' && label.trim() !== '';
+
 function DepartmentBreakdownTable({
     title,
     departments,
@@ -87,14 +90,14 @@ function DepartmentBreakdownTable({
             department[breakdownKey].forEach((item) => {
                 const key = getItemKey(item);
                 if (!map.has(key)) {
-                    map.set(key, resolveColumnLabel(item));
+                    map.set(key, String(resolveColumnLabel(item)));
                 }
             });
         });
 
         return Array.from(map.entries())
             .map(([id, name]) => ({ id, name }))
-            .sort((a, b) => a.name.localeCompare(b.name));
+            .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
     }, [breakdownKey, departments, resolveColumnLabel]);
 
     const getCount = (department: DepartmentReport, columnId: string): number => {
@@ -224,7 +227,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
 
     const resolveGenderLabel = useCallback(
         (item: BreakdownItem) => {
-            if (item.label) {
+            if (isStringLabel(item.label)) {
                 return item.label;
             }
             return String(item.key) === '1' ? t('global.female') : t('global.male');
@@ -234,7 +237,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
 
     const resolveJobCategoryLabel = useCallback(
         (item: BreakdownItem) => {
-            if (item.label) {
+            if (isStringLabel(item.label)) {
                 return item.label;
             }
             return String(item.key) === '0' ? t('global.military') : t('global.civilian');
@@ -244,7 +247,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
 
     const resolveJobTypeLabel = useCallback(
         (item: BreakdownItem) => {
-            if (item.label) {
+            if (isStringLabel(item.label)) {
                 return item.label;
             }
             const map: Record<string, string> = {
@@ -259,7 +262,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
 
     const resolvePatientTypeLabel = useCallback(
         (item: BreakdownItem) => {
-            if (item.label) {
+            if (isStringLabel(item.label)) {
                 return item.label;
             }
             const map: Record<string, string> = {
@@ -273,7 +276,11 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
         [t],
     );
 
-    const resolveNamedLabel = useCallback((item: BreakdownItem) => item.label ?? String(item.key ?? 'Unknown'), []);
+    const resolveNamedLabel = useCallback(
+        (item: BreakdownItem) =>
+            isStringLabel(item.label) ? item.label : String(item.key ?? 'Unknown'),
+        [],
+    );
 
     const labelResolvers: Record<BreakdownKey, (item: BreakdownItem) => string> = useMemo(
         () => ({

@@ -224,11 +224,17 @@ class GenralReport extends Controller
                 return $valueFilter($row->breakdown_value);
             })
             ->groupBy('department_id')
-            ->map(function (Collection $rows) {
-                return $rows->map(function ($row) {
+            ->map(function (Collection $rows) use ($labelColumn) {
+                return $rows->map(function ($row) use ($labelColumn) {
+                    $label = null;
+
+                    if ($labelColumn && $row->breakdown_label !== null && $row->breakdown_label !== '') {
+                        $label = (string) $row->breakdown_label;
+                    }
+
                     return [
                         'key' => $row->breakdown_value,
-                        'label' => $row->breakdown_label ?? $row->breakdown_value,
+                        'label' => $label,
                         'count' => (int) $row->count,
                     ];
                 })->values();

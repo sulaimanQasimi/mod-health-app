@@ -43,10 +43,8 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
     }, [branch_id, date_from, date_to, get, setData]);
 
     return (
-        <div className="container py-4">
-            <h2 className="text-2xl font-bold mb-4">Number of Patients by Department</h2>
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-white shadow-md rounded">
+        <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead>
                         <tr className="bg-gray-100">
                             <th className="py-2 px-4 text-left">Department Name</th>
@@ -76,7 +74,6 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                         )}
                     </tbody>
                 </table>
-            </div>
         </div>
     );
 };

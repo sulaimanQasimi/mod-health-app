@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Reports;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\Branch;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,7 +14,25 @@ class GenralReport extends Controller
 
     public function index(Request $request)
     {
-        return Inertia::render('Reports/GeneralReport');
+        $user = $request->user();
+        $branches = $user?->branch_id
+            ? Branch::query()->where('id', $user->branch_id)->orderBy('name')->get(['id', 'name'])
+            : Branch::query()->orderBy('name')->get(['id', 'name']);
+
+        return Inertia::render('Reports/GeneralReport', [
+            'filters' => [
+                'branch_id' => $request->string('branch_id')->toString(),
+                'date_from' => $request->string('date_from')->toString(),
+                'date_to' => $request->string('date_to')->toString(),
+            ],
+            'hasSearch' => $request->boolean('search'),
+            'filterOptions' => [
+                'branches' => $branches,
+            ],
+            'urls' => [
+                'current' => route('react.reports.general.index'),
+            ],
+        ]);
     }
 
     public function number_of_patients_base_on_department(Request $request)

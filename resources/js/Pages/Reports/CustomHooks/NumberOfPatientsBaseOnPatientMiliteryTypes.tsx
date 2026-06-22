@@ -86,10 +86,8 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
     const columnCount = militeryTypeColumns.length + 2;
 
     return (
-        <div className="container py-4">
-            <h2 className="text-2xl font-bold mb-4">Number of Patients by Department and Militery Type</h2>
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-white shadow-md rounded">
+        <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead>
                         <tr className="bg-gray-100">
                             <th className="py-2 px-4 text-left">Department</th>
@@ -129,7 +127,6 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
                         )}
                     </tbody>
                 </table>
-            </div>
         </div>
     );
 };

@@ -58,6 +58,42 @@ const getItemKey = (item: BreakdownItem): string =>
 const isStringLabel = (label: BreakdownItem['label']): label is string =>
     typeof label === 'string' && label.trim() !== '';
 
+function RemovableColumnHeader({
+    columnName,
+    onRemove,
+    removeLabel,
+    isFirstInGroup,
+}: {
+    columnName: string;
+    onRemove: () => void;
+    removeLabel: string;
+    isFirstInGroup: boolean;
+}) {
+    return (
+        <th
+            className={`h-28 w-12 min-w-12 max-w-14 border-b border-gray-200 bg-gray-100 p-0 align-bottom dark:border-gray-700 dark:bg-gray-800 ${
+                isFirstInGroup ? 'border-s-2 border-s-gray-300 dark:border-s-gray-600' : ''
+            }`}
+        >
+            <button
+                type="button"
+                onClick={onRemove}
+                title={removeLabel}
+                aria-label={`${removeLabel} ${columnName}`}
+                className="group/col-action relative flex h-full w-full items-end justify-center overflow-hidden pb-3 transition hover:bg-red-50 dark:hover:bg-red-950/30"
+            >
+                <span
+                    className="inline-block max-w-28 origin-bottom-left -rotate-90 whitespace-nowrap text-xs font-semibold leading-none text-gray-700 transition-opacity group-hover/col-action:opacity-0 dark:text-gray-200"
+                    title={columnName}
+                >
+                    {columnName}
+                </span>
+                <i className="bx bx-trash absolute bottom-4 text-lg text-red-500 opacity-0 transition-opacity group-hover/col-action:opacity-100" />
+            </button>
+        </th>
+    );
+}
+
 const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmentProps> = ({
     branch_id = '',
     date_from = '',
@@ -65,6 +101,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
 }) => {
     const { t } = useTranslation();
     const [report, setReport] = useState<DepartmentReport[]>([]);
+    const [hiddenColumnIds, setHiddenColumnIds] = useState<Set<string>>(() => new Set());
     const { get, processing, setData } = useHttp({
         branch_id: '',
         date_from: '',
@@ -82,6 +119,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
             .then((response) => {
                 const payload = response as { data?: DepartmentReport[] };
                 setReport(payload?.data ?? []);
+                setHiddenColumnIds(new Set());
             })
             .catch(() => {
                 setReport([]);
@@ -98,6 +136,10 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                 return row.department_name !== department.department_name;
             }),
         );
+    };
+
+    const removeColumn = (columnId: string) => {
+        setHiddenColumnIds((current) => new Set([...current, columnId]));
     };
 
     const resolveGenderLabel = useCallback(
@@ -205,15 +247,24 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
         }).filter((group) => group.columns.length > 0);
     }, [labelResolvers, report, t]);
 
+    const visibleColumnGroups = useMemo<ColumnGroup[]>(() => {
+        return columnGroups
+            .map((group) => ({
+                ...group,
+                columns: group.columns.filter((column) => !hiddenColumnIds.has(column.id)),
+            }))
+            .filter((group) => group.columns.length > 0);
+    }, [columnGroups, hiddenColumnIds]);
+
     const flatColumns = useMemo(
         () =>
-            columnGroups.flatMap((group) =>
+            visibleColumnGroups.flatMap((group) =>
                 group.columns.map((column) => ({
                     ...column,
                     breakdownKey: group.key,
                 })),
             ),
-        [columnGroups],
+        [visibleColumnGroups],
     );
 
     const getCount = (department: DepartmentReport, breakdownKey: BreakdownKey, itemKey: string): number => {
@@ -272,7 +323,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                         >
                             {t('global.department')}
                         </th>
-                        {columnGroups.map((group) => (
+                        {visibleColumnGroups.map((group) => (
                             <th
                                 key={group.key}
                                 colSpan={group.columns.length}
@@ -289,23 +340,15 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                         </th>
                     </tr>
                     <tr className="bg-gray-100 dark:bg-gray-800">
-                        {columnGroups.map((group) =>
+                        {visibleColumnGroups.map((group) =>
                             group.columns.map((column, columnIndex) => (
-                                <th
+                                <RemovableColumnHeader
                                     key={column.id}
-                                    className={`h-28 w-12 min-w-12 max-w-14 border-b border-gray-200 bg-gray-100 p-0 align-bottom dark:border-gray-700 dark:bg-gray-800 ${
-                                        columnIndex === 0 ? 'border-s-2 border-s-gray-300 dark:border-s-gray-600' : ''
-                                    }`}
-                                >
-                                    <div className="flex h-full items-end justify-center overflow-hidden pb-3">
-                                        <span
-                                            className="inline-block max-w-28 origin-bottom-left -rotate-90 whitespace-nowrap text-xs font-semibold leading-none text-gray-700 dark:text-gray-200"
-                                            title={column.name}
-                                        >
-                                            {column.name}
-                                        </span>
-                                    </div>
-                                </th>
+                                    columnName={column.name}
+                                    removeLabel={t('global.remove')}
+                                    isFirstInGroup={columnIndex === 0}
+                                    onRemove={() => removeColumn(column.id)}
+                                />
                             )),
                         )}
                     </tr>
@@ -333,7 +376,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                             <td className="sticky left-12 z-10 bg-white px-4 py-2 font-medium dark:bg-gray-900">
                                 {department.department_name ?? 'Unknown'}
                             </td>
-                            {columnGroups.map((group) =>
+                            {visibleColumnGroups.map((group) =>
                                 group.columns.map((column, columnIndex) => (
                                     <td
                                         key={column.id}
@@ -354,7 +397,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                             <td className="sticky left-12 z-10 bg-gray-50 px-4 py-3 text-right text-gray-900 dark:bg-gray-800/80 dark:text-white">
                                 {t('global.total')}
                             </td>
-                            {columnGroups.map((group) =>
+                            {visibleColumnGroups.map((group) =>
                                 group.columns.map((column, columnIndex) => (
                                     <td
                                         key={column.id}

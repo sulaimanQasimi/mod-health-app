@@ -28,6 +28,7 @@ import AppointmentSectionAccordion, {
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
+import { DetailTextBlock, DetailTile } from '../../ui/DetailTile';
 import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
@@ -512,24 +513,18 @@ export default function PhysiotherapySection({
                                     [t('global.start_date'), selectedProcedure.start_date],
                                     [t('global.end_date'), selectedProcedure.end_date],
                                 ].map(([label, value]) => (
-                                    <div
-                                        key={String(label)}
-                                        className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40"
-                                    >
-                                        <p className="text-xs text-gray-500">{label}</p>
-                                        <p>{value ?? '—'}</p>
-                                    </div>
+                                    <DetailTile key={String(label)} label={String(label)} value={value} />
                                 ))}
                             </div>
 
                             <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/40">
                                 <div className="mb-2 flex items-center justify-between gap-3">
-                                    <p className="text-sm font-medium">{t('global.progress')}</p>
+                                    <p className="text-sm font-medium text-gray-900 dark:text-white">{t('global.progress')}</p>
                                     <TableBadge color={STATUS_COLORS[selectedProcedure.status] ?? 'gray'}>
                                         {statusLabel(selectedProcedure.status)}
                                     </TableBadge>
                                 </div>
-                                <div className="mb-1 flex justify-between text-xs text-gray-500">
+                                <div className="mb-1 flex justify-between text-xs text-gray-500 dark:text-gray-400">
                                     <span>
                                         {selectedProcedure.counter ?? 0}/{selectedProcedure.days_count ?? 0}
                                     </span>
@@ -544,18 +539,18 @@ export default function PhysiotherapySection({
                             </div>
 
                             {selectedProcedure.description && (
-                                <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-4 text-sm dark:border-cyan-900/40 dark:bg-cyan-900/20">
-                                    <strong>{t('global.description')}:</strong> {selectedProcedure.description}
-                                </div>
+                                <DetailTextBlock label={t('global.description')} variant="cyan">
+                                    {selectedProcedure.description}
+                                </DetailTextBlock>
                             )}
 
                             {selectedProcedure.notes && (
-                                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <strong>{t('global.notes')}:</strong> {selectedProcedure.notes}
-                                </div>
+                                <DetailTextBlock label={t('global.notes')}>
+                                    {selectedProcedure.notes}
+                                </DetailTextBlock>
                             )}
 
-                            <div className="flex flex-wrap gap-3 text-sm text-gray-500">
+                            <div className="flex flex-wrap gap-3 text-sm text-gray-500 dark:text-gray-400">
                                 <span>
                                     {t('global.reviews')}: {selectedProcedure.reviews_count}
                                 </span>

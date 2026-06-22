@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Label, TextInput } from 'flowbite-react';
 import { useState } from 'react';
+import { DetailTile } from '../../../Components/ui/DetailTile';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import IcuPanel from '../../../Components/Icus/IcuPanel';
 import { prostheticReferralStatusLabel } from '../../../Components/ProstheticsReferrals/prostheticsReferralUi';
@@ -23,15 +24,6 @@ interface ShowProps {
 
 const PANEL_ICON_CLASS = 'text-indigo-600 dark:text-indigo-400';
 const PANEL_BODY_CLASS = 'p-5';
-
-function DetailTile({ label, value }: { label: string; value?: string | null }) {
-    return (
-        <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-            <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
-            <p className="mt-0.5 font-medium text-gray-900 dark:text-white">{value || '—'}</p>
-        </div>
-    );
-}
 
 export default function ProstheticsReferralsShow({ referral, urls }: ShowProps) {
     const { t } = useTranslation();

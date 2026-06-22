@@ -19,6 +19,7 @@ import PhysiotherapyProcedureReviews from '../../Components/PhysiotherapyProcedu
 import PhysiotherapyProcedureStatusBadge from '../../Components/PhysiotherapyProcedures/PhysiotherapyProcedureStatusBadge';
 import UpdateProgressModal from '../../Components/PhysiotherapyProcedures/UpdateProgressModal';
 import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
+import { DetailTextBlock } from '../../Components/ui/DetailTile';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -251,16 +252,14 @@ export default function ShowPhysiotherapyProcedure({
                     {(procedure.description || procedure.notes) && (
                         <div className="grid gap-4 border-t border-gray-100 px-6 py-5 dark:border-gray-700 lg:grid-cols-2">
                             {procedure.description && (
-                                <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-4 text-sm dark:border-cyan-900/40 dark:bg-cyan-900/20">
-                                    <span className="text-gray-600 dark:text-gray-300">{t('global.description')}:</span>{' '}
+                                <DetailTextBlock label={t('global.description')} variant="cyan">
                                     {procedure.description}
-                                </div>
+                                </DetailTextBlock>
                             )}
                             {procedure.notes && (
-                                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <span className="text-gray-600 dark:text-gray-300">{t('global.notes')}:</span>{' '}
+                                <DetailTextBlock label={t('global.notes')}>
                                     {procedure.notes}
-                                </div>
+                                </DetailTextBlock>
                             )}
                         </div>
                     )}

@@ -28,6 +28,7 @@ import {
     SectionLoadingState,
     SectionShell,
 } from './AppointmentSectionAccordion';
+import { DetailTextBlock, DetailTile } from '../../ui/DetailTile';
 import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
@@ -416,30 +417,32 @@ export default function LabTestSection({
                     {selectedRegistration && (
                         <div className="space-y-4">
                             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <p className="text-xs text-gray-500">{t('global.lab_type')}</p>
-                                    <p>{selectedRegistration.test_name ?? '—'}</p>
-                                </div>
-                                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <p className="text-xs text-gray-500">{t('global.status')}</p>
-                                    <TableBadge color={STATUS_COLORS[selectedRegistration.status] ?? 'gray'}>
-                                        {statusLabel(selectedRegistration.status)}
-                                    </TableBadge>
-                                </div>
-                                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <p className="text-xs text-gray-500">{t('global.doctor_name')}</p>
-                                    <p>{selectedRegistration.doctor_name ?? '—'}</p>
-                                </div>
-                                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <p className="text-xs text-gray-500">{t('global.assigned_to')}</p>
-                                    <p>{selectedRegistration.assigned_to_name ?? '—'}</p>
-                                </div>
+                                <DetailTile
+                                    label={t('global.lab_type')}
+                                    value={selectedRegistration.test_name}
+                                />
+                                <DetailTile
+                                    label={t('global.status')}
+                                    value={
+                                        <TableBadge color={STATUS_COLORS[selectedRegistration.status] ?? 'gray'}>
+                                            {statusLabel(selectedRegistration.status)}
+                                        </TableBadge>
+                                    }
+                                />
+                                <DetailTile
+                                    label={t('global.doctor_name')}
+                                    value={selectedRegistration.doctor_name}
+                                />
+                                <DetailTile
+                                    label={t('global.assigned_to')}
+                                    value={selectedRegistration.assigned_to_name}
+                                />
                             </div>
 
                             {selectedRegistration.notes && (
-                                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm dark:border-emerald-900/40 dark:bg-emerald-900/20">
-                                    <strong>{t('global.notes')}:</strong> {selectedRegistration.notes}
-                                </div>
+                                <DetailTextBlock label={t('global.notes')} variant="emerald">
+                                    {selectedRegistration.notes}
+                                </DetailTextBlock>
                             )}
 
                             {selectedRegistration.parameters.length > 0 ? (

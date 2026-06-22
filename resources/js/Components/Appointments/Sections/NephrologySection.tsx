@@ -25,6 +25,7 @@ import AppointmentSectionAccordion, {
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
+import { DetailTextBlock, DetailTile } from '../../ui/DetailTile';
 import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
@@ -284,13 +285,7 @@ export default function NephrologySection({ appointmentId }: NephrologySectionPr
                                     [t('global.visit_date'), selectedRegistration.visit_date],
                                     [t('global.diagnosis'), selectedRegistration.disease_name],
                                 ].map(([label, value]) => (
-                                    <div
-                                        key={String(label)}
-                                        className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40"
-                                    >
-                                        <p className="text-xs text-gray-500">{label}</p>
-                                        <p className="font-semibold">{value ?? '—'}</p>
-                                    </div>
+                                    <DetailTile key={String(label)} label={String(label)} value={value} />
                                 ))}
                             </div>
 
@@ -305,23 +300,21 @@ export default function NephrologySection({ appointmentId }: NephrologySectionPr
                             )}
 
                             {selectedRegistration.chief_complaint && (
-                                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <strong>{t('global.chief_complaint')}:</strong>{' '}
+                                <DetailTextBlock label={t('global.chief_complaint')}>
                                     {selectedRegistration.chief_complaint}
-                                </div>
+                                </DetailTextBlock>
                             )}
 
                             {selectedRegistration.notes && (
-                                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <strong>{t('global.notes')}:</strong> {selectedRegistration.notes}
-                                </div>
+                                <DetailTextBlock label={t('global.notes')}>
+                                    {selectedRegistration.notes}
+                                </DetailTextBlock>
                             )}
 
                             {selectedRegistration.follow_up_plan && (
-                                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <strong>{t('global.follow_up_plan')}:</strong>{' '}
+                                <DetailTextBlock label={t('global.follow_up_plan')}>
                                     {selectedRegistration.follow_up_plan}
-                                </div>
+                                </DetailTextBlock>
                             )}
 
                             {selectedRegistration.created_at && (

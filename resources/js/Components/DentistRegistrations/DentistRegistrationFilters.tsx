@@ -90,7 +90,7 @@ export default function DentistRegistrationFilters({
                         />
                     </div>
                 </div>
-                <SettingsFilterActions processing={processing} onReset={onReset} />
+                <SettingsFilterActions processing={processing} onClear={() => onReset()} />
             </form>
         </Card>
     );

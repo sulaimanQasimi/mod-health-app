@@ -18,6 +18,7 @@ import PrescriptionSection from '../../Components/Appointments/Sections/Prescrip
 import DentistRegistrationStatusBadge from '../../Components/DentistRegistrations/DentistRegistrationStatusBadge';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import { DetailTextBlock } from '../../Components/ui/DetailTile';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
@@ -303,14 +304,13 @@ export default function ShowDentistRegistration({
                     </div>
 
                     {registration.notes && (
-                        <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                            <span className="text-gray-600 dark:text-gray-300">{t('global.notes')}:</span>{' '}
+                        <DetailTextBlock label={t('global.notes')} className="mt-4">
                             {registration.notes}
-                        </div>
+                        </DetailTextBlock>
                     )}
 
                     {permissions.markStatus && (
-                        <div className="mt-4 flex flex-wrap justify-center gap-2">
+                        <div className="mt-4 flex flex-wrap justify-end dark:text-white gap-2">
                             {registration.status !== 'completed' && (
                                 <Button size="sm" color="success" onClick={() => postStatus(urls.markCompleted!)}>
                                     {t('global.mark_completed')}

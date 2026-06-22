@@ -11,12 +11,8 @@
 
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="preload" href="{{ asset('persian_font.ttf') }}" as="font" type="font/ttf" crossorigin>
 
-    <!-- Scripts -->
-    @viteReactRefresh
-    @vite(['resources/css/app.css', 'resources/js/app.tsx'])
     @inertiaHead
 
     <script>
@@ -40,5 +36,8 @@
 </head>
 <body class="font-sans antialiased" dir="{{ $reactDirection }}">
     @inertia
+
+    @viteReactRefresh
+    @vite(['resources/css/app.css', 'resources/js/app.tsx'])
 </body>
 </html>

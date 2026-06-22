@@ -4,11 +4,13 @@ import {
     DragOverlay,
     DragStartEvent,
     PointerSensor,
-    closestCenter,
+    pointerWithin,
+    rectIntersection,
     useDraggable,
     useDroppable,
     useSensor,
     useSensors,
+    type CollisionDetection,
 } from '@dnd-kit/core';
 import {
     SortableContext,
@@ -19,7 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { Head, router } from '@inertiajs/react';
 import { Button, Card, Label, Spinner } from 'flowbite-react';
-import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
+import { FormEvent, ReactNode, useEffect, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
@@ -46,6 +48,19 @@ interface PlacedWidget {
     id: string;
     type: ReportWidgetType;
 }
+
+interface Slot {
+    id: string;
+    width: number;
+    height: number;
+}
+
+const DEFAULT_SLOT_WIDTH = 420;
+const DEFAULT_SLOT_HEIGHT = 320;
+const MIN_SLOT_WIDTH = 280;
+const MIN_SLOT_HEIGHT = 200;
+const MAX_SLOT_WIDTH = 1200;
+const MAX_SLOT_HEIGHT = 900;
 
 interface GeneralReportProps {
     filters: ReportFilters;
@@ -76,10 +91,41 @@ const WIDGET_CATALOG: Record<ReportWidgetType, { labelKey: string; icon: string 
 };
 
 function createWidget(type: ReportWidgetType): PlacedWidget {
+    const suffix =
+        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
     return {
-        id: `${type}-${crypto.randomUUID()}`,
+        id: `${type}-${suffix}`,
         type,
     };
+}
+
+const canvasCollisionDetection: CollisionDetection = (args) => {
+    const pointerCollisions = pointerWithin(args);
+    if (pointerCollisions.length > 0) {
+        return pointerCollisions;
+    }
+
+    return rectIntersection(args);
+};
+
+function createSlot(): Slot {
+    const suffix =
+        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+    return {
+        id: `slot-${suffix}`,
+        width: DEFAULT_SLOT_WIDTH,
+        height: DEFAULT_SLOT_HEIGHT,
+    };
+}
+
+function clamp(value: number, min: number, max: number): number {
+    return Math.min(max, Math.max(min, value));
 }
 
 function PaletteItem({
@@ -101,74 +147,187 @@ function PaletteItem({
     const style = transform ? { transform: CSS.Translate.toString(transform) } : undefined;
 
     return (
-        <button
-            ref={setNodeRef}
-            style={style}
-            type="button"
-            onClick={() => onAdd(type)}
-            className={`flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-start text-sm font-medium text-gray-800 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/30 ${
-                isDragging ? 'opacity-50' : ''
-            }`}
-            {...listeners}
-            {...attributes}
-        >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-white">
-                <i className={`bx ${icon} text-lg`} />
-            </span>
-            <span className="flex-1">{label}</span>
-            <i className="bx bx-plus text-lg text-indigo-500" />
-        </button>
+        <div className="flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2 text-start text-sm font-medium text-gray-800 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/30">
+            <button
+                type="button"
+                onClick={() => onAdd(type)}
+                className="flex min-w-0 flex-1 items-center gap-3"
+            >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-white">
+                    <i className={`bx ${icon} text-lg`} />
+                </span>
+                <span className="flex-1">{label}</span>
+                <i className="bx bx-plus text-lg text-indigo-500" />
+            </button>
+            <button
+                ref={setNodeRef}
+                style={style}
+                type="button"
+                className={`flex h-9 w-9 shrink-0 cursor-grab items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 active:cursor-grabbing dark:border-gray-700 dark:hover:bg-gray-800 ${
+                    isDragging ? 'opacity-50' : ''
+                }`}
+                aria-label={`Drag ${label}`}
+                {...listeners}
+                {...attributes}
+            >
+                <i className="bx bx-move text-lg" />
+            </button>
+        </div>
     );
 }
 
-function ReportCanvas({
+function SlotCanvas({
+    slotId,
     children,
     isEmpty,
     emptyLabel,
+    height,
 }: {
+    slotId: string;
     children: ReactNode;
     isEmpty: boolean;
     emptyLabel: string;
+    height: number;
 }) {
-    const { setNodeRef, isOver } = useDroppable({ id: 'report-canvas' });
+    const { setNodeRef, isOver } = useDroppable({ id: slotId });
 
     return (
         <div
             ref={setNodeRef}
-            className={`min-h-[280px] rounded-2xl border-2 border-dashed p-4 transition ${
+            style={{ minHeight: height, height: '100%' }}
+            className={`relative h-full rounded-2xl border-2 border-dashed p-4 transition ${
                 isOver
                     ? 'border-indigo-400 bg-indigo-50/70 dark:border-indigo-500 dark:bg-indigo-950/20'
                     : 'border-gray-200 bg-gray-50/70 dark:border-gray-700 dark:bg-gray-900/40'
             }`}
         >
-            {isEmpty ? (
-                <div className="flex h-full min-h-[240px] flex-col items-center justify-center gap-3 text-center text-gray-500 dark:text-gray-400">
+            {isEmpty && (
+                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center text-gray-500 dark:text-gray-400">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-950/30">
                         <i className="bx bx-layer-plus text-2xl text-indigo-500" />
                     </div>
                     <p className="max-w-md text-sm">{emptyLabel}</p>
                 </div>
-            ) : (
-                <div className="space-y-4">{children}</div>
             )}
+            <div className={`relative h-full space-y-4 overflow-auto ${isEmpty ? 'min-h-[200px]' : ''}`}>
+                {children}
+            </div>
+        </div>
+    );
+}
+
+function ResizableSlot({
+    slot,
+    index,
+    canRemove,
+    onRemove,
+    onResize,
+    children,
+}: {
+    slot: Slot;
+    index: number;
+    canRemove: boolean;
+    onRemove: (slotId: string) => void;
+    onResize: (slotId: string, width: number, height: number) => void;
+    children: ReactNode;
+}) {
+    const startResize = (event: React.PointerEvent<HTMLButtonElement>, axis: 'both' | 'width' | 'height') => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const startWidth = slot.width;
+        const startHeight = slot.height;
+
+        const handlePointerMove = (moveEvent: PointerEvent) => {
+            const nextWidth =
+                axis === 'height'
+                    ? startWidth
+                    : clamp(startWidth + (moveEvent.clientX - startX), MIN_SLOT_WIDTH, MAX_SLOT_WIDTH);
+            const nextHeight =
+                axis === 'width'
+                    ? startHeight
+                    : clamp(startHeight + (moveEvent.clientY - startY), MIN_SLOT_HEIGHT, MAX_SLOT_HEIGHT);
+
+            onResize(slot.id, nextWidth, nextHeight);
+        };
+
+        const handlePointerUp = () => {
+            window.removeEventListener('pointermove', handlePointerMove);
+            window.removeEventListener('pointerup', handlePointerUp);
+        };
+
+        window.addEventListener('pointermove', handlePointerMove);
+        window.addEventListener('pointerup', handlePointerUp);
+    };
+
+    return (
+        <div
+            className="relative flex shrink-0 flex-col"
+            style={{ width: slot.width, minHeight: slot.height }}
+        >
+            <div className="mb-3 flex items-center justify-between gap-2">
+                <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Slot {index + 1}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {slot.width}px × {slot.height}px
+                    </p>
+                </div>
+                <Button
+                    type="button"
+                    color="light"
+                    size="sm"
+                    onClick={() => onRemove(slot.id)}
+                    disabled={!canRemove}
+                >
+                    <i className="bx bx-trash me-1" />
+                    Remove
+                </Button>
+            </div>
+
+            <div className="relative min-h-0 flex-1">{children}</div>
+
+            <button
+                type="button"
+                aria-label="Resize slot width"
+                onPointerDown={(event) => startResize(event, 'width')}
+                className="absolute bottom-8 right-0 top-12 z-10 w-2 cursor-ew-resize rounded-full bg-transparent hover:bg-indigo-300/40"
+            />
+            <button
+                type="button"
+                aria-label="Resize slot height"
+                onPointerDown={(event) => startResize(event, 'height')}
+                className="absolute bottom-0 left-0 right-4 z-10 h-2 cursor-ns-resize rounded-full bg-transparent hover:bg-indigo-300/40"
+            />
+            <button
+                type="button"
+                aria-label="Resize slot"
+                onPointerDown={(event) => startResize(event, 'both')}
+                className="absolute bottom-0 right-0 z-20 flex h-5 w-5 cursor-nwse-resize items-center justify-center rounded-tl-md border border-gray-200 bg-white text-gray-400 shadow-sm hover:border-indigo-300 hover:text-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:hover:border-indigo-500"
+            >
+                <i className="bx bx-resize text-sm" />
+            </button>
         </div>
     );
 }
 
 function SortableWidgetCard({
     widget,
+    slotId,
     title,
     onRemove,
     children,
 }: {
     widget: PlacedWidget;
+    slotId: string;
     title: string;
     onRemove: (id: string) => void;
     children: ReactNode;
 }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: widget.id,
-        data: { source: 'canvas', type: widget.type },
+        data: { source: 'canvas', type: widget.type, slotId },
     });
 
     const style = {
@@ -215,7 +374,8 @@ export default function GeneralReport({
     const [hasSearch, setHasSearch] = useState(serverHasSearch);
     const [processing, setProcessing] = useState(false);
     const [filtersOpen, setFiltersOpen] = useState(true);
-    const [widgets, setWidgets] = useState<PlacedWidget[]>([]);
+    const [slots, setSlots] = useState<Slot[]>(() => [createSlot()]);
+    const [widgetsBySlot, setWidgetsBySlot] = useState<Record<string, PlacedWidget[]>>(() => ({}));
     const [activeDragType, setActiveDragType] = useState<ReportWidgetType | null>(null);
 
     const sensors = useSensors(
@@ -231,18 +391,75 @@ export default function GeneralReport({
 
     const appliedFilters = hasSearch ? filters : EMPTY_FILTERS;
 
-    const addWidget = (type: ReportWidgetType) => {
-        setWidgets((current) => {
-            if (current.some((widget) => widget.type === type)) {
+    const ensureSlotInitialized = (slotId: string) => {
+        setWidgetsBySlot((current) => (current[slotId] ? current : { ...current, [slotId]: [] }));
+    };
+
+    useEffect(() => {
+        // Ensure state exists for all slots (e.g. on first render)
+        slots.forEach((slot) => ensureSlotInitialized(slot.id));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [slots]);
+
+    const hasWidgetTypeInAnySlot = (type: ReportWidgetType, current: Record<string, PlacedWidget[]>) =>
+        Object.values(current).some((list) => list.some((w) => w.type === type));
+
+    const addWidgetToSlot = (type: ReportWidgetType, slotId: string) => {
+        setWidgetsBySlot((current) => {
+            const next = { ...current };
+            const list = next[slotId] ? [...next[slotId]] : [];
+
+            if (hasWidgetTypeInAnySlot(type, next)) {
                 return current;
             }
 
-            return [...current, createWidget(type)];
+            list.push(createWidget(type));
+            next[slotId] = list;
+            return next;
         });
     };
 
     const removeWidget = (id: string) => {
-        setWidgets((current) => current.filter((widget) => widget.id !== id));
+        setWidgetsBySlot((current) => {
+            const next: Record<string, PlacedWidget[]> = {};
+            for (const [slotId, list] of Object.entries(current)) {
+                next[slotId] = list.filter((widget) => widget.id !== id);
+            }
+            return next;
+        });
+    };
+
+    const addSlot = () => {
+        setSlots((current) => {
+            const next = [...current, createSlot()];
+            return next;
+        });
+    };
+
+    const removeSlot = (slotId: string) => {
+        setSlots((current) => {
+            if (current.length <= 1) return current;
+            return current.filter((slot) => slot.id !== slotId);
+        });
+        setWidgetsBySlot((current) => {
+            const next = { ...current };
+            delete next[slotId];
+            return next;
+        });
+    };
+
+    const resizeSlot = (slotId: string, width: number, height: number) => {
+        setSlots((current) =>
+            current.map((slot) =>
+                slot.id === slotId
+                    ? {
+                          ...slot,
+                          width: clamp(width, MIN_SLOT_WIDTH, MAX_SLOT_WIDTH),
+                          height: clamp(height, MIN_SLOT_HEIGHT, MAX_SLOT_HEIGHT),
+                      }
+                    : slot,
+            ),
+        );
     };
 
     const handleSubmit = (event: FormEvent) => {
@@ -288,35 +505,86 @@ export default function GeneralReport({
             return;
         }
 
-        const activeData = active.data.current as { source?: string; type?: ReportWidgetType };
+        const activeData = active.data.current as {
+            source?: string;
+            type?: ReportWidgetType;
+            slotId?: string;
+        };
+        const overId = String(over.id);
 
         if (activeData?.source === 'palette' && activeData.type) {
-            if (over.id === 'report-canvas' || widgets.some((widget) => widget.id === over.id)) {
-                addWidget(activeData.type);
+            if (overId.startsWith('slot-')) addWidgetToSlot(activeData.type, overId);
+            if (overId.startsWith('widget-')) {
+                const targetSlot = over.data.current?.slotId as string | undefined;
+                if (targetSlot) addWidgetToSlot(activeData.type, targetSlot);
             }
 
             return;
         }
 
         if (activeData?.source === 'canvas' && active.id !== over.id) {
-            const oldIndex = widgets.findIndex((widget) => widget.id === active.id);
-            const newIndex = widgets.findIndex((widget) => widget.id === over.id);
+            const fromSlot = activeData.slotId;
+            if (!fromSlot) return;
 
-            if (oldIndex !== -1 && newIndex !== -1) {
-                setWidgets((current) => arrayMove(current, oldIndex, newIndex));
+            // Dropped on an empty slot
+            if (overId.startsWith('slot-')) {
+                const toSlot = overId;
+                if (toSlot === fromSlot) return;
+
+                setWidgetsBySlot((current) => {
+                    const fromList = current[fromSlot] ?? [];
+                    const toList = current[toSlot] ?? [];
+                    const moving = fromList.find((w) => w.id === active.id);
+                    if (!moving) return current;
+
+                    return {
+                        ...current,
+                        [fromSlot]: fromList.filter((w) => w.id !== active.id),
+                        [toSlot]: [...toList, moving],
+                    };
+                });
+
+                return;
+            }
+
+            // Dropped on another widget card
+            if (overId.startsWith('widget-')) {
+                const toSlot = over.data.current?.slotId as string | undefined;
+                const overWidgetId = over.data.current?.widgetId as string | undefined;
+                if (!toSlot || !overWidgetId) return;
+
+                setWidgetsBySlot((current) => {
+                    const fromList = current[fromSlot] ?? [];
+                    const toList = current[toSlot] ?? [];
+                    const moving = fromList.find((w) => w.id === active.id);
+                    if (!moving) return current;
+
+                    const withoutMoving = fromList.filter((w) => w.id !== active.id);
+
+                    const insertIndex = toList.findIndex((w) => w.id === overWidgetId);
+                    const nextTo =
+                        insertIndex === -1
+                            ? [...toList, moving]
+                            : [...toList.slice(0, insertIndex), moving, ...toList.slice(insertIndex)];
+
+                    if (fromSlot === toSlot) {
+                        const oldIndex = toList.findIndex((w) => w.id === active.id);
+                        const newIndex = toList.findIndex((w) => w.id === overWidgetId);
+                        if (oldIndex === -1 || newIndex === -1) return current;
+                        return { ...current, [toSlot]: arrayMove(toList, oldIndex, newIndex) };
+                    }
+
+                    return {
+                        ...current,
+                        [fromSlot]: withoutMoving,
+                        [toSlot]: nextTo,
+                    };
+                });
             }
         }
     };
 
     const renderWidget = (widget: PlacedWidget) => {
-        if (!hasSearch) {
-            return (
-                <div className="rounded-xl border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                    {t('global.apply_filters')}
-                </div>
-            );
-        }
-
         const filterProps = {
             branch_id: appliedFilters.branch_id,
             date_from: appliedFilters.date_from,
@@ -330,15 +598,13 @@ export default function GeneralReport({
         return <NumberOfPatientsBaseOnPatientMiliteryTypes {...filterProps} />;
     };
 
-    const widgetIds = useMemo(() => widgets.map((widget) => widget.id), [widgets]);
-
     return (
         <DashboardLayout>
             <Head title={t('global.reports')} />
 
             <DndContext
                 sensors={sensors}
-                collisionDetection={closestCenter}
+                collisionDetection={canvasCollisionDetection}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
             >
@@ -426,56 +692,80 @@ export default function GeneralReport({
                         )}
                     </Card>
 
-                    <div className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
-                        <Card className="!shadow-sm">
-                            <div className="mb-4 border-b border-gray-100 pb-4 dark:border-gray-700">
-                                <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-                                    Report Components
-                                </h2>
+                    <Card className="!shadow-sm">
+                        <div className="mb-4 border-b border-gray-100 pb-4 dark:border-gray-700">
+                            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Report Components</h2>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                Click or drag a component into any slot below.
+                            </p>
+                        </div>
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            {(Object.keys(WIDGET_CATALOG) as ReportWidgetType[]).map((type) => (
+                                <PaletteItem
+                                    key={type}
+                                    type={type}
+                                    label={t(WIDGET_CATALOG[type].labelKey)}
+                                    icon={WIDGET_CATALOG[type].icon}
+                                    onAdd={(widgetType) => addWidgetToSlot(widgetType, slots[0]?.id)}
+                                />
+                            ))}
+                        </div>
+                    </Card>
+
+                    <Card className="!shadow-sm">
+                        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
+                            <div>
+                                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Report Slots</h2>
                                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    Click or drag a component into the canvas.
+                                    Add slots and resize them using the corner or edge handles.
                                 </p>
                             </div>
-                            <div className="space-y-3">
-                                {(Object.keys(WIDGET_CATALOG) as ReportWidgetType[]).map((type) => (
-                                    <PaletteItem
-                                        key={type}
-                                        type={type}
-                                        label={t(WIDGET_CATALOG[type].labelKey)}
-                                        icon={WIDGET_CATALOG[type].icon}
-                                        onAdd={addWidget}
-                                    />
-                                ))}
-                            </div>
-                        </Card>
+                            <Button type="button" color="blue" size="sm" onClick={addSlot}>
+                                <i className="bx bx-plus me-1" />
+                                Add Slot
+                            </Button>
+                        </div>
 
-                        <Card className="!shadow-sm">
-                            <div className="mb-4 border-b border-gray-100 pb-4 dark:border-gray-700">
-                                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Report Canvas</h2>
-                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    Drop components here to build your report layout.
-                                </p>
-                            </div>
+                        <div className="flex flex-wrap items-start gap-4">
+                            {slots.map((slot, index) => {
+                                const widgets = widgetsBySlot[slot.id] ?? [];
+                                const widgetIds = widgets.map((w) => w.id);
 
-                            <ReportCanvas
-                                isEmpty={widgets.length === 0}
-                                emptyLabel="Add report components from the left panel or drag them into this area."
-                            >
-                                <SortableContext items={widgetIds} strategy={verticalListSortingStrategy}>
-                                    {widgets.map((widget) => (
-                                        <SortableWidgetCard
-                                            key={widget.id}
-                                            widget={widget}
-                                            title={t(WIDGET_CATALOG[widget.type].labelKey)}
-                                            onRemove={removeWidget}
+                                return (
+                                    <ResizableSlot
+                                        key={slot.id}
+                                        slot={slot}
+                                        index={index}
+                                        canRemove={slots.length > 1}
+                                        onRemove={removeSlot}
+                                        onResize={resizeSlot}
+                                    >
+                                        <SlotCanvas
+                                            slotId={slot.id}
+                                            height={slot.height}
+                                            isEmpty={widgets.length === 0}
+                                            emptyLabel="Drop here"
                                         >
-                                            {renderWidget(widget)}
-                                        </SortableWidgetCard>
-                                    ))}
-                                </SortableContext>
-                            </ReportCanvas>
-                        </Card>
-                    </div>
+                                            <SortableContext items={widgetIds} strategy={verticalListSortingStrategy}>
+                                                {widgets.map((widget) => (
+                                                    <div key={widget.id} data-slot={slot.id}>
+                                                        <SortableWidgetCard
+                                                            widget={widget}
+                                                            slotId={slot.id}
+                                                            title={t(WIDGET_CATALOG[widget.type].labelKey)}
+                                                            onRemove={removeWidget}
+                                                        >
+                                                            {renderWidget(widget)}
+                                                        </SortableWidgetCard>
+                                                    </div>
+                                                ))}
+                                            </SortableContext>
+                                        </SlotCanvas>
+                                    </ResizableSlot>
+                                );
+                            })}
+                        </div>
+                    </Card>
                 </div>
 
                 <DragOverlay>

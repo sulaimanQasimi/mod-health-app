@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 interface MiliteryTypeReport {
     militery_type_id: number | null;
@@ -33,6 +34,7 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
     date_from = '',
     date_to = '',
 }) => {
+    const { t } = useTranslation();
     const [report, setReport] = useState<DepartmentMiliteryReport[]>([]);
     const { get, processing, setData } = useHttp({
         branch_id: '',
@@ -91,7 +93,7 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
                 <thead>
                     <tr className="bg-gray-100 dark:bg-gray-800">
                         <th className="sticky left-0 z-10 bg-gray-100 px-4 py-3 text-left align-bottom text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200">
-                            Department
+                            {t('global.department')}
                         </th>
                         {militeryTypeColumns.map((column) => (
                             <th
@@ -109,7 +111,7 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
                             </th>
                         ))}
                         <th className="px-4 py-3 text-left align-bottom text-sm font-semibold text-gray-700 dark:text-gray-200">
-                            Total
+                            {t('global.total')}
                         </th>
                     </tr>
                 </thead>
@@ -117,7 +119,7 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
                     {processing ? (
                         <tr>
                             <td colSpan={columnCount} className="py-4 px-4 text-center text-gray-500">
-                                Loading...
+                                {t('global.loading')}...
                             </td>
                         </tr>
                     ) : report.length > 0 ? (
@@ -143,7 +145,7 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
                     ) : (
                         <tr>
                             <td colSpan={columnCount} className="py-4 px-4 text-center text-gray-500">
-                                No data available.
+                                {t('global.no_data_available')}
                             </td>
                         </tr>
                     )}

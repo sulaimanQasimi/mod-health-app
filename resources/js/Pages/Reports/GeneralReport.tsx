@@ -51,16 +51,11 @@ interface PlacedWidget {
 
 interface Slot {
     id: string;
-    width: number;
-    height: number;
+    colSpan: 1 | 2 | 3 | 4;
 }
 
-const DEFAULT_SLOT_WIDTH = 420;
+const SLOT_COL_SPAN_OPTIONS: Array<Slot['colSpan']> = [1, 2, 3, 4];
 const DEFAULT_SLOT_HEIGHT = 320;
-const MIN_SLOT_WIDTH = 280;
-const MIN_SLOT_HEIGHT = 200;
-const MAX_SLOT_WIDTH = 1200;
-const MAX_SLOT_HEIGHT = 900;
 
 interface GeneralReportProps {
     filters: ReportFilters;
@@ -119,13 +114,23 @@ function createSlot(): Slot {
 
     return {
         id: `slot-${suffix}`,
-        width: DEFAULT_SLOT_WIDTH,
-        height: DEFAULT_SLOT_HEIGHT,
+        colSpan: 1,
     };
 }
 
-function clamp(value: number, min: number, max: number): number {
-    return Math.min(max, Math.max(min, value));
+function slotColSpanClass(colSpan: Slot['colSpan']): string {
+    switch (colSpan) {
+        case 1:
+            return 'col-span-1';
+        case 2:
+            return 'col-span-2';
+        case 3:
+            return 'col-span-3';
+        case 4:
+            return 'col-span-4';
+        default:
+            return 'col-span-1';
+    }
 }
 
 function PaletteItem({
@@ -181,20 +186,18 @@ function SlotCanvas({
     children,
     isEmpty,
     emptyLabel,
-    height,
 }: {
     slotId: string;
     children: ReactNode;
     isEmpty: boolean;
     emptyLabel: string;
-    height: number;
 }) {
     const { setNodeRef, isOver } = useDroppable({ id: slotId });
 
     return (
         <div
             ref={setNodeRef}
-            style={{ minHeight: height, height: '100%' }}
+            style={{ minHeight: DEFAULT_SLOT_HEIGHT }}
             className={`relative h-full rounded-2xl border-2 border-dashed p-4 transition ${
                 isOver
                     ? 'border-indigo-400 bg-indigo-50/70 dark:border-indigo-500 dark:bg-indigo-950/20'
@@ -216,68 +219,48 @@ function SlotCanvas({
     );
 }
 
-function ResizableSlot({
+function ReportSlot({
     slot,
     index,
     canRemove,
     onRemove,
-    onResize,
+    onColSpanChange,
     children,
 }: {
     slot: Slot;
     index: number;
     canRemove: boolean;
     onRemove: (slotId: string) => void;
-    onResize: (slotId: string, width: number, height: number) => void;
+    onColSpanChange: (slotId: string, colSpan: Slot['colSpan']) => void;
     children: ReactNode;
 }) {
-    const startResize = (event: React.PointerEvent<HTMLButtonElement>, axis: 'both' | 'width' | 'height') => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const startX = event.clientX;
-        const startY = event.clientY;
-        const startWidth = slot.width;
-        const startHeight = slot.height;
-
-        const handlePointerMove = (moveEvent: PointerEvent) => {
-            const nextWidth =
-                axis === 'height'
-                    ? startWidth
-                    : clamp(startWidth + (moveEvent.clientX - startX), MIN_SLOT_WIDTH, MAX_SLOT_WIDTH);
-            const nextHeight =
-                axis === 'width'
-                    ? startHeight
-                    : clamp(startHeight + (moveEvent.clientY - startY), MIN_SLOT_HEIGHT, MAX_SLOT_HEIGHT);
-
-            onResize(slot.id, nextWidth, nextHeight);
-        };
-
-        const handlePointerUp = () => {
-            window.removeEventListener('pointermove', handlePointerMove);
-            window.removeEventListener('pointerup', handlePointerUp);
-        };
-
-        window.addEventListener('pointermove', handlePointerMove);
-        window.addEventListener('pointerup', handlePointerUp);
-    };
-
     return (
-        <div
-            className="relative flex shrink-0 flex-col"
-            style={{ width: slot.width, minHeight: slot.height }}
-        >
-            <div className="mb-3 flex items-center justify-between gap-2">
-                <div>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Slot {index + 1}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {slot.width}px × {slot.height}px
-                    </p>
+        <div className={`flex min-w-0 flex-col ${slotColSpanClass(slot.colSpan)}`}>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-800">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">Slot {index + 1}</p>
+
+                <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Width:</span>
+                    <div className="flex items-center gap-1">
+                        {SLOT_COL_SPAN_OPTIONS.map((span) => (
+                            <Button
+                                key={span}
+                                type="button"
+                                size="xs"
+                                color={slot.colSpan === span ? 'blue' : 'light'}
+                                onClick={() => onColSpanChange(slot.id, span)}
+                                title={`Span ${span} column${span > 1 ? 's' : ''}`}
+                            >
+                                {span}
+                            </Button>
+                        ))}
+                    </div>
                 </div>
+
                 <Button
                     type="button"
                     color="light"
-                    size="sm"
+                    size="xs"
                     onClick={() => onRemove(slot.id)}
                     disabled={!canRemove}
                 >
@@ -286,28 +269,7 @@ function ResizableSlot({
                 </Button>
             </div>
 
-            <div className="relative min-h-0 flex-1">{children}</div>
-
-            <button
-                type="button"
-                aria-label="Resize slot width"
-                onPointerDown={(event) => startResize(event, 'width')}
-                className="absolute bottom-8 right-0 top-12 z-10 w-2 cursor-ew-resize rounded-full bg-transparent hover:bg-indigo-300/40"
-            />
-            <button
-                type="button"
-                aria-label="Resize slot height"
-                onPointerDown={(event) => startResize(event, 'height')}
-                className="absolute bottom-0 left-0 right-4 z-10 h-2 cursor-ns-resize rounded-full bg-transparent hover:bg-indigo-300/40"
-            />
-            <button
-                type="button"
-                aria-label="Resize slot"
-                onPointerDown={(event) => startResize(event, 'both')}
-                className="absolute bottom-0 right-0 z-20 flex h-5 w-5 cursor-nwse-resize items-center justify-center rounded-tl-md border border-gray-200 bg-white text-gray-400 shadow-sm hover:border-indigo-300 hover:text-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:hover:border-indigo-500"
-            >
-                <i className="bx bx-resize text-sm" />
-            </button>
+            <div className="min-h-0 flex-1">{children}</div>
         </div>
     );
 }
@@ -430,10 +392,7 @@ export default function GeneralReport({
     };
 
     const addSlot = () => {
-        setSlots((current) => {
-            const next = [...current, createSlot()];
-            return next;
-        });
+        setSlots((current) => [createSlot(), ...current]);
     };
 
     const removeSlot = (slotId: string) => {
@@ -448,17 +407,9 @@ export default function GeneralReport({
         });
     };
 
-    const resizeSlot = (slotId: string, width: number, height: number) => {
+    const setSlotColSpan = (slotId: string, colSpan: Slot['colSpan']) => {
         setSlots((current) =>
-            current.map((slot) =>
-                slot.id === slotId
-                    ? {
-                          ...slot,
-                          width: clamp(width, MIN_SLOT_WIDTH, MAX_SLOT_WIDTH),
-                          height: clamp(height, MIN_SLOT_HEIGHT, MAX_SLOT_HEIGHT),
-                      }
-                    : slot,
-            ),
+            current.map((slot) => (slot.id === slotId ? { ...slot, colSpan } : slot)),
         );
     };
 
@@ -717,7 +668,7 @@ export default function GeneralReport({
                             <div>
                                 <h2 className="text-base font-semibold text-gray-900 dark:text-white">Report Slots</h2>
                                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    Add slots and resize them using the corner or edge handles.
+                                    New slots are added at the top. Use width buttons to span 1–4 columns.
                                 </p>
                             </div>
                             <Button type="button" color="blue" size="sm" onClick={addSlot}>
@@ -726,23 +677,22 @@ export default function GeneralReport({
                             </Button>
                         </div>
 
-                        <div className="flex flex-wrap items-start gap-4">
+                        <div className="grid grid-cols-4 gap-4">
                             {slots.map((slot, index) => {
                                 const widgets = widgetsBySlot[slot.id] ?? [];
                                 const widgetIds = widgets.map((w) => w.id);
 
                                 return (
-                                    <ResizableSlot
+                                    <ReportSlot
                                         key={slot.id}
                                         slot={slot}
                                         index={index}
                                         canRemove={slots.length > 1}
                                         onRemove={removeSlot}
-                                        onResize={resizeSlot}
+                                        onColSpanChange={setSlotColSpan}
                                     >
                                         <SlotCanvas
                                             slotId={slot.id}
-                                            height={slot.height}
                                             isEmpty={widgets.length === 0}
                                             emptyLabel="Drop here"
                                         >
@@ -761,7 +711,7 @@ export default function GeneralReport({
                                                 ))}
                                             </SortableContext>
                                         </SlotCanvas>
-                                    </ResizableSlot>
+                                    </ReportSlot>
                                 );
                             })}
                         </div>

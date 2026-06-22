@@ -38,91 +38,60 @@ class GenralReport extends Controller
 
     public function number_of_patients_base_on_department(Request $request)
     {
-        $base = $this->appointmentReportQuery($request);
-
-        $departments = (clone $base)
-            ->selectRaw('appointments.department_id, departments.name as department_name, COUNT(*) as count')
-            ->groupBy('appointments.department_id', 'departments.name')
+        $rows = $this->appointmentReportQuery($request)
+            ->leftJoin('militery_types', 'patients.militery_type_id', '=', 'militery_types.id')
+            ->leftJoin('relations', 'patients.relation_id', '=', 'relations.id')
+            ->selectRaw('
+                appointments.department_id,
+                departments.name as department_name,
+                patients.gender,
+                patients.job_category,
+                patients.job_type,
+                patients.type as patient_type,
+                patients.militery_type_id,
+                militery_types.name as militery_type_name,
+                patients.relation_id,
+                relations.name as relation_name,
+                patients.commanded_by,
+                COUNT(*) as count
+            ')
+            ->groupBy(
+                'appointments.department_id',
+                'departments.name',
+                'patients.gender',
+                'patients.job_category',
+                'patients.job_type',
+                'patients.type',
+                'patients.militery_type_id',
+                'militery_types.name',
+                'patients.relation_id',
+                'relations.name',
+                'patients.commanded_by',
+            )
             ->orderBy('departments.name')
-            ->get()
-            ->keyBy('department_id');
+            ->get();
 
-        $genderByDepartment = $this->fetchDepartmentBreakdown(
-            $base,
-            'patients.gender',
-            ['patients.gender'],
-        );
-
-        $jobCategoryByDepartment = $this->fetchDepartmentBreakdown(
-            $base,
-            'patients.job_category',
-            ['patients.job_category'],
-        );
-
-        $jobTypeByDepartment = $this->fetchDepartmentBreakdown(
-            $base,
-            'patients.job_type',
-            ['patients.job_type'],
-        );
-
-        $patientTypeByDepartment = $this->fetchDepartmentBreakdown(
-            $base,
-            'patients.type',
-            ['patients.type'],
-        );
-
-        $militeryTypeByDepartment = $this->fetchDepartmentBreakdown(
-            $base,
-            'patients.militery_type_id',
-            ['patients.militery_type_id', 'militery_types.name'],
-            function (Builder $query) {
-                $query->leftJoin('militery_types', 'patients.militery_type_id', '=', 'militery_types.id');
-            },
-            'militery_types.name',
-        );
-
-        $relationByDepartment = $this->fetchDepartmentBreakdown(
-            $base,
-            'patients.relation_id',
-            ['patients.relation_id', 'relations.name'],
-            function (Builder $query) {
-                $query->leftJoin('relations', 'patients.relation_id', '=', 'relations.id');
-            },
-            'relations.name',
-        );
-
-        $commandedByDepartment = $this->fetchDepartmentBreakdown(
-            $base,
-            'patients.commanded_by',
-            ['patients.commanded_by'],
-            null,
-            'patients.commanded_by',
-            fn ($value) => filled($value),
-        );
-
-        $data = $departments
-            ->map(function ($department) use (
-                $genderByDepartment,
-                $jobCategoryByDepartment,
-                $jobTypeByDepartment,
-                $patientTypeByDepartment,
-                $militeryTypeByDepartment,
-                $relationByDepartment,
-                $commandedByDepartment,
-            ) {
-                $departmentId = $department->department_id;
+        $data = $rows
+            ->groupBy('department_id')
+            ->map(function (Collection $departmentRows) {
+                $first = $departmentRows->first();
 
                 return [
-                    'department_id' => $departmentId,
-                    'department_name' => $department->department_name,
-                    'count' => (int) $department->count,
-                    'genders' => $this->mapBreakdownItems($genderByDepartment->get($departmentId)),
-                    'job_categories' => $this->mapBreakdownItems($jobCategoryByDepartment->get($departmentId)),
-                    'job_types' => $this->mapBreakdownItems($jobTypeByDepartment->get($departmentId)),
-                    'patient_types' => $this->mapBreakdownItems($patientTypeByDepartment->get($departmentId)),
-                    'militery_types' => $this->mapBreakdownItems($militeryTypeByDepartment->get($departmentId)),
-                    'relations' => $this->mapBreakdownItems($relationByDepartment->get($departmentId)),
-                    'commanded_by' => $this->mapBreakdownItems($commandedByDepartment->get($departmentId)),
+                    'department_id' => $first->department_id,
+                    'department_name' => $first->department_name,
+                    'count' => (int) $departmentRows->sum('count'),
+                    'genders' => $this->aggregateBreakdown($departmentRows, 'gender'),
+                    'job_categories' => $this->aggregateBreakdown($departmentRows, 'job_category'),
+                    'job_types' => $this->aggregateBreakdown($departmentRows, 'job_type'),
+                    'patient_types' => $this->aggregateBreakdown($departmentRows, 'patient_type'),
+                    'militery_types' => $this->aggregateBreakdown($departmentRows, 'militery_type_id', 'militery_type_name'),
+                    'relations' => $this->aggregateBreakdown($departmentRows, 'relation_id', 'relation_name'),
+                    'commanded_by' => $this->aggregateBreakdown(
+                        $departmentRows,
+                        'commanded_by',
+                        'commanded_by',
+                        fn ($value) => filled($value),
+                    ),
                 ];
             })
             ->values();
@@ -188,76 +157,43 @@ class GenralReport extends Controller
     }
 
     /**
-     * @param  list<string>  $groupColumns
      * @param  (callable(mixed): bool)|null  $valueFilter
+     * @return list<array{key: mixed, label: string|null, count: int}>
      */
-    private function fetchDepartmentBreakdown(
-        Builder $base,
-        string $valueColumn,
-        array $groupColumns,
-        ?callable $join = null,
+    private function aggregateBreakdown(
+        Collection $rows,
+        string $keyColumn,
         ?string $labelColumn = null,
         ?callable $valueFilter = null,
-    ): Collection {
-        $query = clone $base;
+    ): array {
+        $totals = [];
 
-        if ($join) {
-            $join($query);
-        }
+        foreach ($rows as $row) {
+            $key = $row->{$keyColumn};
 
-        $labelSelect = $labelColumn
-            ? ", {$labelColumn} as breakdown_label"
-            : ', NULL as breakdown_label';
+            if ($valueFilter && ! $valueFilter($key)) {
+                continue;
+            }
 
-        $query
-            ->selectRaw("appointments.department_id, departments.name as department_name, {$valueColumn} as breakdown_value{$labelSelect}, COUNT(*) as count")
-            ->groupBy('appointments.department_id', 'departments.name', ...$groupColumns)
-            ->orderBy('departments.name');
+            $bucketKey = $key === null ? '__null__' : (string) $key;
 
-        return $query
-            ->get()
-            ->filter(function ($row) use ($valueFilter) {
-                if (! $valueFilter) {
-                    return true;
+            if (! isset($totals[$bucketKey])) {
+                $label = null;
+
+                if ($labelColumn && filled($row->{$labelColumn})) {
+                    $label = (string) $row->{$labelColumn};
                 }
 
-                return $valueFilter($row->breakdown_value);
-            })
-            ->groupBy('department_id')
-            ->map(function (Collection $rows) use ($labelColumn) {
-                return $rows->map(function ($row) use ($labelColumn) {
-                    $label = null;
+                $totals[$bucketKey] = [
+                    'key' => $key,
+                    'label' => $label,
+                    'count' => 0,
+                ];
+            }
 
-                    if ($labelColumn && $row->breakdown_label !== null && $row->breakdown_label !== '') {
-                        $label = (string) $row->breakdown_label;
-                    }
-
-                    return [
-                        'key' => $row->breakdown_value,
-                        'label' => $label,
-                        'count' => (int) $row->count,
-                    ];
-                })->values();
-            });
-    }
-
-    /**
-     * @param  Collection<int, array{key: mixed, label: mixed, count: int}>|null  $items
-     * @return list<array{key: mixed, label: mixed, count: int}>
-     */
-    private function mapBreakdownItems(?Collection $items): array
-    {
-        if (! $items) {
-            return [];
+            $totals[$bucketKey]['count'] += (int) $row->count;
         }
 
-        return $items
-            ->map(fn ($item) => [
-                'key' => $item['key'],
-                'label' => $item['label'],
-                'count' => $item['count'],
-            ])
-            ->values()
-            ->all();
+        return array_values($totals);
     }
 }

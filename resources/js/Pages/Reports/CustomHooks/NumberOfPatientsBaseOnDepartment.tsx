@@ -21,11 +21,6 @@ interface DepartmentReport {
     commanded_by: BreakdownItem[];
 }
 
-interface BreakdownColumn {
-    id: string;
-    name: string;
-}
-
 type BreakdownKey =
     | 'genders'
     | 'job_categories'
@@ -35,9 +30,10 @@ type BreakdownKey =
     | 'relations'
     | 'commanded_by';
 
-interface BreakdownConfig {
+interface ColumnGroup {
     key: BreakdownKey;
-    titleKey: string;
+    title: string;
+    columns: Array<{ id: string; itemKey: string; name: string }>;
 }
 
 interface NumberOfPatientsBaseOnDepartmentProps {
@@ -46,7 +42,7 @@ interface NumberOfPatientsBaseOnDepartmentProps {
     date_to?: string;
 }
 
-const BREAKDOWN_CONFIGS: BreakdownConfig[] = [
+const BREAKDOWN_CONFIGS: Array<{ key: BreakdownKey; titleKey: string }> = [
     { key: 'genders', titleKey: 'global.gender' },
     { key: 'job_categories', titleKey: 'global.job_category' },
     { key: 'job_types', titleKey: 'global.job_type' },
@@ -61,127 +57,6 @@ const getItemKey = (item: BreakdownItem): string =>
 
 const isStringLabel = (label: BreakdownItem['label']): label is string =>
     typeof label === 'string' && label.trim() !== '';
-
-function DepartmentBreakdownTable({
-    title,
-    departments,
-    breakdownKey,
-    resolveColumnLabel,
-    onRemoveDepartment,
-    removeLabel,
-    departmentLabel,
-    totalLabel,
-    numberLabel,
-}: {
-    title: string;
-    departments: DepartmentReport[];
-    breakdownKey: BreakdownKey;
-    resolveColumnLabel: (item: BreakdownItem) => string;
-    onRemoveDepartment: (department: DepartmentReport) => void;
-    removeLabel: string;
-    departmentLabel: string;
-    totalLabel: string;
-    numberLabel: string;
-}) {
-    const columns = useMemo<BreakdownColumn[]>(() => {
-        const map = new Map<string, string>();
-
-        departments.forEach((department) => {
-            department[breakdownKey].forEach((item) => {
-                const key = getItemKey(item);
-                if (!map.has(key)) {
-                    map.set(key, String(resolveColumnLabel(item)));
-                }
-            });
-        });
-
-        return Array.from(map.entries())
-            .map(([id, name]) => ({ id, name }))
-            .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-    }, [breakdownKey, departments, resolveColumnLabel]);
-
-    const getCount = (department: DepartmentReport, columnId: string): number => {
-        const match = department[breakdownKey].find((item) => getItemKey(item) === columnId);
-        return match?.count ?? 0;
-    };
-
-    if (departments.length === 0 || columns.length === 0) {
-        return null;
-    }
-
-    return (
-        <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{title}</h4>
-            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-                <table className="min-w-full border-collapse divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead>
-                        <tr className="bg-gray-100 dark:bg-gray-800">
-                            <th className="sticky left-0 z-10 bg-gray-100 px-3 py-3 text-left text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200">
-                                {numberLabel}
-                            </th>
-                            <th className="sticky left-10 z-10 bg-gray-100 px-4 py-3 text-right text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200">
-                                {departmentLabel}
-                            </th>
-                            {columns.map((column) => (
-                                <th
-                                    key={column.id}
-                                    className="h-28 w-12 min-w-12 max-w-14 border-b border-gray-200 bg-gray-100 p-0 align-bottom dark:border-gray-700 dark:bg-gray-800"
-                                >
-                                    <div className="flex h-full items-end justify-center overflow-hidden pb-3">
-                                        <span
-                                            className="inline-block max-w-28 origin-bottom-left -rotate-90 whitespace-nowrap text-xs font-semibold leading-none text-gray-700 dark:text-gray-200"
-                                            title={column.name}
-                                        >
-                                            {column.name}
-                                        </span>
-                                    </div>
-                                </th>
-                            ))}
-                            <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">
-                                {totalLabel}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {departments.map((department, index) => (
-                            <tr
-                                key={department.department_id ?? department.department_name ?? index}
-                                className="border-t border-gray-200 dark:border-gray-700"
-                            >
-                                <td className="sticky left-0 z-10 bg-white px-2 py-2 dark:bg-gray-900">
-                                    <button
-                                        type="button"
-                                        onClick={() => onRemoveDepartment(department)}
-                                        title={removeLabel}
-                                        aria-label={`${removeLabel} ${department.department_name ?? 'Unknown'}`}
-                                        className="group/row-action relative mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium text-gray-700 transition hover:bg-red-50 dark:text-gray-200 dark:hover:bg-red-950/30"
-                                    >
-                                        <span className="transition-opacity group-hover/row-action:opacity-0">
-                                            {index + 1}
-                                        </span>
-                                        <i className="bx bx-trash absolute text-lg text-red-500 opacity-0 transition-opacity group-hover/row-action:opacity-100" />
-                                    </button>
-                                </td>
-                                <td className="sticky left-10 z-10 bg-white px-4 py-2 font-medium dark:bg-gray-900">
-                                    {department.department_name ?? 'Unknown'}
-                                </td>
-                                {columns.map((column) => (
-                                    <td
-                                        key={column.id}
-                                        className="w-12 min-w-12 px-2 py-2 text-center text-sm text-gray-700 dark:text-gray-300"
-                                    >
-                                        {getCount(department, column.id)}
-                                    </td>
-                                ))}
-                                <td className="px-4 py-2 text-center font-medium">{department.count}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-}
 
 const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmentProps> = ({
     branch_id = '',
@@ -301,6 +176,69 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
         ],
     );
 
+    const columnGroups = useMemo<ColumnGroup[]>(() => {
+        return BREAKDOWN_CONFIGS.map((config) => {
+            const labels = new Map<string, string>();
+
+            report.forEach((department) => {
+                department[config.key].forEach((item) => {
+                    const itemKey = getItemKey(item);
+                    if (!labels.has(itemKey)) {
+                        labels.set(itemKey, String(labelResolvers[config.key](item)));
+                    }
+                });
+            });
+
+            const columns = Array.from(labels.entries())
+                .map(([itemKey, name]) => ({
+                    id: `${config.key}:${itemKey}`,
+                    itemKey,
+                    name,
+                }))
+                .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
+            return {
+                key: config.key,
+                title: t(config.titleKey),
+                columns,
+            };
+        }).filter((group) => group.columns.length > 0);
+    }, [labelResolvers, report, t]);
+
+    const flatColumns = useMemo(
+        () =>
+            columnGroups.flatMap((group) =>
+                group.columns.map((column) => ({
+                    ...column,
+                    breakdownKey: group.key,
+                })),
+            ),
+        [columnGroups],
+    );
+
+    const getCount = (department: DepartmentReport, breakdownKey: BreakdownKey, itemKey: string): number => {
+        const match = department[breakdownKey].find((item) => getItemKey(item) === itemKey);
+        return match?.count ?? 0;
+    };
+
+    const { columnTotals, grandTotal } = useMemo(() => {
+        const totals = new Map<string, number>();
+        let total = 0;
+
+        report.forEach((department) => {
+            total += department.count;
+
+            flatColumns.forEach((column) => {
+                const count = getCount(department, column.breakdownKey, column.itemKey);
+                totals.set(column.id, (totals.get(column.id) ?? 0) + count);
+            });
+        });
+
+        return { columnTotals: totals, grandTotal: total };
+    }, [flatColumns, report]);
+
+    const columnCount = flatColumns.length + 3;
+
     if (processing) {
         return (
             <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
@@ -318,21 +256,128 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
     }
 
     return (
-        <div className="space-y-8">
-            {BREAKDOWN_CONFIGS.map((config) => (
-                <DepartmentBreakdownTable
-                    key={config.key}
-                    title={t(config.titleKey)}
-                    departments={report}
-                    breakdownKey={config.key}
-                    resolveColumnLabel={labelResolvers[config.key]}
-                    onRemoveDepartment={removeDepartment}
-                    removeLabel={t('global.remove')}
-                    departmentLabel={t('global.department')}
-                    totalLabel={t('global.total')}
-                    numberLabel={t('global.number')}
-                />
-            ))}
+        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+            <table className="min-w-full border-collapse divide-y divide-gray-200 dark:divide-gray-700">
+                <thead>
+                    <tr className="bg-gray-100 dark:bg-gray-800">
+                        <th
+                            rowSpan={2}
+                            className="sticky left-0 z-20 min-w-12 bg-gray-100 px-3 py-3 text-left text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                        >
+                            {t('global.number')}
+                        </th>
+                        <th
+                            rowSpan={2}
+                            className="sticky left-12 z-20 min-w-40 bg-gray-100 px-4 py-3 text-right text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                        >
+                            {t('global.department')}
+                        </th>
+                        {columnGroups.map((group) => (
+                            <th
+                                key={group.key}
+                                colSpan={group.columns.length}
+                                className="border-b border-s-2 border-gray-300 bg-gray-100 px-2 py-2 text-center text-xs font-bold uppercase tracking-wide text-indigo-700 dark:border-gray-600 dark:bg-gray-800 dark:text-indigo-300"
+                            >
+                                {group.title}
+                            </th>
+                        ))}
+                        <th
+                            rowSpan={2}
+                            className="bg-gray-100 px-4 py-3 text-center text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                        >
+                            {t('global.total')}
+                        </th>
+                    </tr>
+                    <tr className="bg-gray-100 dark:bg-gray-800">
+                        {columnGroups.map((group) =>
+                            group.columns.map((column, columnIndex) => (
+                                <th
+                                    key={column.id}
+                                    className={`h-28 w-12 min-w-12 max-w-14 border-b border-gray-200 bg-gray-100 p-0 align-bottom dark:border-gray-700 dark:bg-gray-800 ${
+                                        columnIndex === 0 ? 'border-s-2 border-s-gray-300 dark:border-s-gray-600' : ''
+                                    }`}
+                                >
+                                    <div className="flex h-full items-end justify-center overflow-hidden pb-3">
+                                        <span
+                                            className="inline-block max-w-28 origin-bottom-left -rotate-90 whitespace-nowrap text-xs font-semibold leading-none text-gray-700 dark:text-gray-200"
+                                            title={column.name}
+                                        >
+                                            {column.name}
+                                        </span>
+                                    </div>
+                                </th>
+                            )),
+                        )}
+                    </tr>
+                </thead>
+                <tbody>
+                    {report.map((department, index) => (
+                        <tr
+                            key={department.department_id ?? department.department_name ?? index}
+                            className="border-t border-gray-200 dark:border-gray-700"
+                        >
+                            <td className="sticky left-0 z-10 bg-white px-2 py-2 dark:bg-gray-900">
+                                <button
+                                    type="button"
+                                    onClick={() => removeDepartment(department)}
+                                    title={t('global.remove')}
+                                    aria-label={`${t('global.remove')} ${department.department_name ?? 'Unknown'}`}
+                                    className="group/row-action relative mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium text-gray-700 transition hover:bg-red-50 dark:text-gray-200 dark:hover:bg-red-950/30"
+                                >
+                                    <span className="transition-opacity group-hover/row-action:opacity-0">
+                                        {index + 1}
+                                    </span>
+                                    <i className="bx bx-trash absolute text-lg text-red-500 opacity-0 transition-opacity group-hover/row-action:opacity-100" />
+                                </button>
+                            </td>
+                            <td className="sticky left-12 z-10 bg-white px-4 py-2 font-medium dark:bg-gray-900">
+                                {department.department_name ?? 'Unknown'}
+                            </td>
+                            {columnGroups.map((group) =>
+                                group.columns.map((column, columnIndex) => (
+                                    <td
+                                        key={column.id}
+                                        className={`w-12 min-w-12 px-2 py-2 text-center text-sm text-gray-700 dark:text-gray-300 ${
+                                            columnIndex === 0 ? 'border-s-2 border-s-gray-200 dark:border-s-gray-700' : ''
+                                        }`}
+                                    >
+                                        {getCount(department, group.key, column.itemKey)}
+                                    </td>
+                                )),
+                            )}
+                            <td className="px-4 py-2 text-center font-semibold">{department.count}</td>
+                        </tr>
+                    ))}
+                    {flatColumns.length > 0 && (
+                        <tr className="border-t-2 border-gray-300 bg-gray-50 font-semibold dark:border-gray-600 dark:bg-gray-800/80">
+                            <td className="sticky left-0 z-10 bg-gray-50 px-2 py-3 dark:bg-gray-800/80" />
+                            <td className="sticky left-12 z-10 bg-gray-50 px-4 py-3 text-right text-gray-900 dark:bg-gray-800/80 dark:text-white">
+                                {t('global.total')}
+                            </td>
+                            {columnGroups.map((group) =>
+                                group.columns.map((column, columnIndex) => (
+                                    <td
+                                        key={column.id}
+                                        className={`px-2 py-3 text-center text-sm text-gray-900 dark:text-white ${
+                                            columnIndex === 0 ? 'border-s-2 border-s-gray-300 dark:border-s-gray-600' : ''
+                                        }`}
+                                    >
+                                        {columnTotals.get(column.id) ?? 0}
+                                    </td>
+                                )),
+                            )}
+                            <td className="px-4 py-3 text-center text-gray-900 dark:text-white">{grandTotal}</td>
+                        </tr>
+                    )}
+                    {flatColumns.length === 0 && (
+                        <tr>
+                            <td colSpan={columnCount} className="py-4 px-4 text-center text-gray-500">
+                                {t('global.no_data_found')}
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </div>
     );
 };

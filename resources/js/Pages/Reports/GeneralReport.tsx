@@ -85,14 +85,11 @@ const WIDGET_CATALOG: Record<ReportWidgetType, { labelKey: string; icon: string 
     },
 };
 
-function createWidget(type: ReportWidgetType): PlacedWidget {
-    const suffix =
-        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+const INITIAL_SLOT_ID = 'slot-default';
 
+function createWidget(type: ReportWidgetType): PlacedWidget {
     return {
-        id: `${type}-${suffix}`,
+        id: `${type}-${Date.now()}`,
         type,
     };
 }
@@ -107,19 +104,15 @@ const canvasCollisionDetection: CollisionDetection = (args) => {
 };
 
 function createSlot(): Slot {
-    const suffix =
-        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-
     return {
-        id: `slot-${suffix}`,
+        id: `slot-${Date.now()}`,
         colSpan: 1,
     };
 }
 
 function createInitialCanvasState(): { slots: Slot[]; widgetsBySlot: Record<string, PlacedWidget[]> } {
-    const firstSlot = createSlot();
+    const firstSlot: Slot = { id: INITIAL_SLOT_ID, colSpan: 1 };
+
     return {
         slots: [firstSlot],
         widgetsBySlot: { [firstSlot.id]: [] },
@@ -401,12 +394,17 @@ export default function GeneralReport({
     const [slots, setSlots] = useState<Slot[]>(initialCanvas.slots);
     const [widgetsBySlot, setWidgetsBySlot] = useState<Record<string, PlacedWidget[]>>(initialCanvas.widgetsBySlot);
     const [activeDragType, setActiveDragType] = useState<ReportWidgetType | null>(null);
+    const [isDndReady, setIsDndReady] = useState(false);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: { distance: 8 },
         }),
     );
+
+    useEffect(() => {
+        setIsDndReady(true);
+    }, []);
 
     useEffect(() => {
         setFilters(serverFilters);
@@ -645,261 +643,278 @@ export default function GeneralReport({
         return <NumberOfPatientsBaseOnPatientMiliteryTypes {...filterProps} />;
     };
 
+    const renderReportCanvas = () => (
+        <>
+            <Card className="!shadow-sm">
+                <div className="mb-4 border-b border-gray-100 pb-4 dark:border-gray-700">
+                    <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/40">
+                            <i className="bx bx-widget text-xl text-indigo-600 dark:text-indigo-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+                                {t('global.reports')}
+                            </h2>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                {t('global.general')} — click or drag a component into any slot below.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                    {(Object.keys(WIDGET_CATALOG) as ReportWidgetType[]).map((type) => (
+                        <PaletteItem
+                            key={type}
+                            type={type}
+                            label={t(WIDGET_CATALOG[type].labelKey)}
+                            icon={WIDGET_CATALOG[type].icon}
+                            isPlaced={placedWidgetTypes.has(type)}
+                            addedLabel="Added"
+                            onAdd={(widgetType) => {
+                                const targetSlotId = resolveTargetSlotId();
+                                if (targetSlotId) {
+                                    addWidgetToSlot(widgetType, targetSlotId);
+                                }
+                            }}
+                        />
+                    ))}
+                </div>
+            </Card>
+
+            <Card className="!shadow-sm">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
+                    <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-950/40">
+                            <i className="bx bx-layout text-xl text-violet-600 dark:text-violet-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+                                {t('global.general')}
+                            </h2>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                New slots appear at the top. Adjust width to span 1–4 columns on large screens.
+                            </p>
+                        </div>
+                    </div>
+                    <Button type="button" color="blue" size="sm" onClick={addSlot}>
+                        <i className="bx bx-plus" />
+                    </Button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
+                    {slots.map((slot, index) => {
+                        const widgets = widgetsBySlot[slot.id] ?? [];
+                        const widgetIds = widgets.map((w) => w.id);
+
+                        return (
+                            <ReportSlot
+                                key={slot.id}
+                                slot={slot}
+                                index={index}
+                                canRemove={slots.length > 1}
+                                widgetCount={widgets.length}
+                                slotLabel={`Slot ${index + 1}`}
+                                widthLabel="Width"
+                                removeLabel={t('global.remove')}
+                                onRemove={removeSlot}
+                                onColSpanChange={setSlotColSpan}
+                            >
+                                <SlotCanvas
+                                    slotId={slot.id}
+                                    isEmpty={widgets.length === 0}
+                                    emptyLabel="Drop components here"
+                                >
+                                    <SortableContext items={widgetIds} strategy={verticalListSortingStrategy}>
+                                        {widgets.map((widget) => (
+                                            <div key={widget.id} data-slot={slot.id}>
+                                                <SortableWidgetCard
+                                                    widget={widget}
+                                                    slotId={slot.id}
+                                                    title={t(WIDGET_CATALOG[widget.type].labelKey)}
+                                                    removeLabel={t('global.remove')}
+                                                    onRemove={removeWidget}
+                                                >
+                                                    {hasSearch ? (
+                                                        renderWidget(widget)
+                                                    ) : (
+                                                        <WidgetSearchPrompt
+                                                            title={t('global.search')}
+                                                            message="Set your filters above and click Search to load report data."
+                                                        />
+                                                    )}
+                                                </SortableWidgetCard>
+                                            </div>
+                                        ))}
+                                    </SortableContext>
+                                </SlotCanvas>
+                            </ReportSlot>
+                        );
+                    })}
+                </div>
+            </Card>
+        </>
+    );
+
     return (
         <DashboardLayout>
             <Head title={t('global.reports')} />
 
-            <DndContext
-                sensors={sensors}
-                collisionDetection={canvasCollisionDetection}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-            >
-                <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
-                    <SettingsPageHeader
-                        title={t('global.reports')}
-                        subtitle={t('global.general')}
-                        icon="bx-bar-chart-alt-2"
-                        accent="from-indigo-600 to-violet-700"
-                        backLabel={t('global.back')}
-                    />
+            <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
+                <SettingsPageHeader
+                    title={t('global.reports')}
+                    subtitle={t('global.general')}
+                    icon="bx-bar-chart-alt-2"
+                    accent="from-indigo-600 to-violet-700"
+                    backLabel={t('global.back')}
+                />
 
-                    {hasSearch && (
-                        <Card className="!shadow-sm">
-                            <div className="flex flex-wrap items-center gap-3">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white">
-                                    <i className="bx bx-check-shield text-lg" />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                                        {t('global.advanced_filters')}
-                                    </p>
-                                    <div className="mt-2 flex flex-wrap gap-2">
-                                        <Badge color="indigo">
-                                            {t('global.branch')}: {branchLabel}
+                {hasSearch && (
+                    <Card className="!shadow-sm">
+                        <div className="flex flex-wrap items-center gap-3">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white">
+                                <i className="bx bx-check-shield text-lg" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                    {t('global.advanced_filters')}
+                                </p>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    <Badge color="indigo">
+                                        {t('global.branch')}: {branchLabel}
+                                    </Badge>
+                                    {filters.date_from && (
+                                        <Badge color="gray">
+                                            {t('global.from')}: {filters.date_from}
                                         </Badge>
-                                        {filters.date_from && (
-                                            <Badge color="gray">
-                                                {t('global.from')}: {filters.date_from}
-                                            </Badge>
-                                        )}
-                                        {filters.date_to && (
-                                            <Badge color="gray">
-                                                {t('global.to')}: {filters.date_to}
-                                            </Badge>
-                                        )}
-                                        {!filters.date_from && !filters.date_to && (
-                                            <Badge color="gray">{t('global.all')}</Badge>
-                                        )}
-                                    </div>
-                                </div>
-                                {totalWidgetCount > 0 && (
-                                    <div className="text-end">
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('global.total')}</p>
-                                        <p className="text-lg font-bold text-gray-900 dark:text-white">{totalWidgetCount}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </Card>
-                    )}
-
-                    <Card className="!shadow-sm">
-                        <button
-                            type="button"
-                            onClick={() => setFiltersOpen((open) => !open)}
-                            className="flex w-full items-center justify-between gap-3 border-b border-gray-100 px-1 pb-4 text-start dark:border-gray-700"
-                        >
-                            <span className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                                <i className="bx bx-filter-alt text-indigo-500" />
-                                {t('global.advanced_filters')}
-                            </span>
-                            <i className={`bx ${filtersOpen ? 'bx-chevron-up' : 'bx-chevron-down'} text-xl text-gray-400`} />
-                        </button>
-
-                        {filtersOpen && (
-                            <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-                                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                    <div>
-                                        <Label>{t('global.branch')}</Label>
-                                        <SearchableSelect
-                                            value={filters.branch_id}
-                                            onChange={(value) =>
-                                                setFilters((prev) => ({ ...prev, branch_id: value }))
-                                            }
-                                            options={[
-                                                { value: '', label: t('global.all') },
-                                                ...filterOptions.branches.map((branch) => ({
-                                                    value: String(branch.id),
-                                                    label: branch.name,
-                                                })),
-                                            ]}
-                                            placeholder={t('global.select')}
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label>{t('global.from')}</Label>
-                                        <PersianDateInput
-                                            value={filters.date_from}
-                                            onChange={(value) =>
-                                                setFilters((prev) => ({ ...prev, date_from: value }))
-                                            }
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label>{t('global.to')}</Label>
-                                        <PersianDateInput
-                                            value={filters.date_to}
-                                            onChange={(value) =>
-                                                setFilters((prev) => ({ ...prev, date_to: value }))
-                                            }
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex flex-wrap gap-2 border-t border-gray-100 pt-4 dark:border-gray-700">
-                                    <Button type="submit" color="blue" disabled={processing}>
-                                        {processing ? (
-                                            <>
-                                                <Spinner size="sm" className="me-2" />
-                                                {t('global.loading')}
-                                            </>
-                                        ) : (
-                                            <>
-                                                <i className="bx bx-search me-2" />
-                                                {t('global.search')}
-                                            </>
-                                        )}
-                                    </Button>
-                                    <Button type="button" color="light" onClick={handleReset} disabled={processing}>
-                                        <i className="bx bx-refresh me-2" />
-                                        {t('global.reset')}
-                                    </Button>
-                                </div>
-                            </form>
-                        )}
-                    </Card>
-
-                    <Card className="!shadow-sm">
-                        <div className="mb-4 border-b border-gray-100 pb-4 dark:border-gray-700">
-                            <div className="flex items-start gap-3">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/40">
-                                    <i className="bx bx-widget text-xl text-indigo-600 dark:text-indigo-400" />
-                                </div>
-                                <div>
-                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-                                        {t('global.reports')}
-                                    </h2>
-                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                        {t('global.general')} — click or drag a component into any slot below.
-                                    </p>
+                                    )}
+                                    {filters.date_to && (
+                                        <Badge color="gray">
+                                            {t('global.to')}: {filters.date_to}
+                                        </Badge>
+                                    )}
+                                    {!filters.date_from && !filters.date_to && (
+                                        <Badge color="gray">{t('global.all')}</Badge>
+                                    )}
                                 </div>
                             </div>
+                            {totalWidgetCount > 0 && (
+                                <div className="text-end">
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('global.total')}</p>
+                                    <p className="text-lg font-bold text-gray-900 dark:text-white">{totalWidgetCount}</p>
+                                </div>
+                            )}
                         </div>
-                        <div className="grid gap-3 sm:grid-cols-2">
-                            {(Object.keys(WIDGET_CATALOG) as ReportWidgetType[]).map((type) => (
-                                <PaletteItem
-                                    key={type}
-                                    type={type}
-                                    label={t(WIDGET_CATALOG[type].labelKey)}
-                                    icon={WIDGET_CATALOG[type].icon}
-                                    isPlaced={placedWidgetTypes.has(type)}
-                                    addedLabel="Added"
-                                    onAdd={(widgetType) => {
-                                        const targetSlotId = resolveTargetSlotId();
-                                        if (targetSlotId) {
-                                            addWidgetToSlot(widgetType, targetSlotId);
+                    </Card>
+                )}
+
+                <Card className="!shadow-sm">
+                    <button
+                        type="button"
+                        onClick={() => setFiltersOpen((open) => !open)}
+                        className="flex w-full items-center justify-between gap-3 border-b border-gray-100 px-1 pb-4 text-start dark:border-gray-700"
+                    >
+                        <span className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                            <i className="bx bx-filter-alt text-indigo-500" />
+                            {t('global.advanced_filters')}
+                        </span>
+                        <i className={`bx ${filtersOpen ? 'bx-chevron-up' : 'bx-chevron-down'} text-xl text-gray-400`} />
+                    </button>
+
+                    {filtersOpen && (
+                        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                <div>
+                                    <Label>{t('global.branch')}</Label>
+                                    <SearchableSelect
+                                        value={filters.branch_id}
+                                        onChange={(value) =>
+                                            setFilters((prev) => ({ ...prev, branch_id: value }))
                                         }
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </Card>
-
-                    <Card className="!shadow-sm">
-                        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
-                            <div className="flex items-start gap-3">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-950/40">
-                                    <i className="bx bx-layout text-xl text-violet-600 dark:text-violet-400" />
+                                        options={[
+                                            { value: '', label: t('global.all') },
+                                            ...filterOptions.branches.map((branch) => ({
+                                                value: String(branch.id),
+                                                label: branch.name,
+                                            })),
+                                        ]}
+                                        placeholder={t('global.select')}
+                                    />
                                 </div>
                                 <div>
-                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-                                        {t('global.general')}
-                                    </h2>
-                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                        New slots appear at the top. Adjust width to span 1–4 columns on large screens.
-                                    </p>
+                                    <Label>{t('global.from')}</Label>
+                                    <PersianDateInput
+                                        value={filters.date_from}
+                                        onChange={(value) =>
+                                            setFilters((prev) => ({ ...prev, date_from: value }))
+                                        }
+                                    />
+                                </div>
+                                <div>
+                                    <Label>{t('global.to')}</Label>
+                                    <PersianDateInput
+                                        value={filters.date_to}
+                                        onChange={(value) =>
+                                            setFilters((prev) => ({ ...prev, date_to: value }))
+                                        }
+                                    />
                                 </div>
                             </div>
-                            <Button type="button" color="blue" size="sm" onClick={addSlot}>
-                                <i className="bx bx-plus" />
-                            </Button>
-                        </div>
+                            <div className="flex flex-wrap gap-2 border-t border-gray-100 pt-4 dark:border-gray-700">
+                                <Button type="submit" color="blue" disabled={processing}>
+                                    {processing ? (
+                                        <>
+                                            <Spinner size="sm" className="me-2" />
+                                            {t('global.loading')}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="bx bx-search me-2" />
+                                            {t('global.search')}
+                                        </>
+                                    )}
+                                </Button>
+                                <Button type="button" color="light" onClick={handleReset} disabled={processing}>
+                                    <i className="bx bx-refresh me-2" />
+                                    {t('global.reset')}
+                                </Button>
+                            </div>
+                        </form>
+                    )}
+                </Card>
 
-                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
-                            {slots.map((slot, index) => {
-                                const widgets = widgetsBySlot[slot.id] ?? [];
-                                const widgetIds = widgets.map((w) => w.id);
-
-                                return (
-                                    <ReportSlot
-                                        key={slot.id}
-                                        slot={slot}
-                                        index={index}
-                                        canRemove={slots.length > 1}
-                                        widgetCount={widgets.length}
-                                        slotLabel={`Slot ${index + 1}`}
-                                        widthLabel="Width"
-                                        removeLabel={t('global.remove')}
-                                        onRemove={removeSlot}
-                                        onColSpanChange={setSlotColSpan}
-                                    >
-                                        <SlotCanvas
-                                            slotId={slot.id}
-                                            isEmpty={widgets.length === 0}
-                                            emptyLabel="Drop components here"
-                                        >
-                                            <SortableContext items={widgetIds} strategy={verticalListSortingStrategy}>
-                                                {widgets.map((widget) => (
-                                                    <div key={widget.id} data-slot={slot.id}>
-                                                        <SortableWidgetCard
-                                                            widget={widget}
-                                                            slotId={slot.id}
-                                                            title={t(WIDGET_CATALOG[widget.type].labelKey)}
-                                                            removeLabel={t('global.remove')}
-                                                            onRemove={removeWidget}
-                                                        >
-                                                            {hasSearch ? (
-                                                                renderWidget(widget)
-                                                            ) : (
-                                                                <WidgetSearchPrompt
-                                                                    title={t('global.search')}
-                                                                    message="Set your filters above and click Search to load report data."
-                                                                />
-                                                            )}
-                                                        </SortableWidgetCard>
-                                                    </div>
-                                                ))}
-                                            </SortableContext>
-                                        </SlotCanvas>
-                                    </ReportSlot>
-                                );
-                            })}
-                        </div>
-                    </Card>
-                </div>
-
-                <DragOverlay>
-                    {activeDragType ? (
-                        <div className="flex items-center gap-3 rounded-xl border border-indigo-300 bg-white px-4 py-3 shadow-lg dark:border-indigo-500 dark:bg-gray-800">
-                            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-white">
-                                <i className={`bx ${WIDGET_CATALOG[activeDragType].icon} text-lg`} />
-                            </span>
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                {t(WIDGET_CATALOG[activeDragType].labelKey)}
-                            </span>
-                        </div>
-                    ) : null}
-                </DragOverlay>
-            </DndContext>
+                {isDndReady ? (
+                    <DndContext
+                        id="general-report-canvas"
+                        sensors={sensors}
+                        collisionDetection={canvasCollisionDetection}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <div className="space-y-5">{renderReportCanvas()}</div>
+                        <DragOverlay>
+                            {activeDragType ? (
+                                <div className="flex items-center gap-3 rounded-xl border border-indigo-300 bg-white px-4 py-3 shadow-lg dark:border-indigo-500 dark:bg-gray-800">
+                                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-white">
+                                        <i className={`bx ${WIDGET_CATALOG[activeDragType].icon} text-lg`} />
+                                    </span>
+                                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                        {t(WIDGET_CATALOG[activeDragType].labelKey)}
+                                    </span>
+                                </div>
+                            ) : null}
+                        </DragOverlay>
+                    </DndContext>
+                ) : (
+                    <div className="space-y-5" aria-hidden>
+                        <Card className="!shadow-sm">
+                            <div className="h-28 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+                        </Card>
+                        <Card className="!shadow-sm">
+                            <div className="h-80 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+                        </Card>
+                    </div>
+                )}
+            </div>
         </DashboardLayout>
     );
 }

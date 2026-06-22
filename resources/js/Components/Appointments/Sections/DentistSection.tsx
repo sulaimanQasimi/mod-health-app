@@ -27,6 +27,7 @@ import AppointmentSectionAccordion, {
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
+import { DetailTextBlock, DetailTile } from '../../ui/DetailTile';
 import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
@@ -380,13 +381,7 @@ export default function DentistSection({ appointmentId }: DentistSectionProps) {
                                     [t('global.dentist'), selectedRegistration.dentist_name],
                                     [t('global.registration_date'), selectedRegistration.registration_date],
                                 ].map(([label, value]) => (
-                                    <div
-                                        key={String(label)}
-                                        className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40"
-                                    >
-                                        <p className="text-xs text-gray-500">{label}</p>
-                                        <p className="font-semibold">{value ?? '—'}</p>
-                                    </div>
+                                    <DetailTile key={String(label)} label={String(label)} value={value} />
                                 ))}
                             </div>
 
@@ -409,13 +404,13 @@ export default function DentistSection({ appointmentId }: DentistSectionProps) {
                             </div>
 
                             {selectedRegistration.notes && (
-                                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800/40">
-                                    <strong>{t('global.notes')}:</strong> {selectedRegistration.notes}
-                                </div>
+                                <DetailTextBlock label={t('global.notes')}>
+                                    {selectedRegistration.notes}
+                                </DetailTextBlock>
                             )}
 
                             {selectedRegistration.created_at && (
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
                                     {t('global.created_at')}: {selectedRegistration.created_at}
                                 </p>
                             )}

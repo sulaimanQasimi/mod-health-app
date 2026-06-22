@@ -25,6 +25,7 @@ import AppointmentSectionAccordion, {
     SectionEmptyState,
     SectionLoadingState,
 } from './AppointmentSectionAccordion';
+import { DetailTile } from '../../ui/DetailTile';
 import TableBadge from '../../ui/TableBadge';
 import { SectionActionButton } from './SimpleTableSection';
 
@@ -275,16 +276,16 @@ export default function ProstheticsSection({ appointmentId }: ProstheticsSection
                 <ModalHeader>{t('global.prosthetics_referral')}</ModalHeader>
                 <ModalBody>
                     {selectedReferral && (
-                        <div className="space-y-4 text-sm">
+                        <div className="space-y-4 text-sm text-gray-900 dark:text-white">
                             <div className="grid gap-3 sm:grid-cols-2">
-                                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/40">
-                                    <p className="text-xs text-gray-500">{t('global.prosthetics_referral_number')}</p>
-                                    <p className="font-semibold">{selectedReferral.number}</p>
-                                </div>
-                                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/40">
-                                    <p className="text-xs text-gray-500">{t('global.date')}</p>
-                                    <p className="font-semibold">{selectedReferral.referral_date ?? '—'}</p>
-                                </div>
+                                <DetailTile
+                                    label={t('global.prosthetics_referral_number')}
+                                    value={selectedReferral.number}
+                                />
+                                <DetailTile
+                                    label={t('global.date')}
+                                    value={selectedReferral.referral_date}
+                                />
                             </div>
                             <TableBadge color="gray">{selectedReferral.status}</TableBadge>
                             {selectedReferral.reason && (

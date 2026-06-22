@@ -95,6 +95,7 @@ use App\Http\Controllers\V1\ProstheticsReportController;
 use App\Http\Controllers\V1\RecipientController;
 use App\Http\Controllers\V1\RecipientPartController;
 use App\Http\Controllers\V1\RelationController;
+use App\Http\Controllers\V1\Reports\GenralReport;
 use App\Http\Controllers\V1\RoleController;
 use App\Http\Controllers\V1\RoomController;
 use App\Http\Controllers\V1\ScanCodeController;
@@ -845,4 +846,9 @@ Route::middleware(['auth'])->group(function () {
         Route::match(['put', 'post'], '/{nurse}', [NurseController::class, 'update'])->name('update');
         Route::delete('/{nurse}', [NurseController::class, 'destroy'])->name('destroy');
     });
+    Route::get("/reports/general", [GenralReport::class, "index"])->name("reports.general.index");
+ 
+});
+Route::prefix("/api")->name("api.")->group(function () {
+     Route::get("/reports/general/number-of-patients-base-on-department", [GenralReport::class, "number_of_patients_base_on_department"])->name("reports.general.number-of-patients-base-on-department");
 });

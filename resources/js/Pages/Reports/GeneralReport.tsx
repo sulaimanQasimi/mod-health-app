@@ -677,7 +677,7 @@ export default function GeneralReport({
                             </Button>
                         </div>
 
-                        <div className="grid grid-cols-4 gap-4">
+                        <div className="grid grid-cols-4 gap-4 ">
                             {slots.map((slot, index) => {
                                 const widgets = widgetsBySlot[slot.id] ?? [];
                                 const widgetIds = widgets.map((w) => w.id);

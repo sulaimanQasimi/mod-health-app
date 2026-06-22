@@ -92,7 +92,7 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
             <table className="min-w-full border-collapse divide-y divide-gray-200 dark:divide-gray-700">
                 <thead>
                     <tr className="bg-gray-100 dark:bg-gray-800">
-                        <th className="sticky left-0 z-10 bg-gray-100 px-4 py-3 text-left align-bottom text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                        <th className="sticky left-0 z-10 bg-gray-100 px-4 py-3 text-right align-middle text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200">
                             {t('global.department')}
                         </th>
                         {militeryTypeColumns.map((column) => (

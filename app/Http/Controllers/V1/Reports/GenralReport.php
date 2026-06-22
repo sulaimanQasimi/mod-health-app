@@ -53,6 +53,7 @@ class GenralReport extends Controller
                 patients.relation_id,
                 relations.name as relation_name,
                 patients.commanded_by,
+                appointments.clinic_type,
                 COUNT(*) as count
             ')
             ->groupBy(
@@ -67,6 +68,7 @@ class GenralReport extends Controller
                 'patients.relation_id',
                 'relations.name',
                 'patients.commanded_by',
+                'appointments.clinic_type',
             )
             ->orderBy('departments.name')
             ->get();
@@ -84,6 +86,7 @@ class GenralReport extends Controller
                     'job_categories' => $this->aggregateBreakdown($departmentRows, 'job_category'),
                     'job_types' => $this->aggregateBreakdown($departmentRows, 'job_type'),
                     'patient_types' => $this->aggregateBreakdown($departmentRows, 'patient_type'),
+                    'clinic_types' => $this->aggregateBreakdown($departmentRows, 'clinic_type'),
                     'militery_types' => $this->aggregateBreakdown($departmentRows, 'militery_type_id', 'militery_type_name'),
                     'relations' => $this->aggregateBreakdown($departmentRows, 'relation_id', 'relation_name'),
                     'commanded_by' => $this->aggregateBreakdown(

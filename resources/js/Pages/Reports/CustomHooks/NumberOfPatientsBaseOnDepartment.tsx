@@ -16,6 +16,7 @@ interface DepartmentReport {
     job_categories: BreakdownItem[];
     job_types: BreakdownItem[];
     patient_types: BreakdownItem[];
+    clinic_types: BreakdownItem[];
     militery_types: BreakdownItem[];
     relations: BreakdownItem[];
     commanded_by: BreakdownItem[];
@@ -26,6 +27,7 @@ type BreakdownKey =
     | 'job_categories'
     | 'job_types'
     | 'patient_types'
+    | 'clinic_types'
     | 'militery_types'
     | 'relations'
     | 'commanded_by';
@@ -42,11 +44,21 @@ interface NumberOfPatientsBaseOnDepartmentProps {
     date_to?: string;
 }
 
+const FIXED_GROUP_COLUMNS: Partial<
+    Record<BreakdownKey, Array<{ itemKey: string; labelKey: string }>>
+> = {
+    clinic_types: [
+        { itemKey: 'hospital', labelKey: 'global.hospital' },
+        { itemKey: 'clinic', labelKey: 'global.clinic' },
+    ],
+};
+
 const BREAKDOWN_CONFIGS: Array<{ key: BreakdownKey; titleKey: string }> = [
     { key: 'genders', titleKey: 'global.gender' },
     { key: 'job_categories', titleKey: 'global.job_category' },
     { key: 'job_types', titleKey: 'global.job_type' },
     { key: 'patient_types', titleKey: 'global.type' },
+    { key: 'clinic_types', titleKey: 'global.clinic_type' },
     { key: 'militery_types', titleKey: 'global.militery_types' },
     { key: 'relations', titleKey: 'global.relation' },
     { key: 'commanded_by', titleKey: 'global.commanded_by' },
@@ -193,6 +205,20 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
         [t],
     );
 
+    const resolveClinicTypeLabel = useCallback(
+        (item: BreakdownItem) => {
+            if (isStringLabel(item.label)) {
+                return item.label;
+            }
+            const map: Record<string, string> = {
+                hospital: t('global.hospital'),
+                clinic: t('global.clinic'),
+            };
+            return map[String(item.key)] ?? String(item.key ?? 'Unknown');
+        },
+        [t],
+    );
+
     const resolveNamedLabel = useCallback(
         (item: BreakdownItem) =>
             isStringLabel(item.label) ? item.label : String(item.key ?? 'Unknown'),
@@ -205,6 +231,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
             job_categories: resolveJobCategoryLabel,
             job_types: resolveJobTypeLabel,
             patient_types: resolvePatientTypeLabel,
+            clinic_types: resolveClinicTypeLabel,
             militery_types: resolveNamedLabel,
             relations: resolveNamedLabel,
             commanded_by: resolveNamedLabel,
@@ -214,12 +241,27 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
             resolveJobCategoryLabel,
             resolveJobTypeLabel,
             resolvePatientTypeLabel,
+            resolveClinicTypeLabel,
             resolveNamedLabel,
         ],
     );
 
     const columnGroups = useMemo<ColumnGroup[]>(() => {
         return BREAKDOWN_CONFIGS.map((config) => {
+            const fixedColumns = FIXED_GROUP_COLUMNS[config.key];
+
+            if (fixedColumns) {
+                return {
+                    key: config.key,
+                    title: t(config.titleKey),
+                    columns: fixedColumns.map(({ itemKey, labelKey }) => ({
+                        id: `${config.key}:${itemKey}`,
+                        itemKey,
+                        name: t(labelKey),
+                    })),
+                };
+            }
+
             const labels = new Map<string, string>();
 
             report.forEach((department) => {

@@ -11,6 +11,7 @@
 
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}">
     <link rel="preload" href="{{ asset('persian_font.ttf') }}" as="font" type="font/ttf" crossorigin>
 
     @inertiaHead

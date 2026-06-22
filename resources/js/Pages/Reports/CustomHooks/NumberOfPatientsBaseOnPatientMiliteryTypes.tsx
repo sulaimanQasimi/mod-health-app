@@ -85,13 +85,28 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
         return match?.count ?? 0;
     };
 
-    const columnCount = militeryTypeColumns.length + 2;
+    const removeDepartment = (department: DepartmentMiliteryReport) => {
+        setReport((current) =>
+            current.filter((row) => {
+                if (department.department_id != null && row.department_id != null) {
+                    return row.department_id !== department.department_id;
+                }
+
+                return row.department_name !== department.department_name;
+            }),
+        );
+    };
+
+    const columnCount = militeryTypeColumns.length + 3;
 
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full border-collapse divide-y divide-gray-200 dark:divide-gray-700">
                 <thead>
                     <tr className="bg-gray-100 dark:bg-gray-800">
+                        <th className="sticky left-0 z-10 bg-gray-100 px-4 py-3 text-left align-middle text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                            #
+                        </th>
                         <th className="sticky left-0 z-10 bg-gray-100 px-4 py-3 text-right align-middle text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200">
                             {t('global.department')}
                         </th>
@@ -123,11 +138,25 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
                             </td>
                         </tr>
                     ) : report.length > 0 ? (
-                        report.map((department) => (
+                        report.map((department, index) => (
                             <tr
                                 key={department.department_id ?? department.department_name}
                                 className="border-t border-gray-200 dark:border-gray-700"
                             >
+                                <td className="sticky left-0 z-10 bg-white px-2 py-2 dark:bg-gray-900">
+                                    <button
+                                        type="button"
+                                        onClick={() => removeDepartment(department)}
+                                        title={t('global.remove')}
+                                        aria-label={`${t('global.remove')} ${department.department_name ?? 'Unknown'}`}
+                                        className="group/row-action relative mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium text-gray-700 transition hover:bg-red-50 dark:text-gray-200 dark:hover:bg-red-950/30"
+                                    >
+                                        <span className="transition-opacity group-hover/row-action:opacity-0">
+                                            {index + 1}
+                                        </span>
+                                        <i className="bx bx-trash absolute text-lg text-red-500 opacity-0 transition-opacity group-hover/row-action:opacity-100" />
+                                    </button>
+                                </td>
                                 <td className="sticky left-0 z-10 bg-white px-4 py-2 font-medium dark:bg-gray-900">
                                     {department.department_name ?? 'Unknown'}
                                 </td>

@@ -166,11 +166,10 @@ function PaletteItem({
 
     return (
         <div
-            className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-start text-sm font-medium shadow-sm transition ${
-                isPlaced
+            className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-start text-sm font-medium shadow-sm transition ${isPlaced
                     ? 'border-emerald-200 bg-emerald-50/80 text-gray-600 dark:border-emerald-900 dark:bg-emerald-950/20 dark:text-gray-300'
                     : 'border-gray-200 bg-white text-gray-800 hover:border-indigo-300 hover:bg-indigo-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/30'
-            }`}
+                }`}
         >
             <button
                 type="button"
@@ -179,11 +178,10 @@ function PaletteItem({
                 className="flex min-w-0 flex-1 items-center gap-3 disabled:cursor-not-allowed"
             >
                 <span
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white ${
-                        isPlaced
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white ${isPlaced
                             ? 'bg-emerald-500'
                             : 'bg-gradient-to-br from-indigo-500 to-violet-600'
-                    }`}
+                        }`}
                 >
                     <i className={`bx ${isPlaced ? 'bx-check' : icon} text-lg`} />
                 </span>
@@ -199,11 +197,10 @@ function PaletteItem({
                 style={style}
                 type="button"
                 disabled={isPlaced}
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-400 dark:border-gray-700 ${
-                    isPlaced
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-400 dark:border-gray-700 ${isPlaced
                         ? 'cursor-not-allowed opacity-40'
                         : 'cursor-grab hover:bg-gray-50 active:cursor-grabbing dark:hover:bg-gray-800'
-                } ${isDragging ? 'opacity-50' : ''}`}
+                    } ${isDragging ? 'opacity-50' : ''}`}
                 aria-label={`Drag ${label}`}
                 {...listeners}
                 {...attributes}
@@ -231,11 +228,10 @@ function SlotCanvas({
         <div
             ref={setNodeRef}
             style={{ minHeight: DEFAULT_SLOT_HEIGHT }}
-            className={`relative h-full rounded-2xl border-2 border-dashed p-4 transition ${
-                isOver
+            className={`relative h-full rounded-2xl border-2 border-dashed p-4 transition ${isOver
                     ? 'border-indigo-400 bg-indigo-50/70 dark:border-indigo-500 dark:bg-indigo-950/20'
                     : 'border-gray-200 bg-gray-50/70 dark:border-gray-700 dark:bg-gray-900/40'
-            }`}
+                }`}
         >
             {isEmpty && (
                 <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center text-gray-500 dark:text-gray-400">
@@ -314,8 +310,7 @@ function ReportSlot({
                         onClick={() => onRemove(slot.id)}
                         disabled={!canRemove}
                     >
-                        <i className="bx bx-trash me-1" />
-                        {removeLabel}
+                        <i className="bx bx-trash" />
                     </Button>
                 </div>
             </div>
@@ -368,8 +363,7 @@ function SortableWidgetCard({
                         <h3 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h3>
                     </div>
                     <Button type="button" color="light" size="sm" onClick={() => onRemove(widget.id)}>
-                        <i className="bx bx-trash me-1" />
-                        {removeLabel}
+                        <i className="bx bx-trash" />
                     </Button>
                 </div>
                 {children}
@@ -836,8 +830,7 @@ export default function GeneralReport({
                                 </div>
                             </div>
                             <Button type="button" color="blue" size="sm" onClick={addSlot}>
-                                <i className="bx bx-plus me-1" />
-                                {t('global.add')} Slot
+                                <i className="bx bx-plus" />
                             </Button>
                         </div>
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 interface DepartmentReport {
     department_id: number | null;
@@ -18,6 +19,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
     date_from = '',
     date_to = '',
 }) => {
+    const { t } = useTranslation();
     const [report, setReport] = useState<DepartmentReport[]>([]);
     const { get, processing, setData } = useHttp({
         branch_id: '',
@@ -47,8 +49,9 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead>
                         <tr className="bg-gray-100">
-                            <th className="py-2 px-4 text-left">Department Name</th>
-                            <th className="py-2 px-4 text-left">Count</th>
+                            <th className="py-2 px-4 text-right">{t('global.number')}</th>
+                            <th className="py-2 px-4 text-right">{t('global.department')}</th>
+                            <th className="py-2 px-4 text-left">{t('global.count')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,16 +62,19 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                                 </td>
                             </tr>
                         ) : report.length > 0 ? (
-                            report.map((item) => (
+                            report.map((item, index) => (
                                 <tr key={item.department_id ?? item.department_name} className="border-t">
+                                    <td className="py-2 px-4 text-right">{index + 1}</td>
                                     <td className="py-2 px-4">{item.department_name}</td>
                                     <td className="py-2 px-4">{item.count}</td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={2} className="py-4 px-4 text-center text-gray-500">
-                                    No data available.
+                                <td colSpan={3} className="py-4 px-4 text-center text-gray-500">
+                                    <div className="flex items-center justify-center w-full">
+                                        <span className="h-5 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse inline-block" />
+                                    </div>
                                 </td>
                             </tr>
                         )}

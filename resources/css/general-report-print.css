@@ -1,0 +1,161 @@
+@media print {
+    @page {
+        margin: 0;
+        size: A4 landscape;
+    }
+
+    html,
+    body,
+    body:has(.general-report-page) {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+    }
+
+    body:has(.general-report-page) aside,
+    body:has(.general-report-page) header,
+    body:has(.general-report-page) button[aria-label='Close menu'] {
+        display: none !important;
+    }
+
+    body:has(.general-report-page) .lg\:pl-\[16\.25rem\],
+    body:has(.general-report-page) .lg\:pr-\[16\.25rem\] {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin: 0 !important;
+    }
+
+    body:has(.general-report-page) main,
+    body:has(.general-report-page) .min-h-screen {
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+    }
+
+    .general-report-no-print,
+    .general-report-widget-title {
+        display: none !important;
+    }
+
+    .general-report-page,
+    .general-report-page > *,
+    .general-report-page .space-y-5 > *,
+    .general-report-slots,
+    .general-report-slots > *,
+    .general-report-slot-grid,
+    .general-report-slot,
+    .general-report-slot > *,
+    .general-report-slot-canvas,
+    .general-report-slot-canvas > *,
+    .general-report-page [data-slot],
+    .general-report-page [data-slot] > div,
+    .general-report-widget,
+    .general-report-widget > * {
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        min-height: 0 !important;
+        gap: 0 !important;
+    }
+
+    .general-report-slots {
+        display: block !important;
+    }
+
+    .general-report-slots .general-report-slot-grid {
+        display: block !important;
+    }
+
+    .general-report-slot,
+    .general-report-widget {
+        break-inside: auto;
+        page-break-inside: auto;
+    }
+
+    .general-report-page table {
+        break-inside: auto;
+        page-break-inside: auto;
+        width: 100% !important;
+        font-size: 9px !important;
+        border-collapse: collapse !important;
+        margin: 0 !important;
+    }
+
+    .general-report-page table + table {
+        margin-top: 0 !important;
+    }
+
+    .general-report-page .overflow-x-auto,
+    .general-report-page .overflow-auto {
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+    }
+
+    .general-report-page th,
+    .general-report-page td {
+        color: #000 !important;
+        background: white !important;
+        position: static !important;
+        box-shadow: none !important;
+        padding: 2px 3px !important;
+        margin: 0 !important;
+        border: 1px solid #ccc !important;
+    }
+
+    .general-report-page thead th {
+        background: #f0f0f0 !important;
+    }
+
+    .general-report-page button.group\/col-action,
+    .general-report-page button.group\/row-action {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        pointer-events: none !important;
+    }
+
+    .general-report-page button:not(.group\/col-action):not(.group\/row-action) {
+        display: none !important;
+    }
+
+    .general-report-page .group\/col-action span,
+    .general-report-page th .inline-block.-rotate-90,
+    .general-report-page th .inline-block.origin-bottom-left.-rotate-90 {
+        transform: none !important;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        white-space: normal !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .general-report-page .group\/row-action span {
+        opacity: 1 !important;
+    }
+
+    .general-report-page .bx-trash {
+        display: none !important;
+    }
+
+    .dark .general-report-page,
+    .dark .general-report-page th,
+    .dark .general-report-page td {
+        color: #000 !important;
+        background: white !important;
+    }
+}

@@ -22,6 +22,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Head, router } from '@inertiajs/react';
 import { Badge, Button, Card, Label, Spinner } from 'flowbite-react';
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
+import '../../../css/general-report-print.css';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
@@ -221,13 +222,13 @@ function SlotCanvas({
         <div
             ref={setNodeRef}
             style={{ minHeight: DEFAULT_SLOT_HEIGHT }}
-            className={`relative h-full rounded-2xl border-2 border-dashed p-4 transition ${isOver
+            className={`general-report-slot-canvas relative h-full rounded-2xl border-2 border-dashed p-4 transition ${isOver
                     ? 'border-indigo-400 bg-indigo-50/70 dark:border-indigo-500 dark:bg-indigo-950/20'
                     : 'border-gray-200 bg-gray-50/70 dark:border-gray-700 dark:bg-gray-900/40'
                 }`}
         >
             {isEmpty && (
-                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center text-gray-500 dark:text-gray-400">
+                <div className="general-report-no-print pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center text-gray-500 dark:text-gray-400">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-950/30">
                         <i className="bx bx-layer-plus text-2xl text-indigo-500" />
                     </div>
@@ -265,8 +266,10 @@ function ReportSlot({
     children: ReactNode;
 }) {
     return (
-        <div className={`flex min-w-0 flex-col ${slotColSpanClass(slot.colSpan)}`}>
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800">
+        <div
+            className={`general-report-slot flex min-w-0 flex-col ${slotColSpanClass(slot.colSpan)} ${widgetCount === 0 ? 'general-report-no-print' : ''}`}
+        >
+            <div className="general-report-no-print mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800">
                 <div className="flex min-w-0 items-center gap-2">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
                         {index + 1}
@@ -341,8 +344,8 @@ function SortableWidgetCard({
 
     return (
         <div ref={setNodeRef} style={style}>
-            <Card className="!shadow-sm">
-                <div className="mb-4 flex items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
+            <Card className="general-report-widget !shadow-sm">
+                <div className="general-report-no-print mb-4 flex items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
                     <div className="flex items-center gap-3">
                         <button
                             type="button"
@@ -367,7 +370,7 @@ function SortableWidgetCard({
 
 function WidgetSearchPrompt({ title, message }: { title: string; message: string }) {
     return (
-        <div className="flex min-h-[180px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-amber-200 bg-amber-50/60 px-6 py-8 text-center dark:border-amber-900/60 dark:bg-amber-950/20">
+        <div className="general-report-no-print flex min-h-[180px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-amber-200 bg-amber-50/60 px-6 py-8 text-center dark:border-amber-900/60 dark:bg-amber-950/20">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/40">
                 <i className="bx bx-filter-alt text-2xl text-amber-600 dark:text-amber-400" />
             </div>
@@ -645,7 +648,7 @@ export default function GeneralReport({
 
     const renderReportCanvas = () => (
         <>
-            <Card className="!shadow-sm">
+            <Card className="general-report-no-print !shadow-sm">
                 <div className="mb-4 border-b border-gray-100 pb-4 dark:border-gray-700">
                     <div className="flex items-start gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/40">
@@ -681,8 +684,8 @@ export default function GeneralReport({
                 </div>
             </Card>
 
-            <Card className="!shadow-sm">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
+            <Card className="general-report-slots !shadow-sm">
+                <div className="general-report-no-print mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
                     <div className="flex items-start gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-950/40">
                             <i className="bx bx-layout text-xl text-violet-600 dark:text-violet-400" />
@@ -696,12 +699,17 @@ export default function GeneralReport({
                             </p>
                         </div>
                     </div>
-                    <Button type="button" color="blue" size="sm" onClick={addSlot}>
-                        <i className="bx bx-plus" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button type="button" color="light" size="sm" onClick={() => window.print()}>
+                            <i className="bx bx-printer" />
+                        </Button>
+                        <Button type="button" color="blue" size="sm" onClick={addSlot}>
+                            <i className="bx bx-plus" />
+                        </Button>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
+                <div className="general-report-slot-grid grid grid-cols-1 gap-4 xl:grid-cols-4">
                     {slots.map((slot, index) => {
                         const widgets = widgetsBySlot[slot.id] ?? [];
                         const widgetIds = widgets.map((w) => w.id);
@@ -726,7 +734,11 @@ export default function GeneralReport({
                                 >
                                     <SortableContext items={widgetIds} strategy={verticalListSortingStrategy}>
                                         {widgets.map((widget) => (
-                                            <div key={widget.id} data-slot={slot.id}>
+                                            <div
+                                                key={widget.id}
+                                                data-slot={slot.id}
+                                                className={!hasSearch ? 'general-report-no-print' : undefined}
+                                            >
                                                 <SortableWidgetCard
                                                     widget={widget}
                                                     slotId={slot.id}
@@ -759,17 +771,19 @@ export default function GeneralReport({
         <DashboardLayout>
             <Head title={t('global.reports')} />
 
-            <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
-                <SettingsPageHeader
-                    title={t('global.reports')}
-                    subtitle={t('global.general')}
-                    icon="bx-bar-chart-alt-2"
-                    accent="from-indigo-600 to-violet-700"
-                    backLabel={t('global.back')}
-                />
+            <div className={`general-report-page mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
+                <div className="general-report-no-print">
+                    <SettingsPageHeader
+                        title={t('global.reports')}
+                        subtitle={t('global.general')}
+                        icon="bx-bar-chart-alt-2"
+                        accent="from-indigo-600 to-violet-700"
+                        backLabel={t('global.back')}
+                    />
+                </div>
 
                 {hasSearch && (
-                    <Card className="!shadow-sm">
+                    <Card className="general-report-no-print !shadow-sm">
                         <div className="flex flex-wrap items-center gap-3">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white">
                                 <i className="bx bx-check-shield text-lg" />
@@ -807,7 +821,7 @@ export default function GeneralReport({
                     </Card>
                 )}
 
-                <Card className="!shadow-sm">
+                <Card className="general-report-no-print !shadow-sm">
                     <button
                         type="button"
                         onClick={() => setFiltersOpen((open) => !open)}
@@ -905,7 +919,7 @@ export default function GeneralReport({
                         </DragOverlay>
                     </DndContext>
                 ) : (
-                    <div className="space-y-5" aria-hidden>
+                    <div className="general-report-no-print space-y-5" aria-hidden>
                         <Card className="!shadow-sm">
                             <div className="h-28 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
                         </Card>

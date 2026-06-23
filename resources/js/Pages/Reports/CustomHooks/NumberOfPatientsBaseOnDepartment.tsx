@@ -83,7 +83,7 @@ function RemovableColumnHeader({
 }) {
     return (
         <th
-            className={`h-28 w-12 min-w-12 max-w-14 border-b border-gray-200 bg-gray-100 p-0 align-middle text-center dark:border-gray-700 dark:bg-gray-800 ${
+            className={`h-28 min-w-12 border-b border-gray-200 bg-gray-100 p-0 align-middle text-center dark:border-gray-700 dark:bg-gray-800 ${
                 isFirstInGroup ? 'border-s-2 border-s-gray-300 dark:border-s-gray-600' : ''
             }`}
         >
@@ -95,7 +95,7 @@ function RemovableColumnHeader({
                 className="group/col-action relative flex h-full w-full items-center justify-center overflow-hidden transition hover:bg-red-50 dark:hover:bg-red-950/30"
             >
                 <span
-                    className="inline-block max-w-28 origin-center -rotate-90 whitespace-nowrap text-xs font-semibold leading-none text-gray-700 transition-opacity group-hover/col-action:opacity-0 dark:text-gray-200"
+                    className="inline-block origin-center -rotate-90 whitespace-nowrap text-xs font-semibold leading-none text-gray-700 transition-opacity group-hover/col-action:opacity-0 dark:text-gray-200"
                     title={columnName}
                 >
                     {columnName}
@@ -350,14 +350,14 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
 
     return (
         <div className="general-report-table-root overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-            <table className="general-report-data-table min-w-full border-collapse divide-y divide-gray-200 dark:divide-gray-700">
+            <table className="general-report-data-table w-full table-auto border-collapse divide-y divide-gray-200 dark:divide-gray-700">
                 <thead>
                     <tr className="bg-gray-100 dark:bg-gray-800">
                         <th
                             rowSpan={2}
                             className="sticky left-0 z-20 min-w-12 bg-gray-100 px-3 py-3 text-left text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200"
                         >
-                            {t('global.number')}
+                            #
                         </th>
                         <th
                             rowSpan={2}
@@ -369,7 +369,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                             <th
                                 key={group.key}
                                 colSpan={group.columns.length}
-                                className="border-b border-s-2 border-gray-300 bg-gray-100 px-2 py-2 text-center text-xs font-bold uppercase tracking-wide text-indigo-700 dark:border-gray-600 dark:bg-gray-800 dark:text-indigo-300"
+                                className="whitespace-nowrap border-b border-s-2 border-gray-300 bg-gray-100 px-2 py-2 text-center text-xs font-bold uppercase tracking-wide text-indigo-700 dark:border-gray-600 dark:bg-gray-800 dark:text-indigo-300"
                             >
                                 {group.title}
                             </th>
@@ -422,7 +422,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                                 group.columns.map((column, columnIndex) => (
                                     <td
                                         key={column.id}
-                                        className={`w-12 min-w-12 px-2 py-2 text-center text-sm text-gray-700 dark:text-gray-300 ${
+                                        className={`min-w-12 px-2 py-2 text-center text-sm text-gray-700 dark:text-gray-300 ${
                                             columnIndex === 0 ? 'border-s-2 border-s-gray-200 dark:border-s-gray-700' : ''
                                         }`}
                                     >
@@ -443,7 +443,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                                 group.columns.map((column, columnIndex) => (
                                     <td
                                         key={column.id}
-                                        className={`px-2 py-3 text-center text-sm text-gray-900 dark:text-white ${
+                                        className={`min-w-12 px-2 py-3 text-center text-sm text-gray-900 dark:text-white ${
                                             columnIndex === 0 ? 'border-s-2 border-s-gray-300 dark:border-s-gray-600' : ''
                                         }`}
                                     >

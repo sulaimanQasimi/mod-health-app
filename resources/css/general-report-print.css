@@ -1,6 +1,6 @@
 @media print {
     @page {
-        margin: 0;
+        margin: 5mm;
         size: A4 landscape;
     }
 
@@ -73,6 +73,8 @@
     .general-report-table-root {
         display: block !important;
         width: 100% !important;
+        max-width: 100% !important;
+        overflow: visible !important;
     }
 
     .general-report-slot-canvas > * + * {
@@ -86,8 +88,8 @@
         table-layout: fixed !important;
         border-collapse: collapse !important;
         border-spacing: 0 !important;
-        font-size: 7px !important;
-        line-height: 1.2 !important;
+        font-size: 6.5pt !important;
+        line-height: 1.15 !important;
         margin: 0 !important;
         page-break-after: auto;
     }
@@ -129,74 +131,163 @@
         color: #000 !important;
         background: #fff !important;
         box-shadow: none !important;
+        box-sizing: border-box !important;
         margin: 0 !important;
-        padding: 2px 3px !important;
+        padding: 1px 2px !important;
         border: 1px solid #bbb !important;
         height: auto !important;
         min-height: 0 !important;
-        max-height: none !important;
-        width: auto !important;
         min-width: 0 !important;
-        max-width: none !important;
-        white-space: normal !important;
-        word-break: break-word !important;
-        overflow: visible !important;
+        max-height: none !important;
+        white-space: nowrap !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+        overflow: hidden !important;
+        text-overflow: clip !important;
+    }
+
+    .general-report-data-table tbody td {
+        overflow: hidden !important;
     }
 
     .general-report-data-table thead th {
         background: #eee !important;
         font-weight: 700 !important;
         text-align: center !important;
+        padding: 2px 1px !important;
+        white-space: normal !important;
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
+        overflow: hidden !important;
+        vertical-align: middle !important;
     }
 
-    .general-report-data-table th:first-child,
-    .general-report-data-table td:first-child {
-        width: 24px !important;
-        text-align: center !important;
-    }
-
-    .general-report-data-table th:nth-child(2),
-    .general-report-data-table td:nth-child(2) {
-        width: 90px !important;
-        text-align: start !important;
-    }
-
-    .general-report-data-table th > div,
-    .general-report-data-table th > button,
+    .general-report-data-table thead th > div,
+    .general-report-data-table thead th > button,
     .general-report-data-table thead button.group\/col-action {
         display: block !important;
+        position: static !important;
         width: 100% !important;
+        max-width: 100% !important;
         height: auto !important;
         min-height: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
         border: none !important;
         background: transparent !important;
-        overflow: visible !important;
+        overflow: hidden !important;
         pointer-events: none !important;
+        box-sizing: border-box !important;
     }
 
-    .general-report-data-table th span,
-    .general-report-data-table th .inline-block {
-        display: block !important;
-        transform: none !important;
-        writing-mode: horizontal-tb !important;
-        text-orientation: mixed !important;
+    /* Row index column */
+    .general-report-data-table th:first-child,
+    .general-report-data-table td:first-child {
+        width: 4% !important;
+        padding: 1px !important;
+        text-align: center !important;
+    }
+
+    /* Department column */
+    .general-report-data-table th:nth-child(2),
+    .general-report-data-table td:nth-child(2) {
+        width: 15% !important;
         white-space: normal !important;
-        word-break: break-word !important;
-        max-width: none !important;
-        width: 100% !important;
-        margin: 0 !important;
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
+        line-height: 1.15 !important;
+        text-align: start !important;
+        overflow: hidden !important;
+    }
+
+    /* Total column (last cell in each row) */
+    .general-report-data-table thead th[rowspan]:last-of-type,
+    .general-report-data-table tbody td:last-child {
+        width: 6% !important;
+        min-width: 24px !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+    }
+
+    .general-report-data-table thead th[rowspan] {
+        overflow: hidden !important;
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        vertical-align: middle !important;
+    }
+
+    /* Group title row */
+    .general-report-data-table thead tr:first-child th:not([rowspan]) {
+        font-size: 5.5pt !important;
+        white-space: normal !important;
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
+        overflow: hidden !important;
+        line-height: 1.1 !important;
+        padding: 2px 1px !important;
+        vertical-align: middle !important;
+    }
+
+    /* Sub-column header row — collapse screen height */
+    .general-report-data-table thead tr:nth-child(2) th,
+    .general-report-data-table thead th.h-28,
+    .general-report-data-table thead th.h-32 {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        padding: 2px 1px !important;
+        vertical-align: middle !important;
+        text-align: center !important;
+        white-space: normal !important;
+        overflow: hidden !important;
+    }
+
+    /* Column labels — vertical inside cell bounds, rotated 180° */
+    .general-report-data-table thead th span.inline-block,
+    .general-report-data-table thead button.group\/col-action span {
+        display: inline-block !important;
+        position: static !important;
+        transform: rotate(60deg) !important;
+        transform-origin: center center !important;
+        writing-mode: vertical-rl !important;
+        text-orientation: mixed !important;
+        white-space: nowrap !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+        max-width: 100% !important;
+        width: auto !important;
+        max-height: none !important;
+        margin: 0 auto !important;
         padding: 0 !important;
-        font-size: inherit !important;
+        font-size: 5pt !important;
         line-height: 1.1 !important;
         opacity: 1 !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
     }
 
+    /* Numeric data cells */
+    .general-report-data-table tbody td {
+        font-variant-numeric: tabular-nums !important;
+        text-align: center !important;
+        font-size: 6.5pt !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+    }
+
+    .general-report-data-table tbody td:nth-child(2) {
+        text-align: start !important;
+        font-size: 6pt !important;
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+    }
+
+    /* Flatten row-index buttons so numbers aren't clipped */
     .general-report-data-table td:first-child button.group\/row-action {
         display: inline !important;
         width: auto !important;
         height: auto !important;
+        min-width: 0 !important;
         min-height: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -204,12 +295,16 @@
         background: transparent !important;
         font: inherit !important;
         color: inherit !important;
+        line-height: inherit !important;
     }
 
     .general-report-data-table td:first-child button.group\/row-action span {
+        display: inline !important;
         opacity: 1 !important;
         position: static !important;
         transform: none !important;
+        width: auto !important;
+        height: auto !important;
     }
 
     .general-report-data-table .bx-trash,

@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps, SidebarMenuItem } from '../../types';
 import MenuIcon from './MenuIcon';
@@ -7,10 +7,13 @@ import MenuIcon from './MenuIcon';
 interface SidebarProps {
     isOpen: boolean;
     onClose: () => void;
+    isCollapsed: boolean;
+    onCollapseToggle: () => void;
     isRtl: boolean;
 }
 
 const SIDEBAR_WIDTH = '16.25rem';
+const SIDEBAR_COLLAPSED_WIDTH = '5.25rem';
 
 function mergeClasses(...classes: (string | false | null | undefined)[]) {
     return classes.filter(Boolean).join(' ');
@@ -73,17 +76,23 @@ function MenuToggleChevron({ open, isRtl }: { open: boolean; isRtl: boolean }) {
     );
 }
 
-function NavIcon({ icon }: { icon: string | null }) {
+function NavIcon({ icon, isCollapsed = false }: { icon: string | null; isCollapsed?: boolean }) {
     return (
-        <span className="menu-icon me-2 flex w-6 shrink-0 items-center justify-center text-xl">
+        <span
+            className={mergeClasses(
+                'menu-icon flex w-6 shrink-0 items-center justify-center text-xl',
+                isCollapsed ? 'me-0' : 'me-2',
+            )}
+        >
             <MenuIcon icon={icon} className="text-[1.25rem]" />
         </span>
     );
 }
 
-function topLevelLinkClasses(active: boolean) {
+function topLevelLinkClasses(active: boolean, isCollapsed = false) {
     return mergeClasses(
-        'menu-link relative flex w-full min-w-0 items-center rounded-md px-4 py-2.5 text-[0.9375rem] transition-colors duration-300',
+        'menu-link relative flex w-full min-w-0 items-center rounded-md py-2.5 text-[0.9375rem] transition-colors duration-300',
+        isCollapsed ? 'justify-center px-0' : 'px-4',
         active
             ? 'bg-blue-600/15 font-semibold text-blue-600 dark:bg-blue-600 dark:text-white'
             : 'text-[#697a8d] hover:bg-[rgba(67,89,113,0.04)] hover:text-[#566a7f] dark:text-[#c4cdd5] dark:hover:bg-white/4 dark:hover:text-white',
@@ -135,12 +144,14 @@ function SidebarLink({
     currentRoute,
     onNavigate,
     isRtl,
+    isCollapsed,
     nested = false,
 }: {
     item: SidebarMenuItem;
     currentRoute: string | null;
     onNavigate: () => void;
     isRtl: boolean;
+    isCollapsed: boolean;
     nested?: boolean;
 }) {
     const { t } = useTranslation();
@@ -154,6 +165,7 @@ function SidebarLink({
                 initiallyOpen={isItemActive(item, currentRoute)}
                 onNavigate={onNavigate}
                 isRtl={isRtl}
+                isCollapsed={isCollapsed}
             />
         );
     }
@@ -174,10 +186,10 @@ function SidebarLink({
                 <Link
                     href={item.href ?? '#'}
                     onClick={onNavigate}
-                    className={topLevelLinkClasses(active)}
+                    className={topLevelLinkClasses(active, isCollapsed)}
                 >
-                    <NavIcon icon={item.icon} />
-                    <span className="truncate">{t(item.label)}</span>
+                    <NavIcon icon={item.icon} isCollapsed={isCollapsed} />
+                    {!isCollapsed && <span className="truncate">{t(item.label)}</span>}
                 </Link>
             </TopLevelItemShell>
         </li>
@@ -190,12 +202,14 @@ function SidebarGroup({
     initiallyOpen,
     onNavigate,
     isRtl,
+    isCollapsed,
 }: {
     item: SidebarMenuItem;
     currentRoute: string | null;
     initiallyOpen: boolean;
     onNavigate: () => void;
     isRtl: boolean;
+    isCollapsed: boolean;
 }) {
     const { t } = useTranslation();
     const [open, setOpen] = useState(initiallyOpen);
@@ -210,18 +224,18 @@ function SidebarGroup({
                     type="button"
                     onClick={() => setOpen((value) => !value)}
                     className={mergeClasses(
-                        topLevelLinkClasses(groupActive),
+                        topLevelLinkClasses(groupActive, isCollapsed),
                         'menu-toggle text-start',
-                        isRtl ? 'pe-4 ps-[calc(1rem+1.26em)]' : 'pe-[calc(1rem+1.26em)] ps-4',
+                        !isCollapsed && (isRtl ? 'pe-4 ps-[calc(1rem+1.26em)]' : 'pe-[calc(1rem+1.26em)] ps-4'),
                         open && !groupActive && 'bg-[rgba(67,89,113,0.04)] text-[#566a7f] dark:bg-white/4 dark:text-white',
                     )}
                 >
-                    <NavIcon icon={item.icon} />
-                    <span className="truncate">{t(item.label)}</span>
-                    <MenuToggleChevron open={open} isRtl={isRtl} />
+                    <NavIcon icon={item.icon} isCollapsed={isCollapsed} />
+                    {!isCollapsed && <span className="truncate">{t(item.label)}</span>}
+                    {!isCollapsed && <MenuToggleChevron open={open} isRtl={isRtl} />}
                 </button>
             </TopLevelItemShell>
-            {open && (
+            {open && !isCollapsed && (
                 <ul className="menu-sub py-1.5">
                     {item.children.map((child) => (
                         <SidebarLink
@@ -230,6 +244,7 @@ function SidebarGroup({
                             currentRoute={currentRoute}
                             onNavigate={onNavigate}
                             isRtl={isRtl}
+                            isCollapsed={isCollapsed}
                             nested
                         />
                     ))}
@@ -239,15 +254,45 @@ function SidebarGroup({
     );
 }
 
-export default function Sidebar({ isOpen, onClose, isRtl }: SidebarProps) {
+function handleMenuToggle(onClose: () => void, onCollapseToggle: () => void) {
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+        onClose();
+        return;
+    }
+
+    onCollapseToggle();
+}
+
+export default function Sidebar({
+    isOpen,
+    onClose,
+    isCollapsed,
+    onCollapseToggle,
+    isRtl,
+}: SidebarProps) {
     const { sidebarMenu, currentRoute } = usePage<SharedPageProps>().props;
     const { t } = useTranslation();
 
     const menu = useMemo(() => sidebarMenu, [sidebarMenu]);
+    const [isDesktop, setIsDesktop] = useState(false);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(min-width: 1024px)');
+        const updateViewport = () => setIsDesktop(mediaQuery.matches);
+
+        updateViewport();
+        mediaQuery.addEventListener('change', updateViewport);
+
+        return () => mediaQuery.removeEventListener('change', updateViewport);
+    }, []);
+
+    const effectiveCollapsed = isCollapsed && isDesktop;
+    const sidebarWidth = effectiveCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+    const toggleInset = effectiveCollapsed ? '0.75rem' : '31px';
 
     return (
         <aside
-            style={{ width: SIDEBAR_WIDTH }}
+            style={{ width: sidebarWidth }}
             className={mergeClasses(
                 'menu menu-vertical bg-menu-theme fixed inset-y-0 z-40 flex max-w-[85vw] flex-col overflow-x-hidden bg-white text-[#697a8d] shadow-[0_0.125rem_0.375rem_0_rgba(161,172,184,0.12)] transition-transform duration-300 ease-in-out dark:bg-[#191924] dark:text-[#c4cdd5] dark:shadow-[0_0.125rem_0.375rem_0_rgba(0,0,0,0.25)]',
                 isRtl ? 'right-0' : 'left-0',
@@ -258,8 +303,20 @@ export default function Sidebar({ isOpen, onClose, isRtl }: SidebarProps) {
                       : '-translate-x-full lg:translate-x-0',
             )}
         >
-            <div className="app-brand relative flex w-full shrink-0 items-center px-8 py-6">
-                <Link href="/react" className="app-brand-link flex min-w-0 flex-1 items-center" onClick={onClose}>
+            <div
+                className={mergeClasses(
+                    'app-brand relative flex w-full shrink-0 items-center py-6',
+                    isCollapsed ? 'justify-center px-4' : 'px-8',
+                )}
+            >
+                <Link
+                    href="/react"
+                    className={mergeClasses(
+                        'app-brand-link flex min-w-0 items-center',
+                        effectiveCollapsed ? 'justify-center' : 'flex-1',
+                    )}
+                    onClick={onClose}
+                >
                     <span className="app-brand-logo shrink-0">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -274,18 +331,35 @@ export default function Sidebar({ isOpen, onClose, isRtl }: SidebarProps) {
                             />
                         </svg>
                     </span>
-                    <span className="app-brand-text menu-text ms-2 truncate text-[1.05rem] font-bold text-[#566a7f] dark:text-white">
-                        {t('global.system_name')}
-                    </span>
+                    {!effectiveCollapsed && (
+                        <span className="app-brand-text menu-text ms-2 truncate text-[1.05rem] font-bold text-[#566a7f] dark:text-white">
+                            {t('global.system_name')}
+                        </span>
+                    )}
                 </Link>
 
                 <button
                     type="button"
-                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-[#697a8d] transition-colors hover:text-[#566a7f] lg:hidden dark:text-[#c4cdd5] dark:hover:text-white"
-                    aria-label="Close menu"
-                    onClick={onClose}
+                    style={
+                        isRtl
+                            ? { left: toggleInset, top: '58px' }
+                            : { right: toggleInset, top: '58px' }
+                    }
+                    className={mergeClasses(
+                        'layout-menu-toggle menu-link absolute z-10 inline-flex size-[2.375rem] items-center justify-center rounded-full border-[7px] border-white bg-[#696cff] text-white transition-all duration-300 lg:border-[#f5f5f9] dark:border-[#191924] dark:lg:border-[#191924]',
+                        isOpen ? 'max-lg:flex' : 'max-lg:hidden',
+                        'lg:flex',
+                    )}
+                    aria-label={effectiveCollapsed ? 'Expand menu' : 'Collapse menu'}
+                    onClick={() => handleMenuToggle(onClose, onCollapseToggle)}
                 >
-                    <i className="bx bx-x text-xl" />
+                    <i
+                        className={mergeClasses(
+                            'bx bx-chevron-left bx-sm align-middle size-6 transition-transform duration-300',
+                            isRtl && 'scale-x-[-1]',
+                            effectiveCollapsed && (isRtl ? '-rotate-180' : 'rotate-180'),
+                        )}
+                    />
                 </button>
             </div>
 
@@ -301,6 +375,7 @@ export default function Sidebar({ isOpen, onClose, isRtl }: SidebarProps) {
                                     initiallyOpen={isItemActive(item, currentRoute)}
                                     onNavigate={onClose}
                                     isRtl={isRtl}
+                                    isCollapsed={effectiveCollapsed}
                                 />
                             ) : (
                                 <SidebarLink
@@ -309,6 +384,7 @@ export default function Sidebar({ isOpen, onClose, isRtl }: SidebarProps) {
                                     currentRoute={currentRoute}
                                     onNavigate={onClose}
                                     isRtl={isRtl}
+                                    isCollapsed={effectiveCollapsed}
                                 />
                             ),
                         )}
@@ -319,4 +395,4 @@ export default function Sidebar({ isOpen, onClose, isRtl }: SidebarProps) {
     );
 }
 
-export { SIDEBAR_WIDTH };
+export { SIDEBAR_COLLAPSED_WIDTH, SIDEBAR_WIDTH };

@@ -16,6 +16,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const { direction } = usePage<SharedPageProps>().props;
     const { url } = usePage();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        try {
+            return localStorage.getItem('react-layout-collapsed') === 'true';
+        } catch {
+            return false;
+        }
+    });
     const isRtl = direction === 'rtl';
 
     useEffect(() => {
@@ -51,6 +58,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
     const closeSidebar = () => setSidebarOpen(false);
     const toggleSidebar = () => setSidebarOpen((open) => !open);
+    const toggleSidebarCollapsed = () => {
+        setSidebarCollapsed((collapsed) => {
+            const next = !collapsed;
+
+            try {
+                localStorage.setItem('react-layout-collapsed', String(next));
+            } catch {
+                // Ignore storage errors.
+            }
+
+            return next;
+        });
+    };
 
     return (
         <div className="min-h-screen overflow-x-hidden bg-gray-50 dark:bg-gray-900">
@@ -63,12 +83,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 />
             )}
 
-            <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} isRtl={isRtl} />
+            <Sidebar
+                isOpen={sidebarOpen}
+                onClose={closeSidebar}
+                isCollapsed={sidebarCollapsed}
+                onCollapseToggle={toggleSidebarCollapsed}
+                isRtl={isRtl}
+            />
 
             <div
                 className={mergeClasses(
-                    'flex min-h-screen w-full min-w-0 max-w-full flex-col',
-                    isRtl ? 'lg:pr-[16.25rem]' : 'lg:pl-[16.25rem]',
+                    'flex min-h-screen w-full min-w-0 max-w-full flex-col transition-[padding] duration-300 ease-in-out',
+                    sidebarCollapsed
+                        ? isRtl
+                            ? 'lg:pr-[5.25rem]'
+                            : 'lg:pl-[5.25rem]'
+                        : isRtl
+                          ? 'lg:pr-[16.25rem]'
+                          : 'lg:pl-[16.25rem]',
                 )}
             >
                 <Navbar onMenuToggle={toggleSidebar} sidebarOpen={sidebarOpen} />

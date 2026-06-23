@@ -349,8 +349,8 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
     }
 
     return (
-        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-            <table className="min-w-full border-collapse divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="general-report-table-root overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+            <table className="general-report-data-table min-w-full border-collapse divide-y divide-gray-200 dark:divide-gray-700">
                 <thead>
                     <tr className="bg-gray-100 dark:bg-gray-800">
                         <th

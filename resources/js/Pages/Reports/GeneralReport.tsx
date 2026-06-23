@@ -343,7 +343,7 @@ function SortableWidgetCard({
     };
 
     return (
-        <div ref={setNodeRef} style={style}>
+        <div ref={setNodeRef} style={style} className="general-report-widget-wrap">
             <Card className="general-report-widget !shadow-sm">
                 <div className="general-report-no-print mb-4 flex items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
                     <div className="flex items-center gap-3">

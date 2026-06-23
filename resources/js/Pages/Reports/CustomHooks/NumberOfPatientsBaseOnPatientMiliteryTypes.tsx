@@ -100,8 +100,8 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
     const columnCount = militeryTypeColumns.length + 3;
 
     return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="general-report-table-root overflow-x-auto">
+            <table className="general-report-data-table min-w-full border-collapse divide-y divide-gray-200 dark:divide-gray-700">
                 <thead>
                     <tr className="bg-gray-100 dark:bg-gray-800">
                         <th className="sticky left-0 z-10 bg-gray-100 px-4 py-3 text-left align-middle text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200">

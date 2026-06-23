@@ -10,6 +10,8 @@
         margin: 0 !important;
         padding: 0 !important;
         background: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
     body:has(.general-report-page) aside,
@@ -30,27 +32,24 @@
         margin: 0 !important;
         padding: 0 !important;
         min-height: 0 !important;
+        width: 100% !important;
+        overflow: visible !important;
     }
 
-    .general-report-no-print,
-    .general-report-widget-title {
+    .general-report-no-print {
         display: none !important;
     }
 
     .general-report-page,
-    .general-report-page > *,
-    .general-report-page .space-y-5 > *,
+    .general-report-page .space-y-5,
     .general-report-slots,
-    .general-report-slots > *,
     .general-report-slot-grid,
     .general-report-slot,
-    .general-report-slot > *,
     .general-report-slot-canvas,
-    .general-report-slot-canvas > *,
-    .general-report-page [data-slot],
-    .general-report-page [data-slot] > div,
+    .general-report-widget-wrap,
     .general-report-widget,
-    .general-report-widget > * {
+    .general-report-widget > *,
+    .general-report-page [data-slot] {
         margin: 0 !important;
         padding: 0 !important;
         border: none !important;
@@ -59,103 +58,176 @@
         background: transparent !important;
         min-height: 0 !important;
         gap: 0 !important;
+        overflow: visible !important;
     }
 
-    .general-report-slots {
-        display: block !important;
+    .general-report-widget-wrap {
+        transform: none !important;
+        opacity: 1 !important;
+        transition: none !important;
     }
 
-    .general-report-slots .general-report-slot-grid {
-        display: block !important;
-    }
-
+    .general-report-slots,
+    .general-report-slots .general-report-slot-grid,
     .general-report-slot,
-    .general-report-widget {
-        break-inside: auto;
-        page-break-inside: auto;
-    }
-
-    .general-report-page table {
-        break-inside: auto;
-        page-break-inside: auto;
+    .general-report-table-root {
+        display: block !important;
         width: 100% !important;
-        font-size: 9px !important;
-        border-collapse: collapse !important;
-        margin: 0 !important;
     }
 
-    .general-report-page table + table {
+    .general-report-slot-canvas > * + * {
         margin-top: 0 !important;
     }
 
-    .general-report-page .overflow-x-auto,
-    .general-report-page .overflow-auto {
-        overflow: visible !important;
+    .general-report-data-table {
+        display: table !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+        border-spacing: 0 !important;
+        font-size: 7px !important;
+        line-height: 1.2 !important;
         margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
-        border-radius: 0 !important;
+        page-break-after: auto;
     }
 
-    .general-report-page th,
-    .general-report-page td {
-        color: #000 !important;
-        background: white !important;
+    .general-report-data-table + .general-report-data-table,
+    .general-report-table-root + .general-report-table-root {
+        page-break-before: always;
+    }
+
+    .general-report-slot + .general-report-slot,
+    .general-report-widget-wrap + .general-report-widget-wrap {
+        page-break-before: always;
+    }
+
+    .general-report-data-table thead {
+        display: table-header-group !important;
+    }
+
+    .general-report-data-table tbody {
+        display: table-row-group !important;
+    }
+
+    .general-report-data-table tr {
+        display: table-row !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .general-report-data-table th,
+    .general-report-data-table td {
+        display: table-cell !important;
         position: static !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        z-index: auto !important;
+        float: none !important;
+        vertical-align: middle !important;
+        color: #000 !important;
+        background: #fff !important;
         box-shadow: none !important;
-        padding: 2px 3px !important;
         margin: 0 !important;
-        border: 1px solid #ccc !important;
+        padding: 2px 3px !important;
+        border: 1px solid #bbb !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow: visible !important;
     }
 
-    .general-report-page thead th {
-        background: #f0f0f0 !important;
+    .general-report-data-table thead th {
+        background: #eee !important;
+        font-weight: 700 !important;
+        text-align: center !important;
     }
 
-    .general-report-page button.group\/col-action,
-    .general-report-page button.group\/row-action {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+    .general-report-data-table th:first-child,
+    .general-report-data-table td:first-child {
+        width: 24px !important;
+        text-align: center !important;
+    }
+
+    .general-report-data-table th:nth-child(2),
+    .general-report-data-table td:nth-child(2) {
+        width: 90px !important;
+        text-align: start !important;
+    }
+
+    .general-report-data-table th > div,
+    .general-report-data-table th > button,
+    .general-report-data-table thead button.group\/col-action {
+        display: block !important;
         width: 100% !important;
         height: auto !important;
         min-height: 0 !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
         margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        overflow: visible !important;
         pointer-events: none !important;
     }
 
-    .general-report-page button:not(.group\/col-action):not(.group\/row-action) {
-        display: none !important;
-    }
-
-    .general-report-page .group\/col-action span,
-    .general-report-page th .inline-block.-rotate-90,
-    .general-report-page th .inline-block.origin-bottom-left.-rotate-90 {
+    .general-report-data-table th span,
+    .general-report-data-table th .inline-block {
+        display: block !important;
         transform: none !important;
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
+        writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
         white-space: normal !important;
+        word-break: break-word !important;
         max-width: none !important;
+        width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
-    }
-
-    .general-report-page .group\/row-action span {
+        font-size: inherit !important;
+        line-height: 1.1 !important;
         opacity: 1 !important;
     }
 
-    .general-report-page .bx-trash {
+    .general-report-data-table td:first-child button.group\/row-action {
+        display: inline !important;
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        font: inherit !important;
+        color: inherit !important;
+    }
+
+    .general-report-data-table td:first-child button.group\/row-action span {
+        opacity: 1 !important;
+        position: static !important;
+        transform: none !important;
+    }
+
+    .general-report-data-table .bx-trash,
+    .general-report-data-table i {
         display: none !important;
     }
 
-    .dark .general-report-page,
-    .dark .general-report-page th,
-    .dark .general-report-page td {
+    .general-report-page .sticky {
+        position: static !important;
+    }
+
+    .dark .general-report-data-table th,
+    .dark .general-report-data-table td {
         color: #000 !important;
-        background: white !important;
+        background: #fff !important;
+    }
+
+    .dark .general-report-data-table thead th {
+        background: #eee !important;
     }
 }

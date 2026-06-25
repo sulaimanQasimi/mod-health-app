@@ -3,12 +3,12 @@ import { Badge, Button, Card } from 'flowbite-react';
 import { useState } from 'react';
 import DepotNavTabs from '../../Components/Depots/DepotNavTabs';
 import { DEPOT_CARD_CLASS, depotStatusBadgeColor, depotTypeLabel } from '../../Components/Depots/depotUi';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DepotCrudPermissions, DepotDetail, DepotNavPermissions, DepotNavUrls } from '../../types/depot';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH, settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface StockPreviewItem {
     item_type: string;
@@ -103,39 +103,65 @@ export default function ShowDepot({
                         backHref={urls.index}
                         backLabel={t('global.back')}
                         action={
-                            <div className="flex flex-wrap gap-2">
+                            <SettingsPageActions>
                                 {permissions.request_create && (
-                                    <Button color="blue" as={Link} href={urls.requestCreate}>
+                                    <Button
+                                        as={Link}
+                                        href={urls.requestCreate}
+                                        size="sm"
+                                        className={settingsHeaderButtonClass.success}
+                                    >
                                         <i className="bx bx-plus-circle me-2" />
                                         {t('global.depot.new_request')}
                                     </Button>
                                 )}
                                 {permissions.transaction_create && (
-                                    <Button color="light" as={Link} href={urls.transactionCreate}>
+                                    <Button
+                                        as={Link}
+                                        href={urls.transactionCreate}
+                                        size="sm"
+                                        className={settingsHeaderButtonClass.secondary}
+                                    >
                                         <i className="bx bx-package me-2" />
                                         {t('global.depot.new')}
                                     </Button>
                                 )}
                                 {permissions.movement_pharmacy && (
-                                    <Button color="light" as={Link} href={urls.depotToPharmacy}>
+                                    <Button
+                                        as={Link}
+                                        href={urls.depotToPharmacy}
+                                        size="sm"
+                                        className={settingsHeaderButtonClass.secondary}
+                                    >
                                         <i className="bx bx-clinic me-2" />
                                         {t('global.depot.depot_to_pharmacy')}
                                     </Button>
                                 )}
-                                <Button color="light" as={Link} href={urls.stock}>
+                                <Button
+                                    as={Link}
+                                    href={urls.stock}
+                                    size="sm"
+                                    className={settingsHeaderButtonClass.secondary}
+                                >
                                     <i className="bx bx-list-check me-2" />
                                     {t('global.depot.full_stock')}
                                 </Button>
                                 {permissions.edit && (
-                                    <Button color="warning" as={Link} href={urls.edit}>
+                                    <Button
+                                        as={Link}
+                                        href={urls.edit}
+                                        size="sm"
+                                        className={settingsHeaderButtonClass.warning}
+                                    >
                                         <i className="bx bx-edit me-2" />
                                         {t('global.edit')}
                                     </Button>
                                 )}
                                 {permissions.delete && (
                                     <Button
-                                        color="failure"
+                                        size="sm"
                                         disabled={deleting}
+                                        className={settingsHeaderButtonClass.danger}
                                         onClick={() => {
                                             if (window.confirm(t('global.are_you_sure'))) {
                                                 setDeleting(true);
@@ -149,7 +175,7 @@ export default function ShowDepot({
                                         {t('global.delete')}
                                     </Button>
                                 )}
-                            </div>
+                            </SettingsPageActions>
                         }
                     />
                     <div className="mt-4 flex flex-wrap gap-2">

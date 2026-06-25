@@ -140,6 +140,9 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
 
     const removeDepartment = (department: DepartmentReport) => {
         setReport((current) =>
+
+
+            
             current.filter((row) => {
                 if (department.department_id != null && row.department_id != null) {
                     return row.department_id !== department.department_id;
@@ -401,7 +404,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                             key={department.department_id ?? department.department_name ?? index}
                             className="border-t border-gray-200 dark:border-gray-700"
                         >
-                            <td className="sticky left-0 z-10 bg-white px-2 py-2 dark:bg-gray-900">
+                            <td className="sticky left-0 z-10 bg-white px-2 py-2 dark:bg-gray-800">
                                 <button
                                     type="button"
                                     onClick={() => removeDepartment(department)}
@@ -415,7 +418,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                                     <i className="bx bx-trash absolute text-lg text-red-500 opacity-0 transition-opacity group-hover/row-action:opacity-100" />
                                 </button>
                             </td>
-                            <td className="sticky left-12 z-10 bg-white px-4 py-2 font-medium dark:bg-gray-900">
+                            <td className="sticky left-12 z-10 bg-white px-4 py-2 font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-200">
                                 {department.department_name ?? 'Unknown'}
                             </td>
                             {visibleColumnGroups.map((group) =>
@@ -430,7 +433,9 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                                     </td>
                                 )),
                             )}
-                            <td className="px-4 py-2 text-center font-semibold">{department.count}</td>
+                            <td className="px-4 py-2 text-center font-semibold text-gray-900 dark:text-gray-200">
+                                {department.count}
+                            </td>
                         </tr>
                     ))}
                     {flatColumns.length > 0 && (
@@ -456,7 +461,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                     )}
                     {flatColumns.length === 0 && (
                         <tr>
-                            <td colSpan={columnCount} className="py-4 px-4 text-center text-gray-500">
+                            <td colSpan={columnCount} className="py-4 px-4 text-center text-gray-500 dark:text-gray-400">
                                 {t('global.no_data_found')}
                             </td>
                         </tr>

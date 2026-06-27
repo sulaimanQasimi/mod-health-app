@@ -1,6 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
 import { useTranslation } from '../../../hooks/useTranslation';
+import GeneralReportTableSettingsModal from './GeneralReportTableSettingsModal';
+import GeneralReportTableToolbar from './GeneralReportTableToolbar';
+import {
+    applyTableSettings,
+    buildDepartmentOptions,
+    buildMinTotalOptions,
+    buildOrderedColumnGroups,
+    countActiveTableFilters,
+    createDefaultTableSettings,
+    GeneralReportTableSettings,
+    TableColumnDefinition,
+} from './generalReportTableSettings';
+import RemovableColumnHeader from './RemovableColumnHeader';
 
 interface BreakdownItem {
     key: string | number | null;
@@ -31,12 +44,6 @@ type BreakdownKey =
     | 'militery_types'
     | 'relations'
     | 'commanded_by';
-
-interface ColumnGroup {
-    key: BreakdownKey;
-    title: string;
-    columns: Array<{ id: string; itemKey: string; name: string }>;
-}
 
 interface NumberOfPatientsBaseOnDepartmentProps {
     branch_id?: string | number;
@@ -70,40 +77,46 @@ const getItemKey = (item: BreakdownItem): string =>
 const isStringLabel = (label: BreakdownItem['label']): label is string =>
     typeof label === 'string' && label.trim() !== '';
 
-function RemovableColumnHeader({
-    columnName,
-    onRemove,
-    removeLabel,
-    isFirstInGroup,
-}: {
-    columnName: string;
-    onRemove: () => void;
-    removeLabel: string;
-    isFirstInGroup: boolean;
-}) {
-    return (
-        <th
-            className={`h-28 min-w-12 border-b border-gray-200 bg-gray-100 p-0 align-middle text-center dark:border-gray-700 dark:bg-gray-800 ${
-                isFirstInGroup ? 'border-s-2 border-s-gray-300 dark:border-s-gray-600' : ''
-            }`}
-        >
-            <button
-                type="button"
-                onClick={onRemove}
-                title={removeLabel}
-                aria-label={`${removeLabel} ${columnName}`}
-                className="group/col-action relative flex h-full w-full items-center justify-center overflow-hidden transition hover:bg-red-50 dark:hover:bg-red-950/30"
-            >
-                <span
-                    className="inline-block origin-center -rotate-90 whitespace-nowrap text-xs font-semibold leading-none text-gray-700 transition-opacity group-hover/col-action:opacity-0 dark:text-gray-200"
-                    title={columnName}
-                >
-                    {columnName}
-                </span>
-                <i className="bx bx-trash absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-lg text-red-500 opacity-0 transition-opacity group-hover/col-action:opacity-100" />
-            </button>
-        </th>
-    );
+function buildAllColumnsFromReport(
+    report: DepartmentReport[],
+    t: (key: string) => string,
+    labelResolvers: Record<BreakdownKey, (item: BreakdownItem) => string>,
+): TableColumnDefinition[] {
+    return BREAKDOWN_CONFIGS.flatMap((config) => {
+        const fixedColumns = FIXED_GROUP_COLUMNS[config.key];
+        const groupTitle = t(config.titleKey);
+
+        if (fixedColumns) {
+            return fixedColumns.map(({ itemKey, labelKey }) => ({
+                id: `${config.key}:${itemKey}`,
+                itemKey,
+                name: t(labelKey),
+                groupKey: config.key,
+                groupTitle,
+            }));
+        }
+
+        const labels = new Map<string, string>();
+
+        report.forEach((department) => {
+            department[config.key].forEach((item) => {
+                const itemKey = getItemKey(item);
+                if (!labels.has(itemKey)) {
+                    labels.set(itemKey, String(labelResolvers[config.key](item)));
+                }
+            });
+        });
+
+        return Array.from(labels.entries())
+            .sort((left, right) => left[1].localeCompare(right[1], undefined, { numeric: true }))
+            .map(([itemKey, name]) => ({
+                id: `${config.key}:${itemKey}`,
+                itemKey,
+                name,
+                groupKey: config.key,
+                groupTitle,
+            }));
+    });
 }
 
 const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmentProps> = ({
@@ -113,49 +126,15 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
 }) => {
     const { t } = useTranslation();
     const [report, setReport] = useState<DepartmentReport[]>([]);
-    const [hiddenColumnIds, setHiddenColumnIds] = useState<Set<string>>(() => new Set());
+    const [tableSettings, setTableSettings] = useState<GeneralReportTableSettings>(() =>
+        createDefaultTableSettings([]),
+    );
+    const [settingsModalOpen, setSettingsModalOpen] = useState(false);
     const { get, processing, setData } = useHttp({
         branch_id: '',
         date_from: '',
         date_to: '',
     });
-
-    useEffect(() => {
-        setData({
-            branch_id: branch_id !== '' && branch_id != null ? String(branch_id) : '',
-            date_from: date_from ?? '',
-            date_to: date_to ?? '',
-        });
-
-        get('/react/api/reports/general/number-of-patients-base-on-department')
-            .then((response) => {
-                const payload = response as { data?: DepartmentReport[] };
-                setReport(payload?.data ?? []);
-                setHiddenColumnIds(new Set());
-            })
-            .catch(() => {
-                setReport([]);
-            });
-    }, [branch_id, date_from, date_to, get, setData]);
-
-    const removeDepartment = (department: DepartmentReport) => {
-        setReport((current) =>
-
-
-            
-            current.filter((row) => {
-                if (department.department_id != null && row.department_id != null) {
-                    return row.department_id !== department.department_id;
-                }
-
-                return row.department_name !== department.department_name;
-            }),
-        );
-    };
-
-    const removeColumn = (columnId: string) => {
-        setHiddenColumnIds((current) => new Set([...current, columnId]));
-    };
 
     const resolveGenderLabel = useCallback(
         (item: BreakdownItem) => {
@@ -249,64 +228,43 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
         ],
     );
 
-    const columnGroups = useMemo<ColumnGroup[]>(() => {
-        return BREAKDOWN_CONFIGS.map((config) => {
-            const fixedColumns = FIXED_GROUP_COLUMNS[config.key];
+    const allColumns = useMemo(
+        () => buildAllColumnsFromReport(report, t, labelResolvers),
+        [labelResolvers, report, t],
+    );
+    const departmentOptions = useMemo(() => buildDepartmentOptions(report), [report]);
+    const minTotalOptions = useMemo(() => buildMinTotalOptions(report, t('global.all')), [report, t]);
 
-            if (fixedColumns) {
-                return {
-                    key: config.key,
-                    title: t(config.titleKey),
-                    columns: fixedColumns.map(({ itemKey, labelKey }) => ({
-                        id: `${config.key}:${itemKey}`,
-                        itemKey,
-                        name: t(labelKey),
-                    })),
-                };
-            }
+    useEffect(() => {
+        setData({
+            branch_id: branch_id !== '' && branch_id != null ? String(branch_id) : '',
+            date_from: date_from ?? '',
+            date_to: date_to ?? '',
+        });
 
-            const labels = new Map<string, string>();
-
-            report.forEach((department) => {
-                department[config.key].forEach((item) => {
-                    const itemKey = getItemKey(item);
-                    if (!labels.has(itemKey)) {
-                        labels.set(itemKey, String(labelResolvers[config.key](item)));
-                    }
-                });
+        get('/react/api/reports/general/number-of-patients-base-on-department')
+            .then((response) => {
+                const payload = response as { data?: DepartmentReport[] };
+                const data = payload?.data ?? [];
+                setReport(data);
+                setTableSettings(createDefaultTableSettings(buildAllColumnsFromReport(data, t, labelResolvers)));
+            })
+            .catch(() => {
+                setReport([]);
             });
+    }, [branch_id, date_from, date_to, get, setData, t, labelResolvers]);
 
-            const columns = Array.from(labels.entries())
-                .map(([itemKey, name]) => ({
-                    id: `${config.key}:${itemKey}`,
-                    itemKey,
-                    name,
-                }))
-                .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-
-            return {
-                key: config.key,
-                title: t(config.titleKey),
-                columns,
-            };
-        }).filter((group) => group.columns.length > 0);
-    }, [labelResolvers, report, t]);
-
-    const visibleColumnGroups = useMemo<ColumnGroup[]>(() => {
-        return columnGroups
-            .map((group) => ({
-                ...group,
-                columns: group.columns.filter((column) => !hiddenColumnIds.has(column.id)),
-            }))
-            .filter((group) => group.columns.length > 0);
-    }, [columnGroups, hiddenColumnIds]);
+    const visibleColumnGroups = useMemo(
+        () => buildOrderedColumnGroups(tableSettings, allColumns),
+        [tableSettings, allColumns],
+    );
 
     const flatColumns = useMemo(
         () =>
             visibleColumnGroups.flatMap((group) =>
                 group.columns.map((column) => ({
                     ...column,
-                    breakdownKey: group.key,
+                    breakdownKey: group.key as BreakdownKey,
                 })),
             ),
         [visibleColumnGroups],
@@ -317,11 +275,21 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
         return match?.count ?? 0;
     };
 
+    const getColumnCount = (department: DepartmentReport, columnId: string): number => {
+        const [groupKey, itemKey] = columnId.split(':') as [BreakdownKey, string];
+        return getCount(department, groupKey, itemKey);
+    };
+
+    const displayReport = useMemo(
+        () => applyTableSettings(report, tableSettings, getColumnCount),
+        [report, tableSettings],
+    );
+
     const { columnTotals, grandTotal } = useMemo(() => {
         const totals = new Map<string, number>();
         let total = 0;
 
-        report.forEach((department) => {
+        displayReport.forEach((department) => {
             total += department.count;
 
             flatColumns.forEach((column) => {
@@ -331,7 +299,30 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
         });
 
         return { columnTotals: totals, grandTotal: total };
-    }, [flatColumns, report]);
+    }, [displayReport, flatColumns]);
+
+    const activeFilterCount = useMemo(() => countActiveTableFilters(tableSettings), [tableSettings]);
+
+    const removeDepartment = (department: DepartmentReport) => {
+        setReport((current) =>
+            current.filter((row) => {
+                if (department.department_id != null && row.department_id != null) {
+                    return row.department_id !== department.department_id;
+                }
+
+                return row.department_name !== department.department_name;
+            }),
+        );
+    };
+
+    const hideColumn = (columnId: string) => {
+        setTableSettings((current) => ({
+            ...current,
+            hiddenColumnIds: current.hiddenColumnIds.includes(columnId)
+                ? current.hiddenColumnIds
+                : [...current.hiddenColumnIds, columnId],
+        }));
+    };
 
     const columnCount = flatColumns.length + 3;
 
@@ -352,7 +343,17 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
     }
 
     return (
-        <div className="general-report-table-root overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+        <>
+            <GeneralReportTableToolbar
+                visibleRowCount={displayReport.length}
+                totalRowCount={report.length}
+                visibleColumnCount={flatColumns.length}
+                totalColumnCount={allColumns.length}
+                activeFilterCount={activeFilterCount}
+                onOpenSettings={() => setSettingsModalOpen(true)}
+            />
+
+            <div className="general-report-table-root overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
             <table className="general-report-data-table w-full table-auto border-collapse divide-y divide-gray-200 dark:divide-gray-700">
                 <thead>
                     <tr className="bg-gray-100 dark:bg-gray-800">
@@ -392,53 +393,63 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                                     columnName={column.name}
                                     removeLabel={t('global.remove')}
                                     isFirstInGroup={columnIndex === 0}
-                                    onRemove={() => removeColumn(column.id)}
+                                    onRemove={() => hideColumn(column.id)}
                                 />
                             )),
                         )}
                     </tr>
                 </thead>
                 <tbody>
-                    {report.map((department, index) => (
-                        <tr
-                            key={department.department_id ?? department.department_name ?? index}
-                            className="border-t border-gray-200 dark:border-gray-700"
-                        >
-                            <td className="sticky left-0 z-10 bg-white px-2 py-2 dark:bg-gray-800">
-                                <button
-                                    type="button"
-                                    onClick={() => removeDepartment(department)}
-                                    title={t('global.remove')}
-                                    aria-label={`${t('global.remove')} ${department.department_name ?? 'Unknown'}`}
-                                    className="group/row-action relative mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium text-gray-700 transition hover:bg-red-50 dark:text-gray-200 dark:hover:bg-red-950/30"
-                                >
-                                    <span className="transition-opacity group-hover/row-action:opacity-0">
-                                        {index + 1}
-                                    </span>
-                                    <i className="bx bx-trash absolute text-lg text-red-500 opacity-0 transition-opacity group-hover/row-action:opacity-100" />
-                                </button>
-                            </td>
-                            <td className="sticky left-12 z-10 bg-white px-4 py-2 font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-200">
-                                {department.department_name ?? 'Unknown'}
-                            </td>
-                            {visibleColumnGroups.map((group) =>
-                                group.columns.map((column, columnIndex) => (
-                                    <td
-                                        key={column.id}
-                                        className={`min-w-12 px-2 py-2 text-center text-sm text-gray-700 dark:text-gray-300 ${
-                                            columnIndex === 0 ? 'border-s-2 border-s-gray-200 dark:border-s-gray-700' : ''
-                                        }`}
+                    {displayReport.length > 0 ? (
+                        displayReport.map((department, index) => (
+                            <tr
+                                key={department.department_id ?? department.department_name ?? index}
+                                className="border-t border-gray-200 dark:border-gray-700"
+                            >
+                                <td className="sticky left-0 z-10 bg-white px-2 py-2 dark:bg-gray-800">
+                                    <button
+                                        type="button"
+                                        onClick={() => removeDepartment(department)}
+                                        title={t('global.remove')}
+                                        aria-label={`${t('global.remove')} ${department.department_name ?? 'Unknown'}`}
+                                        className="group/row-action relative mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium text-gray-700 transition hover:bg-red-50 dark:text-gray-200 dark:hover:bg-red-950/30"
                                     >
-                                        {getCount(department, group.key, column.itemKey)}
-                                    </td>
-                                )),
-                            )}
-                            <td className="px-4 py-2 text-center font-semibold text-gray-900 dark:text-gray-200">
-                                {department.count}
+                                        <span className="transition-opacity group-hover/row-action:opacity-0">
+                                            {index + 1}
+                                        </span>
+                                        <i className="bx bx-trash absolute text-lg text-red-500 opacity-0 transition-opacity group-hover/row-action:opacity-100" />
+                                    </button>
+                                </td>
+                                <td className="sticky left-12 z-10 bg-white px-4 py-2 font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-200">
+                                    {department.department_name ?? 'Unknown'}
+                                </td>
+                                {visibleColumnGroups.map((group) =>
+                                    group.columns.map((column, columnIndex) => (
+                                        <td
+                                            key={column.id}
+                                            className={`min-w-12 px-2 py-2 text-center text-sm text-gray-700 dark:text-gray-300 ${
+                                                columnIndex === 0
+                                                    ? 'border-s-2 border-s-gray-200 dark:border-s-gray-700'
+                                                    : ''
+                                            }`}
+                                        >
+                                            {getCount(department, group.key as BreakdownKey, column.itemKey)}
+                                        </td>
+                                    )),
+                                )}
+                                <td className="px-4 py-2 text-center font-semibold text-gray-900 dark:text-gray-200">
+                                    {department.count}
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={columnCount} className="py-8 px-4 text-center text-gray-500 dark:text-gray-400">
+                                {t('global.no_data_found')}
                             </td>
                         </tr>
-                    ))}
-                    {flatColumns.length > 0 && (
+                    )}
+                    {tableSettings.showTotalsRow && flatColumns.length > 0 && displayReport.length > 0 && (
                         <tr className="border-t-2 border-gray-300 bg-gray-50 font-semibold dark:border-gray-600 dark:bg-gray-800/80">
                             <td className="sticky left-0 z-10 bg-gray-50 px-2 py-3 dark:bg-gray-800/80" />
                             <td className="sticky left-12 z-10 bg-gray-50 px-4 py-3 text-right text-gray-900 dark:bg-gray-800/80 dark:text-white">
@@ -449,7 +460,9 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                                     <td
                                         key={column.id}
                                         className={`min-w-12 px-2 py-3 text-center text-sm text-gray-900 dark:text-white ${
-                                            columnIndex === 0 ? 'border-s-2 border-s-gray-300 dark:border-s-gray-600' : ''
+                                            columnIndex === 0
+                                                ? 'border-s-2 border-s-gray-300 dark:border-s-gray-600'
+                                                : ''
                                         }`}
                                     >
                                         {columnTotals.get(column.id) ?? 0}
@@ -459,16 +472,23 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
                             <td className="px-4 py-3 text-center text-gray-900 dark:text-white">{grandTotal}</td>
                         </tr>
                     )}
-                    {flatColumns.length === 0 && (
-                        <tr>
-                            <td colSpan={columnCount} className="py-4 px-4 text-center text-gray-500 dark:text-gray-400">
-                                {t('global.no_data_found')}
-                            </td>
-                        </tr>
-                    )}
                 </tbody>
             </table>
-        </div>
+            </div>
+
+            <GeneralReportTableSettingsModal
+                open={settingsModalOpen}
+                settings={tableSettings}
+                allColumns={allColumns}
+                departmentOptions={departmentOptions}
+                minTotalOptions={minTotalOptions}
+                onClose={() => setSettingsModalOpen(false)}
+                onApply={(nextSettings) => {
+                    setTableSettings(nextSettings);
+                    setSettingsModalOpen(false);
+                }}
+            />
+        </>
     );
 };
 

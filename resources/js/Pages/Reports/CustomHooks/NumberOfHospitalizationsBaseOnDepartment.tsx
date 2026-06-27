@@ -1,16 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
-import { Badge, Button } from 'flowbite-react';
 import { useTranslation } from '../../../hooks/useTranslation';
-import HospitalizationReportTableSettingsModal from './HospitalizationReportTableSettingsModal';
+import GeneralReportTableSettingsModal from './GeneralReportTableSettingsModal';
+import GeneralReportTableToolbar from './GeneralReportTableToolbar';
 import {
-    BREAKDOWN_CONFIGS,
-    BreakdownKey,
-    createDefaultHospitalizationTableSettings,
-    FIXED_GROUP_COLUMNS,
-    HospitalizationTableSettings,
+    applyTableSettings,
+    buildDepartmentOptions,
+    buildMinTotalOptions,
+    buildOrderedColumnGroups,
+    countActiveTableFilters,
+    createDefaultTableSettings,
+    GeneralReportTableSettings,
     TableColumnDefinition,
-} from './hospitalizationReportTableSettings';
+} from './generalReportTableSettings';
+import RemovableColumnHeader from './RemovableColumnHeader';
 
 interface BreakdownItem {
     key: string | number | null;
@@ -27,11 +30,7 @@ interface DepartmentReport {
     job_types: BreakdownItem[];
 }
 
-interface ColumnGroup {
-    key: BreakdownKey;
-    title: string;
-    columns: Array<{ id: string; itemKey: string; name: string }>;
-}
+type BreakdownKey = 'genders' | 'discharge_statuses' | 'job_types';
 
 interface NumberOfHospitalizationsBaseOnDepartmentProps {
     branch_id?: string | number;
@@ -39,47 +38,37 @@ interface NumberOfHospitalizationsBaseOnDepartmentProps {
     date_to?: string;
 }
 
+const GROUP_CONFIGS: Array<{ key: BreakdownKey; titleKey: string }> = [
+    { key: 'genders', titleKey: 'global.gender' },
+    { key: 'discharge_statuses', titleKey: 'global.discharge_status' },
+    { key: 'job_types', titleKey: 'global.job_type' },
+];
+
+const FIXED_GROUP_COLUMNS: Record<
+    BreakdownKey,
+    Array<{ itemKey: string; labelKey: string }>
+> = {
+    genders: [
+        { itemKey: '0', labelKey: 'global.male' },
+        { itemKey: '1', labelKey: 'global.female' },
+    ],
+    discharge_statuses: [
+        { itemKey: 'recovered', labelKey: 'global.recovered' },
+        { itemKey: 'died', labelKey: 'global.died' },
+        { itemKey: 'moved', labelKey: 'global.moved' },
+    ],
+    job_types: [
+        { itemKey: 'militant', labelKey: 'global.militant' },
+        { itemKey: 'civilian', labelKey: 'global.civilian' },
+        { itemKey: 'retired', labelKey: 'global.retired' },
+    ],
+};
+
 const getItemKey = (item: BreakdownItem): string =>
     item.key === null || item.key === undefined || item.key === '' ? 'unknown' : String(item.key);
 
-function RemovableColumnHeader({
-    columnName,
-    onRemove,
-    removeLabel,
-    isFirstInGroup,
-}: {
-    columnName: string;
-    onRemove: () => void;
-    removeLabel: string;
-    isFirstInGroup: boolean;
-}) {
-    return (
-        <th
-            className={`h-28 min-w-12 border-b border-gray-200 bg-gray-100 p-0 align-middle text-center dark:border-gray-700 dark:bg-gray-800 ${
-                isFirstInGroup ? 'border-s-2 border-s-gray-300 dark:border-s-gray-600' : ''
-            }`}
-        >
-            <button
-                type="button"
-                onClick={onRemove}
-                title={removeLabel}
-                aria-label={`${removeLabel} ${columnName}`}
-                className="group/col-action relative flex h-full w-full items-center justify-center overflow-hidden transition hover:bg-red-50 dark:hover:bg-red-950/30"
-            >
-                <span
-                    className="inline-block origin-center -rotate-90 whitespace-nowrap text-xs font-semibold leading-none text-gray-700 transition-opacity group-hover/col-action:opacity-0 dark:text-gray-200"
-                    title={columnName}
-                >
-                    {columnName}
-                </span>
-                <i className="bx bx-trash absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-lg text-red-500 opacity-0 transition-opacity group-hover/col-action:opacity-100" />
-            </button>
-        </th>
-    );
-}
-
 function buildAllColumns(t: (key: string) => string): TableColumnDefinition[] {
-    return BREAKDOWN_CONFIGS.flatMap(({ key, titleKey }) =>
+    return GROUP_CONFIGS.flatMap(({ key, titleKey }) =>
         FIXED_GROUP_COLUMNS[key].map(({ itemKey, labelKey }) => ({
             id: `${key}:${itemKey}`,
             itemKey,
@@ -90,47 +79,6 @@ function buildAllColumns(t: (key: string) => string): TableColumnDefinition[] {
     );
 }
 
-function buildOrderedColumnGroups(
-    settings: HospitalizationTableSettings,
-    t: (key: string) => string,
-): ColumnGroup[] {
-    return settings.groupOrder
-        .map((groupKey) => {
-            const config = BREAKDOWN_CONFIGS.find((item) => item.key === groupKey);
-            if (!config) {
-                return null;
-            }
-
-            const columns = (settings.columnOrderByGroup[groupKey] ?? [])
-                .map((columnId) => {
-                    const columnMeta = FIXED_GROUP_COLUMNS[groupKey].find(
-                        ({ itemKey }) => `${groupKey}:${itemKey}` === columnId,
-                    );
-                    if (!columnMeta || settings.hiddenColumnIds.includes(columnId)) {
-                        return null;
-                    }
-
-                    return {
-                        id: columnId,
-                        itemKey: columnMeta.itemKey,
-                        name: t(columnMeta.labelKey),
-                    };
-                })
-                .filter((column): column is { id: string; itemKey: string; name: string } => column !== null);
-
-            if (columns.length === 0) {
-                return null;
-            }
-
-            return {
-                key: groupKey,
-                title: t(config.titleKey),
-                columns,
-            };
-        })
-        .filter((group): group is ColumnGroup => group !== null);
-}
-
 const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalizationsBaseOnDepartmentProps> = ({
     branch_id = '',
     date_from = '',
@@ -138,8 +86,8 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
 }) => {
     const { t } = useTranslation();
     const [report, setReport] = useState<DepartmentReport[]>([]);
-    const [tableSettings, setTableSettings] = useState<HospitalizationTableSettings>(
-        createDefaultHospitalizationTableSettings,
+    const [tableSettings, setTableSettings] = useState<GeneralReportTableSettings>(() =>
+        createDefaultTableSettings([]),
     );
     const [settingsModalOpen, setSettingsModalOpen] = useState(false);
     const { get, processing, setData } = useHttp({
@@ -149,35 +97,8 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
     });
 
     const allColumns = useMemo(() => buildAllColumns(t), [t]);
-
-    const departmentOptions = useMemo(() => {
-        const options = new Map<string, string>();
-
-        report.forEach((row) => {
-            const value = String(row.department_id ?? row.department_name ?? '');
-            if (!options.has(value)) {
-                options.set(value, row.department_name ?? 'Unknown');
-            }
-        });
-
-        return Array.from(options.entries())
-            .map(([value, label]) => ({ value, label }))
-            .sort((left, right) => left.label.localeCompare(right.label));
-    }, [report]);
-
-    const minTotalOptions = useMemo(() => {
-        const totals = [...new Set(report.map((row) => row.count))].sort((left, right) => left - right);
-
-        return [
-            { value: '0', label: t('global.all') },
-            ...totals
-                .filter((total) => total > 0)
-                .map((total) => ({
-                    value: String(total),
-                    label: `>= ${total}`,
-                })),
-        ];
-    }, [report, t]);
+    const departmentOptions = useMemo(() => buildDepartmentOptions(report), [report]);
+    const minTotalOptions = useMemo(() => buildMinTotalOptions(report, t('global.all')), [report, t]);
 
     useEffect(() => {
         setData({
@@ -190,16 +111,16 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
             .then((response) => {
                 const payload = response as { data?: DepartmentReport[] };
                 setReport(payload?.data ?? []);
-                setTableSettings(createDefaultHospitalizationTableSettings());
+                setTableSettings(createDefaultTableSettings(buildAllColumns(t)));
             })
             .catch(() => {
                 setReport([]);
             });
-    }, [branch_id, date_from, date_to, get, setData]);
+    }, [branch_id, date_from, date_to, get, setData, t]);
 
     const visibleColumnGroups = useMemo(
-        () => buildOrderedColumnGroups(tableSettings, t),
-        [tableSettings, t],
+        () => buildOrderedColumnGroups(tableSettings, allColumns),
+        [tableSettings, allColumns],
     );
 
     const flatColumns = useMemo(
@@ -207,7 +128,7 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
             visibleColumnGroups.flatMap((group) =>
                 group.columns.map((column) => ({
                     ...column,
-                    breakdownKey: group.key,
+                    breakdownKey: group.key as BreakdownKey,
                 })),
             ),
         [visibleColumnGroups],
@@ -218,44 +139,15 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
         return match?.count ?? 0;
     };
 
-    const displayReport = useMemo(() => {
-        let rows = [...report];
+    const getColumnCount = (department: DepartmentReport, columnId: string): number => {
+        const [groupKey, itemKey] = columnId.split(':') as [BreakdownKey, string];
+        return getCount(department, groupKey, itemKey);
+    };
 
-        if (tableSettings.departmentFilters.length > 0) {
-            rows = rows.filter((row) =>
-                tableSettings.departmentFilters.includes(
-                    String(row.department_id ?? row.department_name ?? ''),
-                ),
-            );
-        }
-
-        if (tableSettings.hideZeroRows) {
-            rows = rows.filter((row) => row.count > 0);
-        }
-
-        if (tableSettings.minTotal > 0) {
-            rows = rows.filter((row) => row.count >= tableSettings.minTotal);
-        }
-
-        rows.sort((left, right) => {
-            let comparison = 0;
-
-            if (tableSettings.sortBy === 'department') {
-                comparison = (left.department_name ?? '').localeCompare(right.department_name ?? '');
-            } else if (tableSettings.sortBy === 'total') {
-                comparison = left.count - right.count;
-            } else if (tableSettings.sortBy.startsWith('column:')) {
-                const columnId = tableSettings.sortBy.replace('column:', '');
-                const [groupKey, itemKey] = columnId.split(':') as [BreakdownKey, string];
-                comparison =
-                    getCount(left, groupKey, itemKey) - getCount(right, groupKey, itemKey);
-            }
-
-            return tableSettings.sortDirection === 'asc' ? comparison : -comparison;
-        });
-
-        return rows;
-    }, [report, tableSettings]);
+    const displayReport = useMemo(
+        () => applyTableSettings(report, tableSettings, getColumnCount),
+        [report, tableSettings],
+    );
 
     const { columnTotals, grandTotal } = useMemo(() => {
         const totals = new Map<string, number>();
@@ -273,30 +165,7 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
         return { columnTotals: totals, grandTotal: total };
     }, [displayReport, flatColumns]);
 
-    const activeFilterCount = useMemo(() => {
-        let count = 0;
-
-        if (tableSettings.departmentFilters.length > 0) {
-            count += 1;
-        }
-        if (tableSettings.hideZeroRows) {
-            count += 1;
-        }
-        if (tableSettings.minTotal > 0) {
-            count += 1;
-        }
-        if (tableSettings.hiddenColumnIds.length > 0) {
-            count += 1;
-        }
-        if (tableSettings.sortBy !== 'department' || tableSettings.sortDirection !== 'asc') {
-            count += 1;
-        }
-        if (!tableSettings.showTotalsRow) {
-            count += 1;
-        }
-
-        return count;
-    }, [tableSettings]);
+    const activeFilterCount = useMemo(() => countActiveTableFilters(tableSettings), [tableSettings]);
 
     const hideColumn = (columnId: string) => {
         setTableSettings((current) => ({
@@ -339,31 +208,14 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
 
     return (
         <>
-            <div className="general-report-no-print mb-3 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                    <span>
-                        {displayReport.length} / {report.length} {t('global.department')}
-                    </span>
-                    <span className="text-gray-300 dark:text-gray-600">|</span>
-                    <span>
-                        {flatColumns.length} / {allColumns.length} columns
-                    </span>
-                    {activeFilterCount > 0 && (
-                        <Badge color="indigo" size="sm">
-                            {activeFilterCount} active
-                        </Badge>
-                    )}
-                </div>
-                <Button
-                    type="button"
-                    size="sm"
-                    color="light"
-                    onClick={() => setSettingsModalOpen(true)}
-                >
-                    <i className="bx bx-slider-alt me-2" />
-                    {t('global.advanced_filters')}
-                </Button>
-            </div>
+            <GeneralReportTableToolbar
+                visibleRowCount={displayReport.length}
+                totalRowCount={report.length}
+                visibleColumnCount={flatColumns.length}
+                totalColumnCount={allColumns.length}
+                activeFilterCount={activeFilterCount}
+                onOpenSettings={() => setSettingsModalOpen(true)}
+            />
 
             <div className="general-report-table-root overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
                 <table className="general-report-data-table w-full table-auto border-collapse divide-y divide-gray-200 dark:divide-gray-700">
@@ -445,7 +297,11 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
                                                         : ''
                                                 }`}
                                             >
-                                                {getCount(department, group.key, column.itemKey)}
+                                                {getCount(
+                                                    department,
+                                                    group.key as BreakdownKey,
+                                                    column.itemKey,
+                                                )}
                                             </td>
                                         )),
                                     )}
@@ -487,7 +343,7 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
                 </table>
             </div>
 
-            <HospitalizationReportTableSettingsModal
+            <GeneralReportTableSettingsModal
                 open={settingsModalOpen}
                 settings={tableSettings}
                 allColumns={allColumns}

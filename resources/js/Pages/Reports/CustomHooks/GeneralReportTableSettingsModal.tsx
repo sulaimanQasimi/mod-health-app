@@ -4,25 +4,22 @@ import SearchableMultiSelect from '../../../Components/ui/SearchableMultiSelect'
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import {
-    BREAKDOWN_CONFIGS,
-    BreakdownKey,
-    createDefaultHospitalizationTableSettings,
-    FIXED_GROUP_COLUMNS,
+    createDefaultTableSettings,
+    GeneralReportTableSettings,
     getGroupColumnIds,
-    HospitalizationTableSettings,
     isGroupFullyHidden,
     SortField,
     TableColumnDefinition,
-} from './hospitalizationReportTableSettings';
+} from './generalReportTableSettings';
 
-interface HospitalizationReportTableSettingsModalProps {
+interface GeneralReportTableSettingsModalProps {
     open: boolean;
-    settings: HospitalizationTableSettings;
+    settings: GeneralReportTableSettings;
     allColumns: TableColumnDefinition[];
     departmentOptions: Array<{ value: string; label: string }>;
     minTotalOptions: Array<{ value: string; label: string }>;
     onClose: () => void;
-    onApply: (settings: HospitalizationTableSettings) => void;
+    onApply: (settings: GeneralReportTableSettings) => void;
 }
 
 function moveItem<T>(items: T[], index: number, direction: 'up' | 'down'): T[] {
@@ -36,7 +33,7 @@ function moveItem<T>(items: T[], index: number, direction: 'up' | 'down'): T[] {
     return next;
 }
 
-export default function HospitalizationReportTableSettingsModal({
+export default function GeneralReportTableSettingsModal({
     open,
     settings,
     allColumns,
@@ -44,9 +41,9 @@ export default function HospitalizationReportTableSettingsModal({
     minTotalOptions,
     onClose,
     onApply,
-}: HospitalizationReportTableSettingsModalProps) {
+}: GeneralReportTableSettingsModalProps) {
     const { t } = useTranslation();
-    const [draft, setDraft] = useState<HospitalizationTableSettings>(settings);
+    const [draft, setDraft] = useState<GeneralReportTableSettings>(settings);
 
     useEffect(() => {
         if (open) {
@@ -83,8 +80,8 @@ export default function HospitalizationReportTableSettingsModal({
         }));
     };
 
-    const toggleGroupVisibility = (groupKey: BreakdownKey, visible: boolean) => {
-        const groupColumnIds = getGroupColumnIds(groupKey);
+    const toggleGroupVisibility = (groupKey: string, visible: boolean) => {
+        const groupColumnIds = getGroupColumnIds(groupKey, allColumns);
 
         setDraft((current) => ({
             ...current,
@@ -94,7 +91,7 @@ export default function HospitalizationReportTableSettingsModal({
         }));
     };
 
-    const moveGroup = (groupKey: BreakdownKey, direction: 'up' | 'down') => {
+    const moveGroup = (groupKey: string, direction: 'up' | 'down') => {
         setDraft((current) => {
             const index = current.groupOrder.indexOf(groupKey);
             if (index === -1) {
@@ -108,9 +105,9 @@ export default function HospitalizationReportTableSettingsModal({
         });
     };
 
-    const moveColumnInGroup = (groupKey: BreakdownKey, columnId: string, direction: 'up' | 'down') => {
+    const moveColumnInGroup = (groupKey: string, columnId: string, direction: 'up' | 'down') => {
         setDraft((current) => {
-            const order = [...current.columnOrderByGroup[groupKey]];
+            const order = [...(current.columnOrderByGroup[groupKey] ?? getGroupColumnIds(groupKey, allColumns))];
             const index = order.indexOf(columnId);
             if (index === -1) {
                 return current;
@@ -162,14 +159,17 @@ export default function HospitalizationReportTableSettingsModal({
 
                         <div className="space-y-4">
                             {draft.groupOrder.map((groupKey) => {
-                                const config = BREAKDOWN_CONFIGS.find((item) => item.key === groupKey);
-                                if (!config) {
-                                    return null;
-                                }
-
-                                const groupTitle = t(config.titleKey);
-                                const groupHidden = isGroupFullyHidden(groupKey, draft.hiddenColumnIds);
-                                const orderedColumnIds = draft.columnOrderByGroup[groupKey] ?? [];
+                                const groupTitle =
+                                    allColumns.find((column) => column.groupKey === groupKey)?.groupTitle ??
+                                    groupKey;
+                                const groupHidden = isGroupFullyHidden(
+                                    groupKey,
+                                    draft.hiddenColumnIds,
+                                    allColumns,
+                                );
+                                const orderedColumnIds =
+                                    draft.columnOrderByGroup[groupKey] ??
+                                    getGroupColumnIds(groupKey, allColumns);
 
                                 return (
                                     <div
@@ -212,14 +212,10 @@ export default function HospitalizationReportTableSettingsModal({
 
                                         <div className="space-y-2">
                                             {orderedColumnIds.map((columnId, columnIndex) => {
-                                                const columnMeta = FIXED_GROUP_COLUMNS[groupKey].find(
-                                                    ({ itemKey }) => `${groupKey}:${itemKey}` === columnId,
-                                                );
-                                                if (!columnMeta) {
+                                                const column = allColumns.find((item) => item.id === columnId);
+                                                if (!column) {
                                                     return null;
                                                 }
-
-                                                const columnName = t(columnMeta.labelKey);
 
                                                 return (
                                                     <div
@@ -232,7 +228,7 @@ export default function HospitalizationReportTableSettingsModal({
                                                                 onChange={() => toggleColumnVisibility(columnId)}
                                                             />
                                                             <span className="text-sm text-gray-800 dark:text-gray-100">
-                                                                {columnName}
+                                                                {column.name}
                                                             </span>
                                                         </label>
                                                         <div className="flex items-center gap-1">
@@ -244,7 +240,7 @@ export default function HospitalizationReportTableSettingsModal({
                                                                 onClick={() =>
                                                                     moveColumnInGroup(groupKey, columnId, 'up')
                                                                 }
-                                                                aria-label={`Move ${columnName} up`}
+                                                                aria-label={`Move ${column.name} up`}
                                                             >
                                                                 <i className="bx bx-chevron-up" />
                                                             </Button>
@@ -252,11 +248,13 @@ export default function HospitalizationReportTableSettingsModal({
                                                                 type="button"
                                                                 size="xs"
                                                                 color="light"
-                                                                disabled={columnIndex === orderedColumnIds.length - 1}
+                                                                disabled={
+                                                                    columnIndex === orderedColumnIds.length - 1
+                                                                }
                                                                 onClick={() =>
                                                                     moveColumnInGroup(groupKey, columnId, 'down')
                                                                 }
-                                                                aria-label={`Move ${columnName} down`}
+                                                                aria-label={`Move ${column.name} down`}
                                                             >
                                                                 <i className="bx bx-chevron-down" />
                                                             </Button>
@@ -392,7 +390,7 @@ export default function HospitalizationReportTableSettingsModal({
                 <Button
                     type="button"
                     color="light"
-                    onClick={() => setDraft(createDefaultHospitalizationTableSettings())}
+                    onClick={() => setDraft(createDefaultTableSettings(allColumns))}
                 >
                     {t('global.reset')}
                 </Button>

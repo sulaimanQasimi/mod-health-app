@@ -83,7 +83,7 @@ export default function HospitalizationFilters({
                 />
             </div>
             <div className="flex flex-wrap gap-2 lg:col-span-5 lg:justify-end">
-                <Button type="submit" color="success" size="sm" disabled={processing}>
+                <Button type="submit" color="light" size="sm" disabled={processing}>
                     {t('global.search')}
                 </Button>
                 <Button type="button" color="light" size="sm" disabled={processing} onClick={onReset}>

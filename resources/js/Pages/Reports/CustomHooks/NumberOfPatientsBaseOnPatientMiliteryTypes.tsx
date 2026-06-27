@@ -73,11 +73,7 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
         createDefaultTableSettings([]),
     );
     const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-    const { get, processing, setData } = useHttp({
-        branch_id: '',
-        date_from: '',
-        date_to: '',
-    });
+    const { get, processing } = useHttp();
 
     const groupTitle = t('global.militery_types');
     const allColumns = useMemo(() => buildAllColumns(report, groupTitle), [groupTitle, report]);
@@ -85,13 +81,13 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
     const minTotalOptions = useMemo(() => buildMinTotalOptions(report, t('global.all')), [report, t]);
 
     useEffect(() => {
-        setData({
+        const params = new URLSearchParams({
             branch_id: branch_id !== '' && branch_id != null ? String(branch_id) : '',
             date_from: date_from ?? '',
             date_to: date_to ?? '',
         });
 
-        get('/react/api/reports/general/number-of-patients-base-on-patient-militery-types')
+        get(`/react/api/reports/general/number-of-patients-base-on-patient-militery-types?${params.toString()}`)
             .then((response) => {
                 const payload = response as { data?: DepartmentMiliteryReport[] };
                 const data = payload?.data ?? [];
@@ -101,7 +97,7 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
             .catch(() => {
                 setReport([]);
             });
-    }, [branch_id, date_from, date_to, get, groupTitle, setData]);
+    }, [branch_id, date_from, date_to]);
 
     const visibleColumnGroups = useMemo(
         () => buildOrderedColumnGroups(tableSettings, allColumns),

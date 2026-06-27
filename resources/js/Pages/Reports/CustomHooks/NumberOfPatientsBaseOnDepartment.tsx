@@ -130,11 +130,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
         createDefaultTableSettings([]),
     );
     const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-    const { get, processing, setData } = useHttp({
-        branch_id: '',
-        date_from: '',
-        date_to: '',
-    });
+    const { get, processing } = useHttp();
 
     const resolveGenderLabel = useCallback(
         (item: BreakdownItem) => {
@@ -236,13 +232,13 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
     const minTotalOptions = useMemo(() => buildMinTotalOptions(report, t('global.all')), [report, t]);
 
     useEffect(() => {
-        setData({
+        const params = new URLSearchParams({
             branch_id: branch_id !== '' && branch_id != null ? String(branch_id) : '',
             date_from: date_from ?? '',
             date_to: date_to ?? '',
         });
 
-        get('/react/api/reports/general/number-of-patients-base-on-department')
+        get(`/react/api/reports/general/number-of-patients-base-on-department?${params.toString()}`)
             .then((response) => {
                 const payload = response as { data?: DepartmentReport[] };
                 const data = payload?.data ?? [];
@@ -252,7 +248,7 @@ const NumberOfPatientsBaseOnDepartment: React.FC<NumberOfPatientsBaseOnDepartmen
             .catch(() => {
                 setReport([]);
             });
-    }, [branch_id, date_from, date_to, get, setData, t, labelResolvers]);
+    }, [branch_id, date_from, date_to]);
 
     const visibleColumnGroups = useMemo(
         () => buildOrderedColumnGroups(tableSettings, allColumns),

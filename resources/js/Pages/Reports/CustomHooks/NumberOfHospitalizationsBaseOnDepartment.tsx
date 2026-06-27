@@ -90,24 +90,20 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
         createDefaultTableSettings([]),
     );
     const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-    const { get, processing, setData } = useHttp({
-        branch_id: '',
-        date_from: '',
-        date_to: '',
-    });
+    const { get, processing } = useHttp();
 
     const allColumns = useMemo(() => buildAllColumns(t), [t]);
     const departmentOptions = useMemo(() => buildDepartmentOptions(report), [report]);
     const minTotalOptions = useMemo(() => buildMinTotalOptions(report, t('global.all')), [report, t]);
 
     useEffect(() => {
-        setData({
+        const params = new URLSearchParams({
             branch_id: branch_id !== '' && branch_id != null ? String(branch_id) : '',
             date_from: date_from ?? '',
             date_to: date_to ?? '',
         });
 
-        get('/react/api/reports/general/hospitalization')
+        get(`/react/api/reports/general/hospitalization?${params.toString()}`)
             .then((response) => {
                 const payload = response as { data?: DepartmentReport[] };
                 setReport(payload?.data ?? []);
@@ -116,7 +112,7 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
             .catch(() => {
                 setReport([]);
             });
-    }, [branch_id, date_from, date_to, get, setData, t]);
+    }, [branch_id, date_from, date_to]);
 
     const visibleColumnGroups = useMemo(
         () => buildOrderedColumnGroups(tableSettings, allColumns),

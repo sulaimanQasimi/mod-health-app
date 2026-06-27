@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Reports;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Branch;
+use App\Models\Hospitalization;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -146,6 +147,50 @@ class GenralReport extends Controller
         ]);
     }
 
+    public function hospitalization(Request $request)
+    {
+        $rows = $this->hospitalizationReportQuery($request)
+            ->selectRaw('
+                hospitalizations.department_id,
+                departments.name as department_name,
+                patients.gender,
+                hospitalizations.discharge_status,
+                patients.job_type,
+                COUNT(*) as count
+            ')
+            ->groupBy(
+                'hospitalizations.department_id',
+                'departments.name',
+                'patients.gender',
+                'hospitalizations.discharge_status',
+                'patients.job_type',
+            )
+            ->orderBy('departments.name')
+            ->get();
+
+        $data = $rows
+            ->groupBy('department_id')
+            ->map(function (Collection $departmentRows) {
+                $first = $departmentRows->first();
+
+                return [
+                    'department_id' => $first->department_id,
+                    'department_name' => $first->department_name,
+                    'count' => (int) $departmentRows->sum('count'),
+                    'genders' => $this->aggregateBreakdown($departmentRows, 'gender'),
+                    'discharge_statuses' => $this->aggregateBreakdown($departmentRows, 'discharge_status'),
+                    'job_types' => $this->aggregateBreakdown($departmentRows, 'job_type'),
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Hospitalization report fetched successfully',
+            'data' => $data,
+        ]);
+    }
+
     /**
      * @return Builder<Appointment>
      */
@@ -157,6 +202,19 @@ class GenralReport extends Controller
             ->when($request->filled('date_from'), fn ($query) => $query->where('appointments.created_at', '>=', Verta::parse($request->date_from)->datetime()))
             ->when($request->filled('date_to'), fn ($query) => $query->where('appointments.created_at', '<=', Verta::parse($request->date_to)->datetime()))
             ->when($request->filled('branch_id'), fn ($query) => $query->where('appointments.branch_id', $request->branch_id));
+    }
+
+    /**
+     * @return Builder<Hospitalization>
+     */
+    private function hospitalizationReportQuery(Request $request): Builder
+    {
+        return Hospitalization::query()
+            ->leftJoin('departments', 'hospitalizations.department_id', '=', 'departments.id')
+            ->leftJoin('patients', 'hospitalizations.patient_id', '=', 'patients.id')
+            ->when($request->filled('date_from'), fn ($query) => $query->where('hospitalizations.created_at', '>=', Verta::parse($request->date_from)->datetime()))
+            ->when($request->filled('date_to'), fn ($query) => $query->where('hospitalizations.created_at', '<=', Verta::parse($request->date_to)->datetime()))
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('hospitalizations.branch_id', $request->branch_id));
     }
 
     /**

@@ -29,10 +29,11 @@ import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import NumberOfHospitalizationsBaseOnDepartment from './CustomHooks/NumberOfHospitalizationsBaseOnDepartment';
 import NumberOfPatientsBaseOnDepartment from './CustomHooks/NumberOfPatientsBaseOnDepartment';
 import NumberOfPatientsBaseOnPatientMiliteryTypes from './CustomHooks/NumberOfPatientsBaseOnPatientMiliteryTypes';
 
-type ReportWidgetType = 'department' | 'militery-types';
+type ReportWidgetType = 'department' | 'militery-types' | 'hospitalization';
 
 interface BranchOption {
     id: number;
@@ -83,6 +84,10 @@ const WIDGET_CATALOG: Record<ReportWidgetType, { labelKey: string; icon: string 
     'militery-types': {
         labelKey: 'global.militery_types',
         icon: 'bx-user-pin',
+    },
+    hospitalization: {
+        labelKey: 'global.hospitalization',
+        icon: 'bx-bed',
     },
 };
 
@@ -641,6 +646,10 @@ export default function GeneralReport({
 
         if (widget.type === 'department') {
             return <NumberOfPatientsBaseOnDepartment {...filterProps} />;
+        }
+
+        if (widget.type === 'hospitalization') {
+            return <NumberOfHospitalizationsBaseOnDepartment {...filterProps} />;
         }
 
         return <NumberOfPatientsBaseOnPatientMiliteryTypes {...filterProps} />;

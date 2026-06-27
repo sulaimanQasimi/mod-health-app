@@ -264,26 +264,36 @@ function ReportSlot({
     slot,
     index,
     canRemove,
+    canMoveUp,
+    canMoveDown,
     widgetCount,
     slotLabel,
+    orderLabel,
     widthLabel,
     removeLabel,
     isExpanded,
     onToggle,
     onRemove,
+    onMoveUp,
+    onMoveDown,
     onColSpanChange,
     children,
 }: {
     slot: Slot;
     index: number;
     canRemove: boolean;
+    canMoveUp: boolean;
+    canMoveDown: boolean;
     widgetCount: number;
     slotLabel: string;
+    orderLabel: string;
     widthLabel: string;
     removeLabel: string;
     isExpanded: boolean;
     onToggle: () => void;
     onRemove: (slotId: string) => void;
+    onMoveUp: (slotId: string) => void;
+    onMoveDown: (slotId: string) => void;
     onColSpanChange: (slotId: string, colSpan: Slot['colSpan']) => void;
     children: ReactNode;
 }) {
@@ -316,8 +326,36 @@ function ReportSlot({
 
                 {isExpanded && (
                     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-3 py-2.5 dark:border-gray-700">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">{widthLabel}</span>
                         <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{orderLabel}</span>
+                            <div className="flex items-center gap-1">
+                                <Button
+                                    type="button"
+                                    size="xs"
+                                    color="light"
+                                    onClick={() => onMoveUp(slot.id)}
+                                    disabled={!canMoveUp}
+                                    title={`${orderLabel} up`}
+                                    className="!min-w-8"
+                                >
+                                    <i className="bx bx-up-arrow-alt" />
+                                </Button>
+                                <Button
+                                    type="button"
+                                    size="xs"
+                                    color="light"
+                                    onClick={() => onMoveDown(slot.id)}
+                                    disabled={!canMoveDown}
+                                    title={`${orderLabel} down`}
+                                    className="!min-w-8"
+                                >
+                                    <i className="bx bx-down-arrow-alt" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{widthLabel}</span>
                             <div className="flex items-center gap-1 rounded-lg bg-gray-50 p-0.5 dark:bg-gray-900/60">
                                 {SLOT_COL_SPAN_OPTIONS.map((span) => (
                                     <Button
@@ -548,6 +586,22 @@ export default function GeneralReport({
         setSlots((current) =>
             current.map((slot) => (slot.id === slotId ? { ...slot, colSpan } : slot)),
         );
+    };
+
+    const moveSlot = (slotId: string, direction: 'up' | 'down') => {
+        setSlots((current) => {
+            const index = current.findIndex((slot) => slot.id === slotId);
+            if (index === -1) {
+                return current;
+            }
+
+            const targetIndex = direction === 'up' ? index - 1 : index + 1;
+            if (targetIndex < 0 || targetIndex >= current.length) {
+                return current;
+            }
+
+            return arrayMove(current, index, targetIndex);
+        });
     };
 
     const isSlotExpanded = (slotId: string) => expandedSlots[slotId] ?? true;
@@ -800,13 +854,18 @@ export default function GeneralReport({
                                 slot={slot}
                                 index={index}
                                 canRemove={slots.length > 1}
+                                canMoveUp={index > 0}
+                                canMoveDown={index < slots.length - 1}
                                 widgetCount={widgets.length}
                                 slotLabel={`Slot ${index + 1}`}
+                                orderLabel={t('global.order')}
                                 widthLabel="Width"
                                 removeLabel={t('global.remove')}
                                 isExpanded={isSlotExpanded(slot.id)}
                                 onToggle={() => toggleSlot(slot.id)}
                                 onRemove={removeSlot}
+                                onMoveUp={(slotId) => moveSlot(slotId, 'up')}
+                                onMoveDown={(slotId) => moveSlot(slotId, 'down')}
                                 onColSpanChange={setSlotColSpan}
                             >
                                 <SlotCanvas

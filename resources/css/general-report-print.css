@@ -1,4 +1,12 @@
+.general-report-slot-collapsed .general-report-slot-content {
+    display: none;
+}
+
 @media print {
+    .general-report-slot-collapsed .general-report-slot-content {
+        display: block !important;
+    }
+
     @page {
         margin: 5mm;
         size: A4 landscape;

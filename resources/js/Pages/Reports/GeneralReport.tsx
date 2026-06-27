@@ -255,6 +255,8 @@ function ReportSlot({
     slotLabel,
     widthLabel,
     removeLabel,
+    isExpanded,
+    onToggle,
     onRemove,
     onColSpanChange,
     children,
@@ -266,57 +268,74 @@ function ReportSlot({
     slotLabel: string;
     widthLabel: string;
     removeLabel: string;
+    isExpanded: boolean;
+    onToggle: () => void;
     onRemove: (slotId: string) => void;
     onColSpanChange: (slotId: string, colSpan: Slot['colSpan']) => void;
     children: ReactNode;
 }) {
     return (
         <div
-            className={`general-report-slot flex min-w-0 flex-col ${slotColSpanClass(slot.colSpan)} ${widgetCount === 0 ? 'general-report-no-print' : ''}`}
+            className={`general-report-slot flex min-w-0 flex-col ${slotColSpanClass(slot.colSpan)} ${!isExpanded ? 'general-report-slot-collapsed' : ''} ${widgetCount === 0 ? 'general-report-no-print' : ''}`}
         >
-            <div className="general-report-no-print mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800">
-                <div className="flex min-w-0 items-center gap-2">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                        {index + 1}
-                    </span>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{slotLabel}</p>
-                    {widgetCount > 0 && (
-                        <Badge color="indigo" size="sm">
-                            {widgetCount}
-                        </Badge>
-                    )}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">{widthLabel}</span>
-                    <div className="flex items-center gap-1 rounded-lg bg-gray-50 p-0.5 dark:bg-gray-900/60">
-                        {SLOT_COL_SPAN_OPTIONS.map((span) => (
-                            <Button
-                                key={span}
-                                type="button"
-                                size="xs"
-                                color={slot.colSpan === span ? 'blue' : 'light'}
-                                onClick={() => onColSpanChange(slot.id, span)}
-                                title={`${widthLabel} ${span}`}
-                                className="!min-w-8"
-                            >
-                                {span}
-                            </Button>
-                        ))}
+            <div className="general-report-no-print mb-3 overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                <button
+                    type="button"
+                    onClick={onToggle}
+                    className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-start transition hover:bg-gray-50 dark:hover:bg-gray-700/40"
+                    aria-expanded={isExpanded}
+                >
+                    <div className="flex min-w-0 items-center gap-2">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                            {index + 1}
+                        </span>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{slotLabel}</p>
+                        {widgetCount > 0 && (
+                            <Badge color="indigo" size="sm">
+                                {widgetCount}
+                            </Badge>
+                        )}
                     </div>
-                    <Button
-                        type="button"
-                        color="light"
-                        size="xs"
-                        onClick={() => onRemove(slot.id)}
-                        disabled={!canRemove}
-                    >
-                        <i className="bx bx-trash" />
-                    </Button>
-                </div>
+                    <i
+                        className={`bx ${isExpanded ? 'bx-chevron-up' : 'bx-chevron-down'} shrink-0 text-xl text-gray-400`}
+                    />
+                </button>
+
+                {isExpanded && (
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-3 py-2.5 dark:border-gray-700">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{widthLabel}</span>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <div className="flex items-center gap-1 rounded-lg bg-gray-50 p-0.5 dark:bg-gray-900/60">
+                                {SLOT_COL_SPAN_OPTIONS.map((span) => (
+                                    <Button
+                                        key={span}
+                                        type="button"
+                                        size="xs"
+                                        color={slot.colSpan === span ? 'blue' : 'light'}
+                                        onClick={() => onColSpanChange(slot.id, span)}
+                                        title={`${widthLabel} ${span}`}
+                                        className="!min-w-8"
+                                    >
+                                        {span}
+                                    </Button>
+                                ))}
+                            </div>
+                            <Button
+                                type="button"
+                                color="light"
+                                size="xs"
+                                onClick={() => onRemove(slot.id)}
+                                disabled={!canRemove}
+                                title={removeLabel}
+                            >
+                                <i className="bx bx-trash" />
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
 
-            <div className="min-h-0 flex-1">{children}</div>
+            <div className="general-report-slot-content min-h-0 flex-1">{children}</div>
         </div>
     );
 }
@@ -403,6 +422,7 @@ export default function GeneralReport({
     const [widgetsBySlot, setWidgetsBySlot] = useState<Record<string, PlacedWidget[]>>(initialCanvas.widgetsBySlot);
     const [activeDragType, setActiveDragType] = useState<ReportWidgetType | null>(null);
     const [isDndReady, setIsDndReady] = useState(false);
+    const [expandedSlots, setExpandedSlots] = useState<Record<string, boolean>>({});
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -479,6 +499,7 @@ export default function GeneralReport({
         const newSlot = createSlot();
         setSlots((current) => [newSlot, ...current]);
         setWidgetsBySlot((current) => ({ ...current, [newSlot.id]: [] }));
+        setExpandedSlots((current) => ({ ...current, [newSlot.id]: true }));
     };
 
     const removeSlot = (slotId: string) => {
@@ -491,12 +512,26 @@ export default function GeneralReport({
             delete next[slotId];
             return next;
         });
+        setExpandedSlots((current) => {
+            const next = { ...current };
+            delete next[slotId];
+            return next;
+        });
     };
 
     const setSlotColSpan = (slotId: string, colSpan: Slot['colSpan']) => {
         setSlots((current) =>
             current.map((slot) => (slot.id === slotId ? { ...slot, colSpan } : slot)),
         );
+    };
+
+    const isSlotExpanded = (slotId: string) => expandedSlots[slotId] ?? true;
+
+    const toggleSlot = (slotId: string) => {
+        setExpandedSlots((current) => ({
+            ...current,
+            [slotId]: !isSlotExpanded(slotId),
+        }));
     };
 
     const handleSubmit = (event: FormEvent) => {
@@ -733,6 +768,8 @@ export default function GeneralReport({
                                 slotLabel={`Slot ${index + 1}`}
                                 widthLabel="Width"
                                 removeLabel={t('global.remove')}
+                                isExpanded={isSlotExpanded(slot.id)}
+                                onToggle={() => toggleSlot(slot.id)}
                                 onRemove={removeSlot}
                                 onColSpanChange={setSlotColSpan}
                             >

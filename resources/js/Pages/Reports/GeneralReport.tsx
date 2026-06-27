@@ -32,8 +32,10 @@ import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 import NumberOfHospitalizationsBaseOnDepartment from './CustomHooks/NumberOfHospitalizationsBaseOnDepartment';
 import NumberOfPatientsBaseOnDepartment from './CustomHooks/NumberOfPatientsBaseOnDepartment';
 import NumberOfPatientsBaseOnPatientMiliteryTypes from './CustomHooks/NumberOfPatientsBaseOnPatientMiliteryTypes';
+import GeneralReportHeader from './CustomHooks/GeneralReportHeader';
+import { createDefaultHeaderSettings, ReportHeaderSettings } from './CustomHooks/generalReportHeaderSettings';
 
-type ReportWidgetType = 'department' | 'militery-types' | 'hospitalization';
+type ReportWidgetType = 'department' | 'militery-types' | 'hospitalization' | 'header';
 
 interface BranchOption {
     id: number;
@@ -49,6 +51,7 @@ interface ReportFilters {
 interface PlacedWidget {
     id: string;
     type: ReportWidgetType;
+    headerSettings?: ReportHeaderSettings;
 }
 
 interface Slot {
@@ -89,15 +92,25 @@ const WIDGET_CATALOG: Record<ReportWidgetType, { labelKey: string; icon: string 
         labelKey: 'global.hospitalization',
         icon: 'bx-bed',
     },
+    header: {
+        labelKey: 'global.header',
+        icon: 'bx-id-card',
+    },
 };
 
 const INITIAL_SLOT_ID = 'slot-default';
 
 function createWidget(type: ReportWidgetType): PlacedWidget {
-    return {
+    const widget: PlacedWidget = {
         id: `${type}-${Date.now()}`,
         type,
     };
+
+    if (type === 'header') {
+        widget.headerSettings = createDefaultHeaderSettings();
+    }
+
+    return widget;
 }
 
 const canvasCollisionDetection: CollisionDetection = (args) => {
@@ -495,6 +508,18 @@ export default function GeneralReport({
         });
     };
 
+    const updateWidgetHeaderSettings = (widgetId: string, headerSettings: ReportHeaderSettings) => {
+        setWidgetsBySlot((current) => {
+            const next: Record<string, PlacedWidget[]> = {};
+            for (const [slotId, list] of Object.entries(current)) {
+                next[slotId] = list.map((widget) =>
+                    widget.id === widgetId ? { ...widget, headerSettings } : widget,
+                );
+            }
+            return next;
+        });
+    };
+
     const addSlot = () => {
         const newSlot = createSlot();
         setSlots((current) => [newSlot, ...current]);
@@ -673,6 +698,17 @@ export default function GeneralReport({
     };
 
     const renderWidget = (widget: PlacedWidget) => {
+        if (widget.type === 'header') {
+            return (
+                <GeneralReportHeader
+                    settings={widget.headerSettings ?? createDefaultHeaderSettings()}
+                    onSettingsChange={(headerSettings) =>
+                        updateWidgetHeaderSettings(widget.id, headerSettings)
+                    }
+                />
+            );
+        }
+
         const filterProps = {
             branch_id: appliedFilters.branch_id,
             date_from: appliedFilters.date_from,
@@ -779,30 +815,35 @@ export default function GeneralReport({
                                     emptyLabel="Drop components here"
                                 >
                                     <SortableContext items={widgetIds} strategy={verticalListSortingStrategy}>
-                                        {widgets.map((widget) => (
-                                            <div
-                                                key={widget.id}
-                                                data-slot={slot.id}
-                                                className={!hasSearch ? 'general-report-no-print' : undefined}
-                                            >
-                                                <SortableWidgetCard
-                                                    widget={widget}
-                                                    slotId={slot.id}
-                                                    title={t(WIDGET_CATALOG[widget.type].labelKey)}
-                                                    removeLabel={t('global.remove')}
-                                                    onRemove={removeWidget}
+                                        {widgets.map((widget) => {
+                                            const isHeaderWidget = widget.type === 'header';
+                                            const showWidget = isHeaderWidget || hasSearch;
+
+                                            return (
+                                                <div
+                                                    key={widget.id}
+                                                    data-slot={slot.id}
+                                                    className={!showWidget ? 'general-report-no-print' : undefined}
                                                 >
-                                                    {hasSearch ? (
-                                                        renderWidget(widget)
-                                                    ) : (
-                                                        <WidgetSearchPrompt
-                                                            title={t('global.search')}
-                                                            message="Set your filters above and click Search to load report data."
-                                                        />
-                                                    )}
-                                                </SortableWidgetCard>
-                                            </div>
-                                        ))}
+                                                    <SortableWidgetCard
+                                                        widget={widget}
+                                                        slotId={slot.id}
+                                                        title={t(WIDGET_CATALOG[widget.type].labelKey)}
+                                                        removeLabel={t('global.remove')}
+                                                        onRemove={removeWidget}
+                                                    >
+                                                        {showWidget ? (
+                                                            renderWidget(widget)
+                                                        ) : (
+                                                            <WidgetSearchPrompt
+                                                                title={t('global.search')}
+                                                                message="Set your filters above and click Search to load report data."
+                                                            />
+                                                        )}
+                                                    </SortableWidgetCard>
+                                                </div>
+                                            );
+                                        })}
                                     </SortableContext>
                                 </SlotCanvas>
                             </ReportSlot>

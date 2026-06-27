@@ -2,9 +2,48 @@
     display: none;
 }
 
+@font-face {
+    font-family: 'ModFont';
+    src: url('/assets/fonts/mod_font.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.general-report-header-root {
+    font-family: 'ModFont', 'Arial', sans-serif;
+    direction: rtl;
+}
+
+.general-report-header-grid {
+    min-height: 120px;
+}
+
 @media print {
     .general-report-slot-collapsed .general-report-slot-content {
         display: block !important;
+    }
+
+    .general-report-header-root {
+        margin-bottom: 8mm !important;
+        padding-bottom: 4mm !important;
+        border-bottom: 2px solid #000 !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .general-report-header-grid {
+        display: grid !important;
+        grid-template-columns: 100px minmax(0, 1fr) 100px !important;
+        align-items: center !important;
+        gap: 16px !important;
+        min-height: 120px !important;
+    }
+
+    .general-report-header-root img {
+        max-height: 100px !important;
+        max-width: 100px !important;
+        object-fit: contain !important;
     }
 
     @page {

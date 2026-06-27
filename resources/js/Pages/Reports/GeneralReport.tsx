@@ -33,9 +33,11 @@ import NumberOfHospitalizationsBaseOnDepartment from './CustomHooks/NumberOfHosp
 import NumberOfPatientsBaseOnDepartment from './CustomHooks/NumberOfPatientsBaseOnDepartment';
 import NumberOfPatientsBaseOnPatientMiliteryTypes from './CustomHooks/NumberOfPatientsBaseOnPatientMiliteryTypes';
 import GeneralReportHeader from './CustomHooks/GeneralReportHeader';
+import GeneralReportTitle from './CustomHooks/GeneralReportTitle';
 import { createDefaultHeaderSettings, ReportHeaderSettings } from './CustomHooks/generalReportHeaderSettings';
+import { createDefaultTitleSettings, ReportTitleSettings } from './CustomHooks/generalReportTitleSettings';
 
-type ReportWidgetType = 'department' | 'militery-types' | 'hospitalization' | 'header';
+type ReportWidgetType = 'department' | 'militery-types' | 'hospitalization' | 'header' | 'title';
 
 interface BranchOption {
     id: number;
@@ -52,6 +54,7 @@ interface PlacedWidget {
     id: string;
     type: ReportWidgetType;
     headerSettings?: ReportHeaderSettings;
+    titleSettings?: ReportTitleSettings;
 }
 
 interface Slot {
@@ -96,6 +99,10 @@ const WIDGET_CATALOG: Record<ReportWidgetType, { labelKey: string; icon: string 
         labelKey: 'global.header',
         icon: 'bx-id-card',
     },
+    title: {
+        labelKey: 'global.title',
+        icon: 'bx-text',
+    },
 };
 
 const INITIAL_SLOT_ID = 'slot-default';
@@ -108,6 +115,10 @@ function createWidget(type: ReportWidgetType): PlacedWidget {
 
     if (type === 'header') {
         widget.headerSettings = createDefaultHeaderSettings();
+    }
+
+    if (type === 'title') {
+        widget.titleSettings = createDefaultTitleSettings();
     }
 
     return widget;
@@ -513,6 +524,7 @@ export default function GeneralReport({
     }, [filterOptions.branches, filters.branch_id, t]);
 
     const hasWidgetTypeInAnySlot = (type: ReportWidgetType, current: Record<string, PlacedWidget[]>) =>
+        type !== 'title' &&
         Object.values(current).some((list) => list.some((w) => w.type === type));
 
     const resolveTargetSlotId = () => slots[slots.length - 1]?.id;
@@ -552,6 +564,18 @@ export default function GeneralReport({
             for (const [slotId, list] of Object.entries(current)) {
                 next[slotId] = list.map((widget) =>
                     widget.id === widgetId ? { ...widget, headerSettings } : widget,
+                );
+            }
+            return next;
+        });
+    };
+
+    const updateWidgetTitleSettings = (widgetId: string, titleSettings: ReportTitleSettings) => {
+        setWidgetsBySlot((current) => {
+            const next: Record<string, PlacedWidget[]> = {};
+            for (const [slotId, list] of Object.entries(current)) {
+                next[slotId] = list.map((widget) =>
+                    widget.id === widgetId ? { ...widget, titleSettings } : widget,
                 );
             }
             return next;
@@ -763,6 +787,17 @@ export default function GeneralReport({
             );
         }
 
+        if (widget.type === 'title') {
+            return (
+                <GeneralReportTitle
+                    settings={widget.titleSettings ?? createDefaultTitleSettings()}
+                    onSettingsChange={(titleSettings) =>
+                        updateWidgetTitleSettings(widget.id, titleSettings)
+                    }
+                />
+            );
+        }
+
         const filterProps = {
             branch_id: appliedFilters.branch_id,
             date_from: appliedFilters.date_from,
@@ -805,7 +840,7 @@ export default function GeneralReport({
                             type={type}
                             label={t(WIDGET_CATALOG[type].labelKey)}
                             icon={WIDGET_CATALOG[type].icon}
-                            isPlaced={placedWidgetTypes.has(type)}
+                            isPlaced={type !== 'title' && placedWidgetTypes.has(type)}
                             addedLabel="Added"
                             onAdd={(widgetType) => {
                                 const targetSlotId = resolveTargetSlotId();
@@ -875,8 +910,9 @@ export default function GeneralReport({
                                 >
                                     <SortableContext items={widgetIds} strategy={verticalListSortingStrategy}>
                                         {widgets.map((widget) => {
-                                            const isHeaderWidget = widget.type === 'header';
-                                            const showWidget = isHeaderWidget || hasSearch;
+                                            const isInstantWidget =
+                                                widget.type === 'header' || widget.type === 'title';
+                                            const showWidget = isInstantWidget || hasSearch;
 
                                             return (
                                                 <div

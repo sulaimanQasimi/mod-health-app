@@ -150,6 +150,29 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
 
     const allColumns = useMemo(() => buildAllColumns(t), [t]);
 
+    const departmentOptions = useMemo(
+        () =>
+            report.map((row) => ({
+                value: String(row.department_id ?? row.department_name ?? ''),
+                label: row.department_name ?? 'Unknown',
+            })),
+        [report],
+    );
+
+    const minTotalOptions = useMemo(() => {
+        const totals = [...new Set(report.map((row) => row.count))].sort((left, right) => left - right);
+
+        return [
+            { value: '0', label: t('global.all') },
+            ...totals
+                .filter((total) => total > 0)
+                .map((total) => ({
+                    value: String(total),
+                    label: `>= ${total}`,
+                })),
+        ];
+    }, [report, t]);
+
     useEffect(() => {
         setData({
             branch_id: branch_id !== '' && branch_id != null ? String(branch_id) : '',
@@ -191,10 +214,12 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
 
     const displayReport = useMemo(() => {
         let rows = [...report];
-        const search = tableSettings.departmentSearch.trim().toLowerCase();
 
-        if (search) {
-            rows = rows.filter((row) => (row.department_name ?? '').toLowerCase().includes(search));
+        if (tableSettings.departmentFilter) {
+            rows = rows.filter(
+                (row) =>
+                    String(row.department_id ?? row.department_name ?? '') === tableSettings.departmentFilter,
+            );
         }
 
         if (tableSettings.hideZeroRows) {
@@ -244,7 +269,7 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
     const activeFilterCount = useMemo(() => {
         let count = 0;
 
-        if (tableSettings.departmentSearch.trim()) {
+        if (tableSettings.departmentFilter) {
             count += 1;
         }
         if (tableSettings.hideZeroRows) {
@@ -459,6 +484,8 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
                 open={settingsModalOpen}
                 settings={tableSettings}
                 allColumns={allColumns}
+                departmentOptions={departmentOptions}
+                minTotalOptions={minTotalOptions}
                 onClose={() => setSettingsModalOpen(false)}
                 onApply={(nextSettings) => {
                     setTableSettings(nextSettings);

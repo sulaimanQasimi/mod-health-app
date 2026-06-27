@@ -1,4 +1,4 @@
-import { Button, Checkbox, Label, Modal, ModalBody, ModalFooter, ModalHeader, TextInput } from 'flowbite-react';
+import { Button, Checkbox, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'flowbite-react';
 import { useEffect, useMemo, useState } from 'react';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -18,6 +18,8 @@ interface HospitalizationReportTableSettingsModalProps {
     open: boolean;
     settings: HospitalizationTableSettings;
     allColumns: TableColumnDefinition[];
+    departmentOptions: Array<{ value: string; label: string }>;
+    minTotalOptions: Array<{ value: string; label: string }>;
     onClose: () => void;
     onApply: (settings: HospitalizationTableSettings) => void;
 }
@@ -37,6 +39,8 @@ export default function HospitalizationReportTableSettingsModal({
     open,
     settings,
     allColumns,
+    departmentOptions,
+    minTotalOptions,
     onClose,
     onApply,
 }: HospitalizationReportTableSettingsModalProps) {
@@ -48,6 +52,19 @@ export default function HospitalizationReportTableSettingsModal({
             setDraft(settings);
         }
     }, [open, settings]);
+
+    const yesNoOptions = useMemo(
+        () => [
+            { value: '0', label: t('global.no') },
+            { value: '1', label: t('global.yes') },
+        ],
+        [t],
+    );
+
+    const departmentSelectOptions = useMemo(
+        () => [{ value: '', label: t('global.all') }, ...departmentOptions],
+        [departmentOptions, t],
+    );
 
     const sortOptions = useMemo(
         () => [
@@ -309,70 +326,65 @@ export default function HospitalizationReportTableSettingsModal({
                         <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Row filters</h3>
                         <div className="mt-4 grid gap-4 md:grid-cols-2">
                             <div>
-                                <Label htmlFor="hospitalization-report-department-search" className="mb-2 block">
-                                    {t('global.department')}
-                                </Label>
-                                <TextInput
-                                    id="hospitalization-report-department-search"
-                                    value={draft.departmentSearch}
-                                    onChange={(event) =>
+                                <Label className="mb-2 block">{t('global.department')}</Label>
+                                <SearchableSelect
+                                    value={draft.departmentFilter}
+                                    onChange={(value) =>
                                         setDraft((current) => ({
                                             ...current,
-                                            departmentSearch: event.target.value,
+                                            departmentFilter: value,
                                         }))
                                     }
-                                    placeholder={t('global.search')}
+                                    options={departmentSelectOptions}
+                                    placeholder={t('global.select')}
+                                    searchPlaceholder={t('global.search')}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="hospitalization-report-min-total" className="mb-2 block">
+                                <Label className="mb-2 block">
                                     Minimum {t('global.total')}
                                 </Label>
-                                <TextInput
-                                    id="hospitalization-report-min-total"
-                                    type="number"
-                                    min={0}
-                                    value={draft.minTotal === 0 ? '' : String(draft.minTotal)}
-                                    onChange={(event) =>
+                                <SearchableSelect
+                                    value={String(draft.minTotal)}
+                                    onChange={(value) =>
                                         setDraft((current) => ({
                                             ...current,
-                                            minTotal: event.target.value === '' ? 0 : Number(event.target.value),
+                                            minTotal: value === '' ? 0 : Number(value),
                                         }))
                                     }
-                                    placeholder="0"
+                                    options={minTotalOptions}
+                                    placeholder={t('global.select')}
+                                    searchPlaceholder={t('global.search')}
                                 />
                             </div>
-                        </div>
-
-                        <div className="mt-4 space-y-3">
-                            <label className="flex items-center gap-2">
-                                <Checkbox
-                                    checked={draft.hideZeroRows}
-                                    onChange={(event) =>
+                            <div>
+                                <Label className="mb-2 block">Hide rows with zero total</Label>
+                                <SearchableSelect
+                                    value={draft.hideZeroRows ? '1' : '0'}
+                                    onChange={(value) =>
                                         setDraft((current) => ({
                                             ...current,
-                                            hideZeroRows: event.target.checked,
+                                            hideZeroRows: value === '1',
                                         }))
                                     }
+                                    options={yesNoOptions}
+                                    placeholder={t('global.select')}
                                 />
-                                <span className="text-sm text-gray-800 dark:text-gray-100">
-                                    Hide rows with zero total
-                                </span>
-                            </label>
-                            <label className="flex items-center gap-2">
-                                <Checkbox
-                                    checked={draft.showTotalsRow}
-                                    onChange={(event) =>
+                            </div>
+                            <div>
+                                <Label className="mb-2 block">Show totals row</Label>
+                                <SearchableSelect
+                                    value={draft.showTotalsRow ? '1' : '0'}
+                                    onChange={(value) =>
                                         setDraft((current) => ({
                                             ...current,
-                                            showTotalsRow: event.target.checked,
+                                            showTotalsRow: value === '1',
                                         }))
                                     }
+                                    options={yesNoOptions}
+                                    placeholder={t('global.select')}
                                 />
-                                <span className="text-sm text-gray-800 dark:text-gray-100">
-                                    Show totals row
-                                </span>
-                            </label>
+                            </div>
                         </div>
                     </section>
                 </div>

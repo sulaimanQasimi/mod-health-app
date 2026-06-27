@@ -16,7 +16,7 @@ export interface HospitalizationTableSettings {
     columnOrderByGroup: Record<BreakdownKey, string[]>;
     sortBy: SortField;
     sortDirection: 'asc' | 'desc';
-    departmentSearch: string;
+    departmentFilter: string;
     hideZeroRows: boolean;
     showTotalsRow: boolean;
     minTotal: number;
@@ -65,7 +65,7 @@ export function createDefaultHospitalizationTableSettings(): HospitalizationTabl
         columnOrderByGroup: buildDefaultColumnOrderByGroup(),
         sortBy: 'department',
         sortDirection: 'asc',
-        departmentSearch: '',
+        departmentFilter: '',
         hideZeroRows: false,
         showTotalsRow: true,
         minTotal: 0,

@@ -150,14 +150,20 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
 
     const allColumns = useMemo(() => buildAllColumns(t), [t]);
 
-    const departmentOptions = useMemo(
-        () =>
-            report.map((row) => ({
-                value: String(row.department_id ?? row.department_name ?? ''),
-                label: row.department_name ?? 'Unknown',
-            })),
-        [report],
-    );
+    const departmentOptions = useMemo(() => {
+        const options = new Map<string, string>();
+
+        report.forEach((row) => {
+            const value = String(row.department_id ?? row.department_name ?? '');
+            if (!options.has(value)) {
+                options.set(value, row.department_name ?? 'Unknown');
+            }
+        });
+
+        return Array.from(options.entries())
+            .map(([value, label]) => ({ value, label }))
+            .sort((left, right) => left.label.localeCompare(right.label));
+    }, [report]);
 
     const minTotalOptions = useMemo(() => {
         const totals = [...new Set(report.map((row) => row.count))].sort((left, right) => left - right);
@@ -215,10 +221,11 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
     const displayReport = useMemo(() => {
         let rows = [...report];
 
-        if (tableSettings.departmentFilter) {
-            rows = rows.filter(
-                (row) =>
-                    String(row.department_id ?? row.department_name ?? '') === tableSettings.departmentFilter,
+        if (tableSettings.departmentFilters.length > 0) {
+            rows = rows.filter((row) =>
+                tableSettings.departmentFilters.includes(
+                    String(row.department_id ?? row.department_name ?? ''),
+                ),
             );
         }
 
@@ -269,7 +276,7 @@ const NumberOfHospitalizationsBaseOnDepartment: React.FC<NumberOfHospitalization
     const activeFilterCount = useMemo(() => {
         let count = 0;
 
-        if (tableSettings.departmentFilter) {
+        if (tableSettings.departmentFilters.length > 0) {
             count += 1;
         }
         if (tableSettings.hideZeroRows) {

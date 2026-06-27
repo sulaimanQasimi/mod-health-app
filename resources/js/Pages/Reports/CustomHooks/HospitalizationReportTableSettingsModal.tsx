@@ -1,5 +1,6 @@
 import { Button, Checkbox, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'flowbite-react';
 import { useEffect, useMemo, useState } from 'react';
+import SearchableMultiSelect from '../../../Components/ui/SearchableMultiSelect';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import {
@@ -59,11 +60,6 @@ export default function HospitalizationReportTableSettingsModal({
             { value: '1', label: t('global.yes') },
         ],
         [t],
-    );
-
-    const departmentSelectOptions = useMemo(
-        () => [{ value: '', label: t('global.all') }, ...departmentOptions],
-        [departmentOptions, t],
     );
 
     const sortOptions = useMemo(
@@ -290,6 +286,7 @@ export default function HospitalizationReportTableSettingsModal({
                                     }
                                     options={sortOptions}
                                     placeholder={t('global.sort_by')}
+                                    searchPlaceholder={t('global.search')}
                                 />
                             </div>
                             <div>
@@ -325,18 +322,18 @@ export default function HospitalizationReportTableSettingsModal({
                     <section className="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
                         <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Row filters</h3>
                         <div className="mt-4 grid gap-4 md:grid-cols-2">
-                            <div>
+                            <div className="md:col-span-2">
                                 <Label className="mb-2 block">{t('global.department')}</Label>
-                                <SearchableSelect
-                                    value={draft.departmentFilter}
-                                    onChange={(value) =>
+                                <SearchableMultiSelect
+                                    values={draft.departmentFilters}
+                                    onChange={(values) =>
                                         setDraft((current) => ({
                                             ...current,
-                                            departmentFilter: value,
+                                            departmentFilters: values,
                                         }))
                                     }
-                                    options={departmentSelectOptions}
-                                    placeholder={t('global.select')}
+                                    options={departmentOptions}
+                                    placeholder={t('global.all')}
                                     searchPlaceholder={t('global.search')}
                                 />
                             </div>
@@ -369,6 +366,7 @@ export default function HospitalizationReportTableSettingsModal({
                                     }
                                     options={yesNoOptions}
                                     placeholder={t('global.select')}
+                                    searchPlaceholder={t('global.search')}
                                 />
                             </div>
                             <div>
@@ -383,6 +381,7 @@ export default function HospitalizationReportTableSettingsModal({
                                     }
                                     options={yesNoOptions}
                                     placeholder={t('global.select')}
+                                    searchPlaceholder={t('global.search')}
                                 />
                             </div>
                         </div>

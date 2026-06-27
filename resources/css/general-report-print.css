@@ -112,6 +112,17 @@
         transform: none !important;
         opacity: 1 !important;
         transition: none !important;
+        page-break-before: auto;
+        page-break-after: auto;
+        break-before: auto;
+        break-after: auto;
+    }
+
+    .general-report-table-root {
+        page-break-before: auto;
+        page-break-after: auto;
+        break-before: auto;
+        break-after: auto;
     }
 
     .general-report-slots,
@@ -138,17 +149,20 @@
         font-size: 6.5pt !important;
         line-height: 1.15 !important;
         margin: 0 !important;
+        page-break-before: auto;
         page-break-after: auto;
+        break-before: auto;
+        break-after: auto;
     }
 
-    .general-report-data-table + .general-report-data-table,
-    .general-report-table-root + .general-report-table-root {
-        page-break-before: always;
-    }
-
-    .general-report-slot + .general-report-slot,
-    .general-report-widget-wrap + .general-report-widget-wrap {
-        page-break-before: always;
+    .general-report-widget-wrap + .general-report-widget-wrap,
+    .general-report-table-root + .general-report-table-root,
+    .general-report-header-root + .general-report-widget-wrap,
+    .general-report-header-root + .general-report-table-root,
+    .general-report-widget-wrap + .general-report-table-root,
+    .general-report-table-root + .general-report-widget-wrap,
+    .general-report-header-root + .general-report-header-root {
+        margin-top: 4mm !important;
     }
 
     .general-report-data-table thead {
@@ -162,7 +176,12 @@
     .general-report-data-table tr {
         display: table-row !important;
         page-break-inside: avoid;
-        break-inside: avoid;
+        break-inside: avoid-page;
+    }
+
+    .general-report-data-table tbody tr {
+        page-break-inside: auto;
+        break-inside: auto;
     }
 
     .general-report-data-table th,

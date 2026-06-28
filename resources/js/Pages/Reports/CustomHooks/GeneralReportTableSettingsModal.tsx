@@ -20,6 +20,8 @@ interface GeneralReportTableSettingsModalProps {
     minTotalOptions: Array<{ value: string; label: string }>;
     onClose: () => void;
     onApply: (settings: GeneralReportTableSettings) => void;
+    rowFilterLabel?: string;
+    primarySortLabel?: string;
 }
 
 function moveItem<T>(items: T[], index: number, direction: 'up' | 'down'): T[] {
@@ -41,9 +43,13 @@ export default function GeneralReportTableSettingsModal({
     minTotalOptions,
     onClose,
     onApply,
+    rowFilterLabel,
+    primarySortLabel,
 }: GeneralReportTableSettingsModalProps) {
     const { t } = useTranslation();
     const [draft, setDraft] = useState<GeneralReportTableSettings>(settings);
+    const resolvedRowFilterLabel = rowFilterLabel ?? t('global.department');
+    const resolvedPrimarySortLabel = primarySortLabel ?? t('global.department');
 
     useEffect(() => {
         if (open) {
@@ -61,14 +67,14 @@ export default function GeneralReportTableSettingsModal({
 
     const sortOptions = useMemo(
         () => [
-            { value: 'department', label: t('global.department') },
+            { value: 'department', label: resolvedPrimarySortLabel },
             { value: 'total', label: t('global.total') },
             ...allColumns.map((column) => ({
                 value: `column:${column.id}`,
                 label: `${column.groupTitle} / ${column.name}`,
             })),
         ],
-        [allColumns, t],
+        [allColumns, resolvedPrimarySortLabel, t],
     );
 
     const toggleColumnVisibility = (columnId: string) => {
@@ -321,7 +327,7 @@ export default function GeneralReportTableSettingsModal({
                         <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Row filters</h3>
                         <div className="mt-4 grid gap-4 md:grid-cols-2">
                             <div className="md:col-span-2">
-                                <Label className="mb-2 block">{t('global.department')}</Label>
+                                <Label className="mb-2 block">{resolvedRowFilterLabel}</Label>
                                 <SearchableMultiSelect
                                     values={draft.departmentFilters}
                                     onChange={(values) =>

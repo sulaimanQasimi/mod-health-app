@@ -853,4 +853,6 @@ Route::prefix("/api")->name("api.")->group(function () {
      Route::get("/reports/general/number-of-patients-base-on-department", [GenralReport::class, "number_of_patients_base_on_department"])->name("reports.general.number-of-patients-base-on-department");
      Route::get("/reports/general/number-of-patients-base-on-patient-militery-types", [GenralReport::class, "number_of_patients_base_on_patient_militery_types"])->name("reports.general.number-of-patients-base-on-patient-militery-types");
      Route::get("/reports/general/hospitalization", [GenralReport::class, "hospitalization"])->name("reports.general.hospitalization");
+     Route::get("/reports/general/patient-test-registrations", [GenralReport::class, "patient_test_registrations"])->name("reports.general.patient-test-registrations");
+     Route::get("/reports/general/prescriptions", [GenralReport::class, "prescriptions"])->name("reports.general.prescriptions");
 });

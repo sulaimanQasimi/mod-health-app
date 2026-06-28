@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Branch;
 use App\Models\Hospitalization;
+use App\Models\ICU;
+use App\Models\PatientTestRegistration;
+use App\Models\PrescriptionItem;
+use App\Models\UnderReview;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -189,6 +193,194 @@ class GenralReport extends Controller
             'message' => 'Hospitalization report fetched successfully',
             'data' => $data,
         ]);
+    }
+
+    public function patient_test_registrations(Request $request)
+    {
+        $rows = $this->patientTestRegistrationReportQuery($request)
+            ->leftJoin('militery_types', 'patients.militery_type_id', '=', 'militery_types.id')
+            ->leftJoin('relations', 'patients.relation_id', '=', 'relations.id')
+            ->selectRaw('
+                patient_test_registrations.lab_type_id,
+                lab_types.name as test_name,
+                patients.gender,
+                patients.job_category,
+                patients.job_type,
+                patients.type as patient_type,
+                appointments.clinic_type,
+                patients.militery_type_id,
+                militery_types.name as militery_type_name,
+                patients.relation_id,
+                relations.name as relation_name,
+                patients.commanded_by,
+                COUNT(*) as count
+            ')
+            ->groupBy(
+                'patient_test_registrations.lab_type_id',
+                'lab_types.name',
+                'patients.gender',
+                'patients.job_category',
+                'patients.job_type',
+                'patients.type',
+                'appointments.clinic_type',
+                'patients.militery_type_id',
+                'militery_types.name',
+                'patients.relation_id',
+                'relations.name',
+                'patients.commanded_by',
+            )
+            ->orderBy('lab_types.name')
+            ->get();
+
+        $data = $rows
+            ->groupBy('lab_type_id')
+            ->map(function (Collection $testRows) {
+                $first = $testRows->first();
+
+                return [
+                    'lab_type_id' => $first->lab_type_id,
+                    'test_name' => $first->test_name,
+                    'count' => (int) $testRows->sum('count'),
+                    'genders' => $this->aggregateBreakdown($testRows, 'gender'),
+                    'job_categories' => $this->aggregateBreakdown($testRows, 'job_category'),
+                    'job_types' => $this->aggregateBreakdown($testRows, 'job_type'),
+                    'patient_types' => $this->aggregateBreakdown($testRows, 'patient_type'),
+                    'clinic_types' => $this->aggregateBreakdown($testRows, 'clinic_type'),
+                    'militery_types' => $this->aggregateBreakdown($testRows, 'militery_type_id', 'militery_type_name'),
+                    'relations' => $this->aggregateBreakdown($testRows, 'relation_id', 'relation_name'),
+                    'commanded_by' => $this->aggregateBreakdown(
+                        $testRows,
+                        'commanded_by',
+                        'commanded_by',
+                        fn ($value) => filled($value),
+                    ),
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Patient test registration report fetched successfully',
+            'data' => $data,
+        ]);
+    }
+
+    public function prescriptions(Request $request)
+    {
+        $rows = $this->prescriptionReportQuery($request)
+            ->leftJoin('militery_types', 'patients.militery_type_id', '=', 'militery_types.id')
+            ->leftJoin('relations', 'patients.relation_id', '=', 'relations.id')
+            ->selectRaw('
+                prescription_items.medicine_id,
+                medicines.name as medicine_name,
+                patients.gender,
+                patients.job_category,
+                patients.job_type,
+                patients.type as patient_type,
+                appointments.clinic_type,
+                patients.militery_type_id,
+                militery_types.name as militery_type_name,
+                patients.relation_id,
+                relations.name as relation_name,
+                patients.commanded_by,
+                COUNT(*) as count
+            ')
+            ->groupBy(
+                'prescription_items.medicine_id',
+                'medicines.name',
+                'patients.gender',
+                'patients.job_category',
+                'patients.job_type',
+                'patients.type',
+                'appointments.clinic_type',
+                'patients.militery_type_id',
+                'militery_types.name',
+                'patients.relation_id',
+                'relations.name',
+                'patients.commanded_by',
+            )
+            ->orderBy('medicines.name')
+            ->get();
+
+        $data = $rows
+            ->groupBy('medicine_id')
+            ->map(function (Collection $medicineRows) {
+                $first = $medicineRows->first();
+
+                return [
+                    'medicine_id' => $first->medicine_id,
+                    'medicine_name' => $first->medicine_name,
+                    'count' => (int) $medicineRows->sum('count'),
+                    'genders' => $this->aggregateBreakdown($medicineRows, 'gender'),
+                    'job_categories' => $this->aggregateBreakdown($medicineRows, 'job_category'),
+                    'job_types' => $this->aggregateBreakdown($medicineRows, 'job_type'),
+                    'patient_types' => $this->aggregateBreakdown($medicineRows, 'patient_type'),
+                    'clinic_types' => $this->aggregateBreakdown($medicineRows, 'clinic_type'),
+                    'militery_types' => $this->aggregateBreakdown($medicineRows, 'militery_type_id', 'militery_type_name'),
+                    'relations' => $this->aggregateBreakdown($medicineRows, 'relation_id', 'relation_name'),
+                    'commanded_by' => $this->aggregateBreakdown(
+                        $medicineRows,
+                        'commanded_by',
+                        'commanded_by',
+                        fn ($value) => filled($value),
+                    ),
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Prescription report fetched successfully',
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * @return Builder<PrescriptionItem>
+     */
+    private function prescriptionReportQuery(Request $request): Builder
+    {
+        return PrescriptionItem::query()
+            ->join('prescriptions', 'prescription_items.prescription_id', '=', 'prescriptions.id')
+            ->leftJoin('medicines', 'prescription_items.medicine_id', '=', 'medicines.id')
+            ->leftJoin('patients', 'prescriptions.patient_id', '=', 'patients.id')
+            ->leftJoin('appointments', 'prescriptions.appointment_id', '=', 'appointments.id')
+            ->when($request->filled('date_from'), fn ($query) => $query->where('prescriptions.created_at', '>=', Verta::parse($request->date_from)->datetime()))
+            ->when($request->filled('date_to'), fn ($query) => $query->where('prescriptions.created_at', '<=', Verta::parse($request->date_to)->datetime()))
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('prescriptions.branch_id', $request->branch_id));
+    }
+
+    /**
+     * @return Builder<PatientTestRegistration>
+     */
+    private function patientTestRegistrationReportQuery(Request $request): Builder
+    {
+        $icuTable = (new ICU)->getTable();
+
+        return PatientTestRegistration::query()
+            ->leftJoin('lab_types', 'patient_test_registrations.lab_type_id', '=', 'lab_types.id')
+            ->leftJoin('appointments', function ($join) {
+                $join->on('patient_test_registrations.testable_id', '=', 'appointments.id')
+                    ->where('patient_test_registrations.testable_type', '=', Appointment::class);
+            })
+            ->leftJoin('hospitalizations', function ($join) {
+                $join->on('patient_test_registrations.testable_id', '=', 'hospitalizations.id')
+                    ->where('patient_test_registrations.testable_type', '=', Hospitalization::class);
+            })
+            ->leftJoin('under_reviews', function ($join) {
+                $join->on('patient_test_registrations.testable_id', '=', 'under_reviews.id')
+                    ->where('patient_test_registrations.testable_type', '=', UnderReview::class);
+            })
+            ->leftJoin($icuTable, function ($join) use ($icuTable) {
+                $join->on('patient_test_registrations.testable_id', '=', "{$icuTable}.id")
+                    ->where('patient_test_registrations.testable_type', '=', ICU::class);
+            })
+            ->leftJoin('patients', function ($join) use ($icuTable) {
+                $join->whereRaw("patients.id = COALESCE(appointments.patient_id, hospitalizations.patient_id, under_reviews.patient_id, {$icuTable}.patient_id)");
+            })
+            ->when($request->filled('date_from'), fn ($query) => $query->where('patient_test_registrations.registration_date', '>=', Verta::parse($request->date_from)->datetime()))
+            ->when($request->filled('date_to'), fn ($query) => $query->where('patient_test_registrations.registration_date', '<=', Verta::parse($request->date_to)->datetime()))
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('patient_test_registrations.branch_id', $request->branch_id));
     }
 
     /**

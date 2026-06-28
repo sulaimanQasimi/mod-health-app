@@ -29,6 +29,8 @@ import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import NumberOfPatientTestRegistrations from './CustomHooks/NumberOfPatientTestRegistrations';
+import NumberOfPrescriptions from './CustomHooks/NumberOfPrescriptions';
 import NumberOfHospitalizationsBaseOnDepartment from './CustomHooks/NumberOfHospitalizationsBaseOnDepartment';
 import NumberOfPatientsBaseOnDepartment from './CustomHooks/NumberOfPatientsBaseOnDepartment';
 import NumberOfPatientsBaseOnPatientMiliteryTypes from './CustomHooks/NumberOfPatientsBaseOnPatientMiliteryTypes';
@@ -37,7 +39,14 @@ import GeneralReportTitle from './CustomHooks/GeneralReportTitle';
 import { createDefaultHeaderSettings, ReportHeaderSettings } from './CustomHooks/generalReportHeaderSettings';
 import { createDefaultTitleSettings, ReportTitleSettings } from './CustomHooks/generalReportTitleSettings';
 
-type ReportWidgetType = 'department' | 'militery-types' | 'hospitalization' | 'header' | 'title';
+type ReportWidgetType =
+    | 'department'
+    | 'militery-types'
+    | 'hospitalization'
+    | 'patient-test-registrations'
+    | 'prescriptions'
+    | 'header'
+    | 'title';
 
 interface BranchOption {
     id: number;
@@ -94,6 +103,14 @@ const WIDGET_CATALOG: Record<ReportWidgetType, { labelKey: string; icon: string 
     hospitalization: {
         labelKey: 'global.hospitalization',
         icon: 'bx-bed',
+    },
+    'patient-test-registrations': {
+        labelKey: 'global.patient_test_registrations',
+        icon: 'bx-test-tube',
+    },
+    prescriptions: {
+        labelKey: 'global.prescriptions',
+        icon: 'bx-capsule',
     },
     header: {
         labelKey: 'global.header',
@@ -810,6 +827,14 @@ export default function GeneralReport({
 
         if (widget.type === 'hospitalization') {
             return <NumberOfHospitalizationsBaseOnDepartment {...filterProps} />;
+        }
+
+        if (widget.type === 'patient-test-registrations') {
+            return <NumberOfPatientTestRegistrations {...filterProps} />;
+        }
+
+        if (widget.type === 'prescriptions') {
+            return <NumberOfPrescriptions {...filterProps} />;
         }
 
         return <NumberOfPatientsBaseOnPatientMiliteryTypes {...filterProps} />;

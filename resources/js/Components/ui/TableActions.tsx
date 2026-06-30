@@ -7,7 +7,11 @@ interface TableActionsProps {
 }
 
 export function TableActions({ children, className }: TableActionsProps) {
-    return <div className={className ?? 'flex justify-center gap-1'}>{children}</div>;
+    return (
+        <div className={className ?? 'inline-flex flex-nowrap items-center justify-center gap-0.5'}>
+            {children}
+        </div>
+    );
 }
 
 interface TableActionsCellProps {

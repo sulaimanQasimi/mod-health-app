@@ -1,14 +1,9 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import {
-    AppointmentActionGroup,
-    AppointmentIconAnchor,
-    AppointmentIconButton,
-    AppointmentIconLink,
-} from '../../Components/Appointments/AppointmentTableActions';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
+import TableActionButton from '../../Components/ui/TableActionButton';
 import {
     Table,
     TableBody,
@@ -17,6 +12,7 @@ import {
     TableHeader,
     TableRow,
 } from '../../Components/ui/Table';
+import { TableActionsCell } from '../../Components/ui/TableActions';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
     AppointmentIndexFilterOptions,
@@ -370,7 +366,9 @@ export default function IndexAppointment({
                                 <TableHeader>{t('global.phone')}</TableHeader>
                                 <TableHeader>{t('global.status')}</TableHeader>
                                 <TableHeader>{t('global.processed_by')}</TableHeader>
-                                <TableHeader align="center">{t('global.actions')}</TableHeader>
+                                <TableHeader align="center" className="min-w-[9rem]">
+                                    {t('global.actions')}
+                                </TableHeader>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -414,42 +412,32 @@ export default function IndexAppointment({
                                             </Badge>
                                         </TableCell>
                                         <TableCell muted>{appointment.processed_by ?? '—'}</TableCell>
-                                        <TableCell align="center">
-                                            <AppointmentActionGroup>
-                                                {appointment.permissions.view && (
-                                                    <AppointmentIconLink
-                                                        href={`${urls.show}/${appointment.id}`}
-                                                        icon="bx-expand"
-                                                        title={t('global.view')}
-                                                        variant="view"
-                                                    />
-                                                )}
-                                                {appointment.permissions.history && appointment.patient_id && (
-                                                    <AppointmentIconAnchor
-                                                        href={`${urls.patientHistory}/${appointment.patient_id}`}
-                                                        icon="bx-history"
-                                                        title={t('global.history')}
-                                                        variant="history"
-                                                    />
-                                                )}
-                                                {appointment.permissions.edit && (
-                                                    <AppointmentIconLink
-                                                        href={`${urls.edit}/${appointment.id}/edit`}
-                                                        icon="bx-edit"
-                                                        title={t('global.edit')}
-                                                        variant="edit"
-                                                    />
-                                                )}
-                                                {appointment.permissions.delete && (
-                                                    <AppointmentIconButton
-                                                        icon="bx-trash"
-                                                        title={t('global.delete')}
-                                                        variant="delete"
-                                                        onClick={() => handleDelete(appointment.id)}
-                                                    />
-                                                )}
-                                            </AppointmentActionGroup>
-                                        </TableCell>
+                                        <TableActionsCell className="whitespace-nowrap">
+                                            <TableActionButton
+                                                kind="view"
+                                                href={`${urls.show}/${appointment.id}`}
+                                            />
+                                            <TableActionButton
+                                                kind="custom"
+                                                href={`${urls.patientHistory}/${appointment.patient_id}`}
+                                                external
+                                                icon="bx-history"
+                                                title={t('global.history')}
+                                                permission={Boolean(appointment.patient_id)}
+                                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-violet-600 hover:bg-violet-50 dark:text-violet-400 dark:hover:bg-violet-900/30"
+                                            />
+                                            <TableActionButton
+                                                kind="edit"
+                                                href={`${urls.edit}/${appointment.id}/edit`}
+                                                permission={permissions.edit}
+                                            />
+                                            <TableActionButton
+                                                kind="delete"
+                                                permission={permissions.delete}
+                                                confirm={t('global.are_you_sure')}
+                                                onClick={() => handleDelete(appointment.id)}
+                                            />
+                                        </TableActionsCell>
                                     </TableRow>
                                 ))
                             )}

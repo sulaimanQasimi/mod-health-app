@@ -51,6 +51,7 @@ class AppointmentController extends Controller
                 'doctor:id,name',
                 'department:id,name',
                 'processedBy:id,name,last_name',
+                'creator:id,name,last_name',
             ]);
 
         if ($request->filled('patient_name')) {
@@ -109,15 +110,15 @@ class AppointmentController extends Controller
             $filters[$key] = (string) $request->input($key, '');
         }
 
-        $canViewPatient = fn ($patient) => $patient && $user->can('view', $patient);
+        $canViewListedAppointments = $user->can('viewAny', Appointment::class);
 
         return Inertia::render('Appointments/Index', [
             'appointments' => [
                 'data' => collect($paginator->items())
                     ->map(fn (Appointment $appointment) => $this->transformAppointmentForIndex(
                         $appointment,
-                        $user->can('view', $appointment),
-                        $canViewPatient($appointment->patient),
+                        $canViewListedAppointments,
+                        $canViewListedAppointments && (bool) $appointment->patient_id,
                         $user->can('update', $appointment),
                         $user->can('delete', $appointment),
                     ))
@@ -1052,9 +1053,14 @@ class AppointmentController extends Controller
         bool $canDelete = false,
     ): array {
         $processor = $appointment->processedBy;
-        $processedBy = $processor
+        $creator = $appointment->creator;
+        $processedByName = $processor
             ? trim("{$processor->name} {$processor->last_name}")
             : null;
+        $registeredByName = $creator
+            ? trim("{$creator->name} {$creator->last_name}")
+            : null;
+        $processedBy = $processedByName ?: $registeredByName;
 
         return [
             'id' => $appointment->id,
@@ -1068,7 +1074,7 @@ class AppointmentController extends Controller
             'date' => $appointment->date ? verta($appointment->date)->format('Y-m-d') : null,
             'time' => $appointment->time,
             'is_completed' => (bool) $appointment->is_completed,
-            'processed_by' => $processedBy,
+            'processed_by' => $processedBy ?: null,
             'permissions' => [
                 'view' => $canView,
                 'history' => $canViewHistory,

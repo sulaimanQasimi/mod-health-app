@@ -8,6 +8,14 @@ interface AppointmentPageHeaderProps {
     action?: ReactNode;
 }
 
+export function AppointmentPageActions({ children }: { children: ReactNode }) {
+    return (
+        <div className="flex w-full flex-wrap items-center justify-start gap-2 sm:w-auto sm:justify-end">
+            {children}
+        </div>
+    );
+}
+
 export default function AppointmentPageHeader({
     title,
     subtitle,
@@ -30,7 +38,7 @@ export default function AppointmentPageHeader({
                     )}
                 </div>
             </div>
-            {action && <div className="flex flex-wrap gap-2">{action}</div>}
+            {action}
         </div>
     );
 }

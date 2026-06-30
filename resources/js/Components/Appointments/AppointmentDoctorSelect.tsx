@@ -77,7 +77,7 @@ export default function AppointmentDoctorSelect({
     };
 
     return (
-        <div className="min-w-[200px]">
+        <div className="w-full sm:w-auto sm:max-w-[220px]">
             <div className="relative">
                 <select
                     value={selectedDoctorId}

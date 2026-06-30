@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import {
@@ -25,9 +25,8 @@ import {
     UnderReviewSection,
 } from '../../Components/Appointments/Sections';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import AppointmentDoctorSelect from '../../Components/Appointments/AppointmentDoctorSelect';
 import AppointmentPageHeader from '../../Components/Appointments/AppointmentPageHeader';
-import BackLink from '../../Components/ui/BackLink';
+import AppointmentShowHeaderActions from '../../Components/Appointments/AppointmentShowHeaderActions';
 import { useTranslation } from '../../hooks/useTranslation';
 
 interface ShowAppointmentHeader {
@@ -126,52 +125,13 @@ export default function ShowAppointment({
                         subtitle={`#${id}`}
                         icon="bx-calendar-check"
                         action={
-                            <>
-                                <AppointmentDoctorSelect
-                                    departmentId={appointment.department_id}
-                                    doctorId={appointment.doctor_id}
-                                    canChangeDoctor={appointment.can_change_doctor}
-                                    isCompleted={appointment.is_completed}
-                                    isProcessed={appointment.is_processed}
-                                    doctorReassigned={appointment.doctor_reassigned}
-                                    doctorsByDepartmentUrl={formData.doctorsByDepartment}
-                                    assignUrl={urls.assignDoctor}
-                                />
-                                {appointment.is_completed ? (
-                                    <Badge color="success">{t('global.appointment_completed')}</Badge>
-                                ) : (
-                                    <>
-                                        {permissions.complete && (
-                                            <Button
-                                                type="button"
-                                                size="sm"
-                                                color="blue"
-                                                onClick={() => setCompleteOpen(true)}
-                                            >
-                                                <i className="bx bx-check-shield me-2" />
-                                                {t('global.complete_appointment')}
-                                            </Button>
-                                        )}
-                                        {permissions.printToken && (
-                                            <a href={urls.printToken} target="_blank" rel="noopener noreferrer">
-                                                <Button size="sm" color="success">
-                                                    <i className="bx bx-printer me-2" />
-                                                    {t('global.token')}
-                                                </Button>
-                                            </a>
-                                        )}
-                                    </>
-                                )}
-                                {permissions.edit && (
-                                    <Link href={urls.edit}>
-                                        <Button size="sm" color="light">
-                                            <i className="bx bx-edit me-2" />
-                                            {t('global.edit')}
-                                        </Button>
-                                    </Link>
-                                )}
-                                <BackLink href={urls.index}>{t('global.back')}</BackLink>
-                            </>
+                            <AppointmentShowHeaderActions
+                                appointment={appointment}
+                                permissions={permissions}
+                                formData={formData}
+                                urls={urls}
+                                onCompleteClick={() => setCompleteOpen(true)}
+                            />
                         }
                     />
 

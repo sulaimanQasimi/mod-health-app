@@ -180,7 +180,7 @@ export default function ShowNephrologyRegistration({
                     </div>
 
                     {permissions.markStatus && (
-                        <div className="mt-4 flex flex-wrap justify-center gap-2">
+                        <div className="mt-4 flex flex-wrap justify-end gap-2 dark:text-white">
                             {registration.status !== 'completed' && (
                                 <Button
                                     size="sm"

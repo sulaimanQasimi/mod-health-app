@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import {
     Badge,
     Button,
@@ -15,6 +15,7 @@ import {
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import LabTestSection from '../../Components/Appointments/Sections/LabTestSection';
 import PrescriptionSection from '../../Components/Appointments/Sections/PrescriptionSection';
+import DentalChartPanel from '../../Components/DentalCharts/DentalChartPanel';
 import DentistRegistrationStatusBadge from '../../Components/DentistRegistrations/DentistRegistrationStatusBadge';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
@@ -528,88 +529,17 @@ export default function ShowDentistRegistration({
                         )}
 
                         {activeTab === 'dental_chart' && (
-                            <div className="space-y-4">
-                                <div className="flex flex-wrap gap-2">
-                                    {urls.chartIndex && (
-                                        <Button as={Link} href={urls.chartIndex} color="light" size="sm">
-                                            <i className="bx bx-list-ul me-2" />
-                                            {t('global.dental_chart')}
-                                        </Button>
-                                    )}
-                                    {urls.chartHistory && (
-                                        <Button as={Link} href={urls.chartHistory} color="light" size="sm">
-                                            <i className="bx bx-history me-2" />
-                                            {t('global.history')}
-                                        </Button>
-                                    )}
-                                    {urls.chartCompare && (
-                                        <Button as={Link} href={urls.chartCompare} color="light" size="sm">
-                                            <i className="bx bx-git-compare me-2" />
-                                            {t('global.compare_dates')}
-                                        </Button>
-                                    )}
-                                    {urls.chartPrint && (
-                                        <Button as="a" href={urls.chartPrint} target="_blank" color="light" size="sm">
-                                            <i className="bx bx-printer me-2" />
-                                            {t('global.print')}
-                                        </Button>
-                                    )}
-                                    {urls.chartExport && (
-                                        <Button as="a" href={urls.chartExport} color="light" size="sm">
-                                            <i className="bx bx-download me-2" />
-                                            {t('global.export_pdf')}
-                                        </Button>
-                                    )}
-                                    {urls.chartCreate && (
-                                        <Button as={Link} href={urls.chartCreate} color="blue" size="sm">
-                                            <i className="bx bx-plus me-2" />
-                                            {t('global.add_tooth_record')}
-                                        </Button>
-                                    )}
-                                </div>
-
-                                {registration.chart_entries.length > 0 ? (
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow variant="header">
-                                                <TableHeader>{t('global.tooth_number')}</TableHeader>
-                                                <TableHeader>{t('global.condition')}</TableHeader>
-                                                <TableHeader>{t('global.gum_health')}</TableHeader>
-                                                <TableHeader>{t('global.chart_date')}</TableHeader>
-                                                <TableHeader align="center">{t('global.actions')}</TableHeader>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {registration.chart_entries.map((item) => (
-                                                <TableRow key={item.id}>
-                                                    <TableCell>FDI {item.tooth_number}</TableCell>
-                                                    <TableCell>{item.tooth_condition ?? '—'}</TableCell>
-                                                    <TableCell>{item.gum_health ?? '—'}</TableCell>
-                                                    <TableCell muted dir="ltr">
-                                                        {item.chart_date ?? '—'}
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <Button
-                                                            as={Link}
-                                                            href={item.edit_url}
-                                                            size="xs"
-                                                            color="warning"
-                                                        >
-                                                            <i className="bx bx-edit" />
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                ) : (
-                                    <p className="text-center text-sm text-gray-500">{t('global.no_charts_found')}</p>
-                                )}
-
-                                <p className="text-center text-xs text-gray-500">
-                                    {t('global.visual_tooth_chart')}
-                                </p>
-                            </div>
+                            <DentalChartPanel
+                                chartEntries={registration.chart_entries}
+                                canEdit={permissions.edit}
+                                urls={{
+                                    chartStore: urls.chartStore ?? null,
+                                    chartHistory: urls.chartHistory ?? null,
+                                    chartCompare: urls.chartCompare ?? null,
+                                    chartPrint: urls.chartPrint ?? null,
+                                    chartExport: urls.chartExport ?? null,
+                                }}
+                            />
                         )}
                     </div>
                 </div>

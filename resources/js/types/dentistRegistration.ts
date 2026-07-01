@@ -91,8 +91,17 @@ export interface DentalChartEntry {
     pocket_depth: string | number | null;
     bleeding: boolean;
     mobility: string | null;
+    treatment_history: string | null;
+    notes: string | null;
     chart_date: string | null;
+    implant_system_brand: string | null;
+    implant_diameter: string | number | null;
+    implant_length: string | number | null;
+    implant_status: string | null;
+    implant_notes: string | null;
     edit_url: string;
+    update_url: string;
+    destroy_url: string;
 }
 
 export interface DentistRegistrationDetail {

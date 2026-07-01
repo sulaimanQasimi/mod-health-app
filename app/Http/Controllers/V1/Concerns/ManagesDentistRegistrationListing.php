@@ -259,6 +259,8 @@ trait ManagesDentistRegistrationListing
 
     protected function transformChartEntry(DentalChart $chart): array
     {
+        $implant = $chart->implant_details;
+
         return [
             'id' => $chart->id,
             'tooth_number' => $chart->tooth_number,
@@ -268,8 +270,17 @@ trait ManagesDentistRegistrationListing
             'pocket_depth' => $chart->pocket_depth,
             'bleeding' => (bool) $chart->bleeding,
             'mobility' => $chart->mobility,
+            'treatment_history' => $chart->treatment_history,
+            'notes' => $chart->notes,
             'chart_date' => $chart->chart_date ? verta($chart->chart_date)->format('Y-m-d') : null,
+            'implant_system_brand' => $implant['implant_system_brand'] ?? null,
+            'implant_diameter' => $implant['implant_diameter'] ?? null,
+            'implant_length' => $implant['implant_length'] ?? null,
+            'implant_status' => $implant['implant_status'] ?? null,
+            'implant_notes' => $implant['implant_notes'] ?? null,
             'edit_url' => route('react.dental-charts.edit', $chart->id),
+            'update_url' => route('react.dental-charts.update', $chart->id),
+            'destroy_url' => route('react.dental-charts.destroy', $chart->id),
         ];
     }
 

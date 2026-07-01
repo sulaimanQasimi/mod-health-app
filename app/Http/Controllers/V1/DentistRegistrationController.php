@@ -301,6 +301,7 @@ class DentistRegistrationController extends Controller
                 : null,
             'chartIndex' => route('react.dental-charts.index', $dentistRegistration),
             'chartCreate' => route('react.dental-charts.create', $dentistRegistration),
+            'chartStore' => route('react.dental-charts.store', $dentistRegistration),
             'chartHistory' => route('react.dental-charts.history', $dentistRegistration),
             'chartCompare' => route('react.dental-charts.compare', $dentistRegistration),
             'chartPrint' => route('react.dental-charts.print', $dentistRegistration),

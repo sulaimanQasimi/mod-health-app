@@ -42,7 +42,7 @@ export default function CreateDentalChart({ registration, urls }: CreateDentalCh
                     backLabel={t('global.back')}
                 />
                 <Card className="shadow-sm">
-                    <h2 className="mb-4 text-sm font-semibold">{t('global.chart_information')}</h2>
+                    <h2 className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">{t('global.chart_information')}</h2>
                     <DentalChartForm
                         form={form}
                         processing={processing}

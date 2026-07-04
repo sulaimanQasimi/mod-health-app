@@ -77,10 +77,10 @@ export default function DentalChartForm({
 
                 {isImplant && (
                     <div className="md:col-span-2 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/40">
-                        <h3 className="mb-3 font-semibold">{t('global.implant')}</h3>
+                        <h3 className="mb-3 font-semibold text-gray-900 dark:text-white">{t('global.implant')}</h3>
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
-                                <Label>Implant System/Brand</Label>
+                                <Label className="text-gray-900 dark:text-white">Implant System/Brand</Label>
                                 <TextInput
                                     value={form.implant_system_brand}
                                     onChange={(event) => setField('implant_system_brand', event.target.value)}

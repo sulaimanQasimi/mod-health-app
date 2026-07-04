@@ -98,7 +98,7 @@ export default function ShowNephrologyRegistration({
 
         runAction(() =>
             router.put(
-                urls.update,
+                urls.update!,
                 {
                     doctor_id: data.doctor_id ? Number(data.doctor_id) : null,
                     visit_date: data.visit_date,

@@ -6,6 +6,7 @@ import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
+import StatCard from '../../Components/ui/StatCard';
 import {
     Table,
     TableBody,
@@ -193,25 +194,33 @@ export default function PrescriptionsReport({
 
                 {hasSearch && (
                     <div className="grid gap-4 sm:grid-cols-3">
-                        {[
-                            { label: t('global.total'), value: summary.total, accent: 'from-emerald-500 to-teal-600' },
-                            { label: t('global.completed'), value: summary.completed, accent: 'from-blue-500 to-cyan-600' },
-                            { label: t('global.pending'), value: summary.pending, accent: 'from-amber-500 to-orange-600' },
-                        ].map((stat) => (
-                            <Card key={stat.label} className="overflow-hidden !shadow-sm">
-                                <div className="flex items-center gap-4">
-                                    <div
-                                        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${stat.accent} text-white shadow-md`}
-                                    >
-                                        <i className="bx bx-receipt text-xl" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500">{stat.label}</p>
-                                        <p className="text-2xl font-bold">{stat.value}</p>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
+                        <StatCard
+                            title={t('global.total')}
+                            value={summary.total}
+                            subtitle=""
+                            iconClass="bx bx-list-ul"
+                            iconBgClass="bg-blue-600"
+                            borderClass="border-blue-200 dark:border-blue-800"
+                            valueClass="text-blue-700 dark:text-blue-300"
+                        />
+                        <StatCard
+                            title={t('global.completed')}
+                            value={summary.completed}
+                            subtitle=""
+                            iconClass="bx bx-check-circle"
+                            iconBgClass="bg-emerald-600"
+                            borderClass="border-emerald-200 dark:border-emerald-800"
+                            valueClass="text-emerald-700 dark:text-emerald-300"
+                        />
+                        <StatCard
+                            title={t('global.pending')}
+                            value={summary.pending}
+                            subtitle=""
+                            iconClass="bx bx-time"
+                            iconBgClass="bg-amber-500"
+                            borderClass="border-amber-200 dark:border-amber-800"
+                            valueClass="text-amber-700 dark:text-amber-300"
+                        />
                     </div>
                 )}
 

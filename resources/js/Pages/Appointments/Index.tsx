@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import TableActionButton from '../../Components/ui/TableActionButton';
 import {
@@ -295,20 +296,18 @@ export default function IndexAppointment({
                                 </div>
                                 <div>
                                     <Label htmlFor="filter-date-from">{t('global.date_from')}</Label>
-                                    <TextInput
+                                    <PersianDateInput
                                         id="filter-date-from"
                                         value={filters.date_from}
-                                        placeholder="1400-01-01"
-                                        onChange={(event) => updateFilter('date_from', event.target.value)}
+                                        onChange={(value) => updateFilter('date_from', value)}
                                     />
                                 </div>
                                 <div>
                                     <Label htmlFor="filter-date-to">{t('global.date_to')}</Label>
-                                    <TextInput
+                                    <PersianDateInput
                                         id="filter-date-to"
                                         value={filters.date_to}
-                                        placeholder="1400-12-29"
-                                        onChange={(event) => updateFilter('date_to', event.target.value)}
+                                        onChange={(value) => updateFilter('date_to', value)}
                                     />
                                 </div>
                                 <div>

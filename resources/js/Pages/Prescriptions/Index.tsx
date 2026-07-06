@@ -213,6 +213,14 @@ export default function IndexPrescriptions({
                         className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
                     >
                         <div>
+                            <Label>{t('global.patient_id')}</Label>
+                            <TextInput
+                                value={filters.patient_id}
+                                onChange={(e) => setFilters({ ...filters, patient_id: e.target.value })}
+                                placeholder={t('global.search_by_patient_id')}
+                            />
+                        </div>
+                        <div>
                             <Label>{t('global.patient_name')}</Label>
                             <TextInput
                                 value={filters.patient_name}
@@ -234,14 +242,6 @@ export default function IndexPrescriptions({
                                 value={filters.father_name}
                                 onChange={(e) => setFilters({ ...filters, father_name: e.target.value })}
                                 placeholder={t('global.search_by_father_name')}
-                            />
-                        </div>
-                        <div>
-                            <Label>{t('global.patient_id')}</Label>
-                            <TextInput
-                                value={filters.patient_id}
-                                onChange={(e) => setFilters({ ...filters, patient_id: e.target.value })}
-                                placeholder={t('global.search_by_patient_id')}
                             />
                         </div>
                         <div>

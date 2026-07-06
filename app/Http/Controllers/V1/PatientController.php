@@ -24,6 +24,7 @@ class PatientController extends Controller
     use ManagesPatientReport;
     use PaginatesInertiaIndex;
     private const INDEX_FILTER_KEYS = [
+        'patient_id',
         'name',
         'father_name',
         'last_name',
@@ -49,6 +50,10 @@ class PatientController extends Controller
                 'district:id,name_dr',
                 'creator:id,name,last_name',
             ]);
+
+        if ($request->filled('patient_id')) {
+            $query->where('id', $request->patient_id);
+        }
 
         if ($request->filled('name')) {
             $query->where('name', 'like', '%'.$request->name.'%');

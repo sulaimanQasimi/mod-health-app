@@ -257,6 +257,7 @@ export interface PaginatedPatients {
 }
 
 export interface PatientIndexFilters {
+    patient_id: string;
     name: string;
     father_name: string;
     last_name: string;

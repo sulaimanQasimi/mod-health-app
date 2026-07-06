@@ -23,6 +23,7 @@ interface IndexPatientProps {
 }
 
 const EMPTY_FILTERS: PatientIndexFilters = {
+    patient_id: '',
     name: '',
     father_name: '',
     last_name: '',
@@ -200,6 +201,15 @@ export default function IndexPatient({
                         </h2>
                         <form onSubmit={handleFilterSubmit}>
                             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+                                <div>
+                                    <Label htmlFor="filter-patient-id">{t('global.patient_id')}</Label>
+                                    <TextInput
+                                        id="filter-patient-id"
+                                        value={filters.patient_id}
+                                        placeholder={t('global.search_by_patient_id')}
+                                        onChange={(event) => updateFilter('patient_id', event.target.value)}
+                                    />
+                                </div>
                                 <div>
                                     <Label htmlFor="filter-name">{t('global.name')}</Label>
                                     <TextInput

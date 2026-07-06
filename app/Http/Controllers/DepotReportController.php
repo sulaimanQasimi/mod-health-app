@@ -9,6 +9,7 @@ use App\Models\Medicine;
 use App\Models\Pharmacy;
 use App\Models\Tool;
 use App\Services\DepotStockService;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 use Mpdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -204,10 +205,16 @@ class DepotReportController extends Controller
             $query->where('status', $request->status);
         }
         if ($request->filled('date_from')) {
-            $query->whereDate('transaction_date', '>=', $request->date_from);
+            $dateFrom = $this->parseFilterDate($request->date_from);
+            if ($dateFrom) {
+                $query->whereDate('transaction_date', '>=', $dateFrom);
+            }
         }
         if ($request->filled('date_to')) {
-            $query->whereDate('transaction_date', '<=', $request->date_to);
+            $dateTo = $this->parseFilterDate($request->date_to);
+            if ($dateTo) {
+                $query->whereDate('transaction_date', '<=', $dateTo);
+            }
         }
 
         $this->applyAllowedDepotScopeToTransactions($query, $request);
@@ -229,10 +236,16 @@ class DepotReportController extends Controller
             $query->where('status', $request->status);
         }
         if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
+            $dateFrom = $this->parseFilterDate($request->date_from);
+            if ($dateFrom) {
+                $query->whereDate('created_at', '>=', $dateFrom);
+            }
         }
         if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
+            $dateTo = $this->parseFilterDate($request->date_to);
+            if ($dateTo) {
+                $query->whereDate('created_at', '<=', $dateTo);
+            }
         }
 
         $this->applyAllowedDepotScopeToRequests($query, $request);
@@ -314,5 +327,14 @@ class DepotReportController extends Controller
         }, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
+    }
+
+    private function parseFilterDate(string $value): ?string
+    {
+        try {
+            return Verta::parse($value)->datetime()->format('Y-m-d');
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

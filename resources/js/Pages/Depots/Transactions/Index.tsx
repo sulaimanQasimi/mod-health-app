@@ -8,6 +8,7 @@ import SettingsFilterActions from '../../../Components/Settings/SettingsFilterAc
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import PersianDateInput from '../../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../Components/ui/Table';
 import TableActionButton from '../../../Components/ui/TableActionButton';
@@ -235,18 +236,16 @@ export default function IndexDepotTransactions({
                         </div>
                         <div>
                             <Label>{t('global.date_from')}</Label>
-                            <TextInput
-                                type="date"
+                            <PersianDateInput
                                 value={filters.date_from}
-                                onChange={(event) => setFilters({ ...filters, date_from: event.target.value })}
+                                onChange={(value) => setFilters({ ...filters, date_from: value })}
                             />
                         </div>
                         <div>
                             <Label>{t('global.date_to')}</Label>
-                            <TextInput
-                                type="date"
+                            <PersianDateInput
                                 value={filters.date_to}
-                                onChange={(event) => setFilters({ ...filters, date_to: event.target.value })}
+                                onChange={(value) => setFilters({ ...filters, date_to: value })}
                             />
                         </div>
                         <div className="xl:col-span-4">

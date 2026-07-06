@@ -1,10 +1,11 @@
 import { Head } from '@inertiajs/react';
-import { Button, Card, Label, TextInput } from 'flowbite-react';
+import { Button, Card, Label } from 'flowbite-react';
 import { useState } from 'react';
 import DepotNavTabs from '../../../Components/Depots/DepotNavTabs';
 import { DEPOT_CARD_CLASS } from '../../../Components/Depots/depotUi';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import PersianDateInput from '../../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { DepotNavPermissions, DepotNavUrls } from '../../../types/depot';
@@ -186,22 +187,16 @@ export default function IndexDepotReports({
                                         )}
                                         <div>
                                             <Label>{t('global.date_from')}</Label>
-                                            <TextInput
-                                                type="date"
+                                            <PersianDateInput
                                                 value={filters.date_from}
-                                                onChange={(event) =>
-                                                    updateFilter(report.key, 'date_from', event.target.value)
-                                                }
+                                                onChange={(value) => updateFilter(report.key, 'date_from', value)}
                                             />
                                         </div>
                                         <div>
                                             <Label>{t('global.date_to')}</Label>
-                                            <TextInput
-                                                type="date"
+                                            <PersianDateInput
                                                 value={filters.date_to}
-                                                onChange={(event) =>
-                                                    updateFilter(report.key, 'date_to', event.target.value)
-                                                }
+                                                onChange={(value) => updateFilter(report.key, 'date_to', value)}
                                             />
                                         </div>
                                     </div>

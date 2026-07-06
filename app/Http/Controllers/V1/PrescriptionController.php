@@ -603,7 +603,7 @@ class PrescriptionController extends Controller
             'token_date' => $prescription->token_date ?? null,
             'department_name' => $prescription->appointment?->department?->name,
             'is_completed' => (bool) $prescription->is_completed,
-            'created_at' => $prescription->created_at?->toDateTimeString(),
+            'created_at' => $this->formatCreatedAt($prescription->created_at),
         ];
     }
 
@@ -616,7 +616,7 @@ class PrescriptionController extends Controller
             'doctor_name' => $prescription->doctor?->name ?? $prescription->appointment?->doctor?->name ?? '—',
             'pharmacy_name' => $prescription->pharmacy?->name,
             'is_completed' => (bool) $prescription->is_completed,
-            'created_at' => $prescription->created_at?->toDateTimeString(),
+            'created_at' => $this->formatCreatedAt($prescription->created_at),
             'items' => $prescription->prescriptionItems->map(fn (PrescriptionItem $item) => [
                 'id' => $item->id,
                 'medicine_name' => $item->medicine?->name ?? '—',
@@ -655,6 +655,19 @@ class PrescriptionController extends Controller
                 ])->values()->all(),
             ])->values()->all(),
         ];
+    }
+
+    private function formatCreatedAt(?\Illuminate\Support\Carbon $createdAt): ?string
+    {
+        if (! $createdAt) {
+            return null;
+        }
+
+        try {
+            return verta($createdAt)->format('Y/m/d H:i');
+        } catch (\Throwable) {
+            return $createdAt->toDateTimeString();
+        }
     }
 
     private function prescriptionPermissions($user): array

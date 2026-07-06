@@ -16,6 +16,7 @@ use App\Services\DepotRequestService;
 use App\Services\DepotRequestSourceResolver;
 use App\Support\DepotRequestContext;
 use App\Support\DepotRolePermissions;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -586,10 +587,18 @@ class DepotRequestController extends Controller
             $query->whereHas('items', fn ($q) => $q->where('tool_id', $request->tool_id));
         }
         if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
+            try {
+                $query->whereDate('created_at', '>=', Verta::parse($request->date_from)->datetime());
+            } catch (\Throwable) {
+                // Ignore invalid jalali date filter input.
+            }
         }
         if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
+            try {
+                $query->whereDate('created_at', '<=', Verta::parse($request->date_to)->datetime());
+            } catch (\Throwable) {
+                // Ignore invalid jalali date filter input.
+            }
         }
         if ($request->filled('search')) {
             $search = $request->search;
@@ -620,8 +629,21 @@ class DepotRequestController extends Controller
             'destination_name' => $item->destinationLabel(),
             'source_depot_name' => $item->sourceDepot?->name,
             'requested_by_name' => $item->requestedBy ? trim("{$item->requestedBy->name} {$item->requestedBy->last_name}") : null,
-            'created_at' => $item->created_at?->format('Y-m-d H:i'),
+            'created_at' => $this->formatDateTime($item->created_at),
         ];
+    }
+
+    private function formatDateTime(?\Illuminate\Support\Carbon $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        try {
+            return verta($value)->format('Y/m/d H:i');
+        } catch (\Throwable) {
+            return $value->format('Y-m-d H:i');
+        }
     }
 
     /**

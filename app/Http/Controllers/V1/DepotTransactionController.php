@@ -12,6 +12,7 @@ use App\Models\DepotTransaction;
 use App\Models\PharmacyFulfillment;
 use App\Services\DepotStockService;
 use App\Support\DepotRolePermissions;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -265,10 +266,18 @@ class DepotTransactionController extends Controller
             $query->where('status', $request->status);
         }
         if ($request->filled('date_from')) {
-            $query->whereDate('transaction_date', '>=', $request->date_from);
+            try {
+                $query->whereDate('transaction_date', '>=', Verta::parse($request->date_from)->datetime());
+            } catch (\Throwable) {
+                // Ignore invalid jalali date filter input.
+            }
         }
         if ($request->filled('date_to')) {
-            $query->whereDate('transaction_date', '<=', $request->date_to);
+            try {
+                $query->whereDate('transaction_date', '<=', Verta::parse($request->date_to)->datetime());
+            } catch (\Throwable) {
+                // Ignore invalid jalali date filter input.
+            }
         }
         if ($request->filled('search')) {
             $search = $request->search;
@@ -323,9 +332,22 @@ class DepotTransactionController extends Controller
             'item_type' => $tx->medicine_id ? DepotTransaction::ITEM_MEDICINE : ($tx->tool_id ? DepotTransaction::ITEM_TOOL : null),
             'source_name' => $tx->fromDepot?->name ?? $tx->depot?->name,
             'destination_name' => $tx->toDepot?->name ?? $tx->pharmacy?->name,
-            'transaction_date' => $tx->transaction_date?->format('Y-m-d'),
+            'transaction_date' => $this->formatDate($tx->transaction_date),
             'created_by_name' => $tx->createdBy ? trim("{$tx->createdBy->name} {$tx->createdBy->last_name}") : null,
         ];
+    }
+
+    private function formatDate(?\Illuminate\Support\Carbon $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        try {
+            return verta($value)->format('Y/m/d');
+        } catch (\Throwable) {
+            return $value->format('Y-m-d');
+        }
     }
 
     /**

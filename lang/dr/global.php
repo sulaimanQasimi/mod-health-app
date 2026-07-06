@@ -4219,7 +4219,7 @@ return [
     'accepting' => 'در حال قبول',
     'parameter' => 'پارامتر',
     'dentist_department' => 'بخش دندان',
-    'dentist_registrations' => 'بخش پذیرش',
+    'dentist_registrations' => 'بخش پذیرش دندان',
     'dentist_registrations_list' => 'لیست بخش پذیرش',
     'dentist' => 'داکتر دندان',
     'appointment_date' => 'تاریخ ملاقات',

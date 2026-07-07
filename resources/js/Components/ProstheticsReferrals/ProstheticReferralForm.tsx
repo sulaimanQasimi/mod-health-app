@@ -1,6 +1,7 @@
 import { Button, Label, Textarea, TextInput } from 'flowbite-react';
 import { FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
+import PersianDateInput from '../ui/PersianDateInput';
 
 export interface ProstheticReferralFormValues {
     patient_id: string;
@@ -86,48 +87,55 @@ export default function ProstheticReferralForm({
     return (
         <form
             id={formId}
-            className="space-y-4"
+            className="space-y-6"
             onSubmit={(e: FormEvent) => {
                 e.preventDefault();
                 onSubmit(form);
             }}
         >
-            <div>
-                <Label htmlFor="patient_search" value={`${t('global.patient')} *`} />
-                <TextInput
-                    id="patient_search"
-                    sizing="sm"
-                    placeholder={t('global.prosthetics_referral_patient_search_placeholder')}
-                    value={patientQuery}
-                    disabled={disabled}
-                    onChange={(e) => setPatientQuery(e.target.value)}
-                />
-                {searchingPatients && (
-                    <p className="mt-1 text-xs text-gray-500">{t('global.loading')}...</p>
-                )}
-                {patientResults.length > 0 && (
-                    <ul className="mt-2 max-h-40 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                        {patientResults.map((patient) => (
-                            <li key={patient.id}>
-                                <button
-                                    type="button"
-                                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
-                                    onClick={() => selectPatient(patient)}
-                                >
-                                    <span className="font-medium">{patient.name}</span>
-                                    {patient.nid && (
-                                        <span className="ms-2 text-gray-500">NID: {patient.nid}</span>
-                                    )}
-                                    {patient.phone && (
-                                        <span className="ms-2 text-gray-500">{patient.phone}</span>
-                                    )}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-                <div className="mt-2">
-                    <Label htmlFor="patient_id" value={t('global.prosthetics_patient_id')} className="text-xs" />
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="min-w-0 md:col-span-2">
+                    <Label htmlFor="patient_search" className="mb-2 block">
+                        {t('global.patient')} *
+                    </Label>
+                    <TextInput
+                        id="patient_search"
+                        sizing="sm"
+                        placeholder={t('global.prosthetics_referral_patient_search_placeholder')}
+                        value={patientQuery}
+                        disabled={disabled}
+                        onChange={(e) => setPatientQuery(e.target.value)}
+                    />
+                    {searchingPatients && (
+                        <p className="mt-1 text-xs text-gray-500">{t('global.loading')}...</p>
+                    )}
+                    {patientResults.length > 0 && (
+                        <ul className="mt-2 max-h-40 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                            {patientResults.map((patient) => (
+                                <li key={patient.id}>
+                                    <button
+                                        type="button"
+                                        className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
+                                        onClick={() => selectPatient(patient)}
+                                    >
+                                        <span className="font-medium">{patient.name}</span>
+                                        {patient.nid && (
+                                            <span className="ms-2 text-gray-500">NID: {patient.nid}</span>
+                                        )}
+                                        {patient.phone && (
+                                            <span className="ms-2 text-gray-500">{patient.phone}</span>
+                                        )}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
+                <div className="min-w-0">
+                    <Label htmlFor="patient_id" className="mb-2 block">
+                        {t('global.prosthetics_patient_id')} *
+                    </Label>
                     <TextInput
                         id="patient_id"
                         type="number"
@@ -148,21 +156,23 @@ export default function ProstheticReferralForm({
                 </div>
             </div>
 
-            <div>
-                <Label htmlFor="referral_date" value={`${t('global.date')} *`} />
-                <TextInput
-                    id="referral_date"
-                    type="date"
-                    required
-                    disabled={disabled}
-                    value={form.referral_date}
-                    onChange={(e) => setForm((prev) => ({ ...prev, referral_date: e.target.value }))}
-                />
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                    <Label htmlFor="referring_facility" value={t('global.requested_department')} />
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="min-w-0">
+                    <Label htmlFor="referral_date" className="mb-2 block">
+                        {t('global.date')} *
+                    </Label>
+                    <PersianDateInput
+                        id="referral_date"
+                        required
+                        disabled={disabled}
+                        value={form.referral_date}
+                        onChange={(referral_date) => setForm((prev) => ({ ...prev, referral_date }))}
+                    />
+                </div>
+                <div className="min-w-0">
+                    <Label htmlFor="referring_facility" className="mb-2 block">
+                        {t('global.requested_department')}
+                    </Label>
                     <TextInput
                         id="referring_facility"
                         disabled={disabled}
@@ -171,8 +181,10 @@ export default function ProstheticReferralForm({
                         onChange={(e) => setForm((prev) => ({ ...prev, referring_facility: e.target.value }))}
                     />
                 </div>
-                <div>
-                    <Label htmlFor="referring_doctor" value={t('global.doctor')} />
+                <div className="min-w-0">
+                    <Label htmlFor="referring_doctor" className="mb-2 block">
+                        {t('global.doctor')}
+                    </Label>
                     <TextInput
                         id="referring_doctor"
                         disabled={disabled}
@@ -181,11 +193,10 @@ export default function ProstheticReferralForm({
                         onChange={(e) => setForm((prev) => ({ ...prev, referring_doctor: e.target.value }))}
                     />
                 </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                    <Label htmlFor="urgency" value={t('global.urgency')} />
+                <div className="min-w-0">
+                    <Label htmlFor="urgency" className="mb-2 block">
+                        {t('global.urgency')}
+                    </Label>
                     <TextInput
                         id="urgency"
                         disabled={disabled}
@@ -194,8 +205,10 @@ export default function ProstheticReferralForm({
                         onChange={(e) => setForm((prev) => ({ ...prev, urgency: e.target.value }))}
                     />
                 </div>
-                <div>
-                    <Label htmlFor="requested_service_type" value={t('global.prosthetics_requested_service_type')} />
+                <div className="min-w-0 md:col-span-2">
+                    <Label htmlFor="requested_service_type" className="mb-2 block">
+                        {t('global.prosthetics_requested_service_type')}
+                    </Label>
                     <TextInput
                         id="requested_service_type"
                         disabled={disabled}
@@ -208,38 +221,46 @@ export default function ProstheticReferralForm({
                 </div>
             </div>
 
-            <div>
-                <Label htmlFor="reason" value={t('global.reason')} />
-                <Textarea
-                    id="reason"
-                    rows={2}
-                    disabled={disabled}
-                    placeholder={t('global.prosthetics_referral_reason_placeholder')}
-                    value={form.reason}
-                    onChange={(e) => setForm((prev) => ({ ...prev, reason: e.target.value }))}
-                />
-            </div>
-            <div>
-                <Label htmlFor="diagnosis_summary" value={t('global.diagnose')} />
-                <Textarea
-                    id="diagnosis_summary"
-                    rows={2}
-                    disabled={disabled}
-                    placeholder={t('global.prosthetics_referral_diagnosis_placeholder')}
-                    value={form.diagnosis_summary}
-                    onChange={(e) => setForm((prev) => ({ ...prev, diagnosis_summary: e.target.value }))}
-                />
-            </div>
-            <div>
-                <Label htmlFor="notes" value={t('global.notes')} />
-                <Textarea
-                    id="notes"
-                    rows={2}
-                    disabled={disabled}
-                    placeholder={t('global.prosthetics_referral_notes_placeholder')}
-                    value={form.notes}
-                    onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
-                />
+            <div className="grid gap-4 md:grid-cols-2">
+                <div className="min-w-0">
+                    <Label htmlFor="reason" className="mb-2 block">
+                        {t('global.reason')}
+                    </Label>
+                    <Textarea
+                        id="reason"
+                        rows={3}
+                        disabled={disabled}
+                        placeholder={t('global.prosthetics_referral_reason_placeholder')}
+                        value={form.reason}
+                        onChange={(e) => setForm((prev) => ({ ...prev, reason: e.target.value }))}
+                    />
+                </div>
+                <div className="min-w-0">
+                    <Label htmlFor="diagnosis_summary" className="mb-2 block">
+                        {t('global.diagnose')}
+                    </Label>
+                    <Textarea
+                        id="diagnosis_summary"
+                        rows={3}
+                        disabled={disabled}
+                        placeholder={t('global.prosthetics_referral_diagnosis_placeholder')}
+                        value={form.diagnosis_summary}
+                        onChange={(e) => setForm((prev) => ({ ...prev, diagnosis_summary: e.target.value }))}
+                    />
+                </div>
+                <div className="min-w-0 md:col-span-2">
+                    <Label htmlFor="notes" className="mb-2 block">
+                        {t('global.notes')}
+                    </Label>
+                    <Textarea
+                        id="notes"
+                        rows={3}
+                        disabled={disabled}
+                        placeholder={t('global.prosthetics_referral_notes_placeholder')}
+                        value={form.notes}
+                        onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
+                    />
+                </div>
             </div>
 
             {!hideActions && (

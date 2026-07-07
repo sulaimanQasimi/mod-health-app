@@ -15,6 +15,7 @@ use App\Models\ProstheticPrescriptionLine;
 use App\Models\ProstheticWorkOrder;
 use App\Services\ProstheticsNumberService;
 use App\Services\ProstheticsStockService;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -551,7 +552,7 @@ class ProstheticCaseController extends Controller
         }
 
         $data = $request->validate([
-            'session_date' => 'required|date',
+            'session_date' => 'required|string',
             'prosthetic_work_order_id' => 'nullable|exists:prosthetic_work_orders,id',
             'outcome' => 'nullable|string|max:64',
             'comfort_score' => 'nullable|integer|min:1|max:10',
@@ -559,6 +560,8 @@ class ProstheticCaseController extends Controller
             'modifications_required' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
+
+        $data['session_date'] = $this->parseCaseDate($data['session_date']);
 
         $data['prosthetic_case_id'] = $prosthetic_case->id;
         $data['created_by'] = Auth::id();
@@ -579,14 +582,24 @@ class ProstheticCaseController extends Controller
         }
 
         $data = $request->validate([
-            'delivered_at' => 'required|date',
+            'delivered_at' => 'required|string',
             'received_by_name' => 'nullable|string|max:255',
             'device_serial_notes' => 'nullable|string',
             'instructions_explained' => 'nullable|string',
-            'warranty_until' => 'nullable|date',
-            'follow_up_scheduled_at' => 'nullable|date',
+            'warranty_until' => 'nullable|string',
+            'follow_up_scheduled_at' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
+
+        $data['delivered_at'] = $this->parseCaseDate($data['delivered_at']);
+
+        if (! empty($data['warranty_until'])) {
+            $data['warranty_until'] = $this->parseCaseDate($data['warranty_until']);
+        }
+
+        if (! empty($data['follow_up_scheduled_at'])) {
+            $data['follow_up_scheduled_at'] = $this->parseCaseDate($data['follow_up_scheduled_at']);
+        }
 
         $data['handover_signed'] = $request->boolean('handover_signed');
         $data['prosthetic_case_id'] = $prosthetic_case->id;
@@ -610,11 +623,17 @@ class ProstheticCaseController extends Controller
 
         $data = $request->validate([
             'follow_up_type' => 'nullable|string|max:64',
-            'scheduled_at' => 'required|date',
-            'completed_at' => 'nullable|date',
+            'scheduled_at' => 'required|string',
+            'completed_at' => 'nullable|string',
             'outcome' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
+
+        $data['scheduled_at'] = $this->parseCaseDate($data['scheduled_at']);
+
+        if (! empty($data['completed_at'])) {
+            $data['completed_at'] = $this->parseCaseDate($data['completed_at']);
+        }
 
         $data['prosthetic_case_id'] = $prosthetic_case->id;
         $data['created_by'] = Auth::id();
@@ -639,5 +658,14 @@ class ProstheticCaseController extends Controller
         $prosthetic_case->save();
 
         return back()->with('success', __('global.success'));
+    }
+
+    private function parseCaseDate(string $value): \DateTimeInterface
+    {
+        try {
+            return Verta::parse($value)->datetime();
+        } catch (\Throwable) {
+            return new \DateTimeImmutable($value);
+        }
     }
 }

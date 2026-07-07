@@ -10,6 +10,7 @@ use App\Models\Patient;
 use App\Models\ProstheticCase;
 use App\Models\ProstheticReferral;
 use App\Services\ProstheticsNumberService;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -133,7 +134,7 @@ class ProstheticReferralController extends Controller
 
         $data = $request->validate([
             'patient_id' => 'required|exists:patients,id',
-            'referral_date' => 'required|date',
+            'referral_date' => 'required|string',
             'referring_facility' => 'nullable|string|max:255',
             'referring_doctor' => 'nullable|string|max:255',
             'reason' => 'nullable|string',
@@ -142,6 +143,7 @@ class ProstheticReferralController extends Controller
             'requested_service_type' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
+        $data['referral_date'] = $this->parseReferralDate($data['referral_date']);
 
         $referral = new ProstheticReferral($data);
         $referral->referral_number = ProstheticsNumberService::nextReferralNumber();
@@ -351,5 +353,14 @@ class ProstheticReferralController extends Controller
                 ? route('react.prosthetics.cases.show', $referral->converted_case_id)
                 : '',
         ];
+    }
+
+    private function parseReferralDate(string $value): string
+    {
+        try {
+            return Verta::parse($value)->datetime()->format('Y-m-d');
+        } catch (\Throwable) {
+            return $value;
+        }
     }
 }

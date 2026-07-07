@@ -2,9 +2,9 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import ProstheticCatalogTable from '../../../Components/ProstheticsCatalog/ProstheticCatalogTable';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../../Components/Settings/SettingsPagination';
-import TableActionButton from '../../../Components/ui/TableActionButton';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { PaginatedProstheticCatalog } from '../../../types/prosthetics';
 import { buildPaginationSummary } from '../../../utils/pagination';
@@ -64,7 +64,9 @@ export default function ProstheticsCatalogIndex({ items, filters: serverFilters,
                         }}
                     >
                         <div className="min-w-[240px] flex-1">
-                            <Label htmlFor="q" value={t('global.search')} className="mb-1 text-xs" />
+                            <Label htmlFor="q" className="mb-1 text-xs text-gray-700 dark:text-gray-300">
+                                {t('global.search')}
+                            </Label>
                             <TextInput
                                 id="q"
                                 sizing="sm"
@@ -79,38 +81,14 @@ export default function ProstheticsCatalogIndex({ items, filters: serverFilters,
                 </Card>
 
                 <Card>
-                    <div className="mb-3 text-sm text-gray-500">{buildPaginationSummary(items.meta, t)}</div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                            <thead className="border-b text-xs uppercase text-gray-500">
-                                <tr>
-                                    <th className="px-3 py-2">{t('global.code')}</th>
-                                    <th className="px-3 py-2">{t('global.name')}</th>
-                                    <th className="px-3 py-2">{t('global.category')}</th>
-                                    <th className="px-3 py-2">{t('global.cost')}</th>
-                                    {permissions.manage && <th className="px-3 py-2" />}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {items.data.map((item) => (
-                                    <tr key={item.id} className="border-b dark:border-gray-700">
-                                        <td className="px-3 py-2 font-mono">{item.item_code}</td>
-                                        <td className="px-3 py-2">{item.name}</td>
-                                        <td className="px-3 py-2">{item.category ?? '—'}</td>
-                                        <td className="px-3 py-2">{item.standard_cost ?? '—'}</td>
-                                        {permissions.manage && (
-                                            <td className="px-3 py-2 text-right">
-                                                <TableActionButton
-                                                    kind="edit"
-                                                    href={`${urls.edit}/${item.id}/edit`}
-                                                />
-                                            </td>
-                                        )}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+                        {buildPaginationSummary(items.meta, t)}
                     </div>
+                    <ProstheticCatalogTable
+                        items={items.data}
+                        editUrlBase={urls.edit}
+                        canManage={permissions.manage}
+                    />
                     <SettingsPagination links={items.links} className="mt-4" />
                 </Card>
             </div>

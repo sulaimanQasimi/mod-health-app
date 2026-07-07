@@ -22,7 +22,7 @@ interface CreateProps {
 function buildInitialValues(prefill?: CreateProps['prefill']): ProstheticReferralFormValues {
     return {
         patient_id: prefill?.patient_id ? String(prefill.patient_id) : '',
-        referral_date: new Date().toISOString().slice(0, 10),
+        referral_date: '',
         referring_facility: '',
         referring_doctor: '',
         reason: '',

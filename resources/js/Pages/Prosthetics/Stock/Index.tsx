@@ -2,6 +2,8 @@ import { Head, router } from '@inertiajs/react';
 import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import ProstheticStockBalanceTable from '../../../Components/ProstheticsStock/ProstheticStockBalanceTable';
+import ProstheticStockMovementTable from '../../../Components/ProstheticsStock/ProstheticStockMovementTable';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../../Components/Settings/SettingsPagination';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -96,13 +98,17 @@ export default function ProstheticsStockIndex({
 
                 {permissions.manage && (
                     <Card>
-                        <h3 className="mb-4 text-base font-semibold">{t('global.prosthetics_receive_stock')}</h3>
+                        <h3 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">
+                            {t('global.prosthetics_receive_stock')}
+                        </h3>
                         <form onSubmit={handleReceive} className="grid gap-3 md:grid-cols-3">
                             <div>
-                                <Label value={`${t('global.prosthetics_component')} *`} />
+                                <Label className="mb-1 block text-sm text-gray-700 dark:text-gray-300">
+                                    {t('global.prosthetics_component')} *
+                                </Label>
                                 <select
                                     required
-                                    className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                                    className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                                     value={receiveForm.prosthetic_component_catalog_id}
                                     onChange={(e) =>
                                         setReceiveForm((prev) => ({
@@ -120,7 +126,9 @@ export default function ProstheticsStockIndex({
                                 </select>
                             </div>
                             <div>
-                                <Label value={`${t('global.quantity')} *`} />
+                                <Label className="mb-1 block text-sm text-gray-700 dark:text-gray-300">
+                                    {t('global.quantity')} *
+                                </Label>
                                 <TextInput
                                     type="number"
                                     step="0.001"
@@ -131,7 +139,9 @@ export default function ProstheticsStockIndex({
                                 />
                             </div>
                             <div>
-                                <Label value={t('global.notes')} />
+                                <Label className="mb-1 block text-sm text-gray-700 dark:text-gray-300">
+                                    {t('global.notes')}
+                                </Label>
                                 <TextInput
                                     value={receiveForm.notes}
                                     onChange={(e) => setReceiveForm((prev) => ({ ...prev, notes: e.target.value }))}
@@ -155,7 +165,9 @@ export default function ProstheticsStockIndex({
                         }}
                     >
                         <div className="min-w-[240px] flex-1">
-                            <Label htmlFor="q" value={t('global.search')} className="mb-1 text-xs" />
+                            <Label htmlFor="q" className="mb-1 text-xs text-gray-700 dark:text-gray-300">
+                                {t('global.search')}
+                            </Label>
                             <TextInput
                                 id="q"
                                 sizing="sm"
@@ -167,58 +179,18 @@ export default function ProstheticsStockIndex({
                             {t('global.search')}
                         </Button>
                     </form>
-                    <div className="mb-3 text-sm text-gray-500">{buildPaginationSummary(balances.meta, t)}</div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                            <thead className="border-b text-xs uppercase text-gray-500">
-                                <tr>
-                                    <th className="px-3 py-2">{t('global.code')}</th>
-                                    <th className="px-3 py-2">{t('global.name')}</th>
-                                    <th className="px-3 py-2">{t('global.quantity')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {balances.data.map((balance) => (
-                                    <tr key={balance.id} className="border-b dark:border-gray-700">
-                                        <td className="px-3 py-2 font-mono">{balance.catalog_item?.item_code ?? '—'}</td>
-                                        <td className="px-3 py-2">{balance.catalog_item?.name ?? '—'}</td>
-                                        <td className="px-3 py-2">{balance.quantity}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+                        {buildPaginationSummary(balances.meta, t)}
                     </div>
+                    <ProstheticStockBalanceTable items={balances.data} />
                     <SettingsPagination links={balances.links} className="mt-4" />
                 </Card>
 
                 <Card>
-                    <h3 className="mb-4 text-base font-semibold">{t('global.prosthetics_recent_movements')}</h3>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                            <thead className="border-b text-xs uppercase text-gray-500">
-                                <tr>
-                                    <th className="px-3 py-2">{t('global.date')}</th>
-                                    <th className="px-3 py-2">{t('global.type')}</th>
-                                    <th className="px-3 py-2">{t('global.prosthetics_component')}</th>
-                                    <th className="px-3 py-2">Δ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {movements.map((movement) => (
-                                    <tr key={movement.id} className="border-b dark:border-gray-700">
-                                        <td className="px-3 py-2">{movement.created_at ?? '—'}</td>
-                                        <td className="px-3 py-2">{movement.movement_type}</td>
-                                        <td className="px-3 py-2">
-                                            {movement.catalog_item
-                                                ? `${movement.catalog_item.item_code} — ${movement.catalog_item.name}`
-                                                : '—'}
-                                        </td>
-                                        <td className="px-3 py-2">{movement.quantity_delta}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <h3 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">
+                        {t('global.prosthetics_recent_movements')}
+                    </h3>
+                    <ProstheticStockMovementTable items={movements} />
                 </Card>
             </div>
         </DashboardLayout>

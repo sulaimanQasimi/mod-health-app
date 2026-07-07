@@ -21,6 +21,7 @@ import {
 } from '../../../Components/ProstheticsCases/caseShowUi';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
+import PersianDateInput from '../../../Components/ui/PersianDateInput';
 import TableActionButton from '../../../Components/ui/TableActionButton';
 import { useTranslation } from '../../../hooks/useTranslation';
 import {
@@ -98,20 +99,20 @@ export default function ProstheticsCasesShow({
     );
 
     const [fittingForm, setFittingForm] = useState({
-        session_date: new Date().toISOString().slice(0, 10),
+        session_date: '',
         outcome: 'pending',
         notes: '',
     });
 
     const [deliveryForm, setDeliveryForm] = useState({
-        delivered_at: new Date().toISOString().slice(0, 10),
+        delivered_at: '',
         received_by_name: '',
         handover_signed: false,
         notes: '',
     });
 
     const [followUpForm, setFollowUpForm] = useState({
-        scheduled_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+        scheduled_at: '',
         follow_up_type: '1_month',
     });
 
@@ -678,13 +679,11 @@ export default function ProstheticsCasesShow({
                                 <div className="mb-1.5 text-gray-600">
                                     <Label>{t('global.date')}</Label>
                                 </div>
-                                <TextInput
-                                    type="date"
-                                    sizing="sm"
+                                <PersianDateInput
                                     disabled={!permissions.store_fitting}
                                     value={fittingForm.session_date}
-                                    onChange={(e) =>
-                                        setFittingForm((prev) => ({ ...prev, session_date: e.target.value }))
+                                    onChange={(session_date) =>
+                                        setFittingForm((prev) => ({ ...prev, session_date }))
                                     }
                                 />
                             </div>
@@ -753,13 +752,11 @@ export default function ProstheticsCasesShow({
                                 <div className="mb-1.5 text-gray-600">
                                     <Label>{t('global.prosthetics_delivery_date')}</Label>
                                 </div>
-                                <TextInput
-                                    type="date"
-                                    sizing="sm"
+                                <PersianDateInput
                                     disabled={!permissions.store_delivery}
                                     value={deliveryForm.delivered_at}
-                                    onChange={(e) =>
-                                        setDeliveryForm((prev) => ({ ...prev, delivered_at: e.target.value }))
+                                    onChange={(delivered_at) =>
+                                        setDeliveryForm((prev) => ({ ...prev, delivered_at }))
                                     }
                                 />
                             </div>
@@ -830,13 +827,11 @@ export default function ProstheticsCasesShow({
                                 <div className="mb-1.5 text-gray-600">
                                     <Label>{t('global.date')}</Label>
                                 </div>
-                                <TextInput
-                                    type="date"
-                                    sizing="sm"
+                                <PersianDateInput
                                     disabled={!permissions.store_follow_up}
                                     value={followUpForm.scheduled_at}
-                                    onChange={(e) =>
-                                        setFollowUpForm((prev) => ({ ...prev, scheduled_at: e.target.value }))
+                                    onChange={(scheduled_at) =>
+                                        setFollowUpForm((prev) => ({ ...prev, scheduled_at }))
                                     }
                                 />
                             </div>

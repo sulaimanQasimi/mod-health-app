@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import ProstheticCaseTable from '../../../Components/ProstheticsCases/ProstheticCaseTable';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../../Components/Settings/SettingsPagination';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -67,7 +68,9 @@ export default function ProstheticsCasesIndex({ cases, filters: serverFilters, s
                         }}
                     >
                         <div className="min-w-[220px] flex-1">
-                            <Label htmlFor="q" value={t('global.search')} className="mb-1 text-xs" />
+                            <Label htmlFor="q" className="mb-1 text-xs text-gray-700 dark:text-gray-300">
+                                {t('global.search')}
+                            </Label>
                             <TextInput
                                 id="q"
                                 sizing="sm"
@@ -76,10 +79,12 @@ export default function ProstheticsCasesIndex({ cases, filters: serverFilters, s
                             />
                         </div>
                         <div className="min-w-[180px]">
-                            <Label htmlFor="status" value={t('global.status')} className="mb-1 text-xs" />
+                            <Label htmlFor="status" className="mb-1 text-xs text-gray-700 dark:text-gray-300">
+                                {t('global.status')}
+                            </Label>
                             <select
                                 id="status"
-                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                                 value={filters.status}
                                 onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
                             >
@@ -106,39 +111,10 @@ export default function ProstheticsCasesIndex({ cases, filters: serverFilters, s
                 </Card>
 
                 <Card>
-                    <div className="mb-3 text-sm text-gray-500">{buildPaginationSummary(cases.meta, t)}</div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                            <thead className="border-b text-xs uppercase text-gray-500">
-                                <tr>
-                                    <th className="px-3 py-2">{t('global.prosthetics_case_number')}</th>
-                                    <th className="px-3 py-2">{t('global.patient_name')}</th>
-                                    <th className="px-3 py-2">{t('global.status')}</th>
-                                    <th className="px-3 py-2" />
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {cases.data.map((item) => (
-                                    <tr key={item.id} className="border-b dark:border-gray-700">
-                                        <td className="px-3 py-2 font-mono">{item.case_number}</td>
-                                        <td className="px-3 py-2">
-                                            {item.patient
-                                                ? `${item.patient.name} ${item.patient.last_name ?? ''}`.trim()
-                                                : '—'}
-                                        </td>
-                                        <td className="px-3 py-2">
-                                            {t(`global.prosthetics_case_status_${item.status}`)}
-                                        </td>
-                                        <td className="px-3 py-2 text-right">
-                                            <Link href={`${urls.show}/${item.id}`} className="text-blue-600 hover:underline">
-                                                {t('global.show')}
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+                        {buildPaginationSummary(cases.meta, t)}
                     </div>
+                    <ProstheticCaseTable items={cases.data} showUrlBase={urls.show} />
                     <SettingsPagination links={cases.links} className="mt-4" />
                 </Card>
             </div>

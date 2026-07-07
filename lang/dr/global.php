@@ -1067,7 +1067,7 @@ return [
     'prosthetics_estimate' => 'برآورد هزینه',
     'prosthetics_workflow' => 'روند کاری',
     'prosthetics_issue_components' => 'خروج قطعات (انبار)',
-    'prosthetics_fitting' => 'پروبینی',
+    'prosthetics_fitting' => 'بازبینی',
     'prosthetics_delivery' => 'تحویل نهایی',
     'prosthetics_follow_up' => 'پیگیری',
     'prosthetics_need_estimate' => 'قبل از ارسال برای تأیید، نسخه و برآورد را ذخیره کنید.',

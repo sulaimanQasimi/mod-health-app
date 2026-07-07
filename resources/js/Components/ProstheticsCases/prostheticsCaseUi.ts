@@ -16,3 +16,7 @@ export function prostheticCaseCategoryLabel(category: string, t: (key: string) =
 export function prostheticCasePriorityLabel(priority: string, t: (key: string) => string): string {
     return prostheticOptionLabel('prosthetics_priority', priority, t);
 }
+
+export function prostheticCaseStatusLabel(status: string, t: (key: string) => string): string {
+    return prostheticOptionLabel('prosthetics_case_status', status, t);
+}

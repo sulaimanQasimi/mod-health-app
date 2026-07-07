@@ -137,10 +137,10 @@ class LaboratoryController extends Controller
         $this->authorize('viewTools', PatientTestRegistration::class);
 
         return Inertia::render('Laboratory/Scan', [
-            'urls' => [
-                'scan' => route('react.laboratory.scan.submit'),
-                'pending' => route('react.laboratory.results.pending'),
-            ],
+            'urls' => array_merge($this->laboratoryNavUrls(), [
+                'scanSubmit' => route('react.laboratory.scan.submit'),
+                'index' => route('react.laboratory.scan'),
+            ]),
             'error' => session('error'),
         ]);
     }

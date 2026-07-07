@@ -872,6 +872,7 @@ return [
     'enter_results' => 'Enter Results',
     'scan_test' => 'Scan Test',
     'please_scan_test' => 'Please Scan Test Reference',
+    'scan_test_help' => 'Scan or enter the test reference number to open results or print the report.',
     'ref_number' => 'Reference Number',
     'test_not_found' => 'Test not found',
     'backup_management' => 'Backup Management',

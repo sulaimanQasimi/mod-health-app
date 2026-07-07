@@ -3817,4 +3817,5 @@ return [
     'yesterday' => 'دیروز',
     'you_do_not_have_access_to_this_test_registration' => 'شما دسترسی به این ثبت نام آزمایش را ندارید',
     'you_must_have_a_nurse_profile_to_create_nurse_notes' => 'شما باید یک پروفایل نرس داشته باشید تا سوابق نرسی ایجاد کنید.',
+    'added' => 'اضافه شد',
 ];

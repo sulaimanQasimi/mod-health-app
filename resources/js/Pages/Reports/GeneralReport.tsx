@@ -207,8 +207,8 @@ function PaletteItem({
     return (
         <div
             className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-start text-sm font-medium shadow-sm transition ${isPlaced
-                    ? 'border-emerald-200 bg-emerald-50/80 text-gray-600 dark:border-emerald-900 dark:bg-emerald-950/20 dark:text-gray-300'
-                    : 'border-gray-200 bg-white text-gray-800 hover:border-indigo-300 hover:bg-indigo-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/30'
+                ? 'border-emerald-200 bg-emerald-50/80 text-gray-600 dark:border-emerald-900 dark:bg-emerald-950/20 dark:text-gray-300'
+                : 'border-gray-200 bg-white text-gray-800 hover:border-indigo-300 hover:bg-indigo-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/30'
                 }`}
         >
             <button
@@ -219,8 +219,8 @@ function PaletteItem({
             >
                 <span
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white ${isPlaced
-                            ? 'bg-emerald-500'
-                            : 'bg-gradient-to-br from-indigo-500 to-violet-600'
+                        ? 'bg-emerald-500'
+                        : 'bg-gradient-to-br from-indigo-500 to-violet-600'
                         }`}
                 >
                     <i className={`bx ${isPlaced ? 'bx-check' : icon} text-lg`} />
@@ -238,8 +238,8 @@ function PaletteItem({
                 type="button"
                 disabled={isPlaced}
                 className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-400 dark:border-gray-700 ${isPlaced
-                        ? 'cursor-not-allowed opacity-40'
-                        : 'cursor-grab hover:bg-gray-50 active:cursor-grabbing dark:hover:bg-gray-800'
+                    ? 'cursor-not-allowed opacity-40'
+                    : 'cursor-grab hover:bg-gray-50 active:cursor-grabbing dark:hover:bg-gray-800'
                     } ${isDragging ? 'opacity-50' : ''}`}
                 aria-label={`Drag ${label}`}
                 {...listeners}
@@ -269,8 +269,8 @@ function SlotCanvas({
             ref={setNodeRef}
             style={{ minHeight: DEFAULT_SLOT_HEIGHT }}
             className={`general-report-slot-canvas relative h-full rounded-2xl border-2 border-dashed p-4 transition ${isOver
-                    ? 'border-indigo-400 bg-indigo-50/70 dark:border-indigo-500 dark:bg-indigo-950/20'
-                    : 'border-gray-200 bg-gray-50/70 dark:border-gray-700 dark:bg-gray-900/40'
+                ? 'border-indigo-400 bg-indigo-50/70 dark:border-indigo-500 dark:bg-indigo-950/20'
+                : 'border-gray-200 bg-gray-50/70 dark:border-gray-700 dark:bg-gray-900/40'
                 }`}
         >
             {isEmpty && (
@@ -296,8 +296,6 @@ function ReportSlot({
     canMoveDown,
     widgetCount,
     slotLabel,
-    orderLabel,
-    widthLabel,
     removeLabel,
     isExpanded,
     onToggle,
@@ -314,8 +312,6 @@ function ReportSlot({
     canMoveDown: boolean;
     widgetCount: number;
     slotLabel: string;
-    orderLabel: string;
-    widthLabel: string;
     removeLabel: string;
     isExpanded: boolean;
     onToggle: () => void;
@@ -325,6 +321,7 @@ function ReportSlot({
     onColSpanChange: (slotId: string, colSpan: Slot['colSpan']) => void;
     children: ReactNode;
 }) {
+    const { t } = useTranslation();
     return (
         <div
             className={`general-report-slot flex min-w-0 flex-col ${slotColSpanClass(slot.colSpan)} ${!isExpanded ? 'general-report-slot-collapsed' : ''} ${widgetCount === 0 ? 'general-report-no-print' : ''}`}
@@ -341,11 +338,6 @@ function ReportSlot({
                             {index + 1}
                         </span>
                         <p className="text-sm font-semibold text-gray-900 dark:text-white">{slotLabel}</p>
-                        {widgetCount > 0 && (
-                            <Badge color="indigo" size="sm">
-                                {widgetCount}
-                            </Badge>
-                        )}
                     </div>
                     <i
                         className={`bx ${isExpanded ? 'bx-chevron-up' : 'bx-chevron-down'} shrink-0 text-xl text-gray-400`}
@@ -355,7 +347,6 @@ function ReportSlot({
                 {isExpanded && (
                     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-3 py-2.5 dark:border-gray-700">
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-xs text-gray-500 dark:text-gray-400">{orderLabel}</span>
                             <div className="flex items-center gap-1">
                                 <Button
                                     type="button"
@@ -363,7 +354,7 @@ function ReportSlot({
                                     color="light"
                                     onClick={() => onMoveUp(slot.id)}
                                     disabled={!canMoveUp}
-                                    title={`${orderLabel} up`}
+                                    title={t('global.move_up') + ' ' + slotLabel}
                                     className="!min-w-8"
                                 >
                                     <i className="bx bx-up-arrow-alt" />
@@ -374,7 +365,7 @@ function ReportSlot({
                                     color="light"
                                     onClick={() => onMoveDown(slot.id)}
                                     disabled={!canMoveDown}
-                                    title={`${orderLabel} down`}
+                                    title={t('global.move_down') + ' ' + slotLabel}
                                     className="!min-w-8"
                                 >
                                     <i className="bx bx-down-arrow-alt" />
@@ -383,8 +374,7 @@ function ReportSlot({
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-xs text-gray-500 dark:text-gray-400">{widthLabel}</span>
-                            <div className="flex items-center gap-1 rounded-lg bg-gray-50 p-0.5 dark:bg-gray-900/60">
+                            <div className="flex items-center gap-1 rounded bg-gray-50 p-0.5 dark:bg-gray-900/60">
                                 {SLOT_COL_SPAN_OPTIONS.map((span) => (
                                     <Button
                                         key={span}
@@ -392,8 +382,8 @@ function ReportSlot({
                                         size="xs"
                                         color={slot.colSpan === span ? 'blue' : 'light'}
                                         onClick={() => onColSpanChange(slot.id, span)}
-                                        title={`${widthLabel} ${span}`}
-                                        className="!min-w-8"
+                                        title={t('global.width') + ' ' + slotLabel + ' ' + span}
+                                        className="!min-w-8 "
                                     >
                                         {span}
                                     </Button>
@@ -405,7 +395,7 @@ function ReportSlot({
                                 size="xs"
                                 onClick={() => onRemove(slot.id)}
                                 disabled={!canRemove}
-                                title={removeLabel}
+                                title={removeLabel + ' ' + slotLabel}
                             >
                                 <i className="bx bx-trash" />
                             </Button>
@@ -845,16 +835,14 @@ export default function GeneralReport({
             <Card className="general-report-no-print !shadow-sm">
                 <div className="mb-4 border-b border-gray-100 pb-4 dark:border-gray-700">
                     <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/40">
-                            <i className="bx bx-widget text-xl text-indigo-600 dark:text-indigo-400" />
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-950/40">
+                            <i className="bx bx-bar-chart-alt-2 text-xl text-violet-600 dark:text-violet-400" />
                         </div>
                         <div>
                             <h2 className="text-base font-semibold text-gray-900 dark:text-white">
                                 {t('global.reports')}
                             </h2>
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                {t('global.general')} — click or drag a component into any slot below.
-                            </p>
+
                         </div>
                     </div>
                 </div>
@@ -866,7 +854,7 @@ export default function GeneralReport({
                             label={t(WIDGET_CATALOG[type].labelKey)}
                             icon={WIDGET_CATALOG[type].icon}
                             isPlaced={type !== 'title' && placedWidgetTypes.has(type)}
-                            addedLabel="Added"
+                            addedLabel={t('global.added')}
                             onAdd={(widgetType) => {
                                 const targetSlotId = resolveTargetSlotId();
                                 if (targetSlotId) {
@@ -888,9 +876,6 @@ export default function GeneralReport({
                             <h2 className="text-base font-semibold text-gray-900 dark:text-white">
                                 {t('global.general')}
                             </h2>
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                New slots appear at the top. Adjust width to span 1–4 columns on large screens.
-                            </p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -918,8 +903,6 @@ export default function GeneralReport({
                                 canMoveDown={index < slots.length - 1}
                                 widgetCount={widgets.length}
                                 slotLabel={`Slot ${index + 1}`}
-                                orderLabel={t('global.order')}
-                                widthLabel="Width"
                                 removeLabel={t('global.remove')}
                                 isExpanded={isSlotExpanded(slot.id)}
                                 onToggle={() => toggleSlot(slot.id)}

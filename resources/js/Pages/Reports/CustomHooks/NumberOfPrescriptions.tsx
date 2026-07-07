@@ -14,6 +14,7 @@ import {
     TableColumnDefinition,
 } from './generalReportTableSettings';
 import RemovableColumnHeader from './RemovableColumnHeader';
+import { buildGeneralReportExportData } from './generalReportExport';
 
 interface BreakdownItem {
     key: string | number | null;
@@ -312,6 +313,26 @@ const NumberOfPrescriptions: React.FC<NumberOfPrescriptionsProps> = ({
 
     const activeFilterCount = useMemo(() => countActiveTableFilters(tableSettings), [tableSettings]);
 
+    const exportData = useMemo(
+        () =>
+            buildGeneralReportExportData({
+                fileName: 'prescriptions-report',
+                indexLabel: '#',
+                rowLabelColumn: t('global.medicine'),
+                totalLabel: t('global.total'),
+                visibleColumnGroups,
+                displayReport,
+                getRowLabel: (medicineRow) => medicineRow.medicine_name ?? 'Unknown',
+                getCellValue: (medicineRow, columnId) => getColumnCount(medicineRow, columnId),
+                getRowTotal: (medicineRow) => medicineRow.count,
+                showTotalsRow: tableSettings.showTotalsRow,
+                totalsLabel: t('global.total'),
+                columnTotals,
+                grandTotal,
+            }),
+        [columnTotals, displayReport, flatColumns.length, grandTotal, t, tableSettings.showTotalsRow, visibleColumnGroups],
+    );
+
     const removeMedicineRow = (medicineRow: PrescriptionReport) => {
         setReport((current) =>
             current.filter((row) => {
@@ -361,6 +382,7 @@ const NumberOfPrescriptions: React.FC<NumberOfPrescriptionsProps> = ({
                 activeFilterCount={activeFilterCount}
                 onOpenSettings={() => setSettingsModalOpen(true)}
                 rowLabel={t('global.medicine')}
+                exportData={exportData}
             />
 
             <div className="general-report-table-root overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">

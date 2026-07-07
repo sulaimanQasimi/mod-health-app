@@ -1,5 +1,10 @@
 import { Badge, Button } from 'flowbite-react';
 import { useTranslation } from '../../../hooks/useTranslation';
+import {
+    exportGeneralReportToExcel,
+    exportGeneralReportToPdf,
+    GeneralReportExportData,
+} from './generalReportExport';
 
 interface GeneralReportTableToolbarProps {
     visibleRowCount: number;
@@ -9,6 +14,7 @@ interface GeneralReportTableToolbarProps {
     activeFilterCount: number;
     onOpenSettings: () => void;
     rowLabel?: string;
+    exportData?: GeneralReportExportData | null;
 }
 
 export default function GeneralReportTableToolbar({
@@ -19,9 +25,11 @@ export default function GeneralReportTableToolbar({
     activeFilterCount,
     onOpenSettings,
     rowLabel,
+    exportData,
 }: GeneralReportTableToolbarProps) {
     const { t } = useTranslation();
     const resolvedRowLabel = rowLabel ?? t('global.department');
+    const canExport = exportData != null && exportData.rows.length > 0;
 
     return (
         <div className="general-report-no-print mb-3 flex flex-wrap items-center justify-between gap-3">
@@ -39,10 +47,32 @@ export default function GeneralReportTableToolbar({
                     </Badge>
                 )}
             </div>
-            <Button type="button" size="sm" color="light" onClick={onOpenSettings}>
-                <i className="bx bx-slider-alt me-2" />
-                {t('global.advanced_filters')}
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+                <Button
+                    type="button"
+                    size="sm"
+                    color="light"
+                    disabled={!canExport}
+                    onClick={() => exportData && exportGeneralReportToExcel(exportData)}
+                >
+                    <i className="bx bx-spreadsheet me-1" />
+                    {t('global.export_excel')}
+                </Button>
+                <Button
+                    type="button"
+                    size="sm"
+                    color="light"
+                    disabled={!canExport}
+                    onClick={() => exportData && exportGeneralReportToPdf(exportData)}
+                >
+                    <i className="bx bx-file me-1" />
+                    {t('global.export_pdf')}
+                </Button>
+                <Button type="button" size="sm" color="light" onClick={onOpenSettings}>
+                    <i className="bx bx-slider-alt me-2" />
+                    {t('global.advanced_filters')}
+                </Button>
+            </div>
         </div>
     );
 }

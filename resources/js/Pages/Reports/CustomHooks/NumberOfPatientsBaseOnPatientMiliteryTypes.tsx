@@ -14,6 +14,7 @@ import {
     TableColumnDefinition,
 } from './generalReportTableSettings';
 import RemovableColumnHeader from './RemovableColumnHeader';
+import { buildGeneralReportExportData } from './generalReportExport';
 
 interface MiliteryTypeReport {
     militery_type_id: number | null;
@@ -151,6 +152,26 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
 
     const activeFilterCount = useMemo(() => countActiveTableFilters(tableSettings), [tableSettings]);
 
+    const exportData = useMemo(
+        () =>
+            buildGeneralReportExportData({
+                fileName: 'number-of-patients-by-militery-type',
+                indexLabel: '#',
+                rowLabelColumn: t('global.department'),
+                totalLabel: t('global.total'),
+                visibleColumnGroups,
+                displayReport,
+                getRowLabel: (department) => department.department_name ?? 'Unknown',
+                getCellValue: (department, columnId) => getColumnCount(department, columnId),
+                getRowTotal: (department) => department.count,
+                showTotalsRow: tableSettings.showTotalsRow,
+                totalsLabel: t('global.total'),
+                columnTotals,
+                grandTotal,
+            }),
+        [columnTotals, displayReport, flatColumns.length, grandTotal, t, tableSettings.showTotalsRow, visibleColumnGroups],
+    );
+
     const hideColumn = (columnId: string) => {
         setTableSettings((current) => ({
             ...current,
@@ -199,6 +220,7 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
                 totalColumnCount={allColumns.length}
                 activeFilterCount={activeFilterCount}
                 onOpenSettings={() => setSettingsModalOpen(true)}
+                exportData={exportData}
             />
 
             <div className="general-report-table-root overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">

@@ -14,6 +14,7 @@ import {
     TableColumnDefinition,
 } from './generalReportTableSettings';
 import RemovableColumnHeader from './RemovableColumnHeader';
+import { buildGeneralReportExportData } from './generalReportExport';
 
 interface BreakdownItem {
     key: string | number | null;
@@ -312,6 +313,26 @@ const NumberOfPatientTestRegistrations: React.FC<NumberOfPatientTestRegistration
 
     const activeFilterCount = useMemo(() => countActiveTableFilters(tableSettings), [tableSettings]);
 
+    const exportData = useMemo(
+        () =>
+            buildGeneralReportExportData({
+                fileName: 'patient-test-registrations',
+                indexLabel: '#',
+                rowLabelColumn: t('global.test_name'),
+                totalLabel: t('global.total'),
+                visibleColumnGroups,
+                displayReport,
+                getRowLabel: (testRow) => testRow.test_name ?? 'Unknown',
+                getCellValue: (testRow, columnId) => getColumnCount(testRow, columnId),
+                getRowTotal: (testRow) => testRow.count,
+                showTotalsRow: tableSettings.showTotalsRow,
+                totalsLabel: t('global.total'),
+                columnTotals,
+                grandTotal,
+            }),
+        [columnTotals, displayReport, flatColumns.length, grandTotal, t, tableSettings.showTotalsRow, visibleColumnGroups],
+    );
+
     const removeTestRow = (testRow: TestRegistrationReport) => {
         setReport((current) =>
             current.filter((row) => {
@@ -361,6 +382,7 @@ const NumberOfPatientTestRegistrations: React.FC<NumberOfPatientTestRegistration
                 activeFilterCount={activeFilterCount}
                 onOpenSettings={() => setSettingsModalOpen(true)}
                 rowLabel={t('global.test_name')}
+                exportData={exportData}
             />
 
             <div className="general-report-table-root overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">

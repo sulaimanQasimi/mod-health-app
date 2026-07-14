@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
+use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Department;
 use App\Models\LabType;
@@ -18,14 +19,14 @@ class LabTypeController extends Controller
 {
     use PaginatesInertiaIndex;
 
-    private const FILTER_KEYS = ['search', 'category_id', 'department_id', 'per_page'];
+    private const FILTER_KEYS = ['search', 'branch_id', 'category_id', 'department_id', 'per_page'];
 
     public function index(Request $request): Response
     {
         $this->authorizeLabTypeAccess($request);
 
         $query = $this->scopedQuery($request)
-            ->with(['category:id,name', 'department:id,name'])
+            ->with(['category:id,name', 'department:id,name', 'branch:id,name'])
             ->withCount('directLabTestParameters');
 
         if ($request->filled('search')) {
@@ -33,8 +34,13 @@ class LabTypeController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhereHas('category', fn ($categoryQuery) => $categoryQuery->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('department', fn ($departmentQuery) => $departmentQuery->where('name', 'like', "%{$search}%"));
+                    ->orWhereHas('department', fn ($departmentQuery) => $departmentQuery->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('branch', fn ($branchQuery) => $branchQuery->where('name', 'like', "%{$search}%"));
             });
+        }
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
         }
 
         if ($request->filled('category_id')) {
@@ -44,12 +50,14 @@ class LabTypeController extends Controller
         if ($request->filled('department_id')) {
             $query->where('department_id', $request->department_id);
         }
+
         $paginator = $this->paginateQuery($query->orderBy('name'), $request);
 
         return Inertia::render('LabTypes/Index', [
             'labTypes' => $this->paginationPayload($paginator, fn (LabType $labType) => [
                 'id' => $labType->id,
                 'name' => $labType->name,
+                'branch_name' => $labType->branch?->name,
                 'category_name' => $labType->category?->name,
                 'department_name' => $labType->department?->name,
                 'parameters_count' => $labType->direct_lab_test_parameters_count,
@@ -225,7 +233,20 @@ class LabTypeController extends Controller
 
     private function scopedQuery(Request $request)
     {
-        return LabType::query()->forLaboratoryUser($request->user());
+        $user = $request->user();
+
+        if ($user && ($user->hasRole(['super_admin', 'admin']) || $user->can('manage-lab-tests'))) {
+            $query = LabType::query();
+
+            // Default managers to their own branch unless a branch filter is chosen.
+            if (! $request->filled('branch_id') && $user->branch_id) {
+                $query->where('branch_id', $user->branch_id);
+            }
+
+            return $query;
+        }
+
+        return LabType::query()->forLaboratoryUser($user);
     }
 
     private function branchId(Request $request): ?int
@@ -286,21 +307,47 @@ class LabTypeController extends Controller
      */
     private function filterOptions(Request $request): array
     {
+        $user = $request->user();
+        $branchFilterId = $request->filled('branch_id')
+            ? (int) $request->branch_id
+            : null;
+
         return [
+            'branches' => $this->branchesForUser($user),
             'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
-            'departments' => $this->departmentsForUser($request->user())->all(),
+            'departments' => $this->departmentsForUser($user, $branchFilterId)->all(),
         ];
+    }
+
+    /**
+     * @return list<array{id: int, name: string}>
+     */
+    private function branchesForUser(?User $user): array
+    {
+        $query = Branch::query()->orderBy('name');
+
+        if ($user && ! $user->hasRole(['super_admin', 'admin']) && $user->branch_id) {
+            $query->where('id', $user->branch_id);
+        }
+
+        return $query->get(['id', 'name'])->map(fn (Branch $branch) => [
+            'id' => $branch->id,
+            'name' => $branch->name,
+        ])->values()->all();
     }
 
     /**
      * @return \Illuminate\Support\Collection<int, Department>
      */
-    private function departmentsForUser(?User $user)
+    private function departmentsForUser(?User $user, ?int $branchId = null)
     {
         $query = Department::query()->orderBy('name');
 
-        if ($user?->branch_id) {
-            $query->where('branch_id', $user->branch_id);
+        $effectiveBranchId = $branchId
+            ?? ($user?->branch_id ? (int) $user->branch_id : null);
+
+        if ($effectiveBranchId) {
+            $query->where('branch_id', $effectiveBranchId);
         }
 
         if ($user && ($user->hasRole(['super_admin', 'admin']) || $user->can('manage-lab-tests'))) {

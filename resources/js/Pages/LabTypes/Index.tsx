@@ -19,6 +19,7 @@ import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 interface LabTypeItem {
     id: number;
     name: string;
+    branch_name: string | null;
     category_name: string | null;
     department_name: string | null;
     parameters_count: number;
@@ -35,8 +36,8 @@ export default function IndexLabTypes({
     flash,
 }: {
     labTypes: PaginatedResult<LabTypeItem>;
-    filters: { search: string; category_id: string; department_id: string; per_page: string };
-    filterOptions: { categories: OptionItem[]; departments: OptionItem[] };
+    filters: { search: string; branch_id: string; category_id: string; department_id: string; per_page: string };
+    filterOptions: { branches: OptionItem[]; categories: OptionItem[]; departments: OptionItem[] };
     categories: LabCategoryItem[];
     permissions: SettingsPermissions & { view?: boolean };
     urls: { index: string; create: string; show: string; edit: string; destroy: string };
@@ -114,13 +115,27 @@ export default function IndexLabTypes({
                             event.preventDefault();
                             applyFilters(filters);
                         }}
-                        className="mb-6 grid gap-4 md:grid-cols-3"
+                        className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
                     >
                         <div>
                             <Label>{t('global.search')}</Label>
                             <TextInput
                                 value={filters.search}
                                 onChange={(event) => setFilters({ ...filters, search: event.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label>{t('global.branch')}</Label>
+                            <SearchableSelect
+                                value={filters.branch_id}
+                                onChange={(value) =>
+                                    setFilters({ ...filters, branch_id: value, department_id: '' })
+                                }
+                                options={filterOptions.branches.map((branch) => ({
+                                    value: String(branch.id),
+                                    label: branch.name,
+                                }))}
+                                placeholder={t('global.all_branches') || t('global.all')}
                             />
                         </div>
                         <div>
@@ -147,7 +162,7 @@ export default function IndexLabTypes({
                                 placeholder={t('global.all_departments')}
                             />
                         </div>
-                        <div className="md:col-span-3">
+                        <div className="md:col-span-2 xl:col-span-4">
                             <SettingsFilterActions processing={processing} />
                         </div>
                     </form>
@@ -157,6 +172,7 @@ export default function IndexLabTypes({
                                 <TableRow variant="header">
                                     <TableHeader>#</TableHeader>
                                     <TableHeader>{t('global.name')}</TableHeader>
+                                    <TableHeader>{t('global.branch')}</TableHeader>
                                     <TableHeader>{t('global.category')}</TableHeader>
                                     <TableHeader>{t('global.department')}</TableHeader>
                                     <TableHeader>{t('global.parameters_count')}</TableHeader>
@@ -179,6 +195,7 @@ export default function IndexLabTypes({
                                                 item.name
                                             )}
                                         </TableCell>
+                                        <TableCell muted>{item.branch_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.category_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.department_name ?? '—'}</TableCell>
                                         <TableCell>{item.parameters_count}</TableCell>

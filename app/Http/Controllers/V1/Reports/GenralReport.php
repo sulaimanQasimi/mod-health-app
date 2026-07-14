@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Anesthesia;
 use App\Models\Appointment;
 use App\Models\Branch;
+use App\Models\Department;
 use App\Models\Hospitalization;
 use App\Models\ICU;
 use App\Models\PatientTestRegistration;
@@ -344,6 +345,7 @@ class GenralReport extends Controller
             'success' => true,
             'message' => 'Patient test registration report fetched successfully',
             'data' => $data,
+            'departments' => $this->departmentsForReportFilter($request),
         ]);
     }
 
@@ -462,7 +464,35 @@ class GenralReport extends Controller
             })
             ->when($request->filled('date_from'), fn ($query) => $query->where('patient_test_registrations.registration_date', '>=', Verta::parse($request->date_from)->datetime()))
             ->when($request->filled('date_to'), fn ($query) => $query->where('patient_test_registrations.registration_date', '<=', Verta::parse($request->date_to)->datetime()))
-            ->when($request->filled('branch_id'), fn ($query) => $query->where('patient_test_registrations.branch_id', $request->branch_id));
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('patient_test_registrations.branch_id', $request->branch_id))
+            ->when($request->filled('department_id'), function ($query) use ($request) {
+                $departmentId = $request->department_id;
+
+                $query->where(function ($departmentQuery) use ($departmentId) {
+                    $departmentQuery
+                        ->where('lab_types.department_id', $departmentId)
+                        ->orWhere('appointments.department_id', $departmentId)
+                        ->orWhere('hospitalizations.department_id', $departmentId)
+                        ->orWhere('under_reviews.department_id', $departmentId);
+                });
+            });
+    }
+
+    /**
+     * @return list<array{id: int, name: string}>
+     */
+    private function departmentsForReportFilter(Request $request): array
+    {
+        return Department::query()
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('branch_id', $request->branch_id))
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Department $department) => [
+                'id' => $department->id,
+                'name' => $department->name,
+            ])
+            ->values()
+            ->all();
     }
 
     /**

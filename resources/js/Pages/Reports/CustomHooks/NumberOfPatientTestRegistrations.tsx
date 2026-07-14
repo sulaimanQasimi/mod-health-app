@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
+import { Label } from 'flowbite-react';
 import { useTranslation } from '../../../hooks/useTranslation';
+import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import GeneralReportTableSettingsModal from './GeneralReportTableSettingsModal';
 import GeneralReportTableToolbar from './GeneralReportTableToolbar';
 import {
@@ -20,6 +22,11 @@ interface BreakdownItem {
     key: string | number | null;
     label: string | null;
     count: number;
+}
+
+interface DepartmentOption {
+    id: number;
+    name: string;
 }
 
 interface TestRegistrationApiRow {
@@ -140,6 +147,8 @@ const NumberOfPatientTestRegistrations: React.FC<NumberOfPatientTestRegistration
 }) => {
     const { t } = useTranslation();
     const [report, setReport] = useState<TestRegistrationReport[]>([]);
+    const [departments, setDepartments] = useState<DepartmentOption[]>([]);
+    const [departmentId, setDepartmentId] = useState('');
     const [tableSettings, setTableSettings] = useState<GeneralReportTableSettings>(() =>
         createDefaultTableSettings([]),
     );
@@ -246,23 +255,33 @@ const NumberOfPatientTestRegistrations: React.FC<NumberOfPatientTestRegistration
     const minTotalOptions = useMemo(() => buildMinTotalOptions(report, t('global.all')), [report, t]);
 
     useEffect(() => {
+        setDepartmentId('');
+    }, [branch_id]);
+
+    useEffect(() => {
         const params = new URLSearchParams({
             branch_id: branch_id !== '' && branch_id != null ? String(branch_id) : '',
             date_from: date_from ?? '',
             date_to: date_to ?? '',
+            department_id: departmentId,
         });
 
         get(`/react/api/reports/general/patient-test-registrations?${params.toString()}`)
             .then((response) => {
-                const payload = response as { data?: TestRegistrationApiRow[] };
+                const payload = response as {
+                    data?: TestRegistrationApiRow[];
+                    departments?: DepartmentOption[];
+                };
                 const data = (payload?.data ?? []).map(normalizeTestReportRow);
                 setReport(data);
+                setDepartments(payload?.departments ?? []);
                 setTableSettings(createDefaultTableSettings(buildAllColumnsFromReport(data, t, labelResolvers)));
             })
             .catch(() => {
                 setReport([]);
+                setDepartments([]);
             });
-    }, [branch_id, date_from, date_to]);
+    }, [branch_id, date_from, date_to, departmentId]);
 
     const visibleColumnGroups = useMemo(
         () => buildOrderedColumnGroups(tableSettings, allColumns),
@@ -356,30 +375,55 @@ const NumberOfPatientTestRegistrations: React.FC<NumberOfPatientTestRegistration
 
     const columnCount = flatColumns.length + 3;
 
+    const departmentFilter = (
+        <div className="general-report-no-print mb-3 max-w-sm">
+            <Label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('global.department')}
+            </Label>
+            <SearchableSelect
+                value={departmentId}
+                onChange={setDepartmentId}
+                options={departments.map((department) => ({
+                    value: String(department.id),
+                    label: department.name,
+                }))}
+                placeholder={t('global.all_departments')}
+            />
+        </div>
+    );
+
     if (processing) {
         return (
-            <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                {t('global.loading')}...
-            </div>
+            <>
+                {departmentFilter}
+                <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                    {t('global.loading')}...
+                </div>
+            </>
         );
     }
 
     if (report.length === 0) {
         return (
-            <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                {t('global.no_data_found')}
-            </div>
+            <>
+                {departmentFilter}
+                <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                    {t('global.no_data_found')}
+                </div>
+            </>
         );
     }
 
     return (
         <>
+            {departmentFilter}
+
             <GeneralReportTableToolbar
                 visibleRowCount={displayReport.length}
                 totalRowCount={report.length}
                 visibleColumnCount={flatColumns.length}
                 totalColumnCount={allColumns.length}
-                activeFilterCount={activeFilterCount}
+                activeFilterCount={activeFilterCount + (departmentId ? 1 : 0)}
                 onOpenSettings={() => setSettingsModalOpen(true)}
                 rowLabel={t('global.test_name')}
                 exportData={exportData}

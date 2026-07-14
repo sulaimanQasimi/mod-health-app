@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1\Reports;
 
 use App\Http\Controllers\Controller;
+use App\Models\Anesthesia;
 use App\Models\Appointment;
 use App\Models\Branch;
 use App\Models\Hospitalization;
@@ -12,6 +13,7 @@ use App\Models\PrescriptionItem;
 use App\Models\UnderReview;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;
@@ -154,44 +156,124 @@ class GenralReport extends Controller
     public function hospitalization(Request $request)
     {
         $rows = $this->hospitalizationReportQuery($request)
+            ->leftJoin('militery_types', 'patients.militery_type_id', '=', 'militery_types.id')
+            ->leftJoin('relations', 'patients.relation_id', '=', 'relations.id')
+            ->leftJoin('appointments', 'hospitalizations.appointment_id', '=', 'appointments.id')
             ->selectRaw('
                 hospitalizations.department_id,
                 departments.name as department_name,
                 patients.gender,
-                hospitalizations.discharge_status,
+                patients.job_category,
                 patients.job_type,
+                patients.type as patient_type,
+                appointments.clinic_type,
+                patients.militery_type_id,
+                militery_types.name as militery_type_name,
+                patients.relation_id,
+                relations.name as relation_name,
+                patients.commanded_by,
                 COUNT(*) as count
             ')
             ->groupBy(
                 'hospitalizations.department_id',
                 'departments.name',
                 'patients.gender',
-                'hospitalizations.discharge_status',
+                'patients.job_category',
                 'patients.job_type',
+                'patients.type',
+                'appointments.clinic_type',
+                'patients.militery_type_id',
+                'militery_types.name',
+                'patients.relation_id',
+                'relations.name',
+                'patients.commanded_by',
             )
             ->orderBy('departments.name')
             ->get();
 
-        $data = $rows
-            ->groupBy('department_id')
-            ->map(function (Collection $departmentRows) {
-                $first = $departmentRows->first();
-
-                return [
-                    'department_id' => $first->department_id,
-                    'department_name' => $first->department_name,
-                    'count' => (int) $departmentRows->sum('count'),
-                    'genders' => $this->aggregateBreakdown($departmentRows, 'gender'),
-                    'discharge_statuses' => $this->aggregateBreakdown($departmentRows, 'discharge_status'),
-                    'job_types' => $this->aggregateBreakdown($departmentRows, 'job_type'),
-                ];
-            })
-            ->values();
-
         return response()->json([
             'success' => true,
             'message' => 'Hospitalization report fetched successfully',
-            'data' => $data,
+            'data' => $this->mapDepartmentDemographicRows($rows),
+        ]);
+    }
+
+    public function operations(Request $request): JsonResponse
+    {
+        $rows = $this->anesthesiaDemographicQuery($request)
+            ->where('anesthesias.is_referred_to_operation', true)
+            ->selectRaw($this->departmentDemographicSelect('appointments.department_id'))
+            ->groupBy(...$this->departmentDemographicGroupBy('appointments.department_id'))
+            ->orderBy('departments.name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Operations report fetched successfully',
+            'data' => $this->mapDepartmentDemographicRows($rows),
+        ]);
+    }
+
+    public function anesthesias(Request $request): JsonResponse
+    {
+        $rows = $this->anesthesiaDemographicQuery($request)
+            ->selectRaw($this->departmentDemographicSelect('appointments.department_id'))
+            ->groupBy(...$this->departmentDemographicGroupBy('appointments.department_id'))
+            ->orderBy('departments.name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Anesthesias report fetched successfully',
+            'data' => $this->mapDepartmentDemographicRows($rows),
+        ]);
+    }
+
+    public function icus(Request $request): JsonResponse
+    {
+        $icuTable = (new ICU)->getTable();
+
+        $rows = ICU::query()
+            ->leftJoin('appointments', "{$icuTable}.appointment_id", '=', 'appointments.id')
+            ->leftJoin('departments', 'appointments.department_id', '=', 'departments.id')
+            ->leftJoin('patients', "{$icuTable}.patient_id", '=', 'patients.id')
+            ->leftJoin('militery_types', 'patients.militery_type_id', '=', 'militery_types.id')
+            ->leftJoin('relations', 'patients.relation_id', '=', 'relations.id')
+            ->when($request->filled('date_from'), fn ($query) => $query->where("{$icuTable}.created_at", '>=', Verta::parse($request->date_from)->datetime()))
+            ->when($request->filled('date_to'), fn ($query) => $query->where("{$icuTable}.created_at", '<=', Verta::parse($request->date_to)->datetime()))
+            ->when($request->filled('branch_id'), fn ($query) => $query->where("{$icuTable}.branch_id", $request->branch_id))
+            ->selectRaw($this->departmentDemographicSelect('appointments.department_id'))
+            ->groupBy(...$this->departmentDemographicGroupBy('appointments.department_id'))
+            ->orderBy('departments.name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ICU report fetched successfully',
+            'data' => $this->mapDepartmentDemographicRows($rows),
+        ]);
+    }
+
+    public function under_reviews(Request $request): JsonResponse
+    {
+        $rows = UnderReview::query()
+            ->leftJoin('departments', 'under_reviews.department_id', '=', 'departments.id')
+            ->leftJoin('patients', 'under_reviews.patient_id', '=', 'patients.id')
+            ->leftJoin('appointments', 'under_reviews.appointment_id', '=', 'appointments.id')
+            ->leftJoin('militery_types', 'patients.militery_type_id', '=', 'militery_types.id')
+            ->leftJoin('relations', 'patients.relation_id', '=', 'relations.id')
+            ->when($request->filled('date_from'), fn ($query) => $query->where('under_reviews.created_at', '>=', Verta::parse($request->date_from)->datetime()))
+            ->when($request->filled('date_to'), fn ($query) => $query->where('under_reviews.created_at', '<=', Verta::parse($request->date_to)->datetime()))
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('under_reviews.branch_id', $request->branch_id))
+            ->selectRaw($this->departmentDemographicSelect('under_reviews.department_id'))
+            ->groupBy(...$this->departmentDemographicGroupBy('under_reviews.department_id'))
+            ->orderBy('departments.name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Under review report fetched successfully',
+            'data' => $this->mapDepartmentDemographicRows($rows),
         ]);
     }
 
@@ -407,6 +489,94 @@ class GenralReport extends Controller
             ->when($request->filled('date_from'), fn ($query) => $query->where('hospitalizations.created_at', '>=', Verta::parse($request->date_from)->datetime()))
             ->when($request->filled('date_to'), fn ($query) => $query->where('hospitalizations.created_at', '<=', Verta::parse($request->date_to)->datetime()))
             ->when($request->filled('branch_id'), fn ($query) => $query->where('hospitalizations.branch_id', $request->branch_id));
+    }
+
+    /**
+     * @return Builder<Anesthesia>
+     */
+    private function anesthesiaDemographicQuery(Request $request): Builder
+    {
+        return Anesthesia::query()
+            ->leftJoin('appointments', 'anesthesias.appointment_id', '=', 'appointments.id')
+            ->leftJoin('departments', 'appointments.department_id', '=', 'departments.id')
+            ->leftJoin('patients', 'anesthesias.patient_id', '=', 'patients.id')
+            ->leftJoin('militery_types', 'patients.militery_type_id', '=', 'militery_types.id')
+            ->leftJoin('relations', 'patients.relation_id', '=', 'relations.id')
+            ->when($request->filled('date_from'), fn ($query) => $query->where('anesthesias.created_at', '>=', Verta::parse($request->date_from)->datetime()))
+            ->when($request->filled('date_to'), fn ($query) => $query->where('anesthesias.created_at', '<=', Verta::parse($request->date_to)->datetime()))
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('anesthesias.branch_id', $request->branch_id));
+    }
+
+    private function departmentDemographicSelect(string $departmentColumn): string
+    {
+        return "
+            {$departmentColumn} as department_id,
+            departments.name as department_name,
+            patients.gender,
+            patients.job_category,
+            patients.job_type,
+            patients.type as patient_type,
+            appointments.clinic_type,
+            patients.militery_type_id,
+            militery_types.name as militery_type_name,
+            patients.relation_id,
+            relations.name as relation_name,
+            patients.commanded_by,
+            COUNT(*) as count
+        ";
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function departmentDemographicGroupBy(string $departmentColumn): array
+    {
+        return [
+            $departmentColumn,
+            'departments.name',
+            'patients.gender',
+            'patients.job_category',
+            'patients.job_type',
+            'patients.type',
+            'appointments.clinic_type',
+            'patients.militery_type_id',
+            'militery_types.name',
+            'patients.relation_id',
+            'relations.name',
+            'patients.commanded_by',
+        ];
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    private function mapDepartmentDemographicRows(Collection $rows): Collection
+    {
+        return $rows
+            ->groupBy('department_id')
+            ->map(function (Collection $departmentRows) {
+                $first = $departmentRows->first();
+
+                return [
+                    'department_id' => $first->department_id,
+                    'department_name' => $first->department_name,
+                    'count' => (int) $departmentRows->sum('count'),
+                    'genders' => $this->aggregateBreakdown($departmentRows, 'gender'),
+                    'job_categories' => $this->aggregateBreakdown($departmentRows, 'job_category'),
+                    'job_types' => $this->aggregateBreakdown($departmentRows, 'job_type'),
+                    'patient_types' => $this->aggregateBreakdown($departmentRows, 'patient_type'),
+                    'clinic_types' => $this->aggregateBreakdown($departmentRows, 'clinic_type'),
+                    'militery_types' => $this->aggregateBreakdown($departmentRows, 'militery_type_id', 'militery_type_name'),
+                    'relations' => $this->aggregateBreakdown($departmentRows, 'relation_id', 'relation_name'),
+                    'commanded_by' => $this->aggregateBreakdown(
+                        $departmentRows,
+                        'commanded_by',
+                        'commanded_by',
+                        fn ($value) => filled($value),
+                    ),
+                ];
+            })
+            ->values();
     }
 
     /**

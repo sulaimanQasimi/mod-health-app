@@ -34,6 +34,10 @@ import NumberOfPrescriptions from './CustomHooks/NumberOfPrescriptions';
 import NumberOfHospitalizationsBaseOnDepartment from './CustomHooks/NumberOfHospitalizationsBaseOnDepartment';
 import NumberOfPatientsBaseOnDepartment from './CustomHooks/NumberOfPatientsBaseOnDepartment';
 import NumberOfPatientsBaseOnPatientMiliteryTypes from './CustomHooks/NumberOfPatientsBaseOnPatientMiliteryTypes';
+import NumberOfOperationsBaseOnDepartment from './CustomHooks/NumberOfOperationsBaseOnDepartment';
+import NumberOfAnesthesiasBaseOnDepartment from './CustomHooks/NumberOfAnesthesiasBaseOnDepartment';
+import NumberOfIcusBaseOnDepartment from './CustomHooks/NumberOfIcusBaseOnDepartment';
+import NumberOfUnderReviewsBaseOnDepartment from './CustomHooks/NumberOfUnderReviewsBaseOnDepartment';
 import GeneralReportHeader from './CustomHooks/GeneralReportHeader';
 import GeneralReportTitle from './CustomHooks/GeneralReportTitle';
 import { createDefaultHeaderSettings, ReportHeaderSettings } from './CustomHooks/generalReportHeaderSettings';
@@ -43,6 +47,10 @@ type ReportWidgetType =
     | 'department'
     | 'militery-types'
     | 'hospitalization'
+    | 'operations'
+    | 'anesthesias'
+    | 'icus'
+    | 'under-reviews'
     | 'patient-test-registrations'
     | 'prescriptions'
     | 'header'
@@ -103,6 +111,22 @@ const WIDGET_CATALOG: Record<ReportWidgetType, { labelKey: string; icon: string 
     hospitalization: {
         labelKey: 'global.hospitalization',
         icon: 'bx-bed',
+    },
+    operations: {
+        labelKey: 'global.operations',
+        icon: 'bx-cut',
+    },
+    anesthesias: {
+        labelKey: 'global.anesthesias',
+        icon: 'bx-first-aid',
+    },
+    icus: {
+        labelKey: 'global.icus',
+        icon: 'bx-tv',
+    },
+    'under-reviews': {
+        labelKey: 'global.under_review',
+        icon: 'bx-revision',
     },
     'patient-test-registrations': {
         labelKey: 'global.patient_test_registrations',
@@ -817,6 +841,22 @@ export default function GeneralReport({
 
         if (widget.type === 'hospitalization') {
             return <NumberOfHospitalizationsBaseOnDepartment {...filterProps} />;
+        }
+
+        if (widget.type === 'operations') {
+            return <NumberOfOperationsBaseOnDepartment {...filterProps} />;
+        }
+
+        if (widget.type === 'anesthesias') {
+            return <NumberOfAnesthesiasBaseOnDepartment {...filterProps} />;
+        }
+
+        if (widget.type === 'icus') {
+            return <NumberOfIcusBaseOnDepartment {...filterProps} />;
+        }
+
+        if (widget.type === 'under-reviews') {
+            return <NumberOfUnderReviewsBaseOnDepartment {...filterProps} />;
         }
 
         if (widget.type === 'patient-test-registrations') {

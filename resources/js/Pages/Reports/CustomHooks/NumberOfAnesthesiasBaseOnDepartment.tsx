@@ -7,12 +7,12 @@ interface Props {
     date_to?: string;
 }
 
-const NumberOfHospitalizationsBaseOnDepartment: React.FC<Props> = (props) => (
+const NumberOfAnesthesiasBaseOnDepartment: React.FC<Props> = (props) => (
     <DepartmentPatientBreakdownReport
-        endpoint="/react/api/reports/general/hospitalization"
-        exportFileName="hospitalizations-by-department"
+        endpoint="/react/api/reports/general/anesthesias"
+        exportFileName="anesthesias-by-department"
         {...props}
     />
 );
 
-export default NumberOfHospitalizationsBaseOnDepartment;
+export default NumberOfAnesthesiasBaseOnDepartment;

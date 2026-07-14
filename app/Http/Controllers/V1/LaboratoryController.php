@@ -1002,13 +1002,17 @@ class LaboratoryController extends Controller
             $query->where('branch_id', $user->branch_id);
         }
 
-        if ($user->department_id) {
-            $query->where('id', $user->department_id);
-        } else {
-            $query->whereRaw('0 = 1');
+        if ($user->hasRole(['super_admin', 'admin']) || $user->can('manage-lab-tests')) {
+            return $query->get(['id', 'name']);
         }
 
-        return $query->get(['id', 'name']);
+        $departmentId = $user->laboratoryDepartmentId();
+
+        if (! $departmentId) {
+            return $query->whereRaw('0 = 1')->get(['id', 'name']);
+        }
+
+        return $query->where('id', $departmentId)->get(['id', 'name']);
     }
 
     /**

@@ -220,20 +220,19 @@ function PaletteItem({
     isPlaced: boolean;
     addedLabel: string;
 }) {
-    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         id: `palette-${type}`,
         data: { source: 'palette', type },
         disabled: isPlaced,
     });
 
-    const style = transform ? { transform: CSS.Translate.toString(transform) } : undefined;
-
+    // DragOverlay renders the preview — do not transform the handle or it leaves a move-icon ghost.
     return (
         <div
             className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-start text-sm font-medium shadow-sm transition ${isPlaced
                 ? 'border-emerald-200 bg-emerald-50/80 text-gray-600 dark:border-emerald-900 dark:bg-emerald-950/20 dark:text-gray-300'
                 : 'border-gray-200 bg-white text-gray-800 hover:border-indigo-300 hover:bg-indigo-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/30'
-                }`}
+                } ${isDragging ? 'opacity-50' : ''}`}
         >
             <button
                 type="button"
@@ -258,13 +257,12 @@ function PaletteItem({
             </button>
             <button
                 ref={setNodeRef}
-                style={style}
                 type="button"
                 disabled={isPlaced}
                 className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-400 dark:border-gray-700 ${isPlaced
                     ? 'cursor-not-allowed opacity-40'
                     : 'cursor-grab hover:bg-gray-50 active:cursor-grabbing dark:hover:bg-gray-800'
-                    } ${isDragging ? 'opacity-50' : ''}`}
+                    }`}
                 aria-label={`Drag ${label}`}
                 {...listeners}
                 {...attributes}

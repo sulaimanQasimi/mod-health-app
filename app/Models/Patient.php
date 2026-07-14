@@ -212,4 +212,9 @@ class Patient extends Model
     {
         return $this->hasMany(NephrologyRegistration::class);
     }
+
+    public function foreignCountryReferrals()
+    {
+        return $this->hasMany(ForeignCountryReferral::class);
+    }
 }

@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button } from 'flowbite-react';
 import { ReactNode, useState } from 'react';
 import CreateAppointmentModal from '../../Components/Patients/CreateAppointmentModal';
+import ForeignCountryReferralSection from '../../Components/Patients/Sections/ForeignCountryReferralSection';
 import PatientQrCode from '../../Components/Patients/PatientQrCode';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import BackLink from '../../Components/ui/BackLink';
@@ -498,6 +499,10 @@ export default function ShowPatient({
                                 </div>
                             </div>
                         </SectionCard>
+
+                        {permissions.foreignCountryReferral && (
+                            <ForeignCountryReferralSection patientId={patient.id} />
+                        )}
                 </div>
             </div>
 

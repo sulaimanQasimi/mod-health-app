@@ -76,6 +76,7 @@ use App\Http\Controllers\V1\OperationTypeController;
 use App\Http\Controllers\V1\OutcomeController;
 use App\Http\Controllers\V1\PACUController;
 use App\Http\Controllers\V1\PatientController;
+use App\Http\Controllers\V1\PatientSections\ForeignCountryReferralController;
 use App\Http\Controllers\V1\PermissionController;
 use App\Http\Controllers\V1\PharmacyController;
 use App\Http\Controllers\V1\PharmacyFulfillmentController;
@@ -128,6 +129,18 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/doctors-by-department/{departmentId}', [PatientController::class, 'doctorsByDepartment'])->name('doctors-by-department');
         Route::get('/report', [PatientController::class, 'report'])->name('report');
         Route::get('/{patient}/edit', [PatientController::class, 'edit'])->name('edit');
+
+        Route::prefix('{patient}')->name('sections.')->group(function () {
+            Route::get('foreign-country-referral/meta', [ForeignCountryReferralController::class, 'meta'])->name('foreign-country-referral.meta');
+            Route::get('foreign-country-referral', [ForeignCountryReferralController::class, 'index'])->name('foreign-country-referral.index');
+            Route::post('foreign-country-referral', [ForeignCountryReferralController::class, 'store'])->name('foreign-country-referral.store');
+            Route::get('foreign-country-referral/{foreignCountryReferral}', [ForeignCountryReferralController::class, 'show'])->name('foreign-country-referral.show');
+            Route::post('foreign-country-referral/{foreignCountryReferral}/attachments', [ForeignCountryReferralController::class, 'storeAttachments'])->name('foreign-country-referral.attachments.store');
+            Route::delete('foreign-country-referral/items/{foreignCountryReferralItem}', [ForeignCountryReferralController::class, 'destroyItem'])->name('foreign-country-referral.items.destroy');
+            Route::delete('foreign-country-referral/attachments/{foreignCountryReferralAttachment}', [ForeignCountryReferralController::class, 'destroyAttachment'])->name('foreign-country-referral.attachments.destroy');
+            Route::delete('foreign-country-referral/{foreignCountryReferral}', [ForeignCountryReferralController::class, 'destroy'])->name('foreign-country-referral.destroy');
+        });
+
         Route::get('/{patient}', [PatientController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/{patient}', [PatientController::class, 'update'])->name('update');
         Route::delete('/{patient}', [PatientController::class, 'destroy'])->name('destroy');

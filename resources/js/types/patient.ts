@@ -162,6 +162,7 @@ export interface PatientShowPermissions {
     createAppointment: boolean;
     uploadImage: boolean;
     nephrology: boolean;
+    foreignCountryReferral: boolean;
 }
 
 export interface PatientShowUrls {

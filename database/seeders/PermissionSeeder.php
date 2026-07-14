@@ -1204,6 +1204,42 @@ class PermissionSeeder extends Seeder
         );
 
         Permission::updateOrCreate(
+            ['name' => 'view-refer-to-foreign-country'],
+            [
+                'name_dr' => 'مشاهده ارجاع به کشور خارجی',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'add-refer-to-foreign-country'],
+            [
+                'name_dr' => 'اضافه نمودن ارجاع به کشور خارجی',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'edit-refer-to-foreign-country'],
+            [
+                'name_dr' => 'ویرایش ارجاع به کشور خارجی',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'delete-refer-to-foreign-country'],
+            [
+                'name_dr' => 'حذف ارجاع به کشور خارجی',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
             ['name' => 'show-blood-request-menu'],
             [
                 'name_dr' => 'نمایش درخواست خون',

@@ -276,6 +276,10 @@ class SidebarMenuService
             ]);
         }
 
+        if ($user->hasRole(['admin', 'super_admin']) || $user->can('show-reports-menu')) {
+            $items[] = $this->item('general-report', 'global.general_report', 'bx-bar-chart-alt-2', 'react.reports.general.index');
+        }
+
         if ($user->can('show-settings-menu')) {
             $children = [];
             if ($user->can('show-users-menu')) {

@@ -237,6 +237,7 @@ class PatientController extends Controller
                 'createAppointment' => $user->hasPermissionTo('create-appointment'),
                 'uploadImage' => $user->can('uploadImage', $patient),
                 'nephrology' => $canAccessNephrology,
+                'foreignCountryReferral' => $user->can('viewAny', \App\Models\ForeignCountryReferral::class),
             ],
             'urls' => [
                 'index' => route('react.patients.index'),

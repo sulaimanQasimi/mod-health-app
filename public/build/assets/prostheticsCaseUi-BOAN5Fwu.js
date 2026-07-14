@@ -1,0 +1,1 @@
+function s(e,t,a){const r=`global.${e}_${t}`,o=a(r);return o===r?t.replace(/_/g," "):o}function i(e,t){return s("prosthetics_side",e,t)}function c(e,t){return s("prosthetics_category",e,t)}function n(e,t){return s("prosthetics_priority",e,t)}function p(e,t){return s("prosthetics_case_status",e,t)}export{c as a,n as b,p as c,i as p};

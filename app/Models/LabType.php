@@ -75,6 +75,12 @@ class LabType extends Model
     }
 
     /**
+     * Scope lab types for the current laboratory user.
+     *
+     * Branch managers / admins see all tests for their branch.
+     * Lab staff see tests for their laboratory department plus
+     * branch-level tests that have no department assigned yet.
+     *
      * @param  Builder<LabType>  $query
      * @return Builder<LabType>
      */
@@ -84,10 +90,20 @@ class LabType extends Model
             $query->where('branch_id', $user->branch_id);
         }
 
-        if (! $user->department_id) {
+        if ($user->hasRole(['super_admin', 'admin']) || $user->can('manage-lab-tests')) {
+            return $query;
+        }
+
+        $departmentId = $user->laboratoryDepartmentId();
+
+        if (! $departmentId) {
             return $query->whereRaw('0 = 1');
         }
 
-        return $query->where('department_id', $user->department_id);
+        return $query->where(function (Builder $departmentQuery) use ($departmentId) {
+            $departmentQuery
+                ->where('department_id', $departmentId)
+                ->orWhereNull('department_id');
+        });
     }
 }

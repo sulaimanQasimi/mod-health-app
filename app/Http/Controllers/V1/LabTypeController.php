@@ -44,7 +44,6 @@ class LabTypeController extends Controller
         if ($request->filled('department_id')) {
             $query->where('department_id', $request->department_id);
         }
-
         $paginator = $this->paginateQuery($query->orderBy('name'), $request);
 
         return Inertia::render('LabTypes/Index', [
@@ -276,22 +275,9 @@ class LabTypeController extends Controller
      */
     private function buildFormData(Request $request): array
     {
-        $branchId = $this->branchId($request);
-        $user = $request->user();
-
-        $departmentsQuery = Department::query()
-            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
-            ->orderBy('name');
-
-        if ($user?->department_id) {
-            $departmentsQuery->where('id', $user->department_id);
-        } else {
-            $departmentsQuery->whereRaw('0 = 1');
-        }
-
         return [
             'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
-            'departments' => $departmentsQuery->get(['id', 'name']),
+            'departments' => $this->departmentsForUser($request->user())->all(),
         ];
     }
 
@@ -300,23 +286,34 @@ class LabTypeController extends Controller
      */
     private function filterOptions(Request $request): array
     {
-        $branchId = $this->branchId($request);
-        $user = $request->user();
-
-        $departmentsQuery = Department::query()
-            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
-            ->orderBy('name');
-
-        if ($user?->department_id) {
-            $departmentsQuery->where('id', $user->department_id);
-        } else {
-            $departmentsQuery->whereRaw('0 = 1');
-        }
-
         return [
             'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
-            'departments' => $departmentsQuery->get(['id', 'name']),
+            'departments' => $this->departmentsForUser($request->user())->all(),
         ];
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, Department>
+     */
+    private function departmentsForUser(?User $user)
+    {
+        $query = Department::query()->orderBy('name');
+
+        if ($user?->branch_id) {
+            $query->where('branch_id', $user->branch_id);
+        }
+
+        if ($user && ($user->hasRole(['super_admin', 'admin']) || $user->can('manage-lab-tests'))) {
+            return $query->get(['id', 'name']);
+        }
+
+        $departmentId = $user?->laboratoryDepartmentId();
+
+        if (! $departmentId) {
+            return $query->whereRaw('0 = 1')->get(['id', 'name']);
+        }
+
+        return $query->where('id', $departmentId)->get(['id', 'name']);
     }
 
     /**

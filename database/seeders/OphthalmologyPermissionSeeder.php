@@ -15,13 +15,13 @@ class OphthalmologyPermissionSeeder extends Seeder
         'edit-ophthalmology-registrations' => ['ویرایش معاینه چشم', 'د سترګو معاینه سمول'],
         'delete-ophthalmology-registrations' => ['حذف ثبت چشم', 'د سترګو ثبت ړنګول'],
         'change-ophthalmology-status' => ['تغییر وضعیت ثبت چشم', 'د سترګو ثبت حالت بدلول'],
-        'manage-ophthalmology-tests' => ['مدیریت آزمایش‌های چشم', 'د سترګو معاینات اداره کول'],
         'upload-ophthalmology-images' => ['آپلود تصاویر چشم', 'د سترګو انځورونه پورته کول'],
     ];
 
     public function run(): void
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
+        Permission::where('name', 'manage-ophthalmology-tests')->delete();
 
         foreach (self::PERMISSIONS as $name => [$nameDr, $namePa]) {
             Permission::updateOrCreate(
@@ -51,7 +51,6 @@ class OphthalmologyPermissionSeeder extends Seeder
         );
         $technician->givePermissionTo([
             'access-ophthalmology-registrations',
-            'manage-ophthalmology-tests',
             'upload-ophthalmology-images',
         ]);
 

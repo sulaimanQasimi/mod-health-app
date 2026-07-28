@@ -261,6 +261,7 @@
                                         <th>{{ localize('global.clinic_type') }}</th>
                                         <th class="text-center">{{ localize('global.active_status') }}</th>
                                         <th class="text-center">{{ localize('global.is_dentist') ?: 'Is Dentist' }}</th>
+                                        <th class="text-center">{{ localize('global.is_eye_doctor') ?: 'Is Eye Doctor' }}</th>
                                         <th class="text-center" style="width: 100px;">{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
@@ -344,6 +345,15 @@
                                                 @if($doctor->is_dentist)
                                                     <span class="badge bg-label-info">
                                                         <i class="bx bx-check me-1"></i>{{ localize('global.dentist') ?: 'Dentist' }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                @if($doctor->is_eye_doctor)
+                                                    <span class="badge bg-label-success">
+                                                        <i class="bx bx-show me-1"></i>{{ localize('global.eye_doctor') ?: 'Eye Doctor' }}
                                                     </span>
                                                 @else
                                                     <span class="text-muted">-</span>

@@ -58,9 +58,6 @@ class OphthalmologyController extends Controller
                     : null,
                 'status' => $item->status,
                 'diagnosis' => $item->diagnosis,
-                'tests_count' => collect($item->diagnostic_tests ?? [])
-                    ->filter(fn ($test) => is_array($test) ? ($test['selected'] ?? true) : filled($test))
-                    ->count(),
                 'urls' => [
                     'show' => route('react.ophthalmology-registrations.show', $item),
                 ],
@@ -110,6 +107,7 @@ class OphthalmologyController extends Controller
     {
         return Doctor::query()
             ->where('active_status', true)
+            ->where('is_eye_doctor', true)
             ->where('branch_id', $appointment->branch_id)
             ->orderBy('name')
             ->get();

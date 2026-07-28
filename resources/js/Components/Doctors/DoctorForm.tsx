@@ -32,6 +32,7 @@ export default function DoctorForm({ mode, formData, urls, doctor }: DoctorFormP
         active_status: doctor?.active_status ?? true,
         is_dentist: doctor?.is_dentist ?? false,
         is_nephrologist: doctor?.is_nephrologist ?? false,
+        is_eye_doctor: doctor?.is_eye_doctor ?? false,
     });
 
     const departmentOptions = useMemo(
@@ -241,7 +242,7 @@ export default function DoctorForm({ mode, formData, urls, doctor }: DoctorFormP
                 </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <div className="flex items-center gap-2">
                     <Checkbox
                         id="active_status"
@@ -268,10 +269,24 @@ export default function DoctorForm({ mode, formData, urls, doctor }: DoctorFormP
                         {t('global.is_nephrologist') || t('global.nephrology')}
                     </Label>
                 </div>
+                <div className="flex items-center gap-2">
+                    <Checkbox
+                        id="is_eye_doctor"
+                        checked={data.is_eye_doctor}
+                        onChange={(event) => setData('is_eye_doctor', event.target.checked)}
+                    />
+                    <Label htmlFor="is_eye_doctor">{t('global.is_eye_doctor')}</Label>
+                </div>
             </div>
 
             <div className="flex flex-wrap justify-end gap-2 border-t border-gray-200 pt-6 dark:border-gray-700">
-                <Button color="light" type="button" as="a" href={urls.back} disabled={processing}>
+                <Button
+                    color="light"
+                    type="button"
+                    as="a"
+                    href={processing ? undefined : urls.back}
+                    className={processing ? 'pointer-events-none opacity-50' : undefined}
+                >
                     {t('global.cancel')}
                 </Button>
                 <Button type="submit" color="blue" disabled={processing}>

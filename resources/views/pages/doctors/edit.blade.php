@@ -197,6 +197,22 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="is_eye_doctor">{{ localize('global.is_eye_doctor') ?: 'Is Eye Doctor' }}</label>
+                                        <div class="form-check form-switch">
+                                            @php
+                                                $isEyeDoctor = old('is_eye_doctor') !== null
+                                                    ? (bool) old('is_eye_doctor')
+                                                    : ($doctor->is_eye_doctor ?? false);
+                                            @endphp
+                                            <input class="form-check-input" type="checkbox" name="is_eye_doctor" id="is_eye_doctor" value="1" {{ $isEyeDoctor ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="is_eye_doctor">
+                                                {{ localize('global.eye_doctor') ?: 'Eye Doctor' }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('doctors.index') }}" class="btn btn-secondary">{{localize('global.cancel')}}</a>
@@ -212,4 +228,3 @@
 @section('scripts')
 
 @endsection
-

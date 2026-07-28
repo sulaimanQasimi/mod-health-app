@@ -67,6 +67,7 @@ class DoctorController extends Controller
                 'inactive' => $allDoctors->where('active_status', false)->count(),
                 'total' => $allDoctors->count(),
                 'dentists' => $allDoctors->where('is_dentist', true)->count(),
+                'eye_doctors' => $allDoctors->where('is_eye_doctor', true)->count(),
             ],
             'filters' => $filters,
             'filterOptions' => [
@@ -259,6 +260,7 @@ class DoctorController extends Controller
             'active_status' => (bool) $doctor->active_status,
             'is_dentist' => (bool) $doctor->is_dentist,
             'is_nephrologist' => (bool) $doctor->is_nephrologist,
+            'is_eye_doctor' => (bool) $doctor->is_eye_doctor,
         ];
     }
 
@@ -284,6 +286,7 @@ class DoctorController extends Controller
             'active_status' => (bool) $doctor->active_status,
             'is_dentist' => (bool) $doctor->is_dentist,
             'is_nephrologist' => (bool) $doctor->is_nephrologist,
+            'is_eye_doctor' => (bool) $doctor->is_eye_doctor,
             'department_name' => $doctor->department?->name,
             'branch_name' => $doctor->branch?->name,
             'linked_user' => $linkedUser ? [
@@ -324,6 +327,7 @@ class DoctorController extends Controller
             'active_status' => (bool) $doctor->active_status,
             'is_dentist' => (bool) $doctor->is_dentist,
             'is_nephrologist' => (bool) $doctor->is_nephrologist,
+            'is_eye_doctor' => (bool) $doctor->is_eye_doctor,
         ];
     }
 
@@ -384,6 +388,7 @@ class DoctorController extends Controller
             'active_status' => 'nullable|boolean',
             'is_dentist' => 'nullable|boolean',
             'is_nephrologist' => 'nullable|boolean',
+            'is_eye_doctor' => 'nullable|boolean',
         ]);
     }
 
@@ -402,6 +407,7 @@ class DoctorController extends Controller
         $data['active_status'] = $request->boolean('active_status');
         $data['is_dentist'] = $request->boolean('is_dentist');
         $data['is_nephrologist'] = $request->boolean('is_nephrologist');
+        $data['is_eye_doctor'] = $request->boolean('is_eye_doctor');
 
         if ($request->filled('join_date')) {
             try {

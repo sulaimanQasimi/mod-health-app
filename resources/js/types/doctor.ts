@@ -17,6 +17,7 @@ export interface DoctorListItem {
     active_status: boolean;
     is_dentist: boolean;
     is_nephrologist: boolean;
+    is_eye_doctor: boolean;
 }
 
 export interface PaginatedDoctors {
@@ -37,6 +38,7 @@ export interface DoctorIndexStats {
     inactive: number;
     total: number;
     dentists: number;
+    eye_doctors: number;
 }
 
 export interface DoctorIndexFilters {
@@ -103,6 +105,7 @@ export interface DoctorFormValues {
     active_status: boolean;
     is_dentist: boolean;
     is_nephrologist: boolean;
+    is_eye_doctor: boolean;
 }
 
 export interface DoctorFormUrls {
@@ -135,6 +138,7 @@ export interface DoctorDetail {
     active_status: boolean;
     is_dentist: boolean;
     is_nephrologist: boolean;
+    is_eye_doctor: boolean;
     department_name: string | null;
     branch_name: string | null;
     linked_user: DoctorLinkedUser | null;

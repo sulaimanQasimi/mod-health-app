@@ -6,6 +6,7 @@ import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import TableBadge from '../../Components/ui/TableBadge';
+import { LabTestSection, PrescriptionSection } from '../../Components/Appointments/Sections';
 import { useTranslation } from '../../hooks/useTranslation';
 
 type JsonMap = Record<string, any>;
@@ -25,7 +26,6 @@ interface Props {
         refraction: JsonMap;
         slit_lamp_examination: JsonMap;
         fundus_examination: JsonMap;
-        diagnostic_tests: string[] | JsonMap;
         diagnosis: string;
         treatment_plan: string;
         follow_up_date: string;
@@ -46,7 +46,6 @@ interface Props {
     permissions: {
         edit: boolean;
         changeStatus: boolean;
-        manageTests: boolean;
         uploadImages: boolean;
     };
     urls: { update: string; appointment: string };
@@ -94,26 +93,6 @@ const SLIT_LAMP_FIELDS = [
     ['extraocular_movement', 'Extraocular movement'],
 ] as const;
 
-const TESTS = [
-    'B-scan ultrasonography',
-    'A-scan ultrasonography',
-    'OCT',
-    'Fundus photography',
-    'Fundoscopy',
-    'Corneal topography',
-    'Pachymetry',
-    'Perimetry',
-    'Biometry',
-    'OCT RNFL',
-    'Brain CT scan',
-    'Brain MRI',
-    'CBC',
-    'HBsAg',
-    'HCV',
-    'HIV',
-    'Skull X-ray',
-];
-
 const inputClass = 'block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white';
 
 function SectionCard({ title, icon, children }: { title: string; icon: string; children: ReactNode }) {
@@ -131,12 +110,6 @@ function SectionCard({ title, icon, children }: { title: string; icon: string; c
 export default function OphthalmologyRegistrationShow({ registration, formOptions, permissions, urls }: Props) {
     const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
-    const initialDiagnosticTests: JsonMap = Array.isArray(registration.diagnostic_tests)
-        ? Object.fromEntries(registration.diagnostic_tests.map((test) => [
-            test,
-            { selected: true, status: 'requested', priority: 'routine', clinical_indication: '', result: '' },
-        ]))
-        : registration.diagnostic_tests ?? {};
     const [form, setForm] = useState({
         examiner_id: registration.examiner_id ? String(registration.examiner_id) : '',
         registration_date: registration.registration_date,
@@ -147,7 +120,6 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
         refraction: registration.refraction ?? {},
         slit_lamp_examination: registration.slit_lamp_examination ?? {},
         fundus_examination: registration.fundus_examination ?? {},
-        diagnostic_tests: initialDiagnosticTests,
         diagnosis: registration.diagnosis,
         treatment_plan: registration.treatment_plan,
         follow_up_date: registration.follow_up_date,
@@ -201,7 +173,6 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
             });
         }
         if (permissions.changeStatus) payload.status = form.status;
-        if (permissions.manageTests) payload.diagnostic_tests = form.diagnostic_tests;
         if (permissions.uploadImages && form.fundus_image) payload.fundus_image = form.fundus_image;
 
         setProcessing(true);
@@ -218,25 +189,7 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
 
     const canSave = permissions.edit
         || permissions.changeStatus
-        || permissions.manageTests
         || permissions.uploadImages;
-
-    const toggleTest = (test: string) => {
-        setForm((current) => ({
-            ...current,
-            diagnostic_tests: {
-                ...current.diagnostic_tests,
-                [test]: {
-                    status: 'requested',
-                    priority: 'routine',
-                    clinical_indication: '',
-                    result: '',
-                    ...(current.diagnostic_tests[test] ?? {}),
-                    selected: !current.diagnostic_tests[test]?.selected,
-                },
-            },
-        }));
-    };
 
     const statusColor = ({ pending: 'warning', in_progress: 'info', completed: 'success', cancelled: 'failure' } as const)[registration.status] ?? 'gray';
 
@@ -503,43 +456,8 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
                     </div>
                 </SectionCard>
 
-                <SectionCard title={t('global.diagnostic_tests')} icon="bx-test-tube">
-                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                        {TESTS.map((test) => (
-                            <label key={test} className="flex items-center gap-3 rounded-lg border border-gray-200 p-3 text-sm dark:border-gray-700">
-                                <input type="checkbox" checked={Boolean(form.diagnostic_tests[test]?.selected)} onChange={() => toggleTest(test)} disabled={!permissions.manageTests} className="rounded border-gray-300 text-cyan-600 focus:ring-cyan-500" />
-                                {test}
-                            </label>
-                        ))}
-                    </div>
-                    {TESTS.filter((test) => form.diagnostic_tests[test]?.selected).map((test) => (
-                        <div key={`request-${test}`} className="rounded-xl border border-cyan-100 bg-cyan-50/40 p-4 dark:border-cyan-900/50 dark:bg-cyan-950/20">
-                            <h3 className="mb-3 font-medium text-cyan-900 dark:text-cyan-100">{test}</h3>
-                            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-                                <div>
-                                    <Label>Priority</Label>
-                                    <Select value={form.diagnostic_tests[test]?.priority ?? 'routine'} onChange={(event) => setNested('diagnostic_tests', [test, 'priority'], event.target.value)} disabled={!permissions.manageTests}>
-                                        <option value="routine">Routine</option><option value="urgent">Urgent</option><option value="stat">STAT</option>
-                                    </Select>
-                                </div>
-                                <div>
-                                    <Label>Status</Label>
-                                    <Select value={form.diagnostic_tests[test]?.status ?? 'requested'} onChange={(event) => setNested('diagnostic_tests', [test, 'status'], event.target.value)} disabled={!permissions.manageTests}>
-                                        <option value="requested">Requested</option><option value="scheduled">Scheduled</option><option value="in_progress">In progress</option><option value="completed">Completed</option><option value="reviewed">Reviewed</option><option value="cancelled">Cancelled</option>
-                                    </Select>
-                                </div>
-                                <div className="md:col-span-2">
-                                    <Label>Clinical indication</Label>
-                                    <TextInput value={form.diagnostic_tests[test]?.clinical_indication ?? ''} onChange={(event) => setNested('diagnostic_tests', [test, 'clinical_indication'], event.target.value)} disabled={!permissions.manageTests} />
-                                </div>
-                                <div className="md:col-span-2 lg:col-span-4">
-                                    <Label>Result / review note</Label>
-                                    <Textarea rows={2} value={form.diagnostic_tests[test]?.result ?? ''} onChange={(event) => setNested('diagnostic_tests', [test, 'result'], event.target.value)} disabled={!permissions.manageTests} />
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </SectionCard>
+                <LabTestSection appointmentId={registration.appointment_id} embedded />
+                <PrescriptionSection appointmentId={registration.appointment_id} embedded />
 
                 <SectionCard title={t('global.assessment_and_plan')} icon="bx-notepad">
                     <div className="grid gap-4 md:grid-cols-2">

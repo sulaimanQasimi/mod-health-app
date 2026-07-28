@@ -26,6 +26,7 @@ class Doctor extends Model
         'active_status',
         'is_dentist',
         'is_nephrologist',
+        'is_eye_doctor',
         'branch_id',
         'department_id',
         'user_id'
@@ -36,6 +37,7 @@ class Doctor extends Model
         'active_status' => 'boolean',
         'is_dentist' => 'boolean',
         'is_nephrologist' => 'boolean',
+        'is_eye_doctor' => 'boolean',
     ];
 
     public static function boot()
@@ -126,6 +128,11 @@ class Doctor extends Model
     public function nephrologyRegistrations()
     {
         return $this->hasMany(NephrologyRegistration::class, 'doctor_id');
+    }
+
+    public function ophthalmologyRegistrations()
+    {
+        return $this->hasMany(OphthalmologyRegistration::class, 'examiner_id');
     }
 
     public function physiotherapyProcedures()

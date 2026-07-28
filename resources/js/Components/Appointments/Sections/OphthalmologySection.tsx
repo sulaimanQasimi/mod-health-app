@@ -26,7 +26,6 @@ interface Registration {
     registration_date: string | null;
     status: string;
     diagnosis: string | null;
-    tests_count: number;
     urls: { show: string };
 }
 
@@ -156,7 +155,6 @@ export default function OphthalmologySection({ appointmentId }: Props) {
                                     <TableHeader>{t('global.registration_date')}</TableHeader>
                                     <TableHeader>{t('global.status')}</TableHeader>
                                     <TableHeader>{t('global.diagnosis')}</TableHeader>
-                                    <TableHeader>{t('global.diagnostic_tests')}</TableHeader>
                                     <TableHeader align="center">{t('global.actions')}</TableHeader>
                                 </TableRow>
                             </TableHead>
@@ -173,7 +171,6 @@ export default function OphthalmologySection({ appointmentId }: Props) {
                                             </TableBadge>
                                         </TableCell>
                                         <TableCell>{item.diagnosis || '—'}</TableCell>
-                                        <TableCell><TableBadge color="warning">{item.tests_count}</TableBadge></TableCell>
                                         <TableCell align="center">
                                             <SectionActionButton
                                                 icon="bx-expand"

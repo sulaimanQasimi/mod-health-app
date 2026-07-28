@@ -4651,4 +4651,6 @@ return [
     'save_ophthalmology_examination' => 'Save Ophthalmology Examination',
     'ophthalmology_department' => 'Ophthalmology Department',
     'ophthalmology_registration_deleted_successfully' => 'Ophthalmology registration deleted successfully',
+    'eye_doctor' => 'Eye Doctor',
+    'is_eye_doctor' => 'Is Eye Doctor',
 ];

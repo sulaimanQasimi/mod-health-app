@@ -93,6 +93,7 @@ class OphthalmologyRegistrationController extends Controller
             ], $filters),
             'doctors' => Doctor::query()
                 ->where('active_status', true)
+                ->where('is_eye_doctor', true)
                 ->when($request->user()->branch_id, fn (Builder $builder, $branchId) => $builder->where('branch_id', $branchId))
                 ->orderBy('name')
                 ->get(['id', 'name']),
@@ -120,6 +121,7 @@ class OphthalmologyRegistrationController extends Controller
             'formOptions' => [
                 'doctors' => Doctor::query()
                     ->where('active_status', true)
+                    ->where('is_eye_doctor', true)
                     ->where('branch_id', $ophthalmologyRegistration->branch_id)
                     ->orderBy('name')
                     ->get(['id', 'name']),
@@ -129,8 +131,6 @@ class OphthalmologyRegistrationController extends Controller
                     && $request->user()->can('edit-ophthalmology-registrations'),
                 'changeStatus' => ! $ophthalmologyRegistration->appointment?->is_completed
                     && $request->user()->can('change-ophthalmology-status'),
-                'manageTests' => ! $ophthalmologyRegistration->appointment?->is_completed
-                    && $request->user()->can('manage-ophthalmology-tests'),
                 'uploadImages' => ! $ophthalmologyRegistration->appointment?->is_completed
                     && $request->user()->can('upload-ophthalmology-images'),
             ],
@@ -149,6 +149,7 @@ class OphthalmologyRegistrationController extends Controller
 
         $doctorIds = Doctor::query()
             ->where('active_status', true)
+            ->where('is_eye_doctor', true)
             ->where('branch_id', $ophthalmologyRegistration->branch_id)
             ->pluck('id')
             ->all();
@@ -163,7 +164,6 @@ class OphthalmologyRegistrationController extends Controller
             'refraction' => ['nullable', 'array'],
             'slit_lamp_examination' => ['nullable', 'array'],
             'fundus_examination' => ['nullable', 'array'],
-            'diagnostic_tests' => ['nullable', 'array'],
             'diagnosis' => ['nullable', 'string'],
             'treatment_plan' => ['nullable', 'string'],
             'follow_up_date' => ['nullable', 'string'],
@@ -190,9 +190,6 @@ class OphthalmologyRegistrationController extends Controller
         }
         if ($request->has('status')) {
             abort_unless($request->user()->can('change-ophthalmology-status'), 403);
-        }
-        if ($request->has('diagnostic_tests')) {
-            abort_unless($request->user()->can('manage-ophthalmology-tests'), 403);
         }
         if ($request->hasFile('fundus_image')) {
             abort_unless($request->user()->can('upload-ophthalmology-images'), 403);
@@ -255,7 +252,6 @@ class OphthalmologyRegistrationController extends Controller
             'refraction' => $registration->refraction ?? [],
             'slit_lamp_examination' => $registration->slit_lamp_examination ?? [],
             'fundus_examination' => $registration->fundus_examination ?? [],
-            'diagnostic_tests' => $registration->diagnostic_tests ?? [],
             'diagnosis' => $registration->diagnosis ?? '',
             'treatment_plan' => $registration->treatment_plan ?? '',
             'follow_up_date' => $registration->follow_up_date

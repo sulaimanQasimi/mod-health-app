@@ -119,6 +119,9 @@ export default function ShowDoctor({ doctor, permissions, urls }: ShowDoctorProp
                                     {doctor.is_nephrologist && (
                                         <Badge color="purple">{t('global.nephrology')}</Badge>
                                     )}
+                                    {doctor.is_eye_doctor && (
+                                        <Badge color="success">{t('global.eye_doctor')}</Badge>
+                                    )}
                                 </div>
                             </div>
                         </div>

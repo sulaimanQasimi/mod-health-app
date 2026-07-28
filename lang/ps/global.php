@@ -4495,4 +4495,6 @@ return [
 'ophthalmology_registration_deleted_successfully' => 'د سترګو ثبت په بریالیتوب ړنګ شو',
 'from_date' => 'له نېټې',
 'to_date' => 'تر نېټې',
+'eye_doctor' => 'د سترګو ډاکټر',
+'is_eye_doctor' => 'آیا د سترګو ډاکټر دی؟',
 ];

@@ -208,7 +208,7 @@ export default function IndexDoctors({
             <Head title={t('global.doctors')} />
 
             <div className="mx-auto max-w-[1600px] space-y-6">
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
                     {[
                         {
                             label: t('global.active'),
@@ -233,6 +233,12 @@ export default function IndexDoctors({
                             value: stats.dentists,
                             icon: 'bx-plus-medical',
                             color: 'from-cyan-500 to-sky-600',
+                        },
+                        {
+                            label: t('global.eye_doctor'),
+                            value: stats.eye_doctors,
+                            icon: 'bx-low-vision',
+                            color: 'from-teal-500 to-cyan-600',
                         },
                     ].map((card) => (
                         <Card key={card.label} className="shadow-sm">
@@ -453,7 +459,10 @@ export default function IndexDoctors({
                                                         {t('global.nephrology')}
                                                     </Badge>
                                                 )}
-                                                {!doctor.is_dentist && !doctor.is_nephrologist && '—'}
+                                                {doctor.is_eye_doctor && (
+                                                    <Badge color="success">{t('global.eye_doctor')}</Badge>
+                                                )}
+                                                {!doctor.is_dentist && !doctor.is_nephrologist && !doctor.is_eye_doctor && '—'}
                                             </div>
                                         </TableCell>
                                         <TableCell align="center">

@@ -1,8 +1,14 @@
-import { Head, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { Badge, Button, Card, Label, Spinner } from 'flowbite-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import {
+    ReportAnalyticsSection,
+    ReportFilterPanel,
+    ReportKpiGrid,
+    ReportPageShell,
+    ReportResultsCard,
+} from '../../Components/Reports';
+import { ReportChartCard, ReportKpiStat } from '../../Components/Reports/reportTypes';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
@@ -14,7 +20,6 @@ import {
     TableRow,
 } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface PerformanceResult {
     user: string | null;
@@ -74,7 +79,6 @@ export default function DoctorPerformanceReport({
     const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
-    const [filtersOpen, setFiltersOpen] = useState(true);
 
     useEffect(() => setFilters(serverFilters), [serverFilters]);
 
@@ -88,6 +92,22 @@ export default function DoctorPerformanceReport({
             })),
         [results, grandTotal]
     );
+    const kpiStats: ReportKpiStat[] = hasSearch
+        ? [
+              { key: 'appointments', label: t('global.appointments'), value: summary.appointments, icon: 'bx-calendar', accent: 'from-blue-500 to-cyan-600' },
+              { key: 'prescriptions', label: t('global.prescriptions'), value: summary.prescriptions, icon: 'bx-receipt', accent: 'from-emerald-500 to-teal-600' },
+              { key: 'lab', label: t('global.lab_tests'), value: summary.lab_tests, icon: 'bx-test-tube', accent: 'from-violet-500 to-purple-600' },
+              { key: 'anesthesia', label: t('global.anesthesias'), value: summary.anesthesias, icon: 'bx-first-aid', accent: 'from-amber-500 to-orange-600' },
+              { key: 'total', label: t('global.total'), value: summary.total, icon: 'bx-calculator', accent: 'from-rose-500 to-pink-600' },
+          ]
+        : [];
+    const charts: ReportChartCard[] = hasSearch
+        ? [
+              { key: 'appointments', title: t('global.appointments'), type: 'bar', labels: results.map((row) => row.user ?? '—'), values: results.map((row) => row.appointments), color: '#06b6d4' },
+              { key: 'prescriptions', title: t('global.prescriptions'), type: 'bar', labels: results.map((row) => row.user ?? '—'), values: results.map((row) => row.prescriptions), color: '#10b981' },
+              { key: 'lab', title: t('global.lab_tests'), type: 'bar', labels: results.map((row) => row.user ?? '—'), values: results.map((row) => row.lab_tests), color: '#8b5cf6' },
+          ]
+        : [];
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -119,90 +139,15 @@ export default function DoctorPerformanceReport({
     };
 
     return (
-        <DashboardLayout>
-            <Head title={t('global.user_performance_report')} />
-
-            <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
-                <SettingsPageHeader
-                    title={t('global.user_performance_report')}
-                    icon="bx-line-chart"
-                    accent="from-rose-600 to-pink-700"
-                />
-
-                {error && (
+        <ReportPageShell title={t('global.user_performance_report')} subtitle={t('global.reports')} icon="bx-line-chart" accent="from-rose-600 to-pink-700" backLabel={t('global.back')}>
+                {error ? (
                     <Card className="border-rose-200 bg-rose-50 !shadow-sm dark:border-rose-900/40 dark:bg-rose-950/20">
                         <p className="text-sm text-rose-700 dark:text-rose-300">{t(error)}</p>
                     </Card>
-                )}
-
-                {hasSearch && (
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                        {[
-                            {
-                                label: t('global.appointments'),
-                                value: summary.appointments,
-                                icon: 'bx-calendar',
-                                accent: 'from-blue-500 to-cyan-600',
-                            },
-                            {
-                                label: t('global.prescriptions'),
-                                value: summary.prescriptions,
-                                icon: 'bx-receipt',
-                                accent: 'from-emerald-500 to-teal-600',
-                            },
-                            {
-                                label: t('global.lab_tests'),
-                                value: summary.lab_tests,
-                                icon: 'bx-test-tube',
-                                accent: 'from-violet-500 to-purple-600',
-                            },
-                            {
-                                label: t('global.anesthesias'),
-                                value: summary.anesthesias,
-                                icon: 'bx-first-aid',
-                                accent: 'from-amber-500 to-orange-600',
-                            },
-                            {
-                                label: t('global.total'),
-                                value: summary.total,
-                                icon: 'bx-calculator',
-                                accent: 'from-rose-500 to-pink-600',
-                            },
-                        ].map((stat) => (
-                            <Card key={stat.label} className="overflow-hidden !shadow-sm">
-                                <div className="flex items-center gap-3">
-                                    <div
-                                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${stat.accent} text-white shadow-md`}
-                                    >
-                                        <i className={`bx ${stat.icon} text-lg`} />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{stat.label}</p>
-                                        <p className="text-xl font-bold text-gray-900 dark:text-white">
-                                            {stat.value.toLocaleString()}
-                                        </p>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                )}
-
-                <Card className="!shadow-sm">
-                    <button
-                        type="button"
-                        onClick={() => setFiltersOpen((open) => !open)}
-                        className="flex w-full items-center justify-between gap-3 border-b border-gray-100 px-1 pb-4 text-start dark:border-gray-700"
-                    >
-                        <span className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                            <i className="bx bx-filter-alt text-rose-500" />
-                            {t('global.advanced_filters')}
-                        </span>
-                        <i className={`bx ${filtersOpen ? 'bx-chevron-up' : 'bx-chevron-down'} text-xl text-gray-400`} />
-                    </button>
-
-                    {filtersOpen && (
-                        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+                ) : null}
+                {hasSearch ? <ReportKpiGrid stats={kpiStats} /> : null}
+                {hasSearch ? <ReportAnalyticsSection title={t('global.reports')} charts={charts} /> : null}
+                <ReportFilterPanel title={t('global.advanced_filters')} accentIconClass="text-rose-500" onSubmit={handleSubmit} actions={<><Button type="submit" color="blue" disabled={processing || !filters.startDate || !filters.endDate}>{processing ? <><Spinner size="sm" className="me-2" />{t('global.loading')}</> : <><i className="bx bx-search me-2" />{t('global.search')}</>}</Button><Button type="button" color="light" onClick={handleReset} disabled={processing}><i className="bx bx-refresh me-2" />{t('global.reset')}</Button></>}>
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 <div>
                                     <Label>{t('global.from')}</Label>
@@ -235,42 +180,8 @@ export default function DoctorPerformanceReport({
                                     />
                                 </div>
                             </div>
-                            <div className="flex flex-wrap gap-2 border-t border-gray-100 pt-4 dark:border-gray-700">
-                                <Button
-                                    type="submit"
-                                    color="blue"
-                                    disabled={processing || !filters.startDate || !filters.endDate}
-                                >
-                                    {processing ? (
-                                        <>
-                                            <Spinner size="sm" className="me-2" />
-                                            {t('global.loading')}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className="bx bx-search me-2" />
-                                            {t('global.search')}
-                                        </>
-                                    )}
-                                </Button>
-                                <Button type="button" color="light" onClick={handleReset} disabled={processing}>
-                                    <i className="bx bx-refresh me-2" />
-                                    {t('global.reset')}
-                                </Button>
-                            </div>
-                        </form>
-                    )}
-                </Card>
-
-                <Card className="!shadow-sm">
-                    {!hasSearch ? (
-                        <div className="flex flex-col items-center gap-3 py-16 text-center text-gray-500 dark:text-gray-400">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-50 dark:bg-rose-950/30">
-                                <i className="bx bx-line-chart text-2xl text-rose-500" />
-                            </div>
-                            <p className="text-sm">{t('global.search_and_filters')}</p>
-                        </div>
-                    ) : (
+                </ReportFilterPanel>
+                <ReportResultsCard title={t('global.user_performance_report')} hasSearch={hasSearch} resultCount={results.length} resultsLabel={t('global.results')} emptyMessage={t('global.search_and_filters')}>
                         <div className="overflow-x-auto">
                             <Table embedded>
                                 <TableHead>
@@ -319,9 +230,7 @@ export default function DoctorPerformanceReport({
                                 </TableBody>
                             </Table>
                         </div>
-                    )}
-                </Card>
-            </div>
-        </DashboardLayout>
+                </ReportResultsCard>
+        </ReportPageShell>
     );
 }

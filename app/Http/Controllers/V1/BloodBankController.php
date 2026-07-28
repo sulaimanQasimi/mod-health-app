@@ -202,11 +202,26 @@ class BloodBankController extends Controller
         if ($request->boolean('search')) {
             $items = $this->reportItems($request);
         }
+        $reportSummary = [
+            'total' => count($items),
+            'by_status' => collect($items)
+                ->countBy('status')
+                ->map(fn (int $count, string $status) => ['name' => $status, 'count' => $count])
+                ->values()
+                ->all(),
+            'by_blood_type' => collect($items)
+                ->countBy(fn (array $item) => trim(($item['group'] ?? '—').' '.($item['rh'] ?? '')))
+                ->map(fn (int $count, string $type) => ['name' => $type, 'count' => $count])
+                ->values()
+                ->all(),
+        ];
 
         $branchId = $this->bloodBankBranchId();
 
         return Inertia::render('BloodBanks/Report', [
             'items' => $items,
+            'summary' => $reportSummary,
+            'hasSearch' => $request->boolean('search'),
             'filters' => $this->collectFilters($request, [
                 'patient_name',
                 'status',

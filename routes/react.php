@@ -16,6 +16,7 @@ use App\Http\Controllers\V1\AppointmentSections\IcuVisitsController;
 use App\Http\Controllers\V1\AppointmentSections\LabTestController;
 use App\Http\Controllers\V1\AppointmentSections\NephrologyController as AppointmentNephrologyController;
 use App\Http\Controllers\V1\AppointmentSections\OperationController as AppointmentOperationController;
+use App\Http\Controllers\V1\AppointmentSections\OphthalmologyController as AppointmentOphthalmologyController;
 use App\Http\Controllers\V1\AppointmentSections\PacuController as AppointmentPacuController;
 use App\Http\Controllers\V1\AppointmentSections\PhysiotherapyController as AppointmentPhysiotherapyController;
 use App\Http\Controllers\V1\AppointmentSections\PrescriptionController as AppointmentPrescriptionController;
@@ -73,6 +74,7 @@ use App\Http\Controllers\V1\NephrologyRegistrationController;
 use App\Http\Controllers\V1\NurseController;
 use App\Http\Controllers\V1\OperationController;
 use App\Http\Controllers\V1\OperationTypeController;
+use App\Http\Controllers\V1\OphthalmologyRegistrationController;
 use App\Http\Controllers\V1\OutcomeController;
 use App\Http\Controllers\V1\PACUController;
 use App\Http\Controllers\V1\PatientController;
@@ -223,6 +225,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('dentist', [AppointmentDentistController::class, 'index'])->name('dentist.index');
             Route::post('dentist', [AppointmentDentistController::class, 'store'])->name('dentist.store');
             Route::get('dentist/{dentistRegistration}', [AppointmentDentistController::class, 'show'])->name('dentist.show');
+
+            Route::get('ophthalmology/meta', [AppointmentOphthalmologyController::class, 'meta'])->name('ophthalmology.meta');
+            Route::get('ophthalmology', [AppointmentOphthalmologyController::class, 'index'])->name('ophthalmology.index');
+            Route::post('ophthalmology', [AppointmentOphthalmologyController::class, 'store'])->name('ophthalmology.store');
             Route::get('nephrology', [AppointmentNephrologyController::class, 'index'])->name('nephrology.index');
             Route::post('nephrology', [AppointmentNephrologyController::class, 'store'])->name('nephrology.store');
             Route::get('nephrology/{nephrologyRegistration}', [AppointmentNephrologyController::class, 'show'])->name('nephrology.show');
@@ -270,6 +276,13 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{dentistRegistration}/xrays/{dentalXray}', [DentistRegistrationController::class, 'destroyXray'])->name('xrays.destroy');
         Route::post('/{dentistRegistration}/notes', [DentistRegistrationController::class, 'storeNote'])->name('notes.store');
         Route::delete('/{dentistRegistration}/notes/{dentalNote}', [DentistRegistrationController::class, 'destroyNote'])->name('notes.destroy');
+    });
+
+    Route::prefix('ophthalmology-registrations')->name('ophthalmology-registrations.')->group(function () {
+        Route::get('/', [OphthalmologyRegistrationController::class, 'index'])->name('index');
+        Route::get('/{ophthalmologyRegistration}', [OphthalmologyRegistrationController::class, 'show'])->name('show');
+        Route::match(['put', 'post'], '/{ophthalmologyRegistration}', [OphthalmologyRegistrationController::class, 'update'])->name('update');
+        Route::delete('/{ophthalmologyRegistration}', [OphthalmologyRegistrationController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('dental-charts')->name('dental-charts.')->group(function () {

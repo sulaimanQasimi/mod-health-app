@@ -101,9 +101,25 @@ class ICUController extends Controller
         if ($request->boolean('search')) {
             $items = $this->reportItems($request);
         }
+        $summary = [
+            'total' => count($items),
+            'new' => count(array_filter($items, fn ($item) => $item['status'] === 'new')),
+            'approved' => count(array_filter($items, fn ($item) => $item['status'] === 'approved')),
+            'rejected' => count(array_filter($items, fn ($item) => $item['status'] === 'rejected')),
+        ];
 
         return Inertia::render('Icus/Report', [
             'items' => $items,
+            'hasSearch' => $request->boolean('search'),
+            'summary' => $summary,
+            'analytics' => [
+                'by_status' => collect($items)->countBy('status')
+                    ->map(fn ($count, $name) => ['name' => $name, 'count' => $count])->values()->all(),
+                'by_department' => collect($items)
+                    ->groupBy(fn ($item) => $item['department_name'] ?? '—')
+                    ->map(fn ($items, $name) => ['name' => $name, 'count' => $items->count()])
+                    ->sortByDesc('count')->values()->all(),
+            ],
             'filters' => $this->collectFilters($request, [
                 'patient_name',
                 'status',
@@ -312,6 +328,8 @@ class ICUController extends Controller
             ->leftJoin('patients as p', 'i.patient_id', '=', 'p.id')
             ->leftJoin('doctors as d', 'i.doctor_id', '=', 'd.id')
             ->leftJoin('branches as b', 'i.branch_id', '=', 'b.id')
+            ->leftJoin('appointments as app', 'i.appointment_id', '=', 'app.id')
+            ->leftJoin('departments as dep', 'app.department_id', '=', 'dep.id')
             ->select(
                 'i.id',
                 'p.name as patient_name',
@@ -319,6 +337,7 @@ class ICUController extends Controller
                 'b.name as branch_name',
                 'i.status',
                 'i.created_at',
+                'dep.name as department_name',
             )
             ->orderByDesc('i.created_at');
 
@@ -353,6 +372,7 @@ class ICUController extends Controller
             'created_at' => $item->created_at
                 ? $this->formatIcuDate(\Illuminate\Support\Carbon::parse($item->created_at))
                 : null,
+            'department_name' => $item->department_name,
         ])->values()->all();
     }
 

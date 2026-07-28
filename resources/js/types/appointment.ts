@@ -274,6 +274,14 @@ export interface AppointmentReportSummary {
     total: number;
     completed: number;
     ongoing: number;
+    completion_rate?: number;
+}
+
+export interface AppointmentReportAnalytics {
+    by_status: Array<{ name: string; count: number }>;
+    by_doctor: Array<{ name: string; count: number }>;
+    by_date: Array<{ date: string; count: number }>;
+    by_gender: Array<{ name: string; count: number }>;
 }
 
 export interface AppointmentReportItem {

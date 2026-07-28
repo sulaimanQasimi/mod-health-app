@@ -125,6 +125,56 @@ trait ManagesPrescriptionReport
     }
 
     /**
+     * @return array{
+     *     by_status: list<array{name: string, count: int}>,
+     *     by_doctor: list<array{name: string, count: int}>,
+     *     by_date: list<array{date: string, count: int}>
+     * }
+     */
+    protected function prescriptionReportAnalytics(Builder $query): array
+    {
+        $total = (clone $query)->count();
+        $completed = (clone $query)->where('a.is_completed', '1')->count();
+
+        $byDoctor = (clone $query)
+            ->reorder()
+            ->selectRaw('COALESCE(d.name, ?) as name, COUNT(*) as aggregate_count', ['—'])
+            ->groupBy('d.name')
+            ->orderByDesc('aggregate_count')
+            ->limit(10)
+            ->get()
+            ->map(fn ($row) => ['name' => (string) $row->name, 'count' => (int) $row->aggregate_count])
+            ->values()
+            ->all();
+
+        $byDate = (clone $query)
+            ->reorder()
+            ->selectRaw('DATE(a.created_at) as day, COUNT(*) as aggregate_count')
+            ->whereNotNull('a.created_at')
+            ->groupBy('day')
+            ->orderBy('day')
+            ->get()
+            ->map(function ($row) {
+                try {
+                    $date = $row->day ? verta($row->day)->format('Y/m/d') : '—';
+                } catch (\Throwable) {
+                    $date = (string) $row->day;
+                }
+
+                return ['date' => $date, 'count' => (int) $row->aggregate_count];
+            })->values()->all();
+
+        return [
+            'by_status' => [
+                ['name' => 'completed', 'count' => $completed],
+                ['name' => 'pending', 'count' => max(0, $total - $completed)],
+            ],
+            'by_doctor' => $byDoctor,
+            'by_date' => $byDate,
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     protected function transformPrescriptionReportItem(object $row): array

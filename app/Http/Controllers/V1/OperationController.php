@@ -55,9 +55,27 @@ class OperationController extends Controller
         if ($request->boolean('search')) {
             $items = $this->reportItems($request);
         }
+        $summary = [
+            'total' => count($items),
+            'completed' => count(array_filter($items, fn ($item) => $item['is_operation_done'])),
+            'pending' => count(array_filter($items, fn ($item) => ! $item['is_operation_done'])),
+            'approved' => count(array_filter($items, fn ($item) => $item['is_operation_approved'])),
+        ];
 
         return Inertia::render('Operations/Report', [
             'items' => $items,
+            'hasSearch' => $request->boolean('search'),
+            'summary' => $summary,
+            'analytics' => [
+                'by_status' => [
+                    ['name' => 'completed', 'count' => $summary['completed']],
+                    ['name' => 'pending', 'count' => $summary['pending']],
+                ],
+                'by_department' => collect($items)
+                    ->groupBy(fn ($item) => $item['department_name'] ?? '—')
+                    ->map(fn ($items, $name) => ['name' => $name, 'count' => $items->count()])
+                    ->sortByDesc('count')->values()->all(),
+            ],
             'filters' => $this->collectFilters($request, [
                 'patient_name',
                 'surgeon_id',
@@ -349,11 +367,14 @@ class OperationController extends Controller
             ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
             ->leftJoin('doctors as u', 'a.operation_surgion_id', '=', 'u.id')
             ->leftJoin('operation_types as ot', 'a.operation_type_id', '=', 'ot.id')
+            ->leftJoin('appointments as app', 'a.appointment_id', '=', 'app.id')
+            ->leftJoin('departments as dep', 'app.department_id', '=', 'dep.id')
             ->select(
                 'a.id',
                 'p.name as patient_name',
                 'u.name as surgion_name',
                 'ot.name as operation_type_name',
+                'dep.name as department_name',
                 'a.date',
                 'a.time',
                 'a.is_operation_done',
@@ -404,6 +425,7 @@ class OperationController extends Controller
             'patient_name' => $item->patient_name,
             'surgion_name' => $item->surgion_name,
             'operation_type_name' => $item->operation_type_name,
+            'department_name' => $item->department_name,
             'date' => $item->date ? $this->formatOperationDate($item->date) : null,
             'time' => $item->time,
             'is_operation_done' => (bool) $item->is_operation_done,

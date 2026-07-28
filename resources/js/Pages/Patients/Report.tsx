@@ -1,9 +1,16 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Badge, Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
+import { Link, router } from '@inertiajs/react';
+import { Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import AppointmentPagination from '../../Components/Appointments/AppointmentPagination';
-import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
+import {
+    ReportAnalyticsSection,
+    ReportExportButtons,
+    ReportFilterPanel,
+    ReportKpiGrid,
+    ReportPageShell,
+    ReportResultsCard,
+} from '../../Components/Reports';
+import { ReportAnalytics, ReportChartCard, ReportKpiStat } from '../../Components/Reports/reportTypes';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
@@ -15,8 +22,6 @@ import {
     TableRow,
 } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
-import { SharedPageProps } from '../../types';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface PatientReportItem {
     id: number;
@@ -48,7 +53,8 @@ interface ReportProps {
             to: number | null;
         };
     };
-    summary: { total: number };
+    summary: { total: number; male: number; female: number; military: number; civilian: number };
+    analytics: ReportAnalytics;
     hasSearch: boolean;
     filters: Record<string, string>;
     filterOptions: {
@@ -95,16 +101,15 @@ function buildSearchParams(filters: Record<string, string>): Record<string, stri
 export default function PatientsReport({
     patients,
     summary,
+    analytics,
     hasSearch,
     filters: serverFilters,
     filterOptions,
     urls,
 }: ReportProps) {
     const { t } = useTranslation();
-    const { csrfToken } = usePage<SharedPageProps>().props;
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
-    const [filtersOpen, setFiltersOpen] = useState(true);
 
     useEffect(() => setFilters(serverFilters), [serverFilters]);
 
@@ -172,79 +177,28 @@ export default function PatientsReport({
     };
 
     const canExport = hasSearch && patients.data.length > 0;
+    const kpiStats: ReportKpiStat[] = hasSearch
+        ? [
+              { key: 'total', label: t('global.total'), value: summary.total, icon: 'bx-user', accent: 'from-emerald-500 to-teal-600' },
+              { key: 'male', label: t('global.male'), value: summary.male, icon: 'bx-male', accent: 'from-blue-500 to-cyan-600' },
+              { key: 'female', label: t('global.female'), value: summary.female, icon: 'bx-female', accent: 'from-pink-500 to-rose-600' },
+              { key: 'military', label: t('global.military'), value: summary.military, icon: 'bx-shield-quarter', accent: 'from-violet-500 to-purple-600' },
+              { key: 'civilian', label: t('global.civilian'), value: summary.civilian, icon: 'bx-briefcase', accent: 'from-amber-500 to-orange-600' },
+          ]
+        : [];
+    const charts: ReportChartCard[] = hasSearch
+        ? [
+              { key: 'gender', title: t('global.gender'), type: 'donut', labels: (analytics.by_gender ?? []).map((item) => item.name === 'female' ? t('global.female') : item.name === 'male' ? t('global.male') : '—'), values: (analytics.by_gender ?? []).map((item) => item.count), colors: ['#06b6d4', '#ec4899', '#94a3b8'] },
+              { key: 'type', title: t('global.disease_type'), type: 'bar', labels: (analytics.by_type ?? []).map((item) => item.name === 'mod' ? t('global.mod') : item.name === 'recipient' ? t('global.recipient') : item.name === 'family' ? t('global.family') : '—'), values: (analytics.by_type ?? []).map((item) => item.count), color: '#10b981' },
+              { key: 'date', title: t('global.registration_date'), type: 'trend', labels: (analytics.by_date ?? []).map((item) => item.date), values: (analytics.by_date ?? []).map((item) => item.count), color: '#6366f1' },
+          ]
+        : [];
 
     return (
-        <DashboardLayout>
-            <Head title={t('global.reports')} />
-
-            <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
-                <SettingsPageHeader
-                    title={t('global.reports')}
-                    subtitle={t('global.patients')}
-                    icon="bx-bar-chart-alt-2"
-                    accent="from-emerald-600 to-teal-700"
-                    backHref={urls.index}
-                    backLabel={t('global.back')}
-                    action={
-                        canExport ? (
-                            <SettingsPageActions>
-                                <form action={urls.export} method="GET" target="_blank" className="inline-flex gap-2">
-                                    {Object.entries(exportFields).map(([key, value]) => (
-                                        <input key={key} type="hidden" name={key} value={value} />
-                                    ))}
-                                    <button
-                                        type="submit"
-                                        name="export"
-                                        value="excel"
-                                        className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300"
-                                    >
-                                        <i className="bx bx-spreadsheet" />
-                                        Excel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        name="export"
-                                        value="print"
-                                        className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
-                                    >
-                                        <i className="bx bx-file" />
-                                        PDF
-                                    </button>
-                                </form>
-                            </SettingsPageActions>
-                        ) : undefined
-                    }
-                />
-
-                {hasSearch && (
-                    <Card className="!shadow-sm">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md">
-                                <i className="bx bx-user text-xl" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">{t('global.total')}</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.total}</p>
-                            </div>
-                        </div>
-                    </Card>
-                )}
-
-                <Card className="!shadow-sm">
-                    <button
-                        type="button"
-                        onClick={() => setFiltersOpen((open) => !open)}
-                        className="flex w-full items-center justify-between gap-3 border-b border-gray-100 px-1 pb-4 text-start dark:border-gray-700"
-                    >
-                        <span className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                            <i className="bx bx-filter-alt text-emerald-500" />
-                            {t('global.advanced_filters')}
-                        </span>
-                        <i className={`bx ${filtersOpen ? 'bx-chevron-up' : 'bx-chevron-down'} text-xl text-gray-400`} />
-                    </button>
-
-                    {filtersOpen && (
-                        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+        <ReportPageShell title={t('global.reports')} subtitle={t('global.patients')} accent="from-emerald-600 to-teal-700" backHref={urls.index} backLabel={t('global.back')} action={canExport ? <ReportExportButtons action={urls.export} method="GET" fields={exportFields} typeField="export" excelValue="excel" pdfValue="print" /> : undefined}>
+            {hasSearch ? <ReportKpiGrid stats={kpiStats} /> : null}
+            {hasSearch ? <ReportAnalyticsSection title={t('global.reports')} charts={charts} /> : null}
+            <ReportFilterPanel title={t('global.advanced_filters')} accentIconClass="text-emerald-500" onSubmit={handleSubmit} actions={<><Button type="submit" color="blue" disabled={processing}>{processing ? <><Spinner size="sm" className="me-2" />{t('global.loading')}</> : <><i className="bx bx-search me-2" />{t('global.search')}</>}</Button><Button type="button" color="light" onClick={handleReset} disabled={processing}><i className="bx bx-refresh me-2" />{t('global.reset')}</Button></>}>
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                 <div>
                                     <Label>{t('global.patient_name')}</Label>
@@ -381,39 +335,8 @@ export default function PatientsReport({
                                     />
                                 </div>
                             </div>
-                            <div className="flex flex-wrap gap-2 border-t border-gray-100 pt-4 dark:border-gray-700">
-                                <Button type="submit" color="blue" disabled={processing}>
-                                    {processing ? (
-                                        <>
-                                            <Spinner size="sm" className="me-2" />
-                                            {t('global.loading')}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className="bx bx-search me-2" />
-                                            {t('global.search')}
-                                        </>
-                                    )}
-                                </Button>
-                                <Button type="button" color="light" onClick={handleReset} disabled={processing}>
-                                    <i className="bx bx-refresh me-2" />
-                                    {t('global.reset')}
-                                </Button>
-                            </div>
-                        </form>
-                    )}
-                </Card>
-
-                <Card className="!shadow-sm">
-                    {!hasSearch ? (
-                        <div className="flex flex-col items-center gap-3 py-16 text-center text-gray-500 dark:text-gray-400">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950/30">
-                                <i className="bx bx-search-alt text-2xl text-emerald-500" />
-                            </div>
-                            <p className="text-sm">{t('global.search_and_filters')}</p>
-                        </div>
-                    ) : (
-                        <>
+            </ReportFilterPanel>
+            <ReportResultsCard title={t('global.reports')} hasSearch={hasSearch} resultCount={patients.meta.total} resultsLabel={t('global.results')} emptyMessage={t('global.search_and_filters')}>
                             <div className="overflow-x-auto">
                                 <Table embedded>
                                     <TableHead>
@@ -476,10 +399,7 @@ export default function PatientsReport({
                             {patients.links.length > 3 && (
                                 <AppointmentPagination links={patients.links} meta={patients.meta} t={t} />
                             )}
-                        </>
-                    )}
-                </Card>
-            </div>
-        </DashboardLayout>
+            </ReportResultsCard>
+        </ReportPageShell>
     );
 }

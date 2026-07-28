@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Badge, Button, Card, Label, Select, TextInput } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import OperationNavTabs from '../../Components/Operations/OperationNavTabs';
@@ -7,8 +7,14 @@ import {
     operationReservedLabel,
     OPERATION_APPROVE_BTN_CLASS,
 } from '../../Components/Operations/operationUi';
-import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import {
+    ReportAnalyticsSection,
+    ReportExportButtons,
+    ReportFilterPanel,
+    ReportKpiGrid,
+    ReportPageShell,
+    ReportResultsCard,
+} from '../../Components/Reports';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import {
     Table,
@@ -19,6 +25,7 @@ import {
     TableRow,
 } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
+import { SharedPageProps } from '../../types';
 import {
     OperationListUrls,
     OperationReportFilters,
@@ -29,6 +36,9 @@ import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface ReportProps {
     items: OperationReportItem[];
+    hasSearch: boolean;
+    summary: { total: number; completed: number; pending: number; approved: number };
+    analytics: { by_status: { name: string; count: number }[]; by_department: { name: string; count: number }[] };
     filters: OperationReportFilters;
     filterOptions: {
         operationTypes: SelectOption[];
@@ -37,8 +47,9 @@ interface ReportProps {
     urls: OperationListUrls & { current: string; export: string };
 }
 
-export default function OperationsReport({ items, filters, filterOptions, urls }: ReportProps) {
+export default function OperationsReport({ items, hasSearch, summary, analytics, filters, filterOptions, urls }: ReportProps) {
     const { t } = useTranslation();
+    const { csrfToken } = usePage<SharedPageProps>().props;
     const [form, setForm] = useState(filters);
     const [processing, setProcessing] = useState(false);
 
@@ -75,22 +86,21 @@ export default function OperationsReport({ items, filters, filterOptions, urls }
     };
 
     return (
-        <DashboardLayout>
-            <Head title={t('global.reports')} />
-
-            <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
-                <SettingsPageHeader
-                    title={t('global.reports')}
-                    subtitle={t('global.operations')}
-                    icon="bx-bar-chart-alt-2"
-                    accent="from-amber-600 to-orange-700"
-                    backLabel={t('global.back')}
-                />
-
+        <ReportPageShell title={t('global.reports')} subtitle={t('global.operations')} accent="from-amber-600 to-orange-700" backLabel={t('global.back')}
+            action={hasSearch && items.length ? <ReportExportButtons action={urls.export} csrfToken={csrfToken} fields={{ data: JSON.stringify(items.map((item) => item.id)) }} /> : undefined}>
+            {hasSearch ? <ReportKpiGrid stats={[
+                { key: 'total', label: t('global.total'), value: summary.total, icon: 'bx-calendar', accent: 'from-cyan-500 to-blue-600' },
+                { key: 'completed', label: t('global.completed'), value: summary.completed, icon: 'bx-check-circle', accent: 'from-emerald-500 to-teal-600' },
+                { key: 'pending', label: t('global.pending'), value: summary.pending, icon: 'bx-time-five', accent: 'from-amber-500 to-orange-600' },
+                { key: 'approved', label: t('global.approved'), value: summary.approved, icon: 'bx-badge-check', accent: 'from-violet-500 to-purple-600' },
+            ]} /> : null}
+            {hasSearch ? <ReportAnalyticsSection title={t('global.reports')} charts={[
+                { key: 'status', title: t('global.status'), type: 'donut', labels: analytics.by_status.map((item) => item.name === 'completed' ? t('global.completed') : t('global.pending')), values: analytics.by_status.map((item) => item.count), colors: ['#10b981', '#f59e0b'] },
+                { key: 'department', title: t('global.department'), type: 'bar', labels: analytics.by_department.map((item) => item.name), values: analytics.by_department.map((item) => item.count), color: '#f97316' },
+            ]} /> : null}
                 <OperationNavTabs active="report" urls={urls} />
 
-                <Card>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                <ReportFilterPanel title={t('global.advanced_filters')} onSubmit={handleSubmit} actions={<><button type="submit" className={OPERATION_APPROVE_BTN_CLASS} disabled={processing}><i className="bx bx-search" />{t('global.search')}</button><Button type="button" color="light" onClick={handleReset} disabled={processing}>{t('global.reset')}</Button></>}>
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                             <div>
                                 <Label>{t('global.patient_name')}</Label>
@@ -175,19 +185,9 @@ export default function OperationsReport({ items, filters, filterOptions, urls }
                                 />
                             </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                            <button type="submit" className={OPERATION_APPROVE_BTN_CLASS} disabled={processing}>
-                                <i className="bx bx-search" />
-                                {t('global.search')}
-                            </button>
-                            <Button type="button" color="light" onClick={handleReset} disabled={processing}>
-                                {t('global.reset')}
-                            </Button>
-                        </div>
-                    </form>
-                </Card>
+                </ReportFilterPanel>
 
-                <Card>
+                <ReportResultsCard title={t('global.reports')} hasSearch={hasSearch} resultCount={items.length} resultsLabel={t('global.records')} emptyMessage={t('global.search_and_filters')}>
                     <Table embedded>
                         <TableHead>
                             <TableRow variant="header">
@@ -235,8 +235,7 @@ export default function OperationsReport({ items, filters, filterOptions, urls }
                             )}
                         </TableBody>
                     </Table>
-                </Card>
-            </div>
-        </DashboardLayout>
+                </ReportResultsCard>
+        </ReportPageShell>
     );
 }

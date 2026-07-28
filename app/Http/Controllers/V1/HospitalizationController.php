@@ -359,9 +359,26 @@ class HospitalizationController extends Controller
         if ($request->boolean('search')) {
             $items = $this->reportItems($request);
         }
+        $summary = [
+            'total' => count($items),
+            'active' => count(array_filter($items, fn ($item) => ! $item['is_discharged'])),
+            'discharged' => count(array_filter($items, fn ($item) => $item['is_discharged'])),
+        ];
 
         return Inertia::render('Hospitalizations/Report', [
             'items' => $items,
+            'hasSearch' => $request->boolean('search'),
+            'summary' => $summary,
+            'analytics' => [
+                'by_status' => [
+                    ['name' => 'active', 'count' => $summary['active']],
+                    ['name' => 'discharged', 'count' => $summary['discharged']],
+                ],
+                'by_department' => collect($items)
+                    ->groupBy(fn ($item) => $item['department_name'] ?? '—')
+                    ->map(fn ($items, $name) => ['name' => $name, 'count' => $items->count()])
+                    ->sortByDesc('count')->values()->all(),
+            ],
             'filters' => $this->collectFilters($request, [
                 'patient_name',
                 'doctor_id',
@@ -725,6 +742,7 @@ class HospitalizationController extends Controller
                 'patient:id,name,id_card',
                 'doctor:id,name',
                 'room:id,name',
+                'room.department:id,name',
                 'bed:id,number',
             ])
             ->orderByDesc('created_at');
@@ -753,6 +771,7 @@ class HospitalizationController extends Controller
             'patient_id_card' => $item->patient?->id_card,
             'doctor_name' => $item->doctor?->name,
             'room_name' => $item->room?->name,
+            'department_name' => $item->room?->department?->name,
             'bed_number' => $item->bed?->number,
             'admission_date' => $this->formatDate($item->created_at),
             'discharged_at' => $this->formatDate($item->discharged_at),

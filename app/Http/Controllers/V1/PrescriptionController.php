@@ -109,10 +109,16 @@ class PrescriptionController extends Controller
             'completed' => 0,
             'pending' => 0,
         ];
+        $analytics = [
+            'by_status' => [],
+            'by_doctor' => [],
+            'by_date' => [],
+        ];
 
         if ($hasSearch) {
             $query = $this->prescriptionReportBaseQuery($request, $user->clinic_type);
             $summary = $this->prescriptionReportSummary($query);
+            $analytics = $this->prescriptionReportAnalytics($query);
 
             $perPage = $request->input('per_page', '25');
             if ($perPage === 'all') {
@@ -158,6 +164,7 @@ class PrescriptionController extends Controller
         return Inertia::render('Prescriptions/Report', [
             'prescriptions' => $prescriptions,
             'summary' => $summary,
+            'analytics' => $analytics,
             'hasSearch' => $hasSearch,
             'filters' => $this->collectFilters($request, $this->prescriptionReportFilterKeys()),
             'filterOptions' => [

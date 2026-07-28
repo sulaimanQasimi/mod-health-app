@@ -62,9 +62,26 @@ class PACUController extends Controller
         if ($request->boolean('search')) {
             $items = $this->reportItems($request);
         }
+        $summary = [
+            'total' => count($items),
+            'new' => count(array_filter($items, fn ($item) => $item['status'] === 'new')),
+            'completed' => count(array_filter($items, fn ($item) => $item['status'] === 'completed')),
+        ];
 
         return Inertia::render('Pacus/Report', [
             'items' => $items,
+            'hasSearch' => $request->boolean('search'),
+            'summary' => $summary,
+            'analytics' => [
+                'by_status' => [
+                    ['name' => 'new', 'count' => $summary['new']],
+                    ['name' => 'completed', 'count' => $summary['completed']],
+                ],
+                'by_department' => collect($items)
+                    ->groupBy(fn ($item) => $item['department_name'] ?? '—')
+                    ->map(fn ($items, $name) => ['name' => $name, 'count' => $items->count()])
+                    ->sortByDesc('count')->values()->all(),
+            ],
             'filters' => $this->collectFilters($request, [
                 'patient_name',
                 'status',
@@ -193,12 +210,14 @@ class PACUController extends Controller
         $query = DB::table('p_a_c_u_s as pa')
             ->leftJoin('patients as p', 'pa.patient_id', '=', 'p.id')
             ->leftJoin('branches as b', 'pa.branch_id', '=', 'b.id')
+            ->leftJoin('departments as dep', 'pa.department_id', '=', 'dep.id')
             ->select(
                 'pa.id',
                 'p.name as patient_name',
                 'b.name as branch_name',
                 'pa.status',
                 'pa.created_at',
+                'dep.name as department_name',
             )
             ->when($this->pacuBranchId(), fn ($q, $branchId) => $q->where('pa.branch_id', $branchId));
 
@@ -221,6 +240,7 @@ class PACUController extends Controller
                 'branch_name' => $row->branch_name,
                 'status' => $row->status,
                 'created_at' => $this->formatPacuDate($row->created_at),
+                'department_name' => $row->department_name,
             ])
             ->all();
     }

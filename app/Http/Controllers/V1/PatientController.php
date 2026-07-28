@@ -381,11 +381,23 @@ class PatientController extends Controller
                 'to' => null,
             ],
         ];
-        $summary = ['total' => 0];
+        $summary = [
+            'total' => 0,
+            'male' => 0,
+            'female' => 0,
+            'military' => 0,
+            'civilian' => 0,
+        ];
+        $analytics = [
+            'by_gender' => [],
+            'by_type' => [],
+            'by_date' => [],
+        ];
 
         if ($hasSearch) {
             $query = $this->patientReportBaseQuery($request, $branchId);
             $summary = $this->patientReportSummary($query);
+            $analytics = $this->patientReportAnalytics($query);
 
             $perPage = $request->input('per_page', '15');
             if ($perPage === 'all') {
@@ -414,6 +426,7 @@ class PatientController extends Controller
         return Inertia::render('Patients/Report', [
             'patients' => $patients,
             'summary' => $summary,
+            'analytics' => $analytics,
             'hasSearch' => $hasSearch,
             'filters' => $this->collectFilters($request, $this->patientReportFilterKeys()),
             'filterOptions' => [

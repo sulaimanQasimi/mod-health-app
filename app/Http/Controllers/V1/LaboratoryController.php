@@ -590,6 +590,17 @@ class LaboratoryController extends Controller
                 ->sortBy('lab_type_name')
                 ->values();
 
+            $summary = [
+                'test_type_count' => $grouped->count(),
+                'total_registrations' => $grouped->sum('total_count'),
+            ];
+            $analytics = [
+                'by_type' => $grouped->map(fn (array $row) => [
+                    'name' => $row['lab_type_name'],
+                    'count' => $row['total_count'],
+                ])->all(),
+            ];
+
             $perPage = $request->input('per_page', '15');
             if ($perPage === 'all') {
                 $items = ['data' => $grouped->all()];
@@ -623,6 +634,8 @@ class LaboratoryController extends Controller
 
         return Inertia::render('Laboratory/Registrations/Report', [
             'items' => $items,
+            'summary' => $hasFilters ? $summary : null,
+            'analytics' => $hasFilters ? $analytics : null,
             'filters' => $filters,
             'filterOptions' => [
                 'labTypes' => $this->labTypesForUser($user),
@@ -661,6 +674,27 @@ class LaboratoryController extends Controller
                 ->orderByDesc('registration_date')
                 ->orderByDesc('id');
 
+            $reportRows = (clone $query)->get(['id', 'lab_type_id', 'status']);
+            $summary = [
+                'total_registrations' => $reportRows->count(),
+                'test_type_count' => $reportRows->pluck('lab_type_id')->filter()->unique()->count(),
+                'completed_count' => $reportRows->where('status', 'completed')->count(),
+            ];
+            $analytics = [
+                'by_type' => $reportRows
+                    ->groupBy('lab_type_id')
+                    ->map(function ($rows) {
+                        $first = $rows->first();
+
+                        return [
+                            'name' => $first?->labType?->name ?? 'Unknown',
+                            'count' => $rows->count(),
+                        ];
+                    })
+                    ->values()
+                    ->all(),
+            ];
+
             $perPage = $request->input('per_page', '15');
             if ($perPage === 'all') {
                 $items = [
@@ -689,6 +723,8 @@ class LaboratoryController extends Controller
 
         return Inertia::render('Laboratory/Registrations/ReportDetailed', [
             'items' => $items,
+            'summary' => $hasFilters ? $summary : null,
+            'analytics' => $hasFilters ? $analytics : null,
             'filters' => $filters,
             'filterOptions' => [
                 'labTypes' => $this->labTypesForUser($user),

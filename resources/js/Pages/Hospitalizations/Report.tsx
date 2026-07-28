@@ -1,9 +1,14 @@
-import { Head, router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Badge, Button, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
-import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import HospitalizationPanel from '../../Components/Hospitalizations/HospitalizationPanel';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import {
+    ReportAnalyticsSection,
+    ReportExportButtons,
+    ReportFilterPanel,
+    ReportKpiGrid,
+    ReportPageShell,
+    ReportResultsCard,
+} from '../../Components/Reports';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
     Table,
@@ -15,6 +20,7 @@ import {
 } from '../../Components/ui/Table';
 import TableActionButton from '../../Components/ui/TableActionButton';
 import { useTranslation } from '../../hooks/useTranslation';
+import { SharedPageProps } from '../../types';
 import {
     HospitalizationOption,
     HospitalizationReportFilters,
@@ -24,6 +30,9 @@ import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface ReportProps {
     items: HospitalizationReportItem[];
+    hasSearch: boolean;
+    summary: { total: number; active: number; discharged: number };
+    analytics: { by_status: { name: string; count: number }[]; by_department: { name: string; count: number }[] };
     filters: HospitalizationReportFilters;
     filterOptions: {
         doctors: HospitalizationOption[];
@@ -33,8 +42,9 @@ interface ReportProps {
     urls: { current: string; index: string; export: string };
 }
 
-export default function HospitalizationsReport({ items, filters, filterOptions, urls }: ReportProps) {
+export default function HospitalizationsReport({ items, hasSearch, summary, analytics, filters, filterOptions, urls }: ReportProps) {
     const { t } = useTranslation();
+    const { csrfToken } = usePage<SharedPageProps>().props;
     const [form, setForm] = useState(filters);
     const [processing, setProcessing] = useState(false);
 
@@ -52,31 +62,29 @@ export default function HospitalizationsReport({ items, filters, filterOptions, 
     };
 
     return (
-        <DashboardLayout>
-            <Head title={t('global.reports')} />
-
-            <div className={`mx-auto space-y-6 ${SETTINGS_INDEX_WIDTH.wide}`}>
-                <SettingsPageHeader
-                    title={t('global.reports')}
-                    subtitle={t('global.hospitalizations')}
-                    icon="bx-bar-chart-alt-2"
-                    accent="from-emerald-600 to-teal-700"
-                    backHref={urls.index}
-                    backLabel={t('global.back')}
-                />
-
-                <HospitalizationPanel
-                    variant="filter"
+        <ReportPageShell
+            title={t('global.reports')}
+            subtitle={t('global.hospitalizations')}
+            accent="from-emerald-600 to-teal-700"
+            backHref={urls.index}
+            backLabel={t('global.back')}
+            action={hasSearch && items.length ? <ReportExportButtons action={urls.export} csrfToken={csrfToken} fields={{ data: JSON.stringify(items.map((item) => item.id)) }} /> : undefined}
+        >
+            <ReportKpiGrid stats={hasSearch ? [
+                { key: 'total', label: t('global.total'), value: summary.total, icon: 'bx-building-house', accent: 'from-cyan-500 to-blue-600' },
+                { key: 'active', label: t('global.active'), value: summary.active, icon: 'bx-pulse', accent: 'from-emerald-500 to-teal-600' },
+                { key: 'discharged', label: t('global.discharged'), value: summary.discharged, icon: 'bx-exit', accent: 'from-slate-500 to-gray-600' },
+            ] : []} />
+            {hasSearch ? <ReportAnalyticsSection title={t('global.reports')} charts={[
+                { key: 'status', title: t('global.status'), type: 'donut', labels: analytics.by_status.map((item) => item.name === 'active' ? t('global.active') : t('global.discharged')), values: analytics.by_status.map((item) => item.count), colors: ['#10b981', '#64748b'] },
+                { key: 'department', title: t('global.department'), type: 'bar', labels: analytics.by_department.map((item) => item.name), values: analytics.by_department.map((item) => item.count), color: '#0d9488' },
+            ]} /> : null}
+                <ReportFilterPanel
                     title={t('global.search')}
-                    icon="bx-filter-alt"
-                    action={
-                        <Button as="a" href={urls.export} color="light" size="sm" target="_blank">
-                            <i className="bx bx-export me-2" />
-                            {t('global.export')}
-                        </Button>
-                    }
+                    onSubmit={handleSubmit}
+                    actions={<Button type="submit" color="success" size="sm" disabled={processing}><i className="bx bx-search me-2" />{t('global.search')}</Button>}
                 >
-                    <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         <div>
                             <Label htmlFor="patient_name">{t('global.patient_name')}</Label>
                             <TextInput
@@ -154,23 +162,15 @@ export default function HospitalizationsReport({ items, filters, filterOptions, 
                                 onChange={(e) => setForm((prev) => ({ ...prev, date_to: e.target.value }))}
                             />
                         </div>
-                        <div className="flex flex-wrap items-end gap-2 lg:col-span-3">
-                            <Button type="submit" color="success" size="sm" disabled={processing}>
-                                <i className="bx bx-search me-2" />
-                                {t('global.search')}
-                            </Button>
-                        </div>
-                    </form>
-                </HospitalizationPanel>
+                    </div>
+                </ReportFilterPanel>
 
-                <HospitalizationPanel
+                <ReportResultsCard
                     title={t('global.reports')}
-                    icon="bx-spreadsheet"
-                    action={
-                        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-                            {items.length} {t('global.records')}
-                        </span>
-                    }
+                    hasSearch={hasSearch}
+                    resultCount={items.length}
+                    resultsLabel={t('global.records')}
+                    emptyMessage={t('global.search_and_filters')}
                 >
                     <div className="overflow-x-auto">
                         <Table>
@@ -224,8 +224,7 @@ export default function HospitalizationsReport({ items, filters, filterOptions, 
                             </TableBody>
                         </Table>
                     </div>
-                </HospitalizationPanel>
-            </div>
-        </DashboardLayout>
+                </ReportResultsCard>
+        </ReportPageShell>
     );
 }

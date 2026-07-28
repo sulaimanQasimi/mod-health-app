@@ -84,6 +84,14 @@ class SidebarMenuService
             ]);
         }
 
+        if ($user->can('access-ophthalmology-registrations')) {
+            $items[] = $this->group('ophthalmology', 'global.ophthalmology_department', 'bx-low-vision', [
+                'react.ophthalmology-registrations.*',
+            ], [
+                $this->item('ophthalmology-registrations', 'global.ophthalmology_registrations', null, 'react.ophthalmology-registrations.index'),
+            ]);
+        }
+
         if ($user->can('access-nephrology-registrations')) {
             $items[] = $this->group('nephrology', 'global.nephrology_department', 'nephrology', [
                 'react.nephrology-registrations.*',

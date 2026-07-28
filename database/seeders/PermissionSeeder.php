@@ -2069,6 +2069,7 @@ class PermissionSeeder extends Seeder
             ]
         );
 
+        $this->call(OphthalmologyPermissionSeeder::class);
         $this->call(PhysiotherapyPermissionSeeder::class);
         $this->call(PharmacyPermissionSeeder::class);
         $this->call(NursingAssessmentPermissionSeeder::class);

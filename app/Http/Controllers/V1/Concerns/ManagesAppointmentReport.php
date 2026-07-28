@@ -162,17 +162,127 @@ trait ManagesAppointmentReport
     }
 
     /**
-     * @return array{total: int, completed: int, ongoing: int}
+     * @return array{total: int, completed: int, ongoing: int, completion_rate: float}
      */
     protected function appointmentReportSummary(Builder $query): array
     {
         $total = (clone $query)->count();
         $completed = (clone $query)->where('appointments.is_completed', '1')->count();
+        $ongoing = max(0, $total - $completed);
 
         return [
             'total' => $total,
             'completed' => $completed,
-            'ongoing' => max(0, $total - $completed),
+            'ongoing' => $ongoing,
+            'completion_rate' => $total > 0 ? round(($completed / $total) * 100, 1) : 0.0,
+        ];
+    }
+
+    /**
+     * @return array{
+     *     by_status: list<array{name: string, count: int}>,
+     *     by_doctor: list<array{name: string, count: int}>,
+     *     by_date: list<array{date: string, count: int}>,
+     *     by_gender: list<array{name: string, count: int}>
+     * }
+     */
+    protected function appointmentReportAnalytics(Request $request, int $branchId): array
+    {
+        $query = Appointment::query()->where('branch_id', $branchId);
+        $this->applyAppointmentReportFilters($query, $request);
+
+        $completed = (clone $query)->where('appointments.is_completed', '1')->count();
+        $total = (clone $query)->count();
+        $ongoing = max(0, $total - $completed);
+
+        $byDoctor = (clone $query)
+            ->leftJoin('doctors', 'doctors.id', '=', 'appointments.doctor_id')
+            ->selectRaw('COALESCE(doctors.name, ?) as name, COUNT(*) as aggregate_count', ['—'])
+            ->groupBy('doctors.name')
+            ->orderByDesc('aggregate_count')
+            ->limit(10)
+            ->get()
+            ->map(fn ($row) => ['name' => (string) $row->name, 'count' => (int) $row->aggregate_count])
+            ->values()
+            ->all();
+
+        $dateQuery = (clone $query);
+        if (! $request->filled('start') || ! $request->filled('end')) {
+            $dateQuery->whereDate('appointments.date', '>=', now()->subDays(29)->toDateString());
+        }
+
+        $byDate = $dateQuery
+            ->selectRaw('DATE(appointments.date) as day, COUNT(*) as aggregate_count')
+            ->groupBy('day')
+            ->orderBy('day')
+            ->get()
+            ->map(function ($row) {
+                $day = $row->day;
+                try {
+                    $formatted = $day ? verta($day)->format('Y/m/d') : (string) $day;
+                } catch (\Throwable) {
+                    $formatted = (string) $day;
+                }
+
+                return ['date' => $formatted, 'count' => (int) $row->aggregate_count];
+            })
+            ->values()
+            ->all();
+
+        $byGender = (clone $query)
+            ->leftJoin('patients', 'patients.id', '=', 'appointments.patient_id')
+            ->selectRaw('patients.gender as gender, COUNT(*) as aggregate_count')
+            ->groupBy('patients.gender')
+            ->get()
+            ->map(function ($row) {
+                $gender = $row->gender;
+                $name = $gender === null || $gender === ''
+                    ? '—'
+                    : ((string) $gender === '1' ? 'female' : 'male');
+
+                return ['name' => $name, 'count' => (int) $row->aggregate_count];
+            })
+            ->values()
+            ->all();
+
+        return [
+            'by_status' => [
+                ['name' => 'completed', 'count' => $completed],
+                ['name' => 'ongoing', 'count' => $ongoing],
+            ],
+            'by_doctor' => $byDoctor,
+            'by_date' => $byDate,
+            'by_gender' => $byGender,
+        ];
+    }
+
+    /**
+     * @return array{total: int, male: int, female: int, by_gender: list<array{name: string, count: int}>}
+     */
+    protected function departmentReportAnalytics(Builder $query): array
+    {
+        $items = (clone $query)->with('patient:id,gender')->get();
+        $male = 0;
+        $female = 0;
+
+        foreach ($items as $appointment) {
+            if ((string) ($appointment->patient?->gender ?? '') === '1') {
+                $female++;
+            } elseif ($appointment->patient?->gender !== null && $appointment->patient?->gender !== '') {
+                $male++;
+            }
+        }
+
+        $total = $items->count();
+
+        return [
+            'total' => $total,
+            'male' => $male,
+            'female' => $female,
+            'by_gender' => [
+                ['name' => 'male', 'count' => $male],
+                ['name' => 'female', 'count' => $female],
+            ],
         ];
     }
 

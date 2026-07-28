@@ -55,9 +55,25 @@ class AnesthesiaController extends Controller
         if ($request->boolean('search')) {
             $items = $this->reportItems($request);
         }
+        $summary = [
+            'total' => count($items),
+            'new' => count(array_filter($items, fn ($item) => $item['status'] === 'new')),
+            'approved' => count(array_filter($items, fn ($item) => $item['status'] === 'approved')),
+            'rejected' => count(array_filter($items, fn ($item) => $item['status'] === 'rejected')),
+        ];
 
         return Inertia::render('Anesthesias/Report', [
             'items' => $items,
+            'hasSearch' => $request->boolean('search'),
+            'summary' => $summary,
+            'analytics' => [
+                'by_status' => collect($items)->countBy('status')
+                    ->map(fn ($count, $name) => ['name' => $name, 'count' => $count])->values()->all(),
+                'by_department' => collect($items)
+                    ->groupBy(fn ($item) => $item['department_name'] ?? '—')
+                    ->map(fn ($items, $name) => ['name' => $name, 'count' => $items->count()])
+                    ->sortByDesc('count')->values()->all(),
+            ],
             'filters' => $this->collectFilters($request, [
                 'patient_name',
                 'status',
@@ -362,6 +378,7 @@ class AnesthesiaController extends Controller
             ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
             ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
             ->leftJoin('appointments as app', 'a.appointment_id', '=', 'app.id')
+            ->leftJoin('departments as dep', 'app.department_id', '=', 'dep.id')
             ->select(
                 'a.id',
                 'p.name as patient_name',
@@ -371,6 +388,7 @@ class AnesthesiaController extends Controller
                 'a.anesthesia_type',
                 'a.date',
                 'a.time',
+                'dep.name as department_name',
             )
             ->when($this->anesthesiaBranchId(), fn ($q, $branchId) => $q->where('a.branch_id', $branchId))
             ->orderByDesc('a.date')
@@ -422,6 +440,7 @@ class AnesthesiaController extends Controller
             'anesthesia_type' => $item->anesthesia_type,
             'date' => $item->date ? $this->formatAnesthesiaDate($item->date) : null,
             'time' => $item->time,
+            'department_name' => $item->department_name,
         ])->values()->all();
     }
 

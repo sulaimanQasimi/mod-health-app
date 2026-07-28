@@ -1,9 +1,15 @@
-import { Head, router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Badge, Button, Card, Label, Select, TextInput } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import PacuNavTabs from '../../Components/Pacus/PacuNavTabs';
-import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import {
+    ReportAnalyticsSection,
+    ReportExportButtons,
+    ReportFilterPanel,
+    ReportKpiGrid,
+    ReportPageShell,
+    ReportResultsCard,
+} from '../../Components/Reports';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import {
     Table,
@@ -14,11 +20,15 @@ import {
     TableRow,
 } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
+import { SharedPageProps } from '../../types';
 import { PacuListUrls, PacuReportFilters, PacuReportItem } from '../../types/pacu';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface ReportProps {
     items: PacuReportItem[];
+    hasSearch: boolean;
+    summary: { total: number; new: number; completed: number };
+    analytics: { by_status: { name: string; count: number }[]; by_department: { name: string; count: number }[] };
     filters: PacuReportFilters;
     urls: PacuListUrls & { current: string; export: string };
 }
@@ -30,8 +40,9 @@ function statusBadge(status: string, t: (key: string) => string) {
     return <Badge color="success">{t('global.completed_pacus')}</Badge>;
 }
 
-export default function PacusReport({ items, filters, urls }: ReportProps) {
+export default function PacusReport({ items, hasSearch, summary, analytics, filters, urls }: ReportProps) {
     const { t } = useTranslation();
+    const { csrfToken } = usePage<SharedPageProps>().props;
     const [form, setForm] = useState(filters);
     const [processing, setProcessing] = useState(false);
 
@@ -64,63 +75,22 @@ export default function PacusReport({ items, filters, urls }: ReportProps) {
         });
     };
 
-    const handleExport = (type: 'excel' | 'pdf') => {
-        if (items.length === 0) return;
-
-        const formEl = document.createElement('form');
-        formEl.method = 'POST';
-        formEl.action = urls.export;
-        formEl.target = '_blank';
-
-        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if (csrf) {
-            const tokenInput = document.createElement('input');
-            tokenInput.type = 'hidden';
-            tokenInput.name = '_token';
-            tokenInput.value = csrf;
-            formEl.appendChild(tokenInput);
-        }
-
-        const dataInput = document.createElement('input');
-        dataInput.type = 'hidden';
-        dataInput.name = 'data';
-        dataInput.value = JSON.stringify(items.map((item) => item.id));
-        formEl.appendChild(dataInput);
-
-        const typeInput = document.createElement('input');
-        typeInput.type = 'hidden';
-        typeInput.name = 'type';
-        typeInput.value = type;
-        formEl.appendChild(typeInput);
-
-        document.body.appendChild(formEl);
-        formEl.submit();
-        document.body.removeChild(formEl);
-    };
-
     return (
-        <DashboardLayout>
-            <Head title={t('global.reports')} />
-
-            <div className={`mx-auto space-y-6 ${SETTINGS_INDEX_WIDTH.wide}`}>
-                <SettingsPageHeader
-                    title={t('global.reports')}
-                    subtitle={t('global.pacus')}
-                    icon="bx-bar-chart-alt-2"
-                    accent="from-violet-600 to-purple-700"
-                    backLabel={t('global.back')}
-                />
-
-                <Card>
+        <ReportPageShell title={t('global.reports')} subtitle={t('global.pacus')} accent="from-violet-600 to-purple-700" backLabel={t('global.back')}
+            action={hasSearch && items.length ? <ReportExportButtons action={urls.export} csrfToken={csrfToken} fields={{ data: JSON.stringify(items.map((item) => item.id)) }} /> : undefined}>
+            {hasSearch ? <ReportKpiGrid stats={[
+                { key: 'total', label: t('global.total'), value: summary.total, icon: 'bx-building-house', accent: 'from-cyan-500 to-blue-600' },
+                { key: 'new', label: t('global.new_pacus'), value: summary.new, icon: 'bx-time-five', accent: 'from-amber-500 to-orange-600' },
+                { key: 'completed', label: t('global.completed_pacus'), value: summary.completed, icon: 'bx-check-circle', accent: 'from-emerald-500 to-teal-600' },
+            ]} /> : null}
+            {hasSearch ? <ReportAnalyticsSection title={t('global.reports')} charts={[
+                { key: 'status', title: t('global.status'), type: 'donut', labels: analytics.by_status.map((item) => item.name === 'new' ? t('global.new_pacus') : t('global.completed_pacus')), values: analytics.by_status.map((item) => item.count), colors: ['#0ea5e9', '#10b981'] },
+                { key: 'department', title: t('global.department'), type: 'bar', labels: analytics.by_department.map((item) => item.name), values: analytics.by_department.map((item) => item.count), color: '#2563eb' },
+            ]} /> : null}
                     <PacuNavTabs active="report" urls={urls} />
-                </Card>
 
-                <Card>
-                    <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                        <i className="bx bx-search text-violet-500" />
-                        {t('global.documents.search')}
-                    </h2>
-                    <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <ReportFilterPanel title={t('global.documents.search')} onSubmit={handleSubmit} actions={<><Button type="submit" color="blue" size="sm" disabled={processing}><i className="bx bx-search me-1" />{t('global.documents.search')}</Button><Button type="button" color="light" size="sm" disabled={processing} onClick={handleReset}>{t('global.reset')}</Button></>}>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         <div>
                             <Label htmlFor="pacu-report-patient-name">{t('global.patient_name')}</Label>
                             <TextInput
@@ -157,42 +127,10 @@ export default function PacusReport({ items, filters, urls }: ReportProps) {
                                 onChange={(date_to) => setForm((prev) => ({ ...prev, date_to }))}
                             />
                         </div>
-                        <div className="flex flex-wrap gap-2 md:col-span-2 lg:col-span-4">
-                            <Button type="submit" color="blue" size="sm" disabled={processing}>
-                                <i className="bx bx-search me-1" />
-                                {t('global.documents.search')}
-                            </Button>
-                            <Button type="button" color="light" size="sm" disabled={processing} onClick={handleReset}>
-                                {t('global.reset')}
-                            </Button>
-                        </div>
-                    </form>
-                </Card>
-
-                <Card>
-                    <div className="mb-4 flex flex-wrap gap-2">
-                        <Button
-                            type="button"
-                            color="light"
-                            size="sm"
-                            disabled={items.length === 0}
-                            onClick={() => handleExport('excel')}
-                        >
-                            <i className="bx bx-spreadsheet me-1" />
-                            Excel
-                        </Button>
-                        <Button
-                            type="button"
-                            color="failure"
-                            size="sm"
-                            disabled={items.length === 0}
-                            onClick={() => handleExport('pdf')}
-                        >
-                            <i className="bx bx-file me-1" />
-                            PDF
-                        </Button>
                     </div>
+                </ReportFilterPanel>
 
+                <ReportResultsCard title={t('global.reports')} hasSearch={hasSearch} resultCount={items.length} resultsLabel={t('global.records')} emptyMessage={t('global.search_and_filters')}>
                     <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                         <Table>
                             <TableHeader>
@@ -224,8 +162,7 @@ export default function PacusReport({ items, filters, urls }: ReportProps) {
                             </TableBody>
                         </Table>
                     </div>
-                </Card>
-            </div>
-        </DashboardLayout>
+                </ReportResultsCard>
+        </ReportPageShell>
     );
 }

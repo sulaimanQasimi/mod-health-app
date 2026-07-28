@@ -144,12 +144,76 @@ trait ManagesPatientReport
     }
 
     /**
-     * @return array{total: int}
+     * @return array{total: int, male: int, female: int, military: int, civilian: int}
      */
     protected function patientReportSummary(Builder $query): array
     {
+        $total = (clone $query)->count();
+
         return [
-            'total' => (clone $query)->count(),
+            'total' => $total,
+            'male' => (clone $query)->where('patients.gender', '0')->count(),
+            'female' => (clone $query)->where('patients.gender', '1')->count(),
+            'military' => (clone $query)->where('patients.job_category', '0')->count(),
+            'civilian' => (clone $query)->where('patients.job_category', '1')->count(),
+        ];
+    }
+
+    /**
+     * @return array{
+     *     by_gender: list<array{name: string, count: int}>,
+     *     by_type: list<array{name: string, count: int}>,
+     *     by_date: list<array{date: string, count: int}>
+     * }
+     */
+    protected function patientReportAnalytics(Builder $query): array
+    {
+        $byGender = (clone $query)
+            ->reorder()
+            ->selectRaw('patients.gender as value, COUNT(*) as aggregate_count')
+            ->groupBy('patients.gender')
+            ->get()
+            ->map(fn ($row) => [
+                'name' => (string) $row->value === '1' ? 'female' : ((string) $row->value === '0' ? 'male' : 'unknown'),
+                'count' => (int) $row->aggregate_count,
+            ])->values()->all();
+
+        $byType = (clone $query)
+            ->reorder()
+            ->selectRaw('patients.type as value, COUNT(*) as aggregate_count')
+            ->groupBy('patients.type')
+            ->get()
+            ->map(fn ($row) => [
+                'name' => match ((string) $row->value) {
+                    '0' => 'mod',
+                    '1' => 'recipient',
+                    '2' => 'family',
+                    default => 'unknown',
+                },
+                'count' => (int) $row->aggregate_count,
+            ])->values()->all();
+
+        $byDate = (clone $query)
+            ->reorder()
+            ->selectRaw('DATE(patients.registration_date) as day, COUNT(*) as aggregate_count')
+            ->whereNotNull('patients.registration_date')
+            ->groupBy('day')
+            ->orderBy('day')
+            ->get()
+            ->map(function ($row) {
+                try {
+                    $date = $row->day ? verta($row->day)->format('Y/m/d') : '—';
+                } catch (\Throwable) {
+                    $date = (string) $row->day;
+                }
+
+                return ['date' => $date, 'count' => (int) $row->aggregate_count];
+            })->values()->all();
+
+        return [
+            'by_gender' => $byGender,
+            'by_type' => $byType,
+            'by_date' => $byDate,
         ];
     }
 

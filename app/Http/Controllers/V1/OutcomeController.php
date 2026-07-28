@@ -68,6 +68,24 @@ class OutcomeController extends Controller
 
         $user = $request->user();
         $query = $this->buildReportQuery($request, $user);
+        $summaryQuery = clone $query;
+        $summaryQuery->reorder();
+        $summary = DB::query()
+            ->fromSub($summaryQuery, 'usage')
+            ->selectRaw('COUNT(*) as total_items, COALESCE(SUM(usage_count), 0) as total_usage')
+            ->first();
+
+        $topItems = (clone $query)
+            ->reorder('usage_count', 'desc')
+            ->limit(6)
+            ->get(['m.name', 'usage_count'])
+            ->map(fn ($item) => [
+                'name' => $item->name,
+                'count' => (int) $item->usage_count,
+            ])
+            ->values()
+            ->all();
+
         $perPage = (int) $request->get('per_page', 15);
         $paginator = $query->paginate($perPage > 0 ? $perPage : 15)->withQueryString();
 
@@ -88,6 +106,14 @@ class OutcomeController extends Controller
                     'to' => $paginator->lastItem(),
                 ],
             ],
+            'summary' => [
+                'total_items' => (int) ($summary->total_items ?? 0),
+                'total_usage' => (int) ($summary->total_usage ?? 0),
+                'top_usage' => (int) ($topItems[0]['count'] ?? 0),
+            ],
+            'analytics' => [
+                'top_items' => $topItems,
+            ],
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
             'filterOptions' => [
                 'pharmacies' => $this->isPharmacyAdmin($user)
@@ -97,6 +123,7 @@ class OutcomeController extends Controller
             'urls' => [
                 'index' => route('react.outcomes.index'),
                 'report' => route('react.outcomes.report'),
+                'export' => route('outcomes.export-index-report'),
             ],
         ]);
     }

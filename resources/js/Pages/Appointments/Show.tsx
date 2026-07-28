@@ -16,6 +16,7 @@ import {
     LabTestSection,
     NephrologySection,
     OperationSection,
+    OphthalmologySection,
     PacuReferralSection,
     PhysiotherapySection,
     PrescriptionSection,
@@ -212,6 +213,7 @@ export default function ShowAppointment({
                     {sectionPermissions.hospitalization && <HospitalizationSection appointmentId={id} />}
                     <PhysiotherapySection appointmentId={id} />
                     <DentistSection appointmentId={id} />
+                    <OphthalmologySection appointmentId={id} />
                     <NephrologySection appointmentId={id} />
                     <ProstheticsSection appointmentId={id} />
                     <HospitalizationCheckupSection appointmentId={id} />

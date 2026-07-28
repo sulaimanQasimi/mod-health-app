@@ -1,8 +1,14 @@
-import { Head, router, usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Badge, Button, Card, Label, Spinner, Tabs } from 'flowbite-react';
 import { FormEvent, useEffect, useState } from 'react';
-import DashboardLayout from '../../../Components/Layout/DashboardLayout';
-import SettingsPageHeader, { SettingsPageActions } from '../../../Components/Settings/SettingsPageHeader';
+import {
+    ReportAnalyticsSection,
+    ReportExportButtons,
+    ReportFilterPanel,
+    ReportKpiGrid,
+    ReportPageShell,
+    ReportResultsCard,
+} from '../../../Components/Reports';
 import PersianDateInput from '../../../Components/ui/PersianDateInput';
 import {
     Table,
@@ -14,7 +20,6 @@ import {
 } from '../../../Components/ui/Table';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
-import { SETTINGS_INDEX_WIDTH } from '../../../utils/settingsUi';
 
 interface Summary {
     total_procedures: number;
@@ -94,7 +99,6 @@ export default function PhysiotherapyReportsIndex({
     const { csrfToken } = usePage<SharedPageProps>().props;
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
-    const [filtersOpen, setFiltersOpen] = useState(true);
     const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => setFilters(serverFilters), [serverFilters]);
@@ -122,47 +126,46 @@ export default function PhysiotherapyReportsIndex({
     };
 
     const canExport = hasSearch && summary !== null;
+    const kpis = summary
+        ? [
+              { key: 'total', label: t('global.total'), value: summary.total_procedures, icon: 'bx-list-ul', accent: 'from-sky-500 to-blue-600' },
+              { key: 'completed', label: t('global.completed'), value: summary.completed_procedures, icon: 'bx-check-circle', accent: 'from-emerald-500 to-teal-600' },
+              { key: 'rate', label: t('global.completion_rate'), value: `${summary.completion_rate}%`, icon: 'bx-trending-up', accent: 'from-violet-500 to-purple-600' },
+              { key: 'duration', label: t('global.average_duration'), value: summary.average_duration, icon: 'bx-time', accent: 'from-amber-500 to-orange-600' },
+          ]
+        : [];
+    const charts = summary
+        ? [
+              {
+                  key: 'status', title: t('global.status'), type: 'donut' as const,
+                  labels: [t('global.completed'), t('global.in_progress'), t('global.pending'), t('global.cancelled')],
+                  values: [summary.completed_procedures, summary.in_progress_procedures, summary.pending_procedures, summary.cancelled_procedures],
+                  colors: ['#10b981', '#0ea5e9', '#f59e0b', '#ef4444'],
+              },
+              {
+                  key: 'types', title: t('global.by_type'), type: 'bar' as const,
+                  labels: byType.map((item) => item.type_name),
+                  values: byType.map((item) => item.total_procedures),
+                  color: '#0284c7',
+              },
+              {
+                  key: 'physiotherapists', title: t('global.by_physiotherapist'), type: 'bar' as const,
+                  labels: byPhysiotherapist.map((item) => item.name),
+                  values: byPhysiotherapist.map((item) => item.total_procedures),
+                  color: '#7c3aed',
+              },
+          ]
+        : [];
 
     return (
-        <DashboardLayout>
-            <Head title={t('global.reports')} />
-
-            <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
-                <SettingsPageHeader
-                    title={t('global.reports')}
-                    subtitle={t('global.physiotherapy')}
-                    icon="bx-dumbbell"
-                    accent="from-sky-600 to-blue-700"
-                    action={
-                        canExport ? (
-                            <SettingsPageActions>
-                                <form action={urls.export} method="POST" target="_blank" className="inline-flex gap-2">
-                                    <input type="hidden" name="_token" value={csrfToken} />
-                                    <input type="hidden" name="start_date" value={filters.start_date} />
-                                    <input type="hidden" name="end_date" value={filters.end_date} />
-                                    <button
-                                        type="submit"
-                                        name="format"
-                                        value="excel"
-                                        className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300"
-                                    >
-                                        <i className="bx bx-spreadsheet" />
-                                        Excel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        name="format"
-                                        value="pdf"
-                                        className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
-                                    >
-                                        <i className="bx bx-file" />
-                                        PDF
-                                    </button>
-                                </form>
-                            </SettingsPageActions>
-                        ) : undefined
-                    }
-                />
+        <ReportPageShell
+            title={t('global.reports')}
+            subtitle={t('global.physiotherapy')}
+            icon="bx-dumbbell"
+            accent="from-sky-600 to-blue-700"
+            backLabel={t('global.back')}
+            action={canExport ? <ReportExportButtons action={urls.export} csrfToken={csrfToken} fields={filters} typeField="format" /> : undefined}
+        >
 
                 {error && (
                     <Card className="border-rose-200 bg-rose-50 !shadow-sm dark:border-rose-900/40 dark:bg-rose-950/20">
@@ -170,44 +173,19 @@ export default function PhysiotherapyReportsIndex({
                     </Card>
                 )}
 
-                {hasSearch && summary && (
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                        {[
-                            { label: t('global.total'), value: summary.total_procedures, icon: 'bx-list-ul' },
-                            { label: t('global.completed'), value: summary.completed_procedures, icon: 'bx-check-circle' },
-                            { label: t('global.completion_rate'), value: `${summary.completion_rate}%`, icon: 'bx-trending-up' },
-                            { label: t('global.average_duration'), value: summary.average_duration, icon: 'bx-time' },
-                        ].map((stat) => (
-                            <Card key={stat.label} className="!shadow-sm">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-600 dark:bg-sky-950/40 dark:text-sky-400">
-                                        <i className={`bx ${stat.icon} text-lg`} />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500">{stat.label}</p>
-                                        <p className="text-xl font-bold">{stat.value}</p>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                )}
-
-                <Card className="!shadow-sm">
-                    <button
-                        type="button"
-                        onClick={() => setFiltersOpen((open) => !open)}
-                        className="flex w-full items-center justify-between gap-3 border-b border-gray-100 px-1 pb-4 text-start dark:border-gray-700"
-                    >
-                        <span className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                            <i className="bx bx-filter-alt text-sky-500" />
-                            {t('global.advanced_filters')}
-                        </span>
-                        <i className={`bx ${filtersOpen ? 'bx-chevron-up' : 'bx-chevron-down'} text-xl text-gray-400`} />
-                    </button>
-
-                    {filtersOpen && (
-                        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+                {hasSearch ? <ReportKpiGrid stats={kpis} /> : null}
+                {hasSearch ? <ReportAnalyticsSection title={t('global.reports')} charts={charts} /> : null}
+                <ReportFilterPanel
+                    title={t('global.advanced_filters')}
+                    onSubmit={handleSubmit}
+                    accentIconClass="text-sky-500"
+                    actions={<>
+                        <Button type="submit" color="blue" disabled={processing || !filters.start_date || !filters.end_date}>
+                            {processing ? <><Spinner size="sm" className="me-2" />{t('global.loading')}</> : <><i className="bx bx-search me-2" />{t('global.search')}</>}
+                        </Button>
+                        <Button type="button" color="light" onClick={handleReset} disabled={processing}><i className="bx bx-refresh me-2" />{t('global.reset')}</Button>
+                    </>}
+                >
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div>
                                     <Label>{t('global.from')}</Label>
@@ -224,42 +202,8 @@ export default function PhysiotherapyReportsIndex({
                                     />
                                 </div>
                             </div>
-                            <div className="flex flex-wrap gap-2 border-t border-gray-100 pt-4 dark:border-gray-700">
-                                <Button
-                                    type="submit"
-                                    color="blue"
-                                    disabled={processing || !filters.start_date || !filters.end_date}
-                                >
-                                    {processing ? (
-                                        <>
-                                            <Spinner size="sm" className="me-2" />
-                                            {t('global.loading')}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className="bx bx-search me-2" />
-                                            {t('global.search')}
-                                        </>
-                                    )}
-                                </Button>
-                                <Button type="button" color="light" onClick={handleReset} disabled={processing}>
-                                    <i className="bx bx-refresh me-2" />
-                                    {t('global.reset')}
-                                </Button>
-                            </div>
-                        </form>
-                    )}
-                </Card>
-
-                <Card className="!shadow-sm">
-                    {!hasSearch ? (
-                        <div className="flex flex-col items-center gap-3 py-16 text-center text-gray-500">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-sky-50 dark:bg-sky-950/30">
-                                <i className="bx bx-dumbbell text-2xl text-sky-500" />
-                            </div>
-                            <p className="text-sm">{t('global.search_and_filters')}</p>
-                        </div>
-                    ) : (
+                </ReportFilterPanel>
+                <ReportResultsCard title={t('global.reports')} hasSearch={hasSearch} resultCount={summary?.total_procedures} resultsLabel={t('global.results')} emptyMessage={t('global.search_and_filters')}>
                         <Tabs aria-label="Physiotherapy report tabs" onActiveTabChange={setActiveTab}>
                             <Tabs.Item active={activeTab === 0} title={t('global.summary')}>
                                 {summary && (
@@ -370,9 +314,7 @@ export default function PhysiotherapyReportsIndex({
                                 </div>
                             </Tabs.Item>
                         </Tabs>
-                    )}
-                </Card>
-            </div>
-        </DashboardLayout>
+                </ReportResultsCard>
+        </ReportPageShell>
     );
 }

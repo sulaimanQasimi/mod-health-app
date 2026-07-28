@@ -1,11 +1,16 @@
-import { Head, router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Badge, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
 import { BLOOD_BANK_PANEL_ICON_CLASS, bloodGroupLabel, bloodRhLabel, bloodStatusBadgeColor } from '../../Components/BloodBanks/bloodBankUi';
-import DashboardLayout from '../../Components/Layout/DashboardLayout';
-import IcuPanel from '../../Components/Icus/IcuPanel';
-import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
+import {
+    ReportAnalyticsSection,
+    ReportExportButtons,
+    ReportFilterPanel,
+    ReportKpiGrid,
+    ReportPageShell,
+    ReportResultsCard,
+} from '../../Components/Reports';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
@@ -18,23 +23,30 @@ import {
     TableRow,
 } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
+import { SharedPageProps } from '../../types';
 import {
     BloodBankListUrls,
     BloodReportFilterOptions,
     BloodReportFilters,
     BloodReportItem,
 } from '../../types/bloodBank';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface ReportProps {
     items: BloodReportItem[];
+    hasSearch: boolean;
+    summary: {
+        total: number;
+        by_status: Array<{ name: string; count: number }>;
+        by_blood_type: Array<{ name: string; count: number }>;
+    };
     filters: BloodReportFilters;
     filterOptions: BloodReportFilterOptions;
     urls: BloodBankListUrls & { current: string; export: string };
 }
 
-export default function BloodBanksReport({ items, filters, filterOptions, urls }: ReportProps) {
+export default function BloodBanksReport({ items, summary, hasSearch, filters, filterOptions, urls }: ReportProps) {
     const { t } = useTranslation();
+    const { csrfToken } = usePage<SharedPageProps>().props;
     const [form, setForm] = useState(filters);
     const [processing, setProcessing] = useState(false);
 
@@ -69,49 +81,51 @@ export default function BloodBanksReport({ items, filters, filterOptions, urls }
         });
     };
 
-    const exportUrl = () => {
-        const params = new URLSearchParams(
-            Object.fromEntries(
-                Object.entries(form).filter(([, value]) => value !== ''),
-            ),
-        );
-        return `${urls.export}?${params.toString()}`;
-    };
+    const kpis = [
+        { key: 'total', label: t('global.total'), value: summary.total, icon: 'bx-droplet', accent: 'from-rose-500 to-red-600' },
+        { key: 'available', label: t('global.approved'), value: summary.by_status.find((item) => item.name === 'approved')?.count ?? 0, icon: 'bx-check-circle', accent: 'from-emerald-500 to-teal-600' },
+        { key: 'delivered', label: t('global.delivered'), value: summary.by_status.find((item) => item.name === 'delivered')?.count ?? 0, icon: 'bx-package', accent: 'from-cyan-500 to-blue-600' },
+        { key: 'pending', label: t('global.new'), value: summary.by_status.find((item) => item.name === 'new')?.count ?? 0, icon: 'bx-time-five', accent: 'from-amber-500 to-orange-600' },
+    ];
+    const charts = [
+        {
+            key: 'blood-types', title: t('global.blood_group'), type: 'bar' as const,
+            labels: summary.by_blood_type.map((item) => item.name),
+            values: summary.by_blood_type.map((item) => item.count),
+            color: '#e11d48',
+        },
+        {
+            key: 'statuses', title: t('global.status'), type: 'donut' as const,
+            labels: summary.by_status.map((item) => item.name),
+            values: summary.by_status.map((item) => item.count),
+            colors: ['#0ea5e9', '#10b981', '#f59e0b', '#ef4444'],
+        },
+    ];
 
     return (
-        <DashboardLayout>
-            <Head title={t('global.reports')} />
-
-            <div className={`mx-auto space-y-5 ${SETTINGS_INDEX_WIDTH.wide}`}>
-                <SettingsPageHeader
-                    title={t('global.reports')}
-                    subtitle={t('global.blood_bank')}
-                    icon="bx-bar-chart-alt-2"
-                    accent="from-rose-600 to-red-700"
-                    backHref={urls.dashboard}
-                    backLabel={t('global.back')}
-                    action={
-                        <SettingsPageActions>
-                            <a
-                                href={exportUrl()}
-                                className="inline-flex items-center gap-2 rounded-xl border border-rose-200 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50 dark:border-rose-900/40 dark:text-rose-300"
-                            >
-                                <i className="bx bx-download" />
-                                {t('global.export')}
-                            </a>
-                        </SettingsPageActions>
-                    }
-                />
-
+        <ReportPageShell
+            title={t('global.reports')}
+            subtitle={t('global.blood_bank')}
+            accent="from-rose-600 to-red-700"
+            backHref={urls.dashboard}
+            backLabel={t('global.back')}
+            action={items.length ? <ReportExportButtons action={urls.export} csrfToken={csrfToken} fields={{ data: JSON.stringify(items.map((item) => item.id)) }} /> : undefined}
+        >
                 <BloodBankNavTabs active="report" urls={urls} />
-
-                <IcuPanel
-                    variant="filter"
+                {hasSearch ? <ReportKpiGrid stats={kpis} /> : null}
+                {hasSearch ? <ReportAnalyticsSection title={t('global.reports')} charts={charts} /> : null}
+                <ReportFilterPanel
                     title={t('global.advanced_filters')}
-                    icon="bx-filter-alt"
-                    iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
+                    onSubmit={handleSubmit}
+                    accentIconClass={BLOOD_BANK_PANEL_ICON_CLASS}
+                    actions={<>
+                        <Button type="submit" color="failure" disabled={processing}>
+                            {processing ? <Spinner size="sm" className="me-2" /> : <i className="bx bx-search me-2" />}
+                            {t('global.search')}
+                        </Button>
+                        <Button type="button" color="light" onClick={handleReset} disabled={processing}>{t('global.reset')}</Button>
+                    </>}
                 >
-                    <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                             <div>
                                 <Label>{t('global.patient_name')}</Label>
@@ -183,23 +197,13 @@ export default function BloodBanksReport({ items, filters, filterOptions, urls }
                                 />
                             </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                            <Button type="submit" color="failure" disabled={processing}>
-                                {processing ? <Spinner size="sm" className="me-2" /> : <i className="bx bx-search me-2" />}
-                                {t('global.search')}
-                            </Button>
-                            <Button type="button" color="light" onClick={handleReset} disabled={processing}>
-                                {t('global.reset')}
-                            </Button>
-                        </div>
-                    </form>
-                </IcuPanel>
-
-                <IcuPanel
-                    variant="table"
+                </ReportFilterPanel>
+                <ReportResultsCard
                     title={t('global.reports')}
-                    icon="bx-bar-chart-alt-2"
-                    iconClassName={BLOOD_BANK_PANEL_ICON_CLASS}
+                    hasSearch={hasSearch}
+                    resultCount={summary.total}
+                    resultsLabel={t('global.results')}
+                    emptyMessage={t('global.search_and_filters')}
                 >
                     <Table embedded>
                         <TableHead>
@@ -239,8 +243,7 @@ export default function BloodBanksReport({ items, filters, filterOptions, urls }
                             )}
                         </TableBody>
                     </Table>
-                </IcuPanel>
-            </div>
-        </DashboardLayout>
+                </ReportResultsCard>
+        </ReportPageShell>
     );
 }

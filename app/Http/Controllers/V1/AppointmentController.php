@@ -559,8 +559,18 @@ class AppointmentController extends Controller
             'meta' => ['total' => 0],
         ];
 
+        $summary = [
+            'total' => 0,
+            'male' => 0,
+            'female' => 0,
+        ];
+        $analytics = [
+            'by_gender' => [],
+        ];
+
         if ($hasSearch) {
-            $items = $this->departmentReportBaseQuery($request, $branchId)->get();
+            $query = $this->departmentReportBaseQuery($request, $branchId);
+            $items = $query->get();
             $appointments = [
                 'data' => $items
                     ->map(fn (Appointment $item) => $this->transformDepartmentReportItem($item))
@@ -568,10 +578,18 @@ class AppointmentController extends Controller
                     ->all(),
                 'meta' => ['total' => $items->count()],
             ];
+            $analytics = $this->departmentReportAnalytics($query);
+            $summary = [
+                'total' => $analytics['total'],
+                'male' => $analytics['male'],
+                'female' => $analytics['female'],
+            ];
         }
 
         return Inertia::render('Appointments/DepartmentReport', [
             'appointments' => $appointments,
+            'summary' => $summary,
+            'analytics' => $analytics,
             'hasSearch' => $hasSearch,
             'filters' => $this->collectFilters($request, $this->departmentReportFilterKeys()),
             'filterOptions' => [
@@ -735,11 +753,20 @@ class AppointmentController extends Controller
             'total' => 0,
             'completed' => 0,
             'ongoing' => 0,
+            'completion_rate' => 0,
+        ];
+
+        $analytics = [
+            'by_status' => [],
+            'by_doctor' => [],
+            'by_date' => [],
+            'by_gender' => [],
         ];
 
         if ($hasSearch) {
             $query = $this->appointmentReportBaseQuery($request, $branchId);
             $summary = $this->appointmentReportSummary($query);
+            $analytics = $this->appointmentReportAnalytics($request, $branchId);
 
             $perPage = $request->input('per_page', '25');
             if ($perPage === 'all') {
@@ -773,6 +800,7 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Report', [
             'appointments' => $appointments,
             'summary' => $summary,
+            'analytics' => $analytics,
             'hasSearch' => $hasSearch,
             'filters' => $this->collectFilters($request, self::APPOINTMENT_REPORT_FILTER_KEYS),
             'filterOptions' => [

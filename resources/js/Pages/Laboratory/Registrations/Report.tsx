@@ -1,9 +1,15 @@
-import { Head, router } from '@inertiajs/react';
-import { Button, Card, Label, TextInput } from 'flowbite-react';
+import { router, usePage } from '@inertiajs/react';
+import { Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useEffect, useState } from 'react';
 import AppointmentPagination from '../../../Components/Appointments/AppointmentPagination';
-import LaboratoryPageHeader from '../../../Components/Laboratory/LaboratoryPageHeader';
-import DashboardLayout from '../../../Components/Layout/DashboardLayout';
+import {
+    ReportAnalyticsSection,
+    ReportExportButtons,
+    ReportFilterPanel,
+    ReportKpiGrid,
+    ReportPageShell,
+    ReportResultsCard,
+} from '../../../Components/Reports';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
 import {
     Table,
@@ -14,6 +20,7 @@ import {
     TableRow,
 } from '../../../Components/ui/Table';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { SharedPageProps } from '../../../types';
 import {
     perPageFilterOptionsWithAll,
     selectOptionsWithAll,
@@ -39,14 +46,17 @@ interface ReportProps {
         per_page: string;
     };
     filterOptions: { labTypes: SelectOption[] };
+    summary: { test_type_count: number; total_registrations: number } | null;
+    analytics: { by_type: Array<{ name: string; count: number }> } | null;
     urls: {
         report: string;
         export: string;
     };
 }
 
-export default function Report({ items, filters: serverFilters, filterOptions, urls }: ReportProps) {
+export default function Report({ items, summary, analytics, filters: serverFilters, filterOptions, urls }: ReportProps) {
     const { t } = useTranslation();
+    const { csrfToken } = usePage<SharedPageProps>().props;
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
 
@@ -67,24 +77,46 @@ export default function Report({ items, filters: serverFilters, filterOptions, u
         );
     };
 
-    const totalRegistrations = items?.data?.reduce((sum, row) => sum + row.total_count, 0) ?? 0;
+    const hasSearch = items !== null;
+    const canExport = hasSearch && (items?.data.length ?? 0) > 0;
+    const exportFields = Object.fromEntries(
+        Object.entries(filters).filter(([key, value]) => key !== 'per_page' && value !== ''),
+    );
+    const kpis = summary
+        ? [
+              { key: 'types', label: t('global.test_type'), value: summary.test_type_count, icon: 'bx-category', accent: 'from-indigo-500 to-blue-600' },
+              { key: 'registrations', label: t('global.registrations') || 'Registrations', value: summary.total_registrations, icon: 'bx-test-tube', accent: 'from-cyan-500 to-blue-600' },
+          ]
+        : [];
+    const charts = analytics
+        ? [{
+              key: 'types',
+              title: t('global.test_type'),
+              type: 'bar' as const,
+              labels: analytics.by_type.map((item) => item.name),
+              values: analytics.by_type.map((item) => item.count),
+              color: '#4f46e5',
+          }]
+        : [];
 
     return (
-        <DashboardLayout>
-            <Head title={t('global.test_registration_report')} />
-
-            <LaboratoryPageHeader
-                title={t('global.test_registration_report')}
-                subtitle={
-                    t('global.view_and_export_test_registration_statistics') ||
-                    t('global.reports')
-                }
-                icon="bx-bar-chart-alt-2"
-                accent="from-indigo-500 to-blue-600"
-            />
-
-            <Card className="mb-6 shadow-sm">
-                <form onSubmit={handleSubmit} className="space-y-4">
+        <ReportPageShell
+            title={t('global.test_registration_report')}
+            subtitle={t('global.reports')}
+            accent="from-indigo-500 to-blue-600"
+            backLabel={t('global.back')}
+            action={canExport ? <ReportExportButtons action={urls.export} csrfToken={csrfToken} fields={exportFields} /> : undefined}
+        >
+            {hasSearch ? <ReportKpiGrid stats={kpis} columns="sm:grid-cols-2" /> : null}
+            {hasSearch ? <ReportAnalyticsSection title={t('global.reports')} charts={charts} /> : null}
+            <ReportFilterPanel
+                title={t('global.advanced_filters')}
+                onSubmit={handleSubmit}
+                accentIconClass="text-indigo-500"
+                actions={<Button type="submit" color="blue" disabled={processing}>
+                    {processing ? <><Spinner size="sm" className="me-2" />{t('global.loading')}</> : <><i className="bx bx-search me-2" />{t('global.search')}</>}
+                </Button>}
+            >
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                         <div>
                             <Label>{t('global.from')}</Label>
@@ -127,49 +159,32 @@ export default function Report({ items, filters: serverFilters, filterOptions, u
                             />
                         </div>
                     </div>
-                    <Button type="submit" color="blue" disabled={processing}>
-                        {t('global.search')}
-                    </Button>
-                </form>
-            </Card>
-
-            {items && (
-                <>
-                    <Card className="mb-4 shadow-sm">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                                {items.data.length} {t('global.test_type')} · {totalRegistrations}{' '}
-                                {t('global.registrations') || 'registrations'}
-                            </p>
-                            <form method="POST" action={urls.export}>
-                                <input type="hidden" name="_token" value="" />
-                                <Button type="button" color="light" size="sm" disabled>
-                                    <i className="bx bx-export me-1" />
-                                    {t('global.export')}
-                                </Button>
-                            </form>
-                        </div>
-                    </Card>
-
-                    <Card className="shadow-sm">
+            </ReportFilterPanel>
+            <ReportResultsCard
+                title={t('global.test_registration_report')}
+                hasSearch={hasSearch}
+                resultCount={summary?.total_registrations}
+                resultsLabel={t('global.registrations') || 'registrations'}
+                emptyMessage={t('global.search_and_filters')}
+            >
                         <div className="overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>#</TableHead>
-                                        <TableHead>{t('global.test_type')}</TableHead>
-                                        <TableHead className="text-end">{t('global.total')}</TableHead>
+                            <Table embedded>
+                                <TableHead>
+                                    <TableRow variant="header">
+                                        <TableHeader>#</TableHeader>
+                                        <TableHeader>{t('global.test_type')}</TableHeader>
+                                        <TableHeader className="text-end">{t('global.total')}</TableHeader>
                                     </TableRow>
-                                </TableHeader>
+                                </TableHead>
                                 <TableBody>
-                                    {items.data.length === 0 ? (
+                                    {(items?.data.length ?? 0) === 0 ? (
                                         <TableRow>
                                             <TableCell colSpan={3} className="text-center text-gray-500">
                                                 {t('global.no_item_is_found')}
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        items.data.map((row, index) => (
+                                        items?.data.map((row, index) => (
                                             <TableRow key={row.lab_type_id}>
                                                 <TableCell>{index + 1}</TableCell>
                                                 <TableCell className="font-medium">
@@ -186,13 +201,8 @@ export default function Report({ items, filters: serverFilters, filterOptions, u
                                 </TableBody>
                             </Table>
                         </div>
-                    </Card>
-
-                    {items.links && items.meta && (
-                        <AppointmentPagination links={items.links} meta={items.meta} t={t} />
-                    )}
-                </>
-            )}
-        </DashboardLayout>
+                {items?.links && items.meta && <AppointmentPagination links={items.links} meta={items.meta} t={t} />}
+            </ReportResultsCard>
+        </ReportPageShell>
     );
 }

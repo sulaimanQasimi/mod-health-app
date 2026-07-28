@@ -51,6 +51,11 @@
                             <div>{{ localize('global.create_patient') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('patients.create') ? 'active' : '' }}">
+                        <a href="{{ route('patients.create') }}" class="menu-link">
+                            <div>{{ localize('global.create_patient') }}</div>
+                        </a>
+                    </li>
 
                     <li class="menu-item {{ Route::is('patients.index') ? 'active' : '' }}">
                         <a href="{{ route('patients.index') }}" class="menu-link">

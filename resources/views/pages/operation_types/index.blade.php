@@ -23,20 +23,70 @@
 
                 <div class="card-body">
 
+            {{-- Filter --}}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-none border-0">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bx bx-filter-alt text-primary me-2"></i>{{ localize('global.filter') }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('operation_types.index') }}" id="filterForm">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="search" class="form-label fw-semibold">
+                                    <i class="bx bx-search me-1 text-primary"></i>{{ localize('global.name') }}
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary text-white"><i class="bx bx-search"></i></span>
+                                    <input type="text" class="form-control" id="search" name="search"
+                                           value="{{ request('search') }}"
+                                           placeholder="{{ localize('global.search_by_name') }}" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="department_id" class="form-label fw-semibold">
+                                    <i class="bx bx-building me-1 text-info"></i>{{ localize('global.department') }}
+                                </label>
+                                <select class="form-select" id="department_id" name="department_id">
+                                    <option value="">{{ localize('global.all') ?: 'All' }}</option>
+                                    @foreach($departments as $department)
+                                        <option value="{{ $department->id }}" {{ request('department_id') == $department->id ? 'selected' : '' }}>
+                                            {{ $department->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bx bx-filter me-1"></i>{{ localize('global.filter') }}
+                                </button>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <a href="{{ route('operation_types.index') }}" class="btn btn-outline-secondary w-100">
+                                    <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') ?: 'Reset' }}
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>{{localize('global.number')}}</th>
             <th>{{localize('global.name')}}</th>
+            <th>{{localize('global.department')}}</th>
             <th>{{localize('global.actions')}}</th>
         </tr>
     </thead>
     <tbody>
-        @foreach ($operationTypes as $operationType)
+        @forelse ($operationTypes as $operationType)
             <tr>
                 <td>{{ $loop->iteration}}</td>
                 <td>{{ $operationType->name }}</td>
+                <td>{{ $operationType->department->name ?? '—' }}</td>
                 <td>
                     {{-- <a href="{{ route('operation_types.show', $operationType) }}"><i class="bx bx-show-alt"></i></a> --}}
                     @can('edit-operation-types')
@@ -54,7 +104,11 @@
                     </form>
                 </td>
             </tr>
-        @endforeach
+        @empty
+            <tr>
+                <td colspan="4" class="text-center">{{ localize('global.no_data_found') ?: 'No data found' }}</td>
+            </tr>
+        @endforelse
     </tbody>
 </table>
 </div>

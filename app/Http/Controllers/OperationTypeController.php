@@ -12,10 +12,22 @@ class OperationTypeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $operationTypes = OperationType::all();
-        return view('pages.operation_types.index',compact('operationTypes'));
+        $query = OperationType::query()->with(['department', 'branch']);
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
+
+        $operationTypes = $query->orderBy('name')->get();
+        $departments = Department::orderBy('name')->get(['id', 'name']);
+
+        return view('pages.operation_types.index', compact('operationTypes', 'departments'));
     }
 
     /**

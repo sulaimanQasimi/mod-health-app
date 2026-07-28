@@ -13,7 +13,7 @@
         </div>
         <div class="card-body">
             <div class="alert alert-danger d-none" id="depot-form-errors"></div>
-            <form action="{{ route('depots.update', $depot) }}" method="POST" autocomplete="off" class="js-depot-form">
+            <form action="{{ route('depots.update', $depot) }}" method="POST" autocomplete="off"class="js-depot-form">
                 @csrf
                 @method('PUT')
                 @include('pages.depots.partials.form', ['depot' => $depot])

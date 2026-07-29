@@ -3837,7 +3837,7 @@ return [
     'attachments' => 'ضمیمه‌ها',
     'files_uploaded_successfully' => 'فایل‌ها با موفقیت آپلود شدند',
     'ophthalmology_registration' => 'ثبت بخش چشم',
-    'ophthalmology_registrations' => 'ثبت‌های بخش چشم',
+    'ophthalmology_registrations' => 'ثبت‌ بخش چشم',
     'ophthalmology_examination' => 'معاینه بخش چشم',
     'ophthalmology_registration_created_successfully' => 'ثبت بخش چشم با موفقیت ایجاد شد',
     'ophthalmology_registration_updated_successfully' => 'ثبت بخش چشم با موفقیت به‌روزرسانی شد',
@@ -3853,8 +3853,11 @@ return [
     'occupation' => 'وظیفه',
     'create_and_open' => 'ایجاد و باز کردن',
     'save_ophthalmology_examination' => 'ذخیره معاینه چشم',
-    'ophthalmology_department' => 'بخش بخش چشم',
+    'ophthalmology_department' => 'بخش چشم',
     'ophthalmology_registration_deleted_successfully' => 'ثبت بخش چشم با موفقیت حذف شد',
     'eye_doctor' => 'داکتر چشم',
     'is_eye_doctor' => 'آیا داکتر چشم است؟',
+    'print_eye_examination' => 'چاپ معاینه چشم',
+    'eye_examination_report' => 'گزارش معاینه چشم',
+    'eye_diagram' => 'نمای چشمی'
 ];

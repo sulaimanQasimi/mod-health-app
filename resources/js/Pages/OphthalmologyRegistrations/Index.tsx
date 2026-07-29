@@ -117,7 +117,7 @@ export default function OphthalmologyRegistrationIndex({
                 <SettingsPageHeader
                     title={t('global.ophthalmology_registrations')}
                     subtitle={summary}
-                    icon="bx-low-vision"
+                    icon="bx-show"
                     accent="from-cyan-500 to-blue-600"
                     backLabel={t('global.back')}
                 />

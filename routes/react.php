@@ -280,6 +280,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('ophthalmology-registrations')->name('ophthalmology-registrations.')->group(function () {
         Route::get('/', [OphthalmologyRegistrationController::class, 'index'])->name('index');
+        Route::get('/{ophthalmologyRegistration}/print', [OphthalmologyRegistrationController::class, 'print'])->name('print');
         Route::get('/{ophthalmologyRegistration}', [OphthalmologyRegistrationController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/{ophthalmologyRegistration}', [OphthalmologyRegistrationController::class, 'update'])->name('update');
         Route::delete('/{ophthalmologyRegistration}', [OphthalmologyRegistrationController::class, 'destroy'])->name('destroy');

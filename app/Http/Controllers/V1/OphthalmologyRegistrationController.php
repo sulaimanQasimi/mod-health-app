@@ -45,9 +45,8 @@ class OphthalmologyRegistrationController extends Controller
             ->when($request->filled('date_to'), fn (Builder $builder) => $builder->whereDate('registration_date', '<=', Verta::parse($request->date_to)->datetime()))
             ->latest();
 
-        $perPage = in_array((int) ($filters['per_page'] ?? 25), [10, 25, 50], true)
-            ? (int) $filters['per_page']
-            : 25;
+        $requestedPerPage = (int) ($filters['per_page'] ?? 25);
+        $perPage = in_array($requestedPerPage, [10, 25, 50], true) ? $requestedPerPage : 25;
         $paginator = $query->paginate($perPage)->withQueryString();
 
         $statsQuery = OphthalmologyRegistration::query()
@@ -137,7 +136,28 @@ class OphthalmologyRegistrationController extends Controller
             'urls' => [
                 'update' => route('react.ophthalmology-registrations.update', $ophthalmologyRegistration),
                 'appointment' => route('react.appointments.show', $ophthalmologyRegistration->appointment_id),
+                'print' => route('react.ophthalmology-registrations.print', $ophthalmologyRegistration),
             ],
+        ]);
+    }
+
+    public function print(Request $request, OphthalmologyRegistration $ophthalmologyRegistration): Response
+    {
+        $this->authorizeRegistrationAccess($request, $ophthalmologyRegistration);
+        $this->authorize('view', $ophthalmologyRegistration->appointment);
+        $ophthalmologyRegistration->load([
+            'appointment.patient:id,name,last_name,father_name,id_card,age,gender,phone,job',
+            'appointment:id,patient_id,doctor_id,branch_id,date,is_completed',
+            'examiner:id,name',
+        ]);
+
+        return Inertia::render('OphthalmologyRegistrations/Print', [
+            'registration' => $this->transform($ophthalmologyRegistration),
+            'assets' => [
+                'leftLogo' => asset('images/logos/لوگو قومنداني.JPG'),
+                'rightLogo' => asset('images/logos/لوگوی جدید وزارت دفاع ملی.png'),
+            ],
+            'generatedAt' => verta()->format('Y/m/d H:i'),
         ]);
     }
 

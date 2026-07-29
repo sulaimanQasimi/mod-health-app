@@ -4497,4 +4497,7 @@ return [
 'to_date' => 'تر نېټې',
 'eye_doctor' => 'د سترګو ډاکټر',
 'is_eye_doctor' => 'آیا د سترګو ډاکټر دی؟',
+'print_eye_examination' => 'د سترګو معاینې چاپ',
+'eye_examination_report' => 'د سترګو معاینې راپور',
+'eye_diagram' => 'د سترګو انځور',
 ];

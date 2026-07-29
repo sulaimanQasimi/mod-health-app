@@ -4653,4 +4653,7 @@ return [
     'ophthalmology_registration_deleted_successfully' => 'Ophthalmology registration deleted successfully',
     'eye_doctor' => 'Eye Doctor',
     'is_eye_doctor' => 'Is Eye Doctor',
+    'print_eye_examination' => 'Print Eye Examination',
+    'eye_examination_report' => 'Eye Examination Report',
+    'eye_diagram' => 'Eye Diagram',
 ];

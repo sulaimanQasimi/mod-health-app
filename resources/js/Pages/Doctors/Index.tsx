@@ -237,7 +237,7 @@ export default function IndexDoctors({
                         {
                             label: t('global.eye_doctor'),
                             value: stats.eye_doctors,
-                            icon: 'bx-low-vision',
+                            icon: 'bx-show',
                             color: 'from-teal-500 to-cyan-600',
                         },
                     ].map((card) => (

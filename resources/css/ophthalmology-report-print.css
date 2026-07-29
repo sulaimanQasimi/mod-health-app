@@ -1,0 +1,236 @@
+@font-face {
+    font-family: 'ModFont';
+    src: url('/assets/fonts/mod_font.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.ophthalmology-report-print {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'ModFont', 'Arial', sans-serif;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #111;
+    background: #fff;
+    direction: rtl;
+    text-align: right;
+}
+
+.ophthalmology-report-print *,
+.ophthalmology-report-print *::before,
+.ophthalmology-report-print *::after {
+    box-sizing: border-box;
+}
+
+.ophthalmology-report-print .report-container {
+    max-width: 210mm;
+    margin: 0 auto;
+    background: #fff;
+    padding: 16px 18px;
+}
+
+.ophthalmology-report-print .header {
+    border-bottom: 2px solid #000;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+}
+
+.ophthalmology-report-print .header-grid {
+    display: grid;
+    grid-template-columns: 100px 1fr 100px;
+    gap: 12px;
+    align-items: center;
+}
+
+.ophthalmology-report-print .logo-image {
+    max-width: 90px;
+    max-height: 90px;
+    object-fit: contain;
+}
+
+.ophthalmology-report-print .text-column {
+    text-align: center;
+}
+
+.ophthalmology-report-print .text-column h2,
+.ophthalmology-report-print .text-column div {
+    margin: 0 0 3px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.ophthalmology-report-print .report-title {
+    margin: 10px 0 0;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.ophthalmology-report-print .meta-table,
+.ophthalmology-report-print .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+}
+
+.ophthalmology-report-print .meta-table th,
+.ophthalmology-report-print .meta-table td,
+.ophthalmology-report-print .data-table th,
+.ophthalmology-report-print .data-table td {
+    border: 1px solid #000;
+    padding: 5px 7px;
+    vertical-align: middle;
+}
+
+.ophthalmology-report-print .meta-table th,
+.ophthalmology-report-print .data-table th {
+    background: #f3f4f6;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.ophthalmology-report-print .section-title {
+    margin: 14px 0 8px;
+    font-size: 13px;
+    font-weight: 800;
+    border-bottom: 1px solid #111;
+    padding-bottom: 4px;
+}
+
+.ophthalmology-report-print .eyes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.ophthalmology-report-print .eye-card {
+    border: 1px solid #111;
+    border-radius: 8px;
+    padding: 10px;
+    page-break-inside: avoid;
+}
+
+.ophthalmology-report-print .eye-card.od {
+    background: #ecfeff;
+}
+
+.ophthalmology-report-print .eye-card.os {
+    background: #f5f3ff;
+}
+
+.ophthalmology-report-print .eye-card h3 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.ophthalmology-report-print .eye-svg-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.ophthalmology-report-print .eye-svg-wrap svg {
+    width: 170px;
+    height: auto;
+}
+
+.ophthalmology-report-print .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.ophthalmology-report-print .metric {
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+    background: #fff;
+    padding: 4px;
+    text-align: center;
+}
+
+.ophthalmology-report-print .metric .label {
+    font-size: 10px;
+    color: #475569;
+}
+
+.ophthalmology-report-print .metric .value {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ophthalmology-report-print .notes-box {
+    border: 1px solid #000;
+    min-height: 48px;
+    padding: 8px;
+    white-space: pre-wrap;
+}
+
+.ophthalmology-report-print .footer {
+    margin-top: 18px;
+    padding-top: 10px;
+    border-top: 1px solid #000;
+    text-align: center;
+    font-size: 11px;
+}
+
+.ophthalmology-report-print .signatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 28px;
+    text-align: center;
+}
+
+.ophthalmology-report-print .signature-line {
+    border-top: 1px solid #000;
+    margin-top: 40px;
+    padding-top: 6px;
+    font-weight: 700;
+}
+
+.ophthalmology-report-print .print-button {
+    background: #0f172a;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.ophthalmology-report-print .no-print {
+    display: block;
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 8mm;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+    }
+
+    .ophthalmology-report-print .report-container {
+        max-width: none;
+        padding: 0;
+    }
+
+    .ophthalmology-report-print .no-print {
+        display: none !important;
+    }
+
+    .ophthalmology-report-print .eye-card,
+    .ophthalmology-report-print .data-table,
+    .ophthalmology-report-print .signatures {
+        page-break-inside: avoid;
+    }
+}

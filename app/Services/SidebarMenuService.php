@@ -85,7 +85,7 @@ class SidebarMenuService
         }
 
         if ($user->can('access-ophthalmology-registrations')) {
-            $items[] = $this->group('ophthalmology', 'global.ophthalmology_department', 'bx-low-vision', [
+            $items[] = $this->group('ophthalmology', 'global.ophthalmology_department', 'bx-show', [
                 'react.ophthalmology-registrations.*',
             ], [
                 $this->item('ophthalmology-registrations', 'global.ophthalmology_registrations', null, 'react.ophthalmology-registrations.index'),

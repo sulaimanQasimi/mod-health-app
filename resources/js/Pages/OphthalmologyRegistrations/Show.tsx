@@ -3,6 +3,7 @@ import { Button, Card, Label, Select, Spinner, Textarea, TextInput } from 'flowb
 import { FormEvent, ReactNode, useMemo, useState } from 'react';
 import AppointmentPageHeader from '../../Components/Appointments/AppointmentPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import EyeExaminationDiagram from '../../Components/Ophthalmology/EyeExaminationDiagram';
 import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import TableBadge from '../../Components/ui/TableBadge';
@@ -48,7 +49,7 @@ interface Props {
         changeStatus: boolean;
         uploadImages: boolean;
     };
-    urls: { update: string; appointment: string };
+    urls: { update: string; appointment: string; print: string };
 }
 
 const HISTORY_FIELDS = [
@@ -251,10 +252,14 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
                     <AppointmentPageHeader
                         title={t('global.ophthalmology_examination')}
                         subtitle={`${registration.ref_no} · ${registration.patient.name}`}
-                        icon="bx-low-vision"
+                        icon="bx-show"
                         action={
                             <div className="flex flex-wrap items-center gap-2">
                                 <TableBadge color={statusColor}>{statusLabel}</TableBadge>
+                                <Button as="a" href={urls.print} target="_blank" rel="noreferrer" color="light" size="sm" type="button">
+                                    <i className="bx bx-printer me-2" />
+                                    {t('global.print_eye_examination')}
+                                </Button>
                                 <Link href={urls.appointment}>
                                     <Button color="light" size="sm">
                                         <i className="bx bx-arrow-back me-2" />
@@ -420,6 +425,17 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
                             </div>
                         ))}
                     </div>
+
+                    <div className="rounded-2xl border border-dashed border-cyan-200 bg-gradient-to-br from-slate-50 via-white to-cyan-50/60 p-4 dark:border-cyan-900 dark:from-gray-900 dark:via-gray-900 dark:to-cyan-950/20">
+                        <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
+                            <i className="bx bx-show text-cyan-600 dark:text-cyan-400" />
+                            {t('global.eye_diagram')}
+                        </div>
+                        <EyeExaminationDiagram
+                            visualExamination={form.visual_examination}
+                            refraction={form.refraction}
+                        />
+                    </div>
                 </SectionCard>
 
                 <SectionCard id="refraction" step="03" title={t('global.refraction')} icon="bx-glasses">
@@ -552,10 +568,22 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
                 </SectionCard>
 
                 {canSave && (
-                    <div className="sticky bottom-4 flex justify-end">
+                    <div className="sticky bottom-4 flex flex-wrap justify-end gap-2">
+                        <Button as="a" href={urls.print} target="_blank" rel="noreferrer" color="light" size="lg" type="button" className="shadow-lg">
+                            <i className="bx bx-printer me-2" />
+                            {t('global.print_eye_examination')}
+                        </Button>
                         <Button type="submit" color="blue" size="lg" disabled={processing} className="shadow-lg">
                             {processing ? <Spinner size="sm" className="me-2" /> : <i className="bx bx-save me-2" />}
                             {t('global.save_ophthalmology_examination')}
+                        </Button>
+                    </div>
+                )}
+                {!canSave && (
+                    <div className="sticky bottom-4 flex justify-end">
+                        <Button as="a" href={urls.print} target="_blank" rel="noreferrer" color="light" size="lg" type="button" className="shadow-lg">
+                            <i className="bx bx-printer me-2" />
+                            {t('global.print_eye_examination')}
                         </Button>
                     </div>
                 )}

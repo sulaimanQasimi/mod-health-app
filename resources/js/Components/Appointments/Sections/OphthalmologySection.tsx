@@ -132,7 +132,7 @@ export default function OphthalmologySection({ appointmentId }: Props) {
     return (
         <AppointmentSectionAccordion
             id={`ophthalmology-${appointmentId}`}
-            icon="bx-low-vision"
+            icon="bx-show"
             iconClassName="text-cyan-600"
             title={t('global.ophthalmology_registrations')}
             count={items.length}

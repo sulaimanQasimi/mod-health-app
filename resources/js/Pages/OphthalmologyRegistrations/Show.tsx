@@ -52,56 +52,80 @@ interface Props {
 }
 
 const HISTORY_FIELDS = [
-    ['diabetes', 'Diabetes'],
-    ['cardiac_disease', 'Cardiac disease'],
-    ['arthritis', 'Arthritis'],
-    ['pregnancy', 'Pregnancy'],
-    ['asthma', 'Asthma'],
-    ['thyroid_disease', 'Thyroid disease'],
-    ['hypertension', 'Hypertension'],
-    ['allergies', 'Allergies'],
+    ['diabetes', 'دیابت'],
+    ['cardiac_disease', 'بیماری قلبی'],
+    ['arthritis', 'التهاب مفاصل'],
+    ['pregnancy', 'حاملگی'],
+    ['asthma', 'آسم'],
+    ['thyroid_disease', 'بیماری تیروئید'],
+    ['hypertension', 'فشار خون بلند'],
+    ['allergies', 'حساسیت‌ها'],
 ] as const;
 
 const VISUAL_FIELDS = [
-    ['visual_acuity', 'Visual acuity'],
-    ['pinhole_vision', 'Pinhole vision'],
-    ['vision_with_glasses', 'Vision with glasses'],
-    ['near_vision', 'Near vision'],
-    ['intraocular_pressure', 'Intraocular pressure'],
+    ['visual_acuity', 'حدت بینایی'],
+    ['pinhole_vision', 'دید با سوراخ سوزنی'],
+    ['vision_with_glasses', 'دید با عینک'],
+    ['near_vision', 'دید نزدیک'],
+    ['intraocular_pressure', 'فشار داخل چشم'],
 ] as const;
 
 const REFRACTION_FIELDS = [
-    ['sphere', 'Sphere'],
-    ['cylinder', 'Cylinder'],
-    ['axis', 'Axis'],
-    ['distance_vision', 'Distance vision'],
-    ['near_vision', 'Near vision'],
-    ['present_glasses', 'Present glasses'],
-    ['recommended_prescription', 'Recommended prescription'],
+    ['sphere', 'اسفیر (SPH)'],
+    ['cylinder', 'سیلندر (CYL)'],
+    ['axis', 'محور (Axis)'],
+    ['distance_vision', 'دید دور'],
+    ['near_vision', 'دید نزدیک'],
+    ['present_glasses', 'عینک فعلی'],
+    ['recommended_prescription', 'نسخه پیشنهادی'],
 ] as const;
 
 const SLIT_LAMP_FIELDS = [
-    ['lids', 'Lids'],
-    ['conjunctiva', 'Conjunctiva'],
-    ['cornea', 'Cornea'],
-    ['sclera', 'Sclera'],
-    ['anterior_chamber', 'Anterior chamber'],
-    ['iris', 'Iris'],
-    ['pupil', 'Pupil'],
-    ['lens', 'Lens'],
-    ['gonioscopy', 'Gonioscopy'],
-    ['extraocular_movement', 'Extraocular movement'],
+    ['lids', 'پلک‌ها'],
+    ['conjunctiva', 'ملتحمه'],
+    ['cornea', 'قرنیه'],
+    ['sclera', 'صلبیه'],
+    ['anterior_chamber', 'اتاق قدامی'],
+    ['iris', 'عنبیه'],
+    ['pupil', 'مردمک'],
+    ['lens', 'عدسی'],
+    ['gonioscopy', 'گونیوسکوپی'],
+    ['extraocular_movement', 'حرکت خارج چشمی'],
 ] as const;
 
-const inputClass = 'block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white';
+const inputClass = 'block w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
+const tableShellClass = 'overflow-hidden rounded-2xl border border-gray-200/80 dark:border-gray-700';
+const tableHeaderClass = 'bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-gray-800/80 dark:text-gray-300';
+const tableRowClass = 'border-t border-gray-100 text-gray-700 transition hover:bg-cyan-50/40 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-cyan-950/20';
+const tableCellClass = 'p-3 text-start font-medium text-gray-700 dark:text-gray-200';
 
-function SectionCard({ title, icon, children }: { title: string; icon: string; children: ReactNode }) {
+function SectionCard({
+    id,
+    title,
+    icon,
+    step,
+    subtitle,
+    children,
+}: {
+    id: string;
+    title: string;
+    icon: string;
+    step: string;
+    subtitle?: string;
+    children: ReactNode;
+}) {
     return (
-        <Card className="border !shadow-sm">
-            <h2 className="flex items-center gap-2 border-b border-gray-100 pb-3 text-base font-semibold text-gray-900 dark:border-gray-700 dark:text-white">
-                <i className={`bx ${icon} text-xl text-cyan-600`} />
-                {title}
-            </h2>
+        <Card id={id} className="scroll-mt-24 overflow-hidden border border-gray-200/80 !shadow-sm dark:border-gray-700">
+            <div className="flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-sm shadow-cyan-500/20">
+                    <i className={`bx ${icon} text-xl`} />
+                </div>
+                <div className="min-w-0 flex-1">
+                    <div className="mb-0.5 text-xs font-semibold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">{step}</div>
+                    <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
+                    {subtitle && <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{subtitle}</p>}
+                </div>
+            </div>
             {children}
         </Card>
     );
@@ -192,19 +216,45 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
         || permissions.uploadImages;
 
     const statusColor = ({ pending: 'warning', in_progress: 'info', completed: 'success', cancelled: 'failure' } as const)[registration.status] ?? 'gray';
+    const statusLabel = t(`global.status_${registration.status}`);
+    const genderLabel = String(registration.patient.gender) === '1'
+        ? t('global.female')
+        : String(registration.patient.gender) === '0'
+            ? t('global.male')
+            : registration.patient.gender;
+    const patientFields = [
+        [t('global.patient_name'), registration.patient.name, 'bx-user'],
+        [t('global.father_name'), registration.patient.father_name, 'bx-group'],
+        [t('global.id_card'), registration.patient.id_card, 'bx-id-card'],
+        [t('global.age'), registration.patient.age, 'bx-calendar'],
+        [t('global.gender'), genderLabel, 'bx-male-female'],
+        [t('global.phone'), registration.patient.phone, 'bx-phone'],
+        [t('global.occupation'), registration.patient.occupation, 'bx-briefcase'],
+        [t('global.examiner'), registration.examiner_name, 'bx-plus-medical'],
+    ] as const;
+    const sectionLinks = [
+        ['registration-history', t('global.registration_and_history'), 'bx-clipboard'],
+        ['visual-exam', t('global.visual_examination'), 'bx-show'],
+        ['refraction', t('global.refraction'), 'bx-glasses'],
+        ['slit-lamp', t('global.slit_lamp_examination'), 'bx-bulb'],
+        ['fundus', t('global.fundus_examination'), 'bx-camera'],
+        ['laboratory', t('global.lab_tests'), 'bx-test-tube'],
+        ['prescriptions', t('global.prescriptions'), 'bx-capsule'],
+        ['assessment-plan', t('global.assessment_and_plan'), 'bx-notepad'],
+    ] as const;
 
     return (
         <DashboardLayout>
             <Head title={t('global.ophthalmology_examination')} />
-            <form onSubmit={submit} className="mx-auto max-w-7xl space-y-6 pb-10">
-                <Card className="border !shadow-sm">
+            <form onSubmit={submit} className="mx-auto max-w-7xl space-y-5 pb-10">
+                <Card className="overflow-hidden border border-cyan-100 bg-gradient-to-br from-white via-white to-cyan-50/70 !shadow-sm dark:border-cyan-950 dark:from-gray-900 dark:via-gray-900 dark:to-cyan-950/30">
                     <AppointmentPageHeader
                         title={t('global.ophthalmology_examination')}
                         subtitle={`${registration.ref_no} · ${registration.patient.name}`}
                         icon="bx-low-vision"
                         action={
                             <div className="flex flex-wrap items-center gap-2">
-                                <TableBadge color={statusColor}>{registration.status.replace('_', ' ')}</TableBadge>
+                                <TableBadge color={statusColor}>{statusLabel}</TableBadge>
                                 <Link href={urls.appointment}>
                                     <Button color="light" size="sm">
                                         <i className="bx bx-arrow-back me-2" />
@@ -221,26 +271,35 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
                         }
                     />
 
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        {[
-                            [t('global.patient_name'), registration.patient.name],
-                            [t('global.father_name'), registration.patient.father_name],
-                            [t('global.id_card'), registration.patient.id_card],
-                            [t('global.age'), registration.patient.age],
-                            [t('global.gender'), registration.patient.gender],
-                            [t('global.phone'), registration.patient.phone],
-                            [t('global.occupation'), registration.patient.occupation],
-                            [t('global.examiner'), registration.examiner_name],
-                        ].map(([label, value]) => (
-                            <div key={String(label)} className="rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50">
-                                <div className="text-xs text-gray-500">{label}</div>
-                                <div className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{value ?? '—'}</div>
+                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                        {patientFields.map(([label, value, icon]) => (
+                            <div key={String(label)} className="flex min-w-0 items-center gap-3 rounded-xl border border-white/80 bg-white/80 px-3 py-2.5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600 dark:bg-cyan-950/50 dark:text-cyan-300">
+                                    <i className={`bx ${icon} text-lg`} />
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="truncate text-[11px] font-medium text-gray-500 dark:text-gray-400">{label}</div>
+                                    <div className="mt-0.5 truncate text-sm font-semibold text-gray-900 dark:text-white">{value ?? '—'}</div>
+                                </div>
                             </div>
                         ))}
                     </div>
                 </Card>
 
-                <SectionCard title={t('global.registration_and_history')} icon="bx-clipboard">
+                <nav className="sticky top-16 z-20 -mx-1 overflow-x-auto rounded-2xl border border-gray-200/80 bg-white/95 p-2 shadow-sm backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:border-gray-700 dark:bg-gray-900/95" aria-label={t('global.ophthalmology_examination')}>
+                    <div className="flex min-w-max gap-1">
+                        {sectionLinks.map(([id, label, icon], index) => (
+                            <a key={id} href={`#${id}`} className="group flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-cyan-50 hover:text-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 dark:text-gray-300 dark:hover:bg-cyan-950/40 dark:hover:text-cyan-300">
+                                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-100 text-gray-500 group-hover:bg-cyan-100 group-hover:text-cyan-600 dark:bg-gray-800 dark:text-gray-400 dark:group-hover:bg-cyan-900/60 dark:group-hover:text-cyan-300">
+                                    <i className={`bx ${icon}`} />
+                                </span>
+                                <span>{index + 1}. {label}</span>
+                            </a>
+                        ))}
+                    </div>
+                </nav>
+
+                <SectionCard id="registration-history" step="01" title={t('global.registration_and_history')} icon="bx-clipboard" subtitle={t('global.chief_complaint')}>
                     <div className="grid gap-4 md:grid-cols-3">
                         <div>
                             <Label>{t('global.examiner')}</Label>
@@ -284,53 +343,55 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead className="bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-                                <tr><th className="p-2 text-start">Condition</th><th className="p-2 text-start">Yes / No</th><th className="p-2 text-start">Notes</th></tr>
-                            </thead>
-                            <tbody>
-                                {HISTORY_FIELDS.map(([key, label]) => (
-                                    <tr key={key} className="border-t border-gray-100 dark:border-gray-700">
-                                        <td className="p-2 font-medium">{label}</td>
-                                        <td className="p-2">
-                                            <select
-                                                className={inputClass}
-                                                value={nestedValue('medical_history', key, 'value')}
-                                                onChange={(event) => setNested('medical_history', [key, 'value'], event.target.value)}
-                                                disabled={!permissions.edit}
-                                            >
-                                                <option value="">—</option>
-                                                <option value="no">No</option>
-                                                <option value="yes">Yes</option>
-                                            </select>
-                                        </td>
-                                        <td className="p-2">
-                                            <TextInput
-                                                value={nestedValue('medical_history', key, 'notes')}
-                                                onChange={(event) => setNested('medical_history', [key, 'notes'], event.target.value)}
-                                                disabled={!permissions.edit}
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div>
+                        <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
+                            <i className="bx bx-history text-cyan-600 dark:text-cyan-400" />
+                            تاریخچه طبی
+                        </div>
+                        <div className="grid gap-3 md:grid-cols-2">
+                            {HISTORY_FIELDS.map(([key, label]) => (
+                                <div key={key} className="rounded-2xl border border-gray-200/80 bg-gray-50/70 p-3 dark:border-gray-700 dark:bg-gray-800/50">
+                                    <div className="mb-2 flex items-center justify-between gap-3">
+                                        <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">{label}</span>
+                                        <select
+                                            className={`${inputClass} !w-28 shrink-0`}
+                                            value={nestedValue('medical_history', key, 'value')}
+                                            onChange={(event) => setNested('medical_history', [key, 'value'], event.target.value)}
+                                            disabled={!permissions.edit}
+                                        >
+                                            <option value="">—</option>
+                                            <option value="no">نخیر</option>
+                                            <option value="yes">بلی</option>
+                                        </select>
+                                    </div>
+                                    <TextInput
+                                        placeholder={t('global.notes')}
+                                        value={nestedValue('medical_history', key, 'notes')}
+                                        onChange={(event) => setNested('medical_history', [key, 'notes'], event.target.value)}
+                                        disabled={!permissions.edit}
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </SectionCard>
 
-                <SectionCard title={t('global.visual_examination')} icon="bx-show">
-                    <div className="overflow-x-auto">
+                <SectionCard id="visual-exam" step="02" title={t('global.visual_examination')} icon="bx-show">
+                    <div className={`${tableShellClass} overflow-x-auto`}>
                         <table className="w-full text-sm">
-                            <thead className="bg-gray-50 dark:bg-gray-800">
-                                <tr><th className="p-2 text-start">Measurement</th><th className="p-2 text-start">OD (Right)</th><th className="p-2 text-start">OS (Left)</th></tr>
+                            <thead className={tableHeaderClass}>
+                                <tr>
+                                    <th className="p-3 text-start">اندازه‌گیری</th>
+                                    <th className="bg-cyan-50 p-3 text-start text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-300">OD (چشم راست)</th>
+                                    <th className="bg-violet-50 p-3 text-start text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">OS (چشم چپ)</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {VISUAL_FIELDS.map(([key, label]) => (
-                                    <tr key={key} className="border-t border-gray-100 dark:border-gray-700">
-                                        <td className="p-2 font-medium">{label}</td>
+                                    <tr key={key} className={tableRowClass}>
+                                        <td className={tableCellClass}>{label}</td>
                                         {['od', 'os'].map((eye) => (
-                                            <td key={eye} className="p-2">
+                                            <td key={eye} className="p-2.5">
                                                 <TextInput
                                                     value={nestedValue('visual_examination', eye, key)}
                                                     onChange={(event) => setNested('visual_examination', [eye, key], event.target.value)}
@@ -345,9 +406,9 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
                     </div>
                     <div className="grid gap-4 md:grid-cols-3">
                         {[
-                            ['squint_assessment', 'Squint assessment'],
-                            ['blood_pressure', 'Blood pressure'],
-                            ['color_vision', 'Color vision'],
+                            ['squint_assessment', 'ارزیابی انحراف چشم'],
+                            ['blood_pressure', 'فشار خون'],
+                            ['color_vision', 'دید رنگی'],
                         ].map(([key, label]) => (
                             <div key={key}>
                                 <Label>{label}</Label>
@@ -361,18 +422,22 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
                     </div>
                 </SectionCard>
 
-                <SectionCard title={t('global.refraction')} icon="bx-glasses">
-                    <div className="overflow-x-auto">
+                <SectionCard id="refraction" step="03" title={t('global.refraction')} icon="bx-glasses">
+                    <div className={`${tableShellClass} overflow-x-auto`}>
                         <table className="w-full text-sm">
-                            <thead className="bg-gray-50 dark:bg-gray-800">
-                                <tr><th className="p-2 text-start">Measurement</th><th className="p-2 text-start">OD (Right)</th><th className="p-2 text-start">OS (Left)</th></tr>
+                            <thead className={tableHeaderClass}>
+                                <tr>
+                                    <th className="p-3 text-start">اندازه‌گیری</th>
+                                    <th className="bg-cyan-50 p-3 text-start text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-300">OD (چشم راست)</th>
+                                    <th className="bg-violet-50 p-3 text-start text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">OS (چشم چپ)</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {REFRACTION_FIELDS.map(([key, label]) => (
-                                    <tr key={key} className="border-t border-gray-100 dark:border-gray-700">
-                                        <td className="p-2 font-medium">{label}</td>
+                                    <tr key={key} className={tableRowClass}>
+                                        <td className={tableCellClass}>{label}</td>
                                         {['od', 'os'].map((eye) => (
-                                            <td key={eye} className="p-2">
+                                            <td key={eye} className="p-2.5">
                                                 <TextInput
                                                     value={nestedValue('refraction', eye, key)}
                                                     onChange={(event) => setNested('refraction', [eye, key], event.target.value)}
@@ -397,27 +462,29 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
                     </div>
                 </SectionCard>
 
-                <SectionCard title={t('global.slit_lamp_examination')} icon="bx-bulb">
-                    <div className="overflow-x-auto">
+                <SectionCard id="slit-lamp" step="04" title={t('global.slit_lamp_examination')} icon="bx-bulb">
+                    <div className={`${tableShellClass} overflow-x-auto`}>
                         <table className="w-full min-w-[900px] text-sm">
-                            <thead className="bg-gray-50 dark:bg-gray-800">
+                            <thead className={tableHeaderClass}>
                                 <tr>
-                                    <th className="p-2 text-start">Finding</th>
-                                    <th className="p-2 text-start">OD status</th><th className="p-2 text-start">OD notes</th>
-                                    <th className="p-2 text-start">OS status</th><th className="p-2 text-start">OS notes</th>
+                                    <th className="p-3 text-start">یافته</th>
+                                    <th className="bg-cyan-50 p-3 text-start text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-300">وضعیت OD</th>
+                                    <th className="bg-cyan-50 p-3 text-start text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-300">یادداشت OD</th>
+                                    <th className="bg-violet-50 p-3 text-start text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">وضعیت OS</th>
+                                    <th className="bg-violet-50 p-3 text-start text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">یادداشت OS</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {SLIT_LAMP_FIELDS.map(([key, label]) => (
-                                    <tr key={key} className="border-t border-gray-100 dark:border-gray-700">
-                                        <td className="p-2 font-medium">{label}</td>
+                                    <tr key={key} className={tableRowClass}>
+                                        <td className={tableCellClass}>{label}</td>
                                         {['od', 'os'].flatMap((eye) => [
-                                            <td key={`${eye}-status`} className="p-2">
+                                            <td key={`${eye}-status`} className="p-2.5">
                                                 <select className={inputClass} value={nestedValue('slit_lamp_examination', eye, key, 'status')} onChange={(event) => setNested('slit_lamp_examination', [eye, key, 'status'], event.target.value)} disabled={!permissions.edit}>
-                                                    <option value="">—</option><option value="normal">Normal</option><option value="abnormal">Abnormal</option>
+                                                    <option value="">—</option><option value="normal">طبیعی</option><option value="abnormal">غیرطبیعی</option>
                                                 </select>
                                             </td>,
-                                            <td key={`${eye}-notes`} className="p-2">
+                                            <td key={`${eye}-notes`} className="p-2.5">
                                                 <TextInput value={nestedValue('slit_lamp_examination', eye, key, 'notes')} onChange={(event) => setNested('slit_lamp_examination', [eye, key, 'notes'], event.target.value)} disabled={!permissions.edit} />
                                             </td>,
                                         ])}
@@ -428,38 +495,42 @@ export default function OphthalmologyRegistrationShow({ registration, formOption
                     </div>
                 </SectionCard>
 
-                <SectionCard title={t('global.fundus_examination')} icon="bx-camera">
+                <SectionCard id="fundus" step="05" title={t('global.fundus_examination')} icon="bx-camera">
                     <div className="grid gap-4 md:grid-cols-2">
-                        <div>
-                            <Label>OD (Right eye) findings</Label>
+                        <div className="rounded-2xl border border-cyan-200 bg-cyan-50/50 p-4 dark:border-cyan-900 dark:bg-cyan-950/20">
+                            <Label className="text-cyan-800 dark:text-cyan-200">یافته‌های OD (چشم راست)</Label>
                             <Textarea rows={4} value={nestedValue('fundus_examination', 'od_findings')} onChange={(event) => setNested('fundus_examination', ['od_findings'], event.target.value)} disabled={!permissions.edit} />
                         </div>
-                        <div>
-                            <Label>OS (Left eye) findings</Label>
+                        <div className="rounded-2xl border border-violet-200 bg-violet-50/50 p-4 dark:border-violet-900 dark:bg-violet-950/20">
+                            <Label className="text-violet-800 dark:text-violet-200">یافته‌های OS (چشم چپ)</Label>
                             <Textarea rows={4} value={nestedValue('fundus_examination', 'os_findings')} onChange={(event) => setNested('fundus_examination', ['os_findings'], event.target.value)} disabled={!permissions.edit} />
                         </div>
                         <div>
-                            <Label>Dilation status</Label>
+                            <Label>وضعیت گشادسازی مردمک</Label>
                             <Select value={nestedValue('fundus_examination', 'dilation_status')} onChange={(event) => setNested('fundus_examination', ['dilation_status'], event.target.value)} disabled={!permissions.edit}>
-                                <option value="">—</option><option value="not_dilated">Not dilated</option><option value="dilated">Dilated</option>
+                                <option value="">—</option><option value="not_dilated">گشاد نشده</option><option value="dilated">گشاد شده</option>
                             </Select>
                         </div>
                         <div>
-                            <Label>Dilation time</Label>
+                            <Label>زمان گشادسازی</Label>
                             <TextInput type="time" value={nestedValue('fundus_examination', 'dilation_time')} onChange={(event) => setNested('fundus_examination', ['dilation_time'], event.target.value)} disabled={!permissions.edit} />
                         </div>
                         <div className="md:col-span-2">
-                            <Label>Fundus image / report</Label>
+                            <Label>تصویر یا گزارش فوندوس</Label>
                                 <input type="file" accept="image/*,.pdf" className={inputClass} onChange={(event) => setForm((current) => ({ ...current, fundus_image: event.target.files?.[0] ?? null }))} disabled={!permissions.uploadImages} />
-                            {registration.fundus_image_url && <a href={registration.fundus_image_url} target="_blank" rel="noreferrer" className="mt-2 inline-flex text-sm text-cyan-600 hover:underline">View current attachment</a>}
+                            {registration.fundus_image_url && <a href={registration.fundus_image_url} target="_blank" rel="noreferrer" className="mt-2 inline-flex text-sm text-cyan-600 hover:underline">مشاهده ضمیمه فعلی</a>}
                         </div>
                     </div>
                 </SectionCard>
 
-                <LabTestSection appointmentId={registration.appointment_id} embedded />
-                <PrescriptionSection appointmentId={registration.appointment_id} embedded />
+                <div id="laboratory" className="scroll-mt-24">
+                    <LabTestSection appointmentId={registration.appointment_id} embedded />
+                </div>
+                <div id="prescriptions" className="scroll-mt-24">
+                    <PrescriptionSection appointmentId={registration.appointment_id} embedded />
+                </div>
 
-                <SectionCard title={t('global.assessment_and_plan')} icon="bx-notepad">
+                <SectionCard id="assessment-plan" step="08" title={t('global.assessment_and_plan')} icon="bx-notepad">
                     <div className="grid gap-4 md:grid-cols-2">
                         <div>
                             <Label>{t('global.diagnosis')}</Label>

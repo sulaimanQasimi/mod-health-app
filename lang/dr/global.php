@@ -3859,5 +3859,5 @@ return [
     'is_eye_doctor' => 'آیا داکتر چشم است؟',
     'print_eye_examination' => 'چاپ معاینه چشم',
     'eye_examination_report' => 'گزارش معاینه چشم',
-    'eye_diagram' => 'نمای چشمی'
+    'eye_diagram' => 'نمای چشم'
 ];

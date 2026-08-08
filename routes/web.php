@@ -1286,6 +1286,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('cancel/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'cancel'])->name('cancel');
     });
 
+    // Ophthalmology Department routes (Blade)
+    Route::prefix('ophthalmology-registrations')
+        ->middleware(['permission:access-ophthalmology-registrations'])
+        ->name('ophthalmology-registrations.')->group(function () {
+        Route::get('index', [\App\Http\Controllers\OphthalmologyRegistrationController::class, 'index'])->name('index');
+        Route::get('show/{ophthalmologyRegistration}', [\App\Http\Controllers\OphthalmologyRegistrationController::class, 'show'])->name('show');
+        Route::get('print/{ophthalmologyRegistration}', [\App\Http\Controllers\OphthalmologyRegistrationController::class, 'print'])->name('print');
+        Route::put('update/{ophthalmologyRegistration}', [\App\Http\Controllers\OphthalmologyRegistrationController::class, 'update'])->name('update');
+        Route::delete('destroy/{ophthalmologyRegistration}', [\App\Http\Controllers\OphthalmologyRegistrationController::class, 'destroy'])->name('destroy');
+    });
+
     // Nephrology AJAX routes
     Route::prefix('nephrology-ajax')
         ->middleware(['permission:access-nephrology-registrations', 'nephrologist'])

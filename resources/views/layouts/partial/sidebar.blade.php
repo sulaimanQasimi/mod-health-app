@@ -185,6 +185,22 @@
             </li>
         @endcan
 
+        @can('access-ophthalmology-registrations')
+            <li class="menu-item {{ Route::is('ophthalmology-registrations.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-show"></i>
+                    <div>{{ localize('global.ophthalmology_department') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ Route::is('ophthalmology-registrations.*') ? 'active' : '' }}">
+                        <a href="{{ route('ophthalmology-registrations.index') }}" class="menu-link">
+                            <div>{{ localize('global.ophthalmology_registrations') }}</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endcan
+
         @can('access-nephrology-registrations')
             <li class="menu-item {{ Route::is('nephrology-registrations.*') || Route::is('hemodialysis-sessions.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">

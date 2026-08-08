@@ -288,13 +288,12 @@ export default function Sidebar({
 
     const effectiveCollapsed = isCollapsed && isDesktop;
     const sidebarWidth = effectiveCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
-    const toggleInset = effectiveCollapsed ? '0.75rem' : '31px';
 
     return (
         <aside
             style={{ width: sidebarWidth }}
             className={mergeClasses(
-                'menu menu-vertical bg-menu-theme fixed inset-y-0 z-40 flex max-w-[85vw] flex-col overflow-x-hidden bg-white text-[#697a8d] shadow-[0_0.125rem_0.375rem_0_rgba(161,172,184,0.12)] transition-transform duration-300 ease-in-out dark:bg-[#191924] dark:text-[#c4cdd5] dark:shadow-[0_0.125rem_0.375rem_0_rgba(0,0,0,0.25)]',
+                'menu menu-vertical bg-menu-theme fixed inset-y-0 z-40 flex max-w-[85vw] flex-col overflow-visible bg-white text-[#697a8d] shadow-[0_0.125rem_0.375rem_0_rgba(161,172,184,0.12)] transition-transform duration-300 ease-in-out dark:bg-[#191924] dark:text-[#c4cdd5] dark:shadow-[0_0.125rem_0.375rem_0_rgba(0,0,0,0.25)]',
                 isRtl ? 'right-0' : 'left-0',
                 isOpen
                     ? 'translate-x-0'
@@ -305,15 +304,15 @@ export default function Sidebar({
         >
             <div
                 className={mergeClasses(
-                    'app-brand relative flex w-full shrink-0 items-center py-6',
-                    isCollapsed ? 'justify-center px-4' : 'px-8',
+                    'app-brand relative flex w-full shrink-0 items-center overflow-visible py-6',
+                    effectiveCollapsed ? 'justify-center px-4' : 'px-8',
                 )}
             >
                 <Link
                     href="/react"
                     className={mergeClasses(
                         'app-brand-link flex min-w-0 items-center',
-                        effectiveCollapsed ? 'justify-center' : 'flex-1',
+                        effectiveCollapsed ? 'justify-center' : 'flex-1 pe-6',
                     )}
                     onClick={onClose}
                 >
@@ -340,13 +339,9 @@ export default function Sidebar({
 
                 <button
                     type="button"
-                    style={
-                        isRtl
-                            ? { left: toggleInset, top: '58px' }
-                            : { right: toggleInset, top: '58px' }
-                    }
                     className={mergeClasses(
-                        'layout-menu-toggle menu-link absolute z-10 inline-flex size-[2.375rem] items-center justify-center rounded-full border-[7px] border-white bg-[#696cff] text-white transition-all duration-300 lg:border-[#f5f5f9] dark:border-[#191924] dark:lg:border-[#191924]',
+                        'layout-menu-toggle menu-link absolute top-1/2 z-50 inline-flex size-[2.375rem] -translate-y-1/2 items-center justify-center rounded-full border-[7px] border-white bg-[#696cff] text-white shadow-sm transition-all duration-300 lg:border-[#f5f5f9] dark:border-[#191924] dark:lg:border-[#191924]',
+                        isRtl ? '-left-[1.1875rem]' : '-right-[1.1875rem]',
                         isOpen ? 'max-lg:flex' : 'max-lg:hidden',
                         'lg:flex',
                     )}

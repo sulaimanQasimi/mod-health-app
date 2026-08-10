@@ -26,10 +26,12 @@ class OphthalmologyRegistration extends Model
         'fundus_examination',
         'diagnostic_tests',
         'diagnosis',
+        'diagnosis_items',
         'treatment_plan',
         'follow_up_date',
         'notes',
         'fundus_image_path',
+        'attachments',
     ];
 
     protected $casts = [
@@ -41,6 +43,8 @@ class OphthalmologyRegistration extends Model
         'slit_lamp_examination' => 'array',
         'fundus_examination' => 'array',
         'diagnostic_tests' => 'array',
+        'diagnosis_items' => 'array',
+        'attachments' => 'array',
     ];
 
     protected static function booted(): void

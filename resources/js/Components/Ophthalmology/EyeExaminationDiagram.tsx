@@ -11,6 +11,7 @@ export interface EyeExaminationDiagramProps {
 
 const VISUAL_LABELS: Array<[string, string]> = [
     ['visual_acuity', 'VA'],
+    ['best_corrected_acuity', 'BCVA'],
     ['pinhole_vision', 'PH'],
     ['vision_with_glasses', 'cGL'],
     ['near_vision', 'NV'],
@@ -115,7 +116,8 @@ function EyePanel({
     const sphere = valueOf(refraction, side, 'sphere');
     const cylinder = valueOf(refraction, side, 'cylinder');
     const axis = valueOf(refraction, side, 'axis');
-    const hasRefraction = [sphere, cylinder, axis].some((item) => item !== '—');
+    const add = valueOf(refraction, side, 'add');
+    const hasRefraction = [sphere, cylinder, axis, add].some((item) => item !== '—');
 
     return (
         <div className={`rounded-2xl border p-4 ${accentClass}`}>
@@ -145,7 +147,7 @@ function EyePanel({
             </div>
 
             {hasRefraction && (
-                <div className="mt-3 grid grid-cols-3 gap-2 rounded-xl border border-dashed border-current/20 bg-white/50 p-2 text-center text-xs dark:bg-gray-900/30">
+                <div className="mt-3 grid grid-cols-4 gap-2 rounded-xl border border-dashed border-current/20 bg-white/50 p-2 text-center text-xs dark:bg-gray-900/30">
                     <div>
                         <div className="opacity-60">SPH</div>
                         <div className="font-semibold tabular-nums">{sphere}</div>
@@ -157,6 +159,10 @@ function EyePanel({
                     <div>
                         <div className="opacity-60">Axis</div>
                         <div className="font-semibold tabular-nums">{axis}</div>
+                    </div>
+                    <div>
+                        <div className="opacity-60">ADD</div>
+                        <div className="font-semibold tabular-nums">{add}</div>
                     </div>
                 </div>
             )}

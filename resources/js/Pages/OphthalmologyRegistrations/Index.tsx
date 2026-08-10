@@ -22,6 +22,7 @@ interface Registration {
     id_card: string | number | null;
     examiner_name: string | null;
     registration_date: string | null;
+    follow_up_date: string | null;
     status: string;
     diagnosis: string | null;
     show_url: string;
@@ -41,13 +42,14 @@ interface Props {
             to: number | null;
         };
     };
-    stats: { total: number; pending: number; in_progress: number; completed: number };
+    stats: { total: number; pending: number; in_progress: number; completed: number; follow_up_due: number };
     filters: {
         search: string;
         status: string;
         examiner_id: string;
         date_from: string;
         date_to: string;
+        follow_up_due: string;
         per_page: string;
     };
     doctors: Array<{ id: number; name: string }>;
@@ -95,6 +97,7 @@ export default function OphthalmologyRegistrationIndex({
             examiner_id: '',
             date_from: '',
             date_to: '',
+            follow_up_due: '',
             per_page: '25',
         };
         setFilters(empty);
@@ -122,14 +125,30 @@ export default function OphthalmologyRegistrationIndex({
                     backLabel={t('global.back')}
                 />
 
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                     {[
-                        [t('global.total'), stats.total, 'text-slate-600'],
-                        [t('global.status_pending'), stats.pending, 'text-amber-600'],
-                        [t('global.status_in_progress'), stats.in_progress, 'text-blue-600'],
-                        [t('global.status_completed'), stats.completed, 'text-emerald-600'],
-                    ].map(([label, value, color]) => (
-                        <Card key={String(label)} className="border !shadow-sm">
+                        [t('global.total'), stats.total, 'text-slate-600', ''],
+                        [t('global.status_pending'), stats.pending, 'text-amber-600', ''],
+                        [t('global.status_in_progress'), stats.in_progress, 'text-blue-600', ''],
+                        [t('global.status_completed'), stats.completed, 'text-emerald-600', ''],
+                        [t('global.oph_follow_up_due'), stats.follow_up_due, 'text-rose-600', '1'],
+                    ].map(([label, value, color, followUpDue]) => (
+                        <Card
+                            key={String(label)}
+                            className={`border !shadow-sm ${followUpDue ? 'cursor-pointer hover:border-rose-300' : ''}`}
+                            onClick={() => {
+                                if (!followUpDue) return;
+                                const next = { ...filters, follow_up_due: '1' };
+                                setFilters(next);
+                                setProcessing(true);
+                                router.get(urls.current, Object.fromEntries(Object.entries(next).filter(([, v]) => v !== '')), {
+                                    preserveState: true,
+                                    preserveScroll: true,
+                                    replace: true,
+                                    onFinish: () => setProcessing(false),
+                                });
+                            }}
+                        >
                             <div className="text-sm text-gray-500">{label}</div>
                             <div className={`text-3xl font-semibold ${color}`}>{value}</div>
                         </Card>
@@ -172,6 +191,16 @@ export default function OphthalmologyRegistrationIndex({
                             <Label>{t('global.to_date')}</Label>
                             <PersianDateInput value={filters.date_to} onChange={(date_to) => setFilters((current) => ({ ...current, date_to }))} />
                         </div>
+                        <div>
+                            <Label>{t('global.oph_follow_up_due')}</Label>
+                            <Select
+                                value={filters.follow_up_due}
+                                onChange={(event) => setFilters((current) => ({ ...current, follow_up_due: event.target.value }))}
+                            >
+                                <option value="">{t('global.all')}</option>
+                                <option value="1">{t('global.oph_follow_up_due_only')}</option>
+                            </Select>
+                        </div>
                         <div className="flex items-end gap-2 lg:col-span-6">
                             <Button type="submit" color="blue" disabled={processing}>
                                 {processing ? <Spinner size="sm" className="me-2" /> : <i className="bx bx-search me-2" />}
@@ -194,6 +223,7 @@ export default function OphthalmologyRegistrationIndex({
                                     <TableHeader>{t('global.id_card')}</TableHeader>
                                     <TableHeader>{t('global.examiner')}</TableHeader>
                                     <TableHeader>{t('global.registration_date')}</TableHeader>
+                                    <TableHeader>{t('global.follow_up_date')}</TableHeader>
                                     <TableHeader>{t('global.status')}</TableHeader>
                                     <TableHeader>{t('global.diagnosis')}</TableHeader>
                                     <TableHeader align="center">{t('global.actions')}</TableHeader>
@@ -207,6 +237,7 @@ export default function OphthalmologyRegistrationIndex({
                                         <TableCell muted>{item.id_card ?? '—'}</TableCell>
                                         <TableCell muted>{item.examiner_name ?? '—'}</TableCell>
                                         <TableCell muted dir="ltr">{item.registration_date ?? '—'}</TableCell>
+                                        <TableCell muted dir="ltr">{item.follow_up_date ?? '—'}</TableCell>
                                         <TableCell><TableBadge color={STATUS_COLORS[item.status] ?? 'gray'}>{statusLabel(item.status)}</TableBadge></TableCell>
                                         <TableCell>{item.diagnosis || '—'}</TableCell>
                                         <TableActionsCell>

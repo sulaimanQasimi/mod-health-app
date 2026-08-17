@@ -1297,6 +1297,20 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('destroy/{ophthalmologyRegistration}', [\App\Http\Controllers\OphthalmologyRegistrationController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('eye-glasses-orders')
+        ->middleware(['permission:access-ophthalmology-registrations'])
+        ->name('eye-glasses-orders.')->group(function () {
+        Route::get('index', [\App\Http\Controllers\EyeGlassesOrderController::class, 'index'])->name('index');
+        Route::get('show/{eyeGlassesOrder}', [\App\Http\Controllers\EyeGlassesOrderController::class, 'show'])->name('show');
+        Route::get('print/{eyeGlassesOrder}', [\App\Http\Controllers\EyeGlassesOrderController::class, 'print'])->name('print');
+        Route::put('update/{eyeGlassesOrder}', [\App\Http\Controllers\EyeGlassesOrderController::class, 'update'])->name('update');
+        Route::post('process/{eyeGlassesOrder}', [\App\Http\Controllers\EyeGlassesOrderController::class, 'process'])->name('process');
+        Route::post('payment/{eyeGlassesOrder}', [\App\Http\Controllers\EyeGlassesOrderController::class, 'payment'])->name('payment');
+        Route::post('deliver/{eyeGlassesOrder}', [\App\Http\Controllers\EyeGlassesOrderController::class, 'deliver'])->name('deliver');
+        Route::post('cancel/{eyeGlassesOrder}', [\App\Http\Controllers\EyeGlassesOrderController::class, 'cancel'])->name('cancel');
+        Route::delete('destroy/{eyeGlassesOrder}', [\App\Http\Controllers\EyeGlassesOrderController::class, 'destroy'])->name('destroy');
+    });
+
     // Nephrology AJAX routes
     Route::prefix('nephrology-ajax')
         ->middleware(['permission:access-nephrology-registrations', 'nephrologist'])

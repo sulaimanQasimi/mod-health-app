@@ -4803,6 +4803,7 @@ return [
     'eye_glasses_status_processing' => 'Processing',
     'eye_glasses_status_paid' => 'Paid',
     'eye_glasses_status_delivered' => 'Delivered',
+    'eye_glasses_status_cancelled' => 'Cancelled',
     'eye_glasses_step_requested' => 'Request',
     'eye_glasses_step_processing' => 'Process',
     'eye_glasses_step_paid' => 'Payment',

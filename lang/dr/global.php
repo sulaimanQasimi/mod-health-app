@@ -4007,6 +4007,7 @@ return [
     'eye_glasses_status_processing' => 'در حال پردازش',
     'eye_glasses_status_paid' => 'پرداخت شده',
     'eye_glasses_status_delivered' => 'تحویل شده',
+    'eye_glasses_status_cancelled' => 'لغو شده',
     'eye_glasses_step_requested' => 'درخواست',
     'eye_glasses_step_processing' => 'پردازش',
     'eye_glasses_step_paid' => 'پرداخت',

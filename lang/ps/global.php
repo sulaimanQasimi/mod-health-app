@@ -4647,6 +4647,7 @@ return [
 'eye_glasses_status_processing' => 'په پروسس کې',
 'eye_glasses_status_paid' => 'تادیه شوې',
 'eye_glasses_status_delivered' => 'تحویل شوې',
+'eye_glasses_status_cancelled' => 'لغوه شوې',
 'eye_glasses_step_requested' => 'غوښتنه',
 'eye_glasses_step_processing' => 'پروسس',
 'eye_glasses_step_paid' => 'تادیه',

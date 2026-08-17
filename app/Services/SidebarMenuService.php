@@ -87,8 +87,10 @@ class SidebarMenuService
         if ($user->can('access-ophthalmology-registrations')) {
             $items[] = $this->group('ophthalmology', 'global.ophthalmology_department', 'bx-show', [
                 'react.ophthalmology-registrations.*',
+                'react.eye-glasses-orders.*',
             ], [
                 $this->item('ophthalmology-registrations', 'global.ophthalmology_registrations', null, 'react.ophthalmology-registrations.index'),
+                $this->item('eye-glasses-orders', 'global.eye_glasses_orders', null, 'react.eye-glasses-orders.index'),
             ]);
         }
 

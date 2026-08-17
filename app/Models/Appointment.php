@@ -173,6 +173,11 @@ class Appointment extends Model
         return $this->hasMany(OphthalmologyRegistration::class);
     }
 
+    public function eyeGlassesOrders()
+    {
+        return $this->hasMany(EyeGlassesOrder::class);
+    }
+
     public function nephrologyRegistrations()
     {
         return $this->hasMany(NephrologyRegistration::class);

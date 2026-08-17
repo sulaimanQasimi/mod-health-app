@@ -135,6 +135,11 @@ class Doctor extends Model
         return $this->hasMany(OphthalmologyRegistration::class, 'examiner_id');
     }
 
+    public function eyeGlassesOrders()
+    {
+        return $this->hasMany(EyeGlassesOrder::class, 'examiner_id');
+    }
+
     public function physiotherapyProcedures()
     {
         return $this->hasMany(PhysiotherapyProcedure::class, 'doctor_id');

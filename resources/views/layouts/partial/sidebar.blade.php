@@ -186,15 +186,20 @@
         @endcan
 
         @can('access-ophthalmology-registrations')
-            <li class="menu-item {{ Route::is('ophthalmology-registrations.*') ? 'active open' : '' }}">
+            <li class="menu-item {{ Route::is('ophthalmology-registrations.*') || Route::is('react.ophthalmology-registrations.*') || Route::is('react.eye-glasses-orders.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-show"></i>
                     <div>{{ localize('global.ophthalmology_department') }}</div>
                 </a>
                 <ul class="menu-sub">
-                    <li class="menu-item {{ Route::is('ophthalmology-registrations.*') ? 'active' : '' }}">
+                    <li class="menu-item {{ Route::is('ophthalmology-registrations.*') || Route::is('react.ophthalmology-registrations.*') ? 'active' : '' }}">
                         <a href="{{ route('ophthalmology-registrations.index') }}" class="menu-link">
                             <div>{{ localize('global.ophthalmology_registrations') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('react.eye-glasses-orders.*') ? 'active' : '' }}">
+                        <a href="{{ route('react.eye-glasses-orders.index') }}" class="menu-link">
+                            <div>{{ localize('global.eye_glasses_orders') }}</div>
                         </a>
                     </li>
                 </ul>

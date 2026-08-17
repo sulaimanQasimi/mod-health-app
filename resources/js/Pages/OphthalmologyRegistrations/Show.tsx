@@ -1214,14 +1214,14 @@ export default function OphthalmologyRegistrationShow({
                             </div>
                             {compareVisit && (
                                 <div className="grid gap-4 lg:grid-cols-2">
-                                    <div className="rounded-2xl border border-cyan-200 bg-cyan-50/40 p-4 dark:border-cyan-900 dark:bg-cyan-950/20">
-                                        <div className="mb-2 text-sm font-semibold">{t('global.oph_current_visit')}</div>
+                                    <div className="rounded-2xl border border-cyan-200 bg-gradient-to-br from-cyan-50 to-white p-4 text-cyan-950 dark:border-cyan-800 dark:from-cyan-950/50 dark:to-gray-900 dark:text-cyan-50">
+                                        <div className="mb-2 text-sm font-semibold text-cyan-900 dark:text-cyan-100">{t('global.oph_current_visit')}</div>
                                         <CompareMetrics visual={form.visual_examination} refraction={form.refraction} diagnosis={form.diagnosis} />
                                     </div>
-                                    <div className="rounded-2xl border border-violet-200 bg-violet-50/40 p-4 dark:border-violet-900 dark:bg-violet-950/20">
+                                    <div className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-white p-4 text-violet-950 dark:border-violet-800 dark:from-violet-950/50 dark:to-gray-900 dark:text-violet-50">
                                         <div className="mb-2 flex items-center justify-between gap-2">
-                                            <div className="text-sm font-semibold">{t('global.oph_previous_visit')} · {compareVisit.registration_date}</div>
-                                            <a href={compareVisit.show_url} className="text-xs text-cyan-700 hover:underline dark:text-cyan-300">{t('global.show')}</a>
+                                            <div className="text-sm font-semibold text-violet-900 dark:text-violet-100">{t('global.oph_previous_visit')} · {compareVisit.registration_date}</div>
+                                            <a href={compareVisit.show_url} className="text-xs font-medium text-violet-700 hover:underline dark:text-violet-300">{t('global.show')}</a>
                                         </div>
                                         <CompareMetrics
                                             visual={compareVisit.visual_examination}
@@ -1284,25 +1284,25 @@ function CompareMetrics({
         <div className="space-y-2 text-sm">
             <table className="w-full text-xs">
                 <thead>
-                    <tr className="text-gray-500">
-                        <th className="py-1 text-start">{t('global.oph_measurement')}</th>
-                        <th className="py-1 text-start">OD</th>
-                        <th className="py-1 text-start">OS</th>
+                    <tr className="text-gray-500 dark:text-gray-400">
+                        <th className="py-1 text-start font-medium">{t('global.oph_measurement')}</th>
+                        <th className="py-1 text-start font-medium">OD</th>
+                        <th className="py-1 text-start font-medium">OS</th>
                     </tr>
                 </thead>
                 <tbody>
                     {rows.map(([label, od, os]) => (
-                        <tr key={String(label)} className="border-t border-white/40 dark:border-gray-700/60">
-                            <td className="py-1.5 font-medium">{label}</td>
-                            <td className="py-1.5 tabular-nums">{od || '—'}</td>
-                            <td className="py-1.5 tabular-nums">{os || '—'}</td>
+                        <tr key={String(label)} className="border-t border-black/5 dark:border-white/10">
+                            <td className="py-1.5 font-medium text-gray-700 dark:text-gray-200">{label}</td>
+                            <td className="py-1.5 tabular-nums text-gray-900 dark:text-gray-100">{od || '—'}</td>
+                            <td className="py-1.5 tabular-nums text-gray-900 dark:text-gray-100">{os || '—'}</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
             <div>
-                <div className="text-xs text-gray-500">{t('global.diagnosis')}</div>
-                <div className="mt-0.5 font-medium">{diagnosis || '—'}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">{t('global.diagnosis')}</div>
+                <div className="mt-0.5 font-medium text-gray-900 dark:text-gray-100">{diagnosis || '—'}</div>
             </div>
         </div>
     );

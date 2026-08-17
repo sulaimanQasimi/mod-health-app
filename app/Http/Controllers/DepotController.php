@@ -119,7 +119,7 @@ class DepotController extends Controller
             ->get();
 
         $pendingOutgoingRequests = DepotRequest::query()
-            ->with(['medicine', 'tool', 'sourceDepot'])
+            ->with(['items.medicine', 'items.tool', 'sourceDepot'])
             ->where('requesting_depot_id', $depot->id)
             ->whereIn('status', [DepotRequest::STATUS_DRAFT, DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED])
             ->latest('id')
@@ -127,7 +127,7 @@ class DepotController extends Controller
             ->get();
 
         $pendingIncomingRequests = DepotRequest::query()
-            ->with(['medicine', 'tool', 'requestingDepot'])
+            ->with(['items.medicine', 'items.tool', 'requestingDepot'])
             ->where('source_depot_id', $depot->id)
             ->whereIn('status', [DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED])
             ->latest('id')

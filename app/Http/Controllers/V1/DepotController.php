@@ -161,7 +161,7 @@ class DepotController extends Controller
             ->all();
 
         $pendingOutgoing = DepotRequest::query()
-            ->with(['medicine:id,name', 'tool:id,name', 'sourceDepot:id,name'])
+            ->with(['items.medicine:id,name', 'items.tool:id,name', 'sourceDepot:id,name'])
             ->where('requesting_depot_id', $depot->id)
             ->whereIn('status', [DepotRequest::STATUS_DRAFT, DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED])
             ->latest('id')
@@ -172,7 +172,7 @@ class DepotController extends Controller
             ->all();
 
         $pendingIncoming = DepotRequest::query()
-            ->with(['medicine:id,name', 'tool:id,name', 'requestingDepot:id,name'])
+            ->with(['items.medicine:id,name', 'items.tool:id,name', 'requestingDepot:id,name'])
             ->where('source_depot_id', $depot->id)
             ->whereIn('status', [DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED])
             ->latest('id')
@@ -451,7 +451,7 @@ class DepotController extends Controller
             'request_number' => $request->request_number,
             'status' => $request->status,
             'quantity' => $request->quantity,
-            'item_name' => $request->medicine?->name ?? $request->tool?->name,
+            'item_name' => $request->itemsSummary(),
             'counterparty_name' => $request->sourceDepot?->name ?? $request->requestingDepot?->name,
             'show_url' => route('react.depots.requests.show', $request),
         ];

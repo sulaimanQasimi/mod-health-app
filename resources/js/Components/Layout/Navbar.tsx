@@ -97,10 +97,9 @@ export default function Navbar({ onMenuToggle, sidebarOpen }: NavbarProps) {
                             </DropdownItem>
                             <DropdownDivider />
                             <DropdownItem
-                                as="a"
-                                href={urls.logout}
-                                onClick={(event) => {
-                                    event.preventDefault();
+                                as="button"
+                                type="button"
+                                onClick={() => {
                                     const form = document.getElementById('react-logout-form') as HTMLFormElement | null;
                                     form?.submit();
                                 }}

@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Models\Role as ParentRole;
-use App\Models\Permission;
 
 class Role extends ParentRole
 {
@@ -26,5 +24,24 @@ class Role extends ParentRole
         } else {
             return $query;
         }
+    }
+
+    /**
+     * @param  array<int|string>|string|null  $permissions
+     */
+    public function syncPermissionIds(array|string|null $permissions): static
+    {
+        $ids = collect(is_array($permissions) ? $permissions : ($permissions ? [$permissions] : []))
+            ->filter(fn ($id) => $id !== null && $id !== '')
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn ($id) => $id > 0)
+            ->unique()
+            ->values();
+
+        $this->syncPermissions(
+            Permission::query()->whereIn('id', $ids)->get()
+        );
+
+        return $this;
     }
 }

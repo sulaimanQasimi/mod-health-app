@@ -2089,10 +2089,52 @@ class PermissionSeeder extends Seeder
             ]);
         }
 
+        Permission::updateOrCreate(
+            ['name' => 'show-units-menu'],
+            [
+                'name_dr' => 'نمایش مینو واحدها',
+                'name_pa' => null,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'create-units'],
+            [
+                'name_dr' => 'ایجاد واحدها',
+                'name_pa' => null,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'edit-units'],
+            [
+                'name_dr' => 'تصحیح واحدها',
+                'name_pa' => null,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'delete-units'],
+            [
+                'name_dr' => 'حذف واحدها',
+                'name_pa' => null,
+                'guard_name' => 'web',
+            ]
+        );
+
         foreach (['admin', 'super_admin'] as $roleName) {
             $role = Role::where('name', $roleName)->first();
             if ($role) {
-                $role->givePermissionTo('manage-hospitalization-rooms');
+                $role->givePermissionTo([
+                    'manage-hospitalization-rooms',
+                    'show-units-menu',
+                    'create-units',
+                    'edit-units',
+                    'delete-units',
+                ]);
             }
         }
 

@@ -4045,4 +4045,10 @@ return [
     'eye_glasses_pay_card' => 'کارت',
     'eye_glasses_pay_free' => 'رایگان',
     'eye_glasses_pay_other' => 'سایر',
+    'units' => 'واحدها',
+    'symbol' => 'نماد',
+    'unit_created_successfully' => 'واحد موفقانه ایجاد شد',
+    'unit_updated_successfully' => 'واحد موفقانه تصحیح شد',
+    'unit_deleted_successfully' => 'واحد موفقانه حذف شد',
+    'role_delete_success' => 'نقش موفقانه حذف شد',
 ];

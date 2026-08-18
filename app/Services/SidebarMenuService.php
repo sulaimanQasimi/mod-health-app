@@ -316,6 +316,9 @@ class SidebarMenuService
             if ($user->can('show-relations-menu')) {
                 $children[] = $this->item('relations', 'global.relations', null, 'react.relations.index');
             }
+            if ($user->hasRole(['admin', 'super_admin']) || $user->can('show-units-menu')) {
+                $children[] = $this->item('units', 'global.units', null, 'react.units.index');
+            }
             if ($user->can('show-departments-menu')) {
                 $children[] = $this->item('departments', 'global.departments', null, 'react.departments.index');
             }
@@ -378,6 +381,7 @@ class SidebarMenuService
                 'react.activity-logs.*',
                 'react.recipients.*',
                 'react.relations.*',
+                'react.units.*',
                 'react.departments.*',
                 'react.sections.*',
                 'react.floors.*',

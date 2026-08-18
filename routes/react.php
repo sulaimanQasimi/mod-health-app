@@ -107,6 +107,7 @@ use App\Http\Controllers\V1\ScanCodeController;
 use App\Http\Controllers\V1\SectionController;
 use App\Http\Controllers\V1\ToolController;
 use App\Http\Controllers\V1\UnderReviewController;
+use App\Http\Controllers\V1\UnitController;
 use App\Http\Controllers\V1\UserController;
 use App\Http\Controllers\V1\VitalSignController;
 use App\Http\Controllers\V1\VitalSignTypeController;
@@ -717,7 +718,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{doctor}/status', [DoctorController::class, 'updateStatus'])->name('update-status');
         Route::delete('/{doctor}', [DoctorController::class, 'destroy'])->name('destroy');
     });
-    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::prefix('roles')->name('roles.')->group(function () {
+        Route::get('/', [RoleController::class, 'index'])->name('index');
+        Route::get('/create', [RoleController::class, 'create'])->name('create');
+        Route::post('/', [RoleController::class, 'store'])->name('store');
+        Route::get('/{role}/edit', [RoleController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{role}', [RoleController::class, 'update'])->name('update');
+        Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
+    });
     Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
     Route::prefix('activity-logs')->name('activity-logs.')->middleware('role:super_admin')->group(function () {
@@ -749,6 +757,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{relation}/edit', [RelationController::class, 'edit'])->name('edit');
         Route::match(['put', 'post'], '/{relation}', [RelationController::class, 'update'])->name('update');
         Route::delete('/{relation}', [RelationController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('units')->name('units.')->group(function () {
+        Route::get('/', [UnitController::class, 'index'])->name('index');
+        Route::get('/create', [UnitController::class, 'create'])->name('create');
+        Route::post('/', [UnitController::class, 'store'])->name('store');
+        Route::get('/{unit}/edit', [UnitController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{unit}', [UnitController::class, 'update'])->name('update');
+        Route::delete('/{unit}', [UnitController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('departments')->name('departments.')->group(function () {

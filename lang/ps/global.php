@@ -4685,4 +4685,10 @@ return [
 'eye_glasses_pay_card' => 'کارت',
 'eye_glasses_pay_free' => 'وړیا',
 'eye_glasses_pay_other' => 'نور',
+'units' => 'واحدونه',
+'symbol' => 'نښه',
+'unit_created_successfully' => 'واحد په بریالیتوب سره جوړ شو',
+'unit_updated_successfully' => 'واحد په بریالیتوب سره سم شو',
+'unit_deleted_successfully' => 'واحد په بریالیتوب سره حذف شو',
+'role_delete_success' => 'رول په بریالیتوب سره حذف شو',
 ];

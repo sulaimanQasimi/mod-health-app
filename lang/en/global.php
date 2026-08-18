@@ -4841,4 +4841,10 @@ return [
     'eye_glasses_pay_card' => 'Card',
     'eye_glasses_pay_free' => 'Free',
     'eye_glasses_pay_other' => 'Other',
+    'units' => 'Units',
+    'symbol' => 'Symbol',
+    'unit_created_successfully' => 'Unit created successfully',
+    'unit_updated_successfully' => 'Unit updated successfully',
+    'unit_deleted_successfully' => 'Unit deleted successfully',
+    'role_delete_success' => 'Role deleted successfully',
 ];

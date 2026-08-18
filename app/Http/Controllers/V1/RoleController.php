@@ -40,7 +40,7 @@ class RoleController extends Controller
                 'name' => $role->name,
                 'name_dr' => $role->name_dr,
                 'permissions_count' => $role->permissions->count(),
-                'permissions' => $role->permissions->take(6)->map(fn (Permission $permission) => [
+                'permissions' => $role->permissions->take(6)->map(fn ($permission) => [
                     'id' => $permission->id,
                     'name' => $permission->name,
                     'name_dr' => $permission->name_dr,

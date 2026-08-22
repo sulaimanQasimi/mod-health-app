@@ -267,7 +267,14 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/physiotherapy-reports', [PhysiotherapyReportController::class, 'index'])->name('physiotherapy-reports.index');
-    Route::get('/physiotherapy-types', [PhysiotherapyTypeController::class, 'index'])->name('physiotherapy-types.index');
+    Route::prefix('physiotherapy-types')->name('physiotherapy-types.')->group(function () {
+        Route::get('/', [PhysiotherapyTypeController::class, 'index'])->name('index');
+        Route::get('/create', [PhysiotherapyTypeController::class, 'create'])->name('create');
+        Route::post('/', [PhysiotherapyTypeController::class, 'store'])->name('store');
+        Route::get('/{physiotherapyType}/edit', [PhysiotherapyTypeController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{physiotherapyType}', [PhysiotherapyTypeController::class, 'update'])->name('update');
+        Route::delete('/{physiotherapyType}', [PhysiotherapyTypeController::class, 'destroy'])->name('destroy');
+    });
 
     Route::prefix('dentist-registrations')->name('dentist-registrations.')->group(function () {
         Route::get('/', [DentistRegistrationController::class, 'index'])->name('index');

@@ -84,7 +84,7 @@ class RoleController extends Controller
             'sector_id' => $request->user()?->sector_id,
         ]);
 
-        $role->syncPermissions($data['permission']);
+        $role->syncPermissionIds($data['permission']);
 
         return redirect()
             ->route('react.roles.index')
@@ -116,7 +116,7 @@ class RoleController extends Controller
         $role->name = $data['name'];
         $role->name_dr = $data['name_dr'];
         $role->save();
-        $role->syncPermissions($data['permission']);
+        $role->syncPermissionIds($data['permission']);
 
         return redirect()
             ->route('react.roles.index')

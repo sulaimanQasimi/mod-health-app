@@ -80,7 +80,7 @@ class RoleController extends Controller
         $role->sector_id = $request->sector ? $request->sector : currentUser()->sector_id;
         $role->save();
 
-        $role->syncPermissions($request->input('permission'));
+        $role->syncPermissionIds($request->input('permission'));
 
         return redirect()->route('roles.index')->with('success', localize('global.role_create_success'));
     }
@@ -131,7 +131,7 @@ class RoleController extends Controller
         $role->name_dr = $request->input('name_dr');
         $role->recipients = $request->has('recipients') ? $request->recipients : null;
         $role->save();
-        $role->syncPermissions($request->input('permission'));
+        $role->syncPermissionIds($request->input('permission'));
         return redirect()->route('roles.index')->with('success', localize('global.role_update_success'));
     }
 

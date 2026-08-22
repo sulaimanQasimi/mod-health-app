@@ -252,12 +252,14 @@ export default function CreateDepotRequest({
                             />
                         </div>
 
-                        <label className="flex items-center gap-2">
+                        <label className="flex cursor-pointer items-center gap-2">
                             <Checkbox
                                 checked={data.submit_now}
                                 onChange={(event) => setData('submit_now', event.target.checked)}
                             />
-                            <span>{t('global.prosthetics_submit_for_approval')}</span>
+                            <span className="text-sm text-gray-700 dark:text-gray-300">
+                                {t('global.prosthetics_submit_for_approval')}
+                            </span>
                         </label>
 
                         <div className="flex gap-2">

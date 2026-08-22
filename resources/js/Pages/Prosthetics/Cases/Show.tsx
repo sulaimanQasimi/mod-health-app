@@ -559,6 +559,7 @@ export default function ProstheticsCasesShow({
                             {permissions.submit_for_approval && (
                                 <Button
                                     color="blue"
+                                    outline
                                     size="sm"
                                     disabled={processing}
                                     onClick={() => post(urls.submit_approval)}

@@ -117,7 +117,7 @@ export default function DepotRequestItemsEditor({
                 </div>
                 <Button type="button" color="light" size="sm" onClick={addLine}>
                     <i className="bx bx-plus me-1" />
-                    {t('global.add')} {t('global.depot.line')}
+                    {t('global.add')}
                 </Button>
             </div>
 

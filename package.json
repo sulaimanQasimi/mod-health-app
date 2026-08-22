@@ -12,7 +12,7 @@
         "autoprefixer": "^10.4.23",
         "axios": "^1.6.4",
         "flowbite": "^4.0.1",
-        "flowbite-react": "^0.10.2",
+        "flowbite-react": "^0.12.17",
         "laravel-vite-plugin": "^1.0.0",
         "postcss": "^8.5.6",
         "tailwindcss": "^4.1.18",

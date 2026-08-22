@@ -129,7 +129,7 @@ class SidebarMenuService
                 $children[] = $this->item('prescription-stocks', 'global.stock_overview', null, 'react.prescription-stocks.index');
             }
             if ($user->hasRole(['admin', 'super_admin']) || $user->hasActivePharmacyRole(['manager', 'procurement'])) {
-                $children[] = $this->item('depot-requests', 'global.depot.requests', null, 'react.depots.requests.index');
+                $children[] = $this->item('pharmacy-transfer-requests', 'global.pharmacy_transfer_requests', null, 'react.pharmacy.transfer-requests.index');
                 $children[] = $this->item('pharmacy-stock', 'global.pharmacy_stock', null, 'react.pharmacy-stock.index');
             }
             if ($user->hasRole(['admin', 'super_admin']) || $user->hasActivePharmacyRole(['manager'])) {
@@ -141,6 +141,7 @@ class SidebarMenuService
                 $items[] = $this->group('pharmacy-stock', 'global.prescription_stocks', 'bx-package', [
                     'react.prescription-stocks.*',
                     'react.pharmacy-stock.*',
+                    'react.pharmacy.transfer-requests.*',
                     'react.pharmacies.*',
                     'react.incomes.*',
                     'react.outcomes.*',

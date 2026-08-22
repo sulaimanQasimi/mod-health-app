@@ -290,7 +290,7 @@
 
         @if ($canSeePharmacyStockMenu)
             <li
-                class="menu-item {{ Route::is('prescription_stocks.*') || Route::is('pharmacy_fulfillments.*') || Route::is('pharmacies.*') ? 'active open' : '' }}">
+                class="menu-item {{ Route::is('prescription_stocks.*') || Route::is('pharmacy_fulfillments.*') || Route::is('pharmacies.*') || Route::is('react.pharmacy.transfer-requests.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-package"></i>
                     <div>{{ localize('global.prescription_stocks') }}</div>
@@ -314,6 +314,11 @@
                     @endif
 
                     @if ($isPharmacyManager || $isPharmacyProcurement || $sidebarUser?->hasRole(['admin', 'super_admin']))
+                        <li class="menu-item {{ Route::is('react.pharmacy.transfer-requests.*') ? 'active' : '' }}">
+                            <a href="{{ route('react.pharmacy.transfer-requests.index') }}" class="menu-link">
+                                <div>{{ localize('global.pharmacy_transfer_requests') }}</div>
+                            </a>
+                        </li>
                         <li class="menu-item {{ Route::is('pharmacy_fulfillments.*') ? 'active' : '' }}">
                             <a href="{{ route('pharmacy_fulfillments.index') }}" class="menu-link">
                                 <div>{{ localize('global.pharmacy_fulfillments') }}</div>

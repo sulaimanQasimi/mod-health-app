@@ -84,6 +84,7 @@ use App\Http\Controllers\V1\PatientSections\ForeignCountryReferralController;
 use App\Http\Controllers\V1\PermissionController;
 use App\Http\Controllers\V1\PharmacyController;
 use App\Http\Controllers\V1\PharmacyFulfillmentController;
+use App\Http\Controllers\V1\PharmacyTransferRequestController;
 use App\Http\Controllers\V1\PhysiotherapyProcedureController;
 use App\Http\Controllers\V1\PhysiotherapyReportController;
 use App\Http\Controllers\V1\PhysiotherapyTypeController;
@@ -375,6 +376,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/prescription-stocks', [PrescriptionStockController::class, 'index'])->name('prescription-stocks.index');
 
     Route::get('/pharmacy-stock', [PharmacyFulfillmentController::class, 'stock'])->name('pharmacy-stock.index');
+
+    Route::prefix('pharmacy/transfer-requests')->name('pharmacy.transfer-requests.')->group(function () {
+        Route::get('/', [PharmacyTransferRequestController::class, 'index'])->name('index');
+        Route::get('/create', [PharmacyTransferRequestController::class, 'create'])->name('create');
+        Route::post('/', [PharmacyTransferRequestController::class, 'store'])->name('store');
+        Route::get('/{depotRequest}/edit', [PharmacyTransferRequestController::class, 'edit'])->name('edit');
+        Route::put('/{depotRequest}', [PharmacyTransferRequestController::class, 'update'])->name('update');
+        Route::get('/{depotRequest}', [PharmacyTransferRequestController::class, 'show'])->name('show');
+        Route::post('/{depotRequest}/submit', [PharmacyTransferRequestController::class, 'submit'])->name('submit');
+        Route::post('/{depotRequest}/cancel', [PharmacyTransferRequestController::class, 'cancel'])->name('cancel');
+    });
 
     Route::prefix('incomes')->name('incomes.')->group(function () {
         Route::get('/', [IncomeController::class, 'index'])->name('index');

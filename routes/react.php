@@ -726,7 +726,13 @@ Route::middleware(['auth'])->group(function () {
         Route::match(['put', 'post'], '/{role}', [RoleController::class, 'update'])->name('update');
         Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
     });
-    Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
+    Route::prefix('permissions')->name('permissions.')->group(function () {
+        Route::get('/', [PermissionController::class, 'index'])->name('index');
+        Route::get('/create', [PermissionController::class, 'create'])->name('create');
+        Route::post('/', [PermissionController::class, 'store'])->name('store');
+        Route::get('/{permission}/edit', [PermissionController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{permission}', [PermissionController::class, 'update'])->name('update');
+    });
     Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
     Route::prefix('activity-logs')->name('activity-logs.')->middleware('role:super_admin')->group(function () {
         Route::get('/', [ActivityLogController::class, 'index'])->name('index');

@@ -4051,4 +4051,6 @@ return [
     'unit_updated_successfully' => 'واحد موفقانه تصحیح شد',
     'unit_deleted_successfully' => 'واحد موفقانه حذف شد',
     'role_delete_success' => 'نقش موفقانه حذف شد',
-];
+    'name_en' => 'نام (انگلیسی)',
+    'name_dr' => 'نام (فارسی)',
+    ];

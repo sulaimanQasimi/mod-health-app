@@ -14,8 +14,7 @@ trait ValidatesDepotRequestDestination
             'pharmacy_id' => ['nullable', 'required_without:requesting_depot_id', 'prohibited_if:requesting_depot_id,*', 'exists:pharmacies,id'],
             'source_depot_id' => [
                 'nullable',
-                'required_with:requesting_depot_id',
-                'prohibited_if:pharmacy_id,*',
+                'required_with:pharmacy_id,requesting_depot_id',
                 'exists:depots,id',
                 'different:requesting_depot_id',
             ],

@@ -14,6 +14,12 @@ class DepotRequestSourceResolver
     public function resolve(array $data, ?User $user = null, ?int $hintedSourceDepotId = null): int
     {
         if (! empty($data['pharmacy_id'])) {
+            if ($hintedSourceDepotId) {
+                $this->assertValidPharmacySourceDepot($hintedSourceDepotId);
+
+                return $hintedSourceDepotId;
+            }
+
             return $this->resolveForPharmacy((int) $data['pharmacy_id']);
         }
 
@@ -111,6 +117,34 @@ class DepotRequestSourceResolver
             return $depot ? ['id' => (int) $depot->id, 'name' => $depot->name] : null;
         } catch (ValidationException) {
             return null;
+        }
+    }
+
+    /**
+     * @return list<array{id: int, name: string}>
+     */
+    public function sourceOptionsForPharmacyRequest(?User $user = null): array
+    {
+        return Depot::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Depot $depot) => [
+                'id' => (int) $depot->id,
+                'name' => $depot->name,
+            ])
+            ->values()
+            ->all();
+    }
+
+    private function assertValidPharmacySourceDepot(int $sourceDepotId): void
+    {
+        $sourceDepot = Depot::query()->find($sourceDepotId);
+
+        if (! $sourceDepot || ! $sourceDepot->is_active) {
+            throw ValidationException::withMessages([
+                'source_depot_id' => 'Source depot must be active.',
+            ]);
         }
     }
 

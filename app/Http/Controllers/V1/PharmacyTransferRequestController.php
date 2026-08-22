@@ -85,16 +85,15 @@ class PharmacyTransferRequestController extends Controller
         $userPharmacies = $this->userPharmacyOptions($user);
         $defaultPharmacyId = (string) ($request->query('pharmacy_id')
             ?: ($userPharmacies[0]['id'] ?? ''));
-        $sourceDepotMap = $this->pharmacySourceDepotMap($user);
-        $defaultSourceDepot = $defaultPharmacyId !== ''
-            ? ($sourceDepotMap[$defaultPharmacyId] ?? null)
-            : null;
+        $sourceDepotOptions = $this->sourceResolver->sourceOptionsForPharmacyRequest($user);
+        $defaultSourceDepotId = (string) ($request->query('source_depot_id')
+            ?: ($sourceDepotOptions[0]['id'] ?? ''));
 
         return Inertia::render('PharmacyTransferRequests/Create', [
             'defaultPharmacyId' => $defaultPharmacyId,
             'userPharmacies' => $userPharmacies,
-            'sourceDepotMap' => $sourceDepotMap,
-            'defaultSourceDepot' => $defaultSourceDepot,
+            'sourceDepotOptions' => $sourceDepotOptions,
+            'defaultSourceDepotId' => $defaultSourceDepotId,
             'formData' => $this->depotFormOptions(),
             'urls' => [
                 ...$this->pageUrls(),
@@ -114,7 +113,11 @@ class PharmacyTransferRequestController extends Controller
         abort_unless(! empty($data['pharmacy_id']), 422);
         $this->authorizePharmacyRequestData($data, $user);
 
-        $sourceDepotId = $this->sourceResolver->resolve($data, $user);
+        $sourceDepotId = $this->sourceResolver->resolve(
+            $data,
+            $user,
+            ! empty($data['source_depot_id']) ? (int) $data['source_depot_id'] : null,
+        );
 
         $depotRequest = DB::transaction(function () use ($data, $sourceDepotId) {
             $depotRequest = DepotRequest::create([
@@ -187,17 +190,13 @@ class PharmacyTransferRequestController extends Controller
             'items.unit:id,name',
         ]);
 
-        $pharmacyId = (string) $depotRequest->pharmacy_id;
-        $sourceDepotMap = $this->pharmacySourceDepotMap($user);
+        $sourceDepotOptions = $this->sourceResolver->sourceOptionsForPharmacyRequest($user);
 
         return Inertia::render('PharmacyTransferRequests/Edit', [
             'request' => $this->transformDetail($depotRequest),
             'userPharmacies' => $this->userPharmacyOptions($user),
-            'sourceDepotMap' => $sourceDepotMap,
-            'sourceDepot' => $sourceDepotMap[$pharmacyId] ?? [
-                'id' => (int) $depotRequest->source_depot_id,
-                'name' => $depotRequest->sourceDepot?->name ?? '',
-            ],
+            'sourceDepotOptions' => $sourceDepotOptions,
+            'defaultSourceDepotId' => (string) $depotRequest->source_depot_id,
             'formData' => $this->depotFormOptions(),
             'urls' => [
                 ...$this->pageUrls(),
@@ -221,7 +220,11 @@ class PharmacyTransferRequestController extends Controller
         abort_unless(! empty($data['pharmacy_id']), 422);
         $this->authorizePharmacyRequestData($data, $user);
 
-        $sourceDepotId = $this->sourceResolver->resolve($data, $user, $depotRequest->source_depot_id);
+        $sourceDepotId = $this->sourceResolver->resolve(
+            $data,
+            $user,
+            ! empty($data['source_depot_id']) ? (int) $data['source_depot_id'] : $depotRequest->source_depot_id,
+        );
 
         DB::transaction(function () use ($depotRequest, $data, $sourceDepotId) {
             $depotRequest->update([
@@ -321,24 +324,6 @@ class PharmacyTransferRequestController extends Controller
             ])
             ->values()
             ->all();
-    }
-
-    /**
-     * @return array<string, array{id: int, name: string}>
-     */
-    private function pharmacySourceDepotMap(User $user): array
-    {
-        $map = [];
-
-        foreach ($this->allowedPharmacyIdsForRequests($user) as $pharmacyId) {
-            $preview = $this->sourceResolver->preview(['pharmacy_id' => $pharmacyId], $user);
-
-            if ($preview) {
-                $map[(string) $pharmacyId] = $preview;
-            }
-        }
-
-        return $map;
     }
 
     /**

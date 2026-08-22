@@ -21,15 +21,15 @@ interface SourceDepotOption {
 export default function CreatePharmacyTransferRequest({
     defaultPharmacyId,
     userPharmacies,
-    sourceDepotMap,
-    defaultSourceDepot,
+    sourceDepotOptions,
+    defaultSourceDepotId,
     formData,
     urls,
 }: {
     defaultPharmacyId: string;
     userPharmacies: OptionItem[];
-    sourceDepotMap: Record<string, SourceDepotOption>;
-    defaultSourceDepot: SourceDepotOption | null;
+    sourceDepotOptions: SourceDepotOption[];
+    defaultSourceDepotId: string;
     formData: DepotFormData;
     urls: {
         index: string;
@@ -38,24 +38,20 @@ export default function CreatePharmacyTransferRequest({
     };
 }) {
     const { t } = useTranslation();
-    const singlePharmacy = userPharmacies.length === 1;
 
     const { data, setData, post, processing, errors } = useForm<{
         pharmacy_id: string;
+        source_depot_id: string;
         notes: string;
         items: DepotRequestLineItem[];
         submit_now: boolean;
     }>({
         pharmacy_id: defaultPharmacyId,
+        source_depot_id: defaultSourceDepotId,
         notes: '',
         items: [emptyRequestLine()],
         submit_now: true,
     });
-
-    const sourceDepot = useMemo(
-        () => sourceDepotMap[data.pharmacy_id] ?? defaultSourceDepot,
-        [sourceDepotMap, data.pharmacy_id, defaultSourceDepot],
-    );
 
     const selectedPharmacyName = useMemo(
         () => userPharmacies.find((item) => String(item.id) === data.pharmacy_id)?.name ?? '—',
@@ -88,42 +84,40 @@ export default function CreatePharmacyTransferRequest({
                     <form onSubmit={submit} className="space-y-6">
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
-                                <Label>{t('global.pharmacy')}</Label>
-                                {singlePharmacy ? (
+                                <Label>{t('global.depot.source_depot')} *</Label>
+                                <SearchableSelect
+                                    value={data.source_depot_id}
+                                    onChange={(value) => setData('source_depot_id', value)}
+                                    options={[
+                                        { value: '', label: t('global.select') },
+                                        ...sourceDepotOptions.map((depot) => ({
+                                            value: String(depot.id),
+                                            label: depot.name,
+                                        })),
+                                    ]}
+                                />
+                                {errors.source_depot_id && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.source_depot_id}</p>
+                                )}
+                            </div>
+                            {data.pharmacy_id && (
+                                <div>
+                                    <Label>{t('global.pharmacy')}</Label>
                                     <div className="mt-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800/60 dark:text-gray-200">
                                         {selectedPharmacyName}
                                     </div>
-                                ) : (
-                                    <SearchableSelect
-                                        value={data.pharmacy_id}
-                                        onChange={(value) => setData('pharmacy_id', value)}
-                                        options={[
-                                            { value: '', label: t('global.select') },
-                                            ...userPharmacies.map((pharmacy) => ({
-                                                value: String(pharmacy.id),
-                                                label: pharmacy.name,
-                                            })),
-                                        ]}
-                                    />
-                                )}
-                                {errors.pharmacy_id && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.pharmacy_id}</p>
-                                )}
-                            </div>
-                            <div>
-                                <Label>{t('global.depot.source_depot')}</Label>
-                                <div className="mt-1 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-100">
-                                    {sourceDepot?.name ?? t('global.pharmacy_source_depot_pending')}
+                                    {errors.pharmacy_id && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.pharmacy_id}</p>
+                                    )}
                                 </div>
-                                <p className="mt-1 text-xs text-gray-500">{t('global.pharmacy_source_depot_auto')}</p>
-                            </div>
+                            )}
                         </div>
 
                         <DepotRequestItemsEditor
                             items={data.items}
                             onChange={(items) => setData('items', items)}
                             formData={formData}
-                            sourceDepotId={sourceDepot ? String(sourceDepot.id) : ''}
+                            sourceDepotId={data.source_depot_id}
                             stockUrl={urls.stockAvailable}
                             errors={errors as Record<string, string>}
                             medicinesOnly
@@ -140,7 +134,11 @@ export default function CreatePharmacyTransferRequest({
                         </div>
 
                         <div className="flex gap-2">
-                            <Button type="submit" color="blue" disabled={processing || !data.pharmacy_id || !sourceDepot}>
+                            <Button
+                                type="submit"
+                                color="blue"
+                                disabled={processing || !data.pharmacy_id || !data.source_depot_id}
+                            >
                                 {processing && <Spinner size="sm" className="me-2" />}
                                 {t('global.pharmacy_submit_transfer_request')}
                             </Button>

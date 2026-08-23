@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { Dropdown, DropdownDivider, DropdownHeader, DropdownItem } from 'flowbite-react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
@@ -16,9 +16,13 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onMenuToggle, sidebarOpen }: NavbarProps) {
-    const { auth, urls, csrfToken } = usePage<SharedPageProps>().props;
+    const { auth, urls } = usePage<SharedPageProps>().props;
     const { t } = useTranslation();
     const user = auth.user;
+
+    const handleLogout = () => {
+        router.post(urls.logout);
+    };
 
     return (
         <header className="sticky top-0 z-20 border-b border-gray-200 bg-white px-4 py-3 sm:px-6 dark:border-gray-700 dark:bg-gray-800">
@@ -96,14 +100,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }: NavbarProps) {
                                 {t('global.my_profile')}
                             </DropdownItem>
                             <DropdownDivider />
-                            <DropdownItem
-                                as="button"
-                                type="button"
-                                onClick={() => {
-                                    const form = document.getElementById('react-logout-form') as HTMLFormElement | null;
-                                    form?.submit();
-                                }}
-                            >
+                            <DropdownItem as="button" type="button" onClick={handleLogout}>
                                 <i className="bx bx-log-out me-2" />
                                 {t('global.logout')}
                             </DropdownItem>
@@ -111,10 +108,6 @@ export default function Navbar({ onMenuToggle, sidebarOpen }: NavbarProps) {
                     )}
                 </div>
             </div>
-
-            <form id="react-logout-form" action={urls.logout} method="POST" className="hidden">
-                <input type="hidden" name="_token" value={csrfToken} />
-            </form>
         </header>
     );
 }

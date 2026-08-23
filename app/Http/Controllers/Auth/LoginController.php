@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LoginController extends Controller
 {
@@ -24,5 +25,14 @@ class LoginController extends Controller
         $credentials['status'] = 1;
 
         return $credentials;
+    }
+
+    protected function loggedOut(Request $request)
+    {
+        if ($request->header('X-Inertia')) {
+            return Inertia::location(route('login'));
+        }
+
+        return redirect()->route('login');
     }
 }

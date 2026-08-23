@@ -79,7 +79,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'pharmacy_role' => \App\Http\Middleware\EnsurePharmacyRole::class,
         ]);
 
-        $middleware->redirectUsersTo('/home');
+        $middleware->redirectUsersTo('/react');
     })
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('blood-bank:archive-expired')->everyFifteenMinutes();

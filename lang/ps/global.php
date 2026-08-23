@@ -4691,4 +4691,9 @@ return [
 'unit_updated_successfully' => 'واحد په بریالیتوب سره سم شو',
 'unit_deleted_successfully' => 'واحد په بریالیتوب سره حذف شو',
 'role_delete_success' => 'رول په بریالیتوب سره حذف شو',
+'depot' => [
+    'stock_in' => 'د موجودي ننوت',
+    'stock_out' => 'د موجودي وتلو',
+    'adjustment' => 'د موجودي سمون',
+],
 ];

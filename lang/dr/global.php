@@ -880,6 +880,7 @@ return [
     'depot' => array (
   'stock_in' => 'ورود موجودی',
   'stock_out' => 'خروج موجودی',
+  'adjustment' => 'تنظیم موجودی',
   'stock_adjustment' => 'تنظیم موجودی دیپو',
   'stock_transfer' => 'انتقال موجودی',
   'stock_transfer_to_pharmacy' => 'انتقال موجودی به دواخانه',
@@ -4067,5 +4068,4 @@ return [
     'name_en' => 'نام (انگلیسی)',
     'name_dr' => 'نام (فارسی)',
     'in_stock'=>'موجود در انبار',
-    'adjustment'=>'تنظیمات انبار'
     ];

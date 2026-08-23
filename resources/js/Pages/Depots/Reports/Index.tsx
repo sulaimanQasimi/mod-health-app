@@ -1,4 +1,4 @@
-import { Button, Card, Label } from 'flowbite-react';
+import { Card, Label } from 'flowbite-react';
 import { useState } from 'react';
 import DepotNavTabs from '../../../Components/Depots/DepotNavTabs';
 import { DEPOT_CARD_CLASS } from '../../../Components/Depots/depotUi';
@@ -286,24 +286,24 @@ export default function IndexDepotReports({
                                         </div>
                                     </div>
                                     <div className="mt-4 flex flex-wrap gap-2">
-                                        <Button
-                                            color="success"
-                                            as="a"
+                                        <a
                                             href={buildExportUrl(urls.export, report.key, 'excel', filters)}
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300 dark:hover:bg-emerald-950/50"
                                         >
-                                            Excel
-                                        </Button>
-                                        <Button
-                                            color="failure"
-                                            as="a"
+                                            <i className="bx bx-spreadsheet" />
+                                            {t('global.export_excel')}
+                                        </a>
+                                        <a
                                             href={buildExportUrl(urls.export, report.key, 'pdf', filters)}
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300 dark:hover:bg-rose-950/50"
                                         >
-                                            PDF
-                                        </Button>
+                                            <i className="bx bx-file" />
+                                            {t('global.export_pdf')}
+                                        </a>
                                     </div>
                                 </div>
                             );

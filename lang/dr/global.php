@@ -880,7 +880,7 @@ return [
     'depot' => array (
   'stock_in' => 'ورود موجودی',
   'stock_out' => 'خروج موجودی',
-  'stock_adjustment' => 'تنظیم موجودی',
+  'stock_adjustment' => 'تنظیم موجودی دیپو',
   'stock_transfer' => 'انتقال موجودی',
   'stock_transfer_to_pharmacy' => 'انتقال موجودی به دواخانه',
   'stock_transfer_to_depot' => 'انتقال موجودی به دیپو',
@@ -990,6 +990,9 @@ return [
   'destination_type' => 'نوع مقصد',
   'create_tool' => 'افزودن ابزار',
   'edit_tool' => 'ویرایش ابزار',
+  'tool_created_successfully.' => 'ابزار با موفقیت ایجاد شد.',
+  'tool_updated_successfully.' => 'ابزار با موفقیت بروزرسانی شد.',
+  'tool_deleted_successfully.' => 'ابزار با موفقیت حذف شد.',
   'requesting_depot' => 'دیپوی درخواست‌کننده',
   'source_depot' => 'دیپوی منبع',
   'destination_depot' => 'دیپوی مقصد',

@@ -367,13 +367,6 @@
                         <div>{{ localize('global.depot.list') }}</div>
                     </a>
                 </li>
-                @can('depot.transaction.view')
-                <li class="menu-item {{ Route::is('depots.transactions.*') ? 'active' : '' }}">
-                    <a href="{{ route('depots.transactions.index') }}" class="menu-link">
-                        <div>{{ localize('global.depot.transactions') }}</div>
-                    </a>
-                </li>
-                @endcan
                 @canany(['depot.request.create', 'depot.request.approve', 'depot.request.fulfill'])
                 <li class="menu-item {{ Route::is('depots.requests.*') ? 'active' : '' }}">
                     <a href="{{ route('depots.requests.index') }}" class="menu-link">

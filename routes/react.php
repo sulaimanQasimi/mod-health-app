@@ -439,7 +439,14 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{depot}', [DepotController::class, 'destroy'])->name('destroy');
     });
 
-    Route::get('/tools', [ToolController::class, 'index'])->name('tools.index');
+    Route::prefix('tools')->name('tools.')->group(function () {
+        Route::get('/', [ToolController::class, 'index'])->name('index');
+        Route::get('/create', [ToolController::class, 'create'])->name('create');
+        Route::post('/', [ToolController::class, 'store'])->name('store');
+        Route::get('/{tool}/edit', [ToolController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{tool}', [ToolController::class, 'update'])->name('update');
+        Route::delete('/{tool}', [ToolController::class, 'destroy'])->name('destroy');
+    });
 
     Route::prefix('blood-banks')->name('blood-banks.')->group(function () {
         Route::get('/dashboard', [BloodBankController::class, 'dashboard'])->name('dashboard');

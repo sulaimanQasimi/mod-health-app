@@ -254,7 +254,6 @@ trait ManagesDepotAccess
     {
         return [
             'index' => $this->userCanDepotAction(DepotRolePermissions::ACTION_VIEW, null, $user),
-            'transactions' => $this->userCanDepotAction(DepotRolePermissions::ACTION_TRANSACTION_VIEW, null, $user),
             'requests' => $this->canViewDepotRequests($user),
             'reports' => $this->userCanDepotAction(DepotRolePermissions::ACTION_REPORT_EXPORT, null, $user),
             'tools' => $this->userCanDepotAction(DepotRolePermissions::ACTION_VIEW, null, $user),

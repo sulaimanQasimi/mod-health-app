@@ -77,7 +77,7 @@ export default function ShowDepotTransaction({
         <DashboardLayout>
             <Head title={transaction.transaction_number ?? t('global.depot.transactions')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="transactions" urls={navUrls} permissions={navPermissions} />
+                <DepotNavTabs active="index" urls={navUrls} permissions={navPermissions} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={transaction.transaction_number ?? `#${transaction.id}`}

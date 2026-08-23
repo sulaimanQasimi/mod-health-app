@@ -122,8 +122,8 @@ export default function ShowDepot({
                                         size="sm"
                                         className={settingsHeaderButtonClass.secondary}
                                     >
-                                        <i className="bx bx-package me-2" />
-                                        {t('global.depot.new')}
+                                        <i className="bx bx-slider-alt me-2" />
+                                        {t('global.depot.stock_adjustment')}
                                     </Button>
                                 )}
                                 {permissions.movement_pharmacy && (

@@ -224,8 +224,8 @@ export default function StockDepot({
                                 )}
                                 {permissions.transaction_create && (
                                     <Button color="light" as={Link} href={urls.transactionCreate}>
-                                        <i className="bx bx-transfer me-2 text-lg" />
-                                        {t('global.depot.new')}
+                                        <i className="bx bx-slider-alt me-2 text-lg" />
+                                        {t('global.depot.stock_adjustment')}
                                     </Button>
                                 )}
                             </div>

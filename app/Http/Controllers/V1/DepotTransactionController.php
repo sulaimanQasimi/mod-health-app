@@ -89,7 +89,7 @@ class DepotTransactionController extends Controller
         return Inertia::render('Depots/Transactions/Create', [
             'depot' => $this->transactionDepotPreview($hintedDepotId, $user),
             'defaults' => [
-                'type' => DepotTransaction::TYPE_STOCK_IN,
+                'type' => DepotTransaction::TYPE_ADJUSTMENT,
             ],
             'formData' => $this->depotFormOptions(),
             'types' => [

@@ -75,14 +75,14 @@ export default function CreateDepotTransaction({
 
     return (
         <DashboardLayout>
-            <Head title={t('global.depot.new')} />
+            <Head title={t('global.depot.stock_adjustment')} />
             <div className={`mx-auto w-full min-w-0 ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="transactions" urls={navUrls} permissions={navPermissions} />
+                <DepotNavTabs active="index" urls={navUrls} permissions={navPermissions} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader
-                        title={t('global.depot.new')}
-                        subtitle={t('global.depot.depot_transactions')}
-                        icon="bx-transfer"
+                        title={t('global.depot.stock_adjustment')}
+                        subtitle={depot?.name ?? t('global.depot.title')}
+                        icon="bx-slider-alt"
                         accent="from-sky-500 to-blue-600"
                         backHref={urls.index}
                         backLabel={t('global.back')}

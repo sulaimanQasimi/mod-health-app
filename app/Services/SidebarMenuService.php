@@ -155,9 +155,6 @@ class SidebarMenuService
             if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_VIEW)) {
                 $depotChildren[] = $this->item('depots', 'global.depot.list', null, 'react.depots.index', ['global.depot', 'list']);
             }
-            if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_TRANSACTION_VIEW)) {
-                $depotChildren[] = $this->item('depot-transactions', 'global.depot.transactions', null, 'react.depots.transactions.index', ['global.depot', 'transactions']);
-            }
             if ($this->canSeeDepotRequestsMenu($user)) {
                 $depotChildren[] = $this->item('depot-requests', 'global.depot.requests', null, 'react.depots.requests.index', ['global.depot', 'requests']);
             }

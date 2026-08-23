@@ -105,20 +105,20 @@ export default function IndexDepotTransactions({
 
     return (
         <DashboardLayout>
-            <Head title={t('global.depot.depot_transactions')} />
+            <Head title={t('global.depot.stock_adjustment')} />
             <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="transactions" urls={navUrls} permissions={navPermissions} />
+                <DepotNavTabs active="index" urls={navUrls} permissions={navPermissions} />
                 <Card className="shadow-sm">
                     <SettingsPageHeader
-                        title={t('global.depot.depot_transactions')}
+                        title={t('global.depot.stock_adjustment')}
                         subtitle={summaryLabel}
-                        icon="bx-transfer"
+                        icon="bx-slider-alt"
                         accent="from-sky-500 to-blue-600"
                         action={
                             permissions.create ? (
                                 <Button color="blue" as={Link} href={urls.create}>
                                     <i className="bx bx-plus me-2 text-lg" />
-                                    {t('global.depot.new')}
+                                    {t('global.depot.stock_adjustment')}
                                 </Button>
                             ) : undefined
                         }

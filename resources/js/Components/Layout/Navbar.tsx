@@ -1,4 +1,4 @@
-import { Link, router, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Dropdown, DropdownDivider, DropdownHeader, DropdownItem } from 'flowbite-react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
@@ -15,13 +15,36 @@ interface NavbarProps {
     sidebarOpen: boolean;
 }
 
+function resolveCsrfToken(sharedToken?: string): string {
+    if (sharedToken) {
+        return sharedToken;
+    }
+
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+}
+
 export default function Navbar({ onMenuToggle, sidebarOpen }: NavbarProps) {
-    const { auth, urls } = usePage<SharedPageProps>().props;
+    const { auth, urls, csrfToken } = usePage<SharedPageProps>().props;
     const { t } = useTranslation();
     const user = auth.user;
 
     const handleLogout = () => {
-        router.post(urls.logout);
+        const logoutUrl = urls?.logout || '/logout';
+        const token = resolveCsrfToken(csrfToken);
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = logoutUrl;
+        form.style.display = 'none';
+
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = token;
+        form.appendChild(csrfInput);
+
+        document.body.appendChild(form);
+        form.submit();
     };
 
     return (

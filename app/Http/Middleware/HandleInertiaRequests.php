@@ -60,7 +60,7 @@ class HandleInertiaRequests extends Middleware
             'urls' => [
                 'changeLanguage' => url('change_language'),
                 'profile' => route('react.profile.show'),
-                'logout' => route('logout'),
+                'logout' => url('/logout'),
                 'chats' => url('/chats'),
             ],
         ];

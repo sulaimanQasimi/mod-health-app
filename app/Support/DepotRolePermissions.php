@@ -6,6 +6,12 @@ class DepotRolePermissions
 {
     public const ACTION_VIEW = 'view';
 
+    public const ACTION_CREATE = 'create';
+
+    public const ACTION_UPDATE = 'update';
+
+    public const ACTION_DELETE = 'delete';
+
     public const ACTION_REPORT_EXPORT = 'report.export';
 
     public const ACTION_TRANSACTION_VIEW = 'transaction.view';
@@ -21,6 +27,26 @@ class DepotRolePermissions
     public const ACTION_MOVEMENT_DEPOT_TO_PHARMACY = 'movement.depot_to_pharmacy';
 
     public const ACTION_MOVEMENT_DEPOT_TO_DEPOT = 'movement.depot_to_depot';
+
+    /**
+     * Spatie permissions that grant global depot menu/access (same as legacy Blade routes).
+     *
+     * @var list<string>
+     */
+    public const SPATIE_PERMISSIONS = [
+        'depot.view',
+        'depot.create',
+        'depot.update',
+        'depot.delete',
+        'depot.report.export',
+        'depot.transaction.view',
+        'depot.transaction.create',
+        'depot.request.create',
+        'depot.request.approve',
+        'depot.request.fulfill',
+        'depot.movement.depot_to_pharmacy',
+        'depot.movement.depot_to_depot',
+    ];
 
     /**
      * Depot manager (admin): view depot data and export reports only.
@@ -61,6 +87,9 @@ class DepotRolePermissions
     {
         return match ($permission) {
             'depot.view' => self::ACTION_VIEW,
+            'depot.create' => self::ACTION_CREATE,
+            'depot.update' => self::ACTION_UPDATE,
+            'depot.delete' => self::ACTION_DELETE,
             'depot.report.export' => self::ACTION_REPORT_EXPORT,
             'depot.transaction.view' => self::ACTION_TRANSACTION_VIEW,
             'depot.transaction.create' => self::ACTION_TRANSACTION_CREATE,
@@ -72,6 +101,25 @@ class DepotRolePermissions
             default => str_starts_with($permission, 'depot.')
                 ? substr($permission, strlen('depot.'))
                 : $permission,
+        };
+    }
+
+    public static function actionToPermission(string $action): string
+    {
+        return match ($action) {
+            self::ACTION_VIEW => 'depot.view',
+            self::ACTION_CREATE => 'depot.create',
+            self::ACTION_UPDATE => 'depot.update',
+            self::ACTION_DELETE => 'depot.delete',
+            self::ACTION_REPORT_EXPORT => 'depot.report.export',
+            self::ACTION_TRANSACTION_VIEW => 'depot.transaction.view',
+            self::ACTION_TRANSACTION_CREATE => 'depot.transaction.create',
+            self::ACTION_REQUEST_CREATE => 'depot.request.create',
+            self::ACTION_REQUEST_APPROVE => 'depot.request.approve',
+            self::ACTION_REQUEST_FULFILL => 'depot.request.fulfill',
+            self::ACTION_MOVEMENT_DEPOT_TO_PHARMACY => 'depot.movement.depot_to_pharmacy',
+            self::ACTION_MOVEMENT_DEPOT_TO_DEPOT => 'depot.movement.depot_to_depot',
+            default => str_starts_with($action, 'depot.') ? $action : 'depot.'.$action,
         };
     }
 

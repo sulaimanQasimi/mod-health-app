@@ -91,7 +91,7 @@ class DepotController extends Controller
 
     public function create(): Response
     {
-        abort_unless($this->isDepotSystemAdmin(), 403);
+        $this->authorizeDepotPermission('depot.create');
 
         return Inertia::render('Depots/Create', [
             'formData' => $this->depotFormOptions(),
@@ -106,7 +106,7 @@ class DepotController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        abort_unless($this->isDepotSystemAdmin(), 403);
+        $this->authorizeDepotPermission('depot.create');
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -310,7 +310,7 @@ class DepotController extends Controller
 
     public function edit(Depot $depot): Response
     {
-        abort_unless($this->isDepotSystemAdmin(), 403);
+        $this->authorizeDepotPermission('depot.update');
 
         $depot->load('activeUsers:id,name,last_name,email');
 
@@ -329,7 +329,7 @@ class DepotController extends Controller
 
     public function update(Request $request, Depot $depot): RedirectResponse
     {
-        abort_unless($this->isDepotSystemAdmin(), 403);
+        $this->authorizeDepotPermission('depot.update');
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -364,7 +364,7 @@ class DepotController extends Controller
 
     public function destroy(Depot $depot): RedirectResponse
     {
-        abort_unless($this->isDepotSystemAdmin(), 403);
+        $this->authorizeDepotPermission('depot.delete');
 
         $depot->delete();
 

@@ -158,9 +158,9 @@ class SidebarMenuService
             if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_TRANSACTION_VIEW)) {
                 $depotChildren[] = $this->item('depot-transactions', 'global.depot.transactions', null, 'react.depots.transactions.index', ['global.depot', 'transactions']);
             }
-            // if ($this->canSeeDepotRequestsMenu($user)) {
-            //     $depotChildren[] = $this->item('depot-requests', 'global.depot.requests', null, 'react.depots.requests.index', ['global.depot', 'requests']);
-            // }
+            if ($this->canSeeDepotRequestsMenu($user)) {
+                $depotChildren[] = $this->item('depot-requests', 'global.depot.requests', null, 'react.depots.requests.index', ['global.depot', 'requests']);
+            }
             if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_MOVEMENT_DEPOT_TO_DEPOT)) {
                 $depotChildren[] = $this->item('depot-to-depot', 'global.depot.depot_to_depot', null, 'react.depots.movements.depot-to-depot', ['global.depot', 'depot_to_depot']);
             }
@@ -452,7 +452,7 @@ class SidebarMenuService
             return true;
         }
 
-        return $user->activeDepots()->exists();
+        return $user->activeDepots()->exists() || $user->hasAnySpatieDepotPermission();
     }
 
     private function userCanDepotMenuAction(User $user, string $action): bool

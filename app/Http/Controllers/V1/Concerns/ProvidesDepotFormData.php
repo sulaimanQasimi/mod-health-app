@@ -33,7 +33,7 @@ trait ProvidesDepotFormData
             $depotsQuery->whereKeyNot($excludeDepot->id);
         }
 
-        if ($user && ! $user->hasRole(['super_admin', 'admin'])) {
+        if ($user && ! $user->hasRole(['super_admin', 'admin']) && ! $user->hasAnySpatieDepotPermission()) {
             $allowedIds = $user->activeDepots->pluck('id')->all();
             $depotsQuery->whereIn('id', $allowedIds ?: [0]);
         }

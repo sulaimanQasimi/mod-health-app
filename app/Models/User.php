@@ -163,6 +163,10 @@ class User extends Authenticatable implements WirechatUser
 
     public function canPerformDepotAction(int $depotId, string $action): bool
     {
+        if ($this->hasSpatieDepotPermission($action)) {
+            return true;
+        }
+
         $role = $this->getDepotRole($depotId);
 
         return DepotRolePermissions::roleCan($role, $action);
@@ -170,8 +174,31 @@ class User extends Authenticatable implements WirechatUser
 
     public function canPerformDepotActionOnAny(string $action): bool
     {
+        if ($this->hasSpatieDepotPermission($action)) {
+            return true;
+        }
+
         foreach ($this->activeDepots as $depot) {
             if (DepotRolePermissions::roleCan($depot->pivot->role, $action)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Spatie role permissions grant the same global depot access as legacy Blade routes.
+     */
+    public function hasSpatieDepotPermission(string $action): bool
+    {
+        return $this->can(DepotRolePermissions::actionToPermission($action));
+    }
+
+    public function hasAnySpatieDepotPermission(): bool
+    {
+        foreach (DepotRolePermissions::SPATIE_PERMISSIONS as $permission) {
+            if ($this->can($permission)) {
                 return true;
             }
         }
@@ -184,6 +211,10 @@ class User extends Authenticatable implements WirechatUser
      */
     public function allowedDepotIdsForAction(string $action): array
     {
+        if ($this->hasSpatieDepotPermission($action) || $this->hasSpatieDepotPermission(DepotRolePermissions::ACTION_VIEW)) {
+            return Depot::query()->pluck('id')->map(fn ($id) => (int) $id)->all();
+        }
+
         return $this->activeDepots
             ->filter(fn ($depot) => DepotRolePermissions::roleCan($depot->pivot->role, $action))
             ->pluck('id')

@@ -23,6 +23,10 @@ class DepotRequestAuthorization
             return false;
         }
 
+        if ($user->hasRole(['super_admin', 'admin']) || $user->hasSpatieDepotPermission($action)) {
+            return true;
+        }
+
         return $user->hasDepotAccess($processingDepotId)
             && $user->canPerformDepotAction($processingDepotId, $action);
     }

@@ -475,7 +475,7 @@ class DepotRequestController extends Controller
     {
         $user = request()->user();
 
-        if ($this->isDepotSystemAdmin($user)) {
+        if ($this->isDepotSystemAdmin($user) || $user?->hasSpatieDepotPermission(DepotRolePermissions::ACTION_REQUEST_CREATE)) {
             return;
         }
 
@@ -710,7 +710,7 @@ class DepotRequestController extends Controller
         $sourceDepotId = (int) $request->query('source_depot_id');
         $user = $request->user();
 
-        if ($user && ! $this->isDepotSystemAdmin($user)) {
+        if ($user && ! $this->isDepotSystemAdmin($user) && ! $user->hasAnySpatieDepotPermission()) {
             abort_unless($user->hasDepotAccess($sourceDepotId), 403);
         }
 

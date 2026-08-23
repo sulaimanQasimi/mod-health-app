@@ -1,0 +1,1 @@
+import{j as t}from"./app-eekKWhIT.js";import{e as r}from"./Table-DUV4fyw_.js";function s({children:e,className:n}){return t.jsx("div",{className:n??"inline-flex flex-nowrap items-center justify-center gap-0.5",children:e})}function l({children:e,className:n}){return t.jsx(r,{align:"center",className:n,children:t.jsx(s,{children:e})})}export{l as T,s as a};

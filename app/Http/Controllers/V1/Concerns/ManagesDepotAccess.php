@@ -47,6 +47,11 @@ trait ManagesDepotAccess
             return true;
         }
 
+        // Spatie role permissions (legacy Blade parity) grant global access.
+        if ($user->hasSpatieDepotPermission($action)) {
+            return true;
+        }
+
         if ($depotId !== null) {
             return $user->hasDepotAccess($depotId)
                 && $user->canPerformDepotAction($depotId, $action);
@@ -61,7 +66,7 @@ trait ManagesDepotAccess
 
         abort_unless($user, 403);
 
-        if ($this->isDepotSystemAdmin($user)) {
+        if ($this->isDepotSystemAdmin($user) || $user->hasAnySpatieDepotPermission()) {
             return;
         }
 
@@ -158,6 +163,10 @@ trait ManagesDepotAccess
             }
         }
 
+        if ($user->hasAnySpatieDepotPermission()) {
+            return true;
+        }
+
         foreach ([$depotRequest->source_depot_id, $depotRequest->requesting_depot_id] as $depotId) {
             if ($depotId && $user->hasDepotAccess((int) $depotId)) {
                 return true;
@@ -178,7 +187,7 @@ trait ManagesDepotAccess
             return [];
         }
 
-        if ($this->isDepotSystemAdmin($user)) {
+        if ($this->isDepotSystemAdmin($user) || $user->hasAnySpatieDepotPermission()) {
             return Depot::query()->pluck('id')->map(fn ($id) => (int) $id)->all();
         }
 
@@ -259,9 +268,9 @@ trait ManagesDepotAccess
     {
         return [
             'view' => $this->userCanDepotAction(DepotRolePermissions::ACTION_VIEW, null, $user),
-            'create' => $this->isDepotSystemAdmin($user),
-            'edit' => $this->isDepotSystemAdmin($user),
-            'delete' => $this->isDepotSystemAdmin($user),
+            'create' => $this->userCanDepotAction(DepotRolePermissions::ACTION_CREATE, null, $user),
+            'edit' => $this->userCanDepotAction(DepotRolePermissions::ACTION_UPDATE, null, $user),
+            'delete' => $this->userCanDepotAction(DepotRolePermissions::ACTION_DELETE, null, $user),
         ];
     }
 

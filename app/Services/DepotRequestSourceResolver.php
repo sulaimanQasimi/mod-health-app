@@ -69,7 +69,7 @@ class DepotRequestSourceResolver
             ->whereKeyNot($requestingDepotId)
             ->orderBy('name');
 
-        if ($user && ! $user->hasRole(['super_admin', 'admin'])) {
+        if ($user && ! $user->hasRole(['super_admin', 'admin']) && ! $user->hasAnySpatieDepotPermission()) {
             $allowedIds = $user->activeDepots->pluck('id')->map(fn ($id) => (int) $id)->all();
 
             if ($requestingDepot?->parent_depot_id) {
@@ -181,7 +181,7 @@ class DepotRequestSourceResolver
             ]);
         }
 
-        if ($user && ! $user->hasRole(['super_admin', 'admin'])) {
+        if ($user && ! $user->hasRole(['super_admin', 'admin']) && ! $user->hasAnySpatieDepotPermission()) {
             $requestingDepot = Depot::query()->find($requestingDepotId);
             $isParentSource = $requestingDepot
                 && (int) $requestingDepot->parent_depot_id === $sourceDepotId;

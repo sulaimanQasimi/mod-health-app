@@ -31,8 +31,18 @@ class PatientPolicy
             );
     }
 
+    public function accessVip(User $user): bool
+    {
+        return $user->hasRole(['super_admin', 'admin'])
+            || $user->can('access-to-vip');
+    }
+
     public function update(User $user, Patient $patient): bool
     {
+        if ($patient->isVipRecord() && ! $this->accessVip($user)) {
+            return false;
+        }
+
         return $this->belongsToUserBranch($user, $patient)
             && (
                 $user->hasRole(['super_admin', 'admin'])
@@ -42,6 +52,10 @@ class PatientPolicy
 
     public function delete(User $user, Patient $patient): bool
     {
+        if ($patient->isVipRecord() && ! $this->accessVip($user)) {
+            return false;
+        }
+
         return $this->belongsToUserBranch($user, $patient)
             && (
                 $user->hasRole(['super_admin', 'admin'])

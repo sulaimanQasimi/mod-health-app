@@ -4,21 +4,34 @@ import { PatientType } from '../../../types/patient';
 interface PatientTypeSelectorProps {
     value: PatientType;
     onChange: (type: PatientType) => void;
+    canAccessVip?: boolean;
 }
 
-const patientTypes: { type: PatientType; labelKey: string }[] = [
+const basePatientTypes: { type: PatientType; labelKey: string }[] = [
     { type: '0', labelKey: 'global.mod' },
     { type: '1', labelKey: 'global.recipient' },
     { type: '3', labelKey: 'global.extraordinary' },
     { type: '2', labelKey: 'global.family' },
 ];
 
-export default function PatientTypeSelector({ value, onChange }: PatientTypeSelectorProps) {
+export default function PatientTypeSelector({
+    value,
+    onChange,
+    canAccessVip = false,
+}: PatientTypeSelectorProps) {
     const { t } = useTranslation();
+
+    const patientTypes = canAccessVip
+        ? [...basePatientTypes, { type: '4' as PatientType, labelKey: 'global.vip' }]
+        : basePatientTypes;
+
+    const gridClass = canAccessVip
+        ? 'grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5 sm:gap-3'
+        : 'grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 sm:gap-3';
 
     return (
         <div className="nav-align-top mb-6">
-            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 sm:gap-3" role="tablist">
+            <ul className={gridClass} role="tablist">
                 {patientTypes.map((item) => {
                     const selected = value === item.type;
 

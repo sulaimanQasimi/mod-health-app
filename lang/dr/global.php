@@ -1430,6 +1430,8 @@ return [
     'external' => 'خارجی',
     'extraction' => 'کشیدن دندان',
     'extraordinary' => 'فوق العاده',
+  'vip' => 'VIP',
+  'access_to_vip' => 'دسترسی به مریضان VIP',
     'extremities' => 'Extremities',
     'fail' => 'ناکام',
     'failed' => 'ناموفق',

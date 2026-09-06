@@ -1775,6 +1775,8 @@ return [
     'mod' => 'Mod',
     'family' => 'Family',
     'extraordinary' => 'Extraordinary',
+    'vip' => 'VIP',
+    'access_to_vip' => 'Access to VIP patients',
     'commanded_by' => 'Commanded By',
     'add_advice' => 'Add Advice',
     'no_item_is_found' => 'No Item Is Found',

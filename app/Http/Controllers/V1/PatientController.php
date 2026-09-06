@@ -310,6 +310,8 @@ class PatientController extends Controller
             'mode' => 'create',
             'formData' => $this->buildFormData($user),
             'urls' => $this->buildFormUrls(),
+            'canAccessVip' => $user->hasRole(['super_admin', 'admin'])
+                || $user->can('access-to-vip'),
         ]);
     }
 
@@ -535,9 +537,15 @@ class PatientController extends Controller
     {
         $ageParts = $this->parseAge($patient->age);
 
+        $type = (string) ($patient->type ?? '0');
+        if ($patient->isVipRecord()) {
+            $type = '4';
+        }
+
         return [
             'id' => $patient->id,
-            'type' => (string) ($patient->type ?? '0'),
+            'type' => $type,
+            'is_vip' => $patient->isVipRecord(),
             'id_card' => $patient->id_card ?? '',
             'name' => $patient->name ?? '',
             'last_name' => $patient->last_name ?? '',
@@ -593,6 +601,7 @@ class PatientController extends Controller
             'rank' => $patient->rank,
             'job_category' => $patient->job_category,
             'type' => $patient->type,
+            'is_vip' => $patient->isVipRecord(),
             'province' => $patient->province?->name_dr,
             'district' => $patient->district?->name_dr,
             'militery_type' => $patient->militeryType?->name,
@@ -679,6 +688,7 @@ class PatientController extends Controller
             'name' => $patient->name,
             'last_name' => $patient->last_name,
             'father_name' => $patient->father_name,
+            'is_vip' => $patient->isVipRecord(),
             'location' => $location,
             'age' => $patient->age,
             'militery_type' => $patient->militeryType?->name,

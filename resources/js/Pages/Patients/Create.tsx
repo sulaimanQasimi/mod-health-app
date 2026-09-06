@@ -20,6 +20,7 @@ export interface PatientFormPageProps {
     urls: PatientFormUrls;
     patient?: PatientFormValues;
     permissions?: PatientFormPermissions;
+    canAccessVip?: boolean;
 }
 
 export function PatientFormPage({
@@ -28,6 +29,7 @@ export function PatientFormPage({
     urls,
     patient,
     permissions,
+    canAccessVip = false,
 }: PatientFormPageProps) {
     const { t } = useTranslation();
     const isEdit = mode === 'edit';
@@ -50,7 +52,11 @@ export function PatientFormPage({
 
                     <div className="px-5 py-5">
                         {!isEdit && (
-                            <PatientTypeSelector value={patientType} onChange={setPatientType} />
+                            <PatientTypeSelector
+                                value={patientType}
+                                onChange={setPatientType}
+                                canAccessVip={canAccessVip}
+                            />
                         )}
 
                         <PatientCreateForm
@@ -74,8 +80,16 @@ interface CreatePatientProps {
     mode?: 'create';
     formData: PatientFormData;
     urls: PatientFormUrls;
+    canAccessVip?: boolean;
 }
 
-export default function CreatePatient({ formData, urls }: CreatePatientProps) {
-    return <PatientFormPage mode="create" formData={formData} urls={urls} />;
+export default function CreatePatient({ formData, urls, canAccessVip = false }: CreatePatientProps) {
+    return (
+        <PatientFormPage
+            mode="create"
+            formData={formData}
+            urls={urls}
+            canAccessVip={canAccessVip}
+        />
+    );
 }

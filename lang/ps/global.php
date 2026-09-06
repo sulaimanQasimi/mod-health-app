@@ -1144,6 +1144,8 @@ return [
 'recipient' => 'نورې ادارې',
 'family' => 'د فامیل غړي او نور',
 'extraordinary' => 'فوق العاده',
+'vip' => 'VIP',
+'access_to_vip' => 'VIP ناروغانو ته لاسرسی',
 'commanded_by' => 'فرمانده',
 'add_advice' => 'توصیه اضافه کول',
 'no_item_is_found' => 'هیڅ توکی ونه موندل شو',

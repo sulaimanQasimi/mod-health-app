@@ -57,7 +57,8 @@ class HandleInertiaRequests extends Middleware
                 ] : null,
             ],
             'csrfToken' => csrf_token(),
-            'urls' => [
+            // Named appUrls so page-level `urls` props do not overwrite navbar links.
+            'appUrls' => [
                 'changeLanguage' => url('change_language'),
                 'profile' => route('react.profile.show'),
                 'logout' => url('/logout'),

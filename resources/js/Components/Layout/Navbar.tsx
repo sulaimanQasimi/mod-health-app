@@ -24,12 +24,12 @@ function resolveCsrfToken(sharedToken?: string): string {
 }
 
 export default function Navbar({ onMenuToggle, sidebarOpen }: NavbarProps) {
-    const { auth, urls, csrfToken } = usePage<SharedPageProps>().props;
+    const { auth, appUrls, csrfToken } = usePage<SharedPageProps>().props;
     const { t } = useTranslation();
     const user = auth.user;
 
     const handleLogout = () => {
-        const logoutUrl = urls?.logout || '/logout';
+        const logoutUrl = appUrls?.logout || '/logout';
         const token = resolveCsrfToken(csrfToken);
 
         const form = document.createElement('form');
@@ -63,7 +63,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }: NavbarProps) {
                 <div className="ms-auto flex min-w-0 items-center justify-end gap-2 sm:gap-3">
                     {user && (
                         <a
-                            href={urls.chats}
+                            href={appUrls.chats}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
@@ -90,7 +90,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }: NavbarProps) {
                         )}
                     >
                         {languages.map((language) => (
-                            <DropdownItem key={language.code} as="a" href={`${urls.changeLanguage}/${language.code}`}>
+                            <DropdownItem key={language.code} as="a" href={`${appUrls.changeLanguage}/${language.code}`}>
                                 {language.label}
                             </DropdownItem>
                         ))}
@@ -118,7 +118,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }: NavbarProps) {
                                 <span className="block text-sm font-semibold">{user.name}</span>
                                 <span className="block truncate text-sm text-gray-500">{user.email}</span>
                             </DropdownHeader>
-                            <DropdownItem as={Link} href={urls.profile}>
+                            <DropdownItem as={Link} href={appUrls.profile}>
                                 <i className="bx bx-user me-2" />
                                 {t('global.my_profile')}
                             </DropdownItem>

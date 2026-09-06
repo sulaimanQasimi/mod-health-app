@@ -27,7 +27,7 @@ export interface SharedPageProps extends Record<string, unknown> {
         user: AuthUser | null;
     };
     csrfToken: string;
-    urls: {
+    appUrls: {
         changeLanguage: string;
         profile: string;
         logout: string;

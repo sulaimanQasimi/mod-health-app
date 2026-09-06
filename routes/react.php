@@ -155,12 +155,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('appointments')->name('appointments.')->group(function () {
         Route::get('/', [AppointmentController::class, 'index'])->name('index');
+        Route::post('/', [AppointmentController::class, 'store'])->name('store');
         Route::get('/trashed', [AppointmentController::class, 'trashed'])->name('trashed');
         Route::get('/department-report', [AppointmentController::class, 'departmentReport'])->name('department-report');
         Route::get('/department', [AppointmentController::class, 'department'])->name('department');
         Route::get('/doctor', [AppointmentController::class, 'doctor'])->name('doctor');
         Route::get('/completed', [AppointmentController::class, 'completed'])->name('completed');
         Route::get('/report', [AppointmentController::class, 'report'])->name('report');
+        Route::get('/print-token/{appointment}', [AppointmentController::class, 'printToken'])->name('printToken');
         Route::put('/{appointment}/complete', [AppointmentController::class, 'complete'])->name('complete');
         Route::get('/{appointment}', [AppointmentController::class, 'show'])->name('show');
         Route::prefix('{appointment}')->name('sections.')->group(function () {

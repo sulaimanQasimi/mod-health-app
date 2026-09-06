@@ -23,6 +23,7 @@ export interface UserListItem {
     email: string;
     avatar_url: string;
     category_name: string | null;
+    department_name: string | null;
     is_doctor: boolean;
     clinic_type: string | null;
     status: number;
@@ -39,6 +40,7 @@ export interface UserIndexStats {
 export interface UserIndexFilters {
     search: string;
     category_id: string;
+    department_id: string;
     status: string;
     role_id: string;
     is_doctor: string;
@@ -48,6 +50,7 @@ export interface UserIndexFilters {
 
 export interface UserIndexFilterOptions {
     categories: Array<{ id: number; name: string }>;
+    departments: Array<{ id: number; name: string }>;
     roles: Array<{ id: number; name: string; name_dr?: string | null }>;
 }
 

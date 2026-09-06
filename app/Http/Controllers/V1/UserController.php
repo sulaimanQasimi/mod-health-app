@@ -24,6 +24,7 @@ class UserController extends Controller
     private const INDEX_FILTER_KEYS = [
         'search',
         'category_id',
+        'department_id',
         'status',
         'role_id',
         'is_doctor',
@@ -79,6 +80,7 @@ class UserController extends Controller
             'filters' => $filters,
             'filterOptions' => [
                 'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
+                'departments' => Department::query()->orderBy('name')->get(['id', 'name']),
                 'roles' => Role::query()->orderBy('name')->get(['id', 'name', 'name_dr']),
             ],
             'permissions' => $this->userPermissions($user),
@@ -206,10 +208,14 @@ class UserController extends Controller
      */
     private function buildIndexQuery(Request $request)
     {
-        $query = User::query()->with(['roles:id,name,name_dr', 'category:id,name']);
+        $query = User::query()->with(['roles:id,name,name_dr', 'category:id,name', 'department:id,name']);
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
         }
 
         if ($request->filled('status') && in_array($request->status, ['0', '1'], true)) {
@@ -253,6 +259,7 @@ class UserController extends Controller
                 ? asset('storage/'.$user->avatar)
                 : asset('assets/img/avatars/1.png'),
             'category_name' => $user->category?->name,
+            'department_name' => $user->department?->name,
             'is_doctor' => (bool) $user->is_doctor,
             'clinic_type' => $user->clinic_type,
             'status' => (int) $user->status,

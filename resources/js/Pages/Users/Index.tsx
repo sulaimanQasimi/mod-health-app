@@ -36,6 +36,7 @@ interface IndexUsersProps {
 const EMPTY_FILTERS: UserIndexFilters = {
     search: '',
     category_id: '',
+    department_id: '',
     status: '',
     role_id: '',
     is_doctor: '',
@@ -289,6 +290,18 @@ export default function IndexUsers({
                                 />
                             </div>
                             <div>
+                                <Label>{t('global.department')}</Label>
+                                <SearchableSelect
+                                    value={filters.department_id}
+                                    onChange={(value) => handleSelectChange('department_id', value)}
+                                    options={(filterOptions.departments ?? []).map((department) => ({
+                                        value: String(department.id),
+                                        label: department.name,
+                                    }))}
+                                    placeholder={t('global.all_departments')}
+                                />
+                            </div>
+                            <div>
                                 <Label>{t('global.status')}</Label>
                                 <SearchableSelect
                                     value={filters.status}
@@ -366,6 +379,7 @@ export default function IndexUsers({
                                     <TableHeader>{t('global.name')}</TableHeader>
                                     <TableHeader>{t('global.email')}</TableHeader>
                                     <TableHeader>{t('global.category')}</TableHeader>
+                                    <TableHeader>{t('global.department')}</TableHeader>
                                     <TableHeader>{t('global.is_doctor')}</TableHeader>
                                     <TableHeader>{t('global.clinic_type')}</TableHeader>
                                     <TableHeader>{t('global.status')}</TableHeader>
@@ -389,6 +403,7 @@ export default function IndexUsers({
                                         <TableCell>{user.name}</TableCell>
                                         <TableCell muted>{user.email}</TableCell>
                                         <TableCell muted>{user.category_name ?? '—'}</TableCell>
+                                        <TableCell muted>{user.department_name ?? '—'}</TableCell>
                                         <TableCell>
                                             <Badge color={user.is_doctor ? 'success' : 'gray'}>
                                                 {user.is_doctor ? t('global.yes') : t('global.no')}

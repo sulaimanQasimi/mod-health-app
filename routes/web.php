@@ -19,7 +19,12 @@ use App\Http\Controllers\VitalSignController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Auth::routes(['register' => false]);
+Auth::routes([
+    'register' => false,
+    'reset' => false,
+    'verify' => false,
+    'confirm' => false,
+]);
 
 Route::middleware(['auth'])->group(function () {
     Route::get('change_language/{lang?}', [HomeController::class, 'changeLanguage'])

@@ -59,8 +59,11 @@ class HandleInertiaRequests extends Middleware
             'csrfToken' => csrf_token(),
             'urls' => [
                 'changeLanguage' => url('change_language'),
-                'profile' => route('profile.show'),
+                'profile' => \Illuminate\Support\Facades\Route::has('profile.show')
+                    ? route('profile.show')
+                    : url('/profile'),
                 'logout' => url('/logout'),
+                'login' => route('login'),
                 'chats' => url('/chats'),
             ],
         ];

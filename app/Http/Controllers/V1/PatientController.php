@@ -4,8 +4,10 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PatientController as LegacyPatientController;
+use App\Http\Controllers\V1\Concerns\ManagesAppointmentReport;
 use App\Http\Controllers\V1\Concerns\ManagesPatientReport;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
+use App\Models\Appointment;
 use App\Models\Department;
 use App\Models\District;
 use App\Models\MiliteryType;
@@ -21,6 +23,7 @@ use Inertia\Response;
 
 class PatientController extends Controller
 {
+    use ManagesAppointmentReport;
     use ManagesPatientReport;
     use PaginatesInertiaIndex;
     private const INDEX_FILTER_KEYS = [
@@ -369,6 +372,41 @@ class PatientController extends Controller
 
         $user = $request->user();
         $branchId = (int) $user->branch_id;
+        $canAccessDepartment = $user->can('viewAny', Appointment::class);
+
+        $tab = $request->input('tab', 'patients') === 'department' && $canAccessDepartment
+            ? 'department'
+            : 'patients';
+
+        $patientsTab = null;
+        $departmentTab = null;
+
+        if ($tab === 'patients') {
+            $patientsTab = $this->buildPatientsReportTab($request, $branchId);
+        } else {
+            $departmentTab = $this->buildDepartmentReportTab($request, $user, $branchId);
+        }
+
+        return Inertia::render('Patients/Report', [
+            'tab' => $tab,
+            'permissions' => [
+                'department' => $canAccessDepartment,
+            ],
+            'patientsTab' => $patientsTab,
+            'departmentTab' => $departmentTab,
+            'urls' => [
+                'current' => route('patients.report'),
+                'index' => route('patients.index'),
+                'export' => route('patients.export-report'),
+            ],
+        ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildPatientsReportTab(Request $request, int $branchId): array
+    {
         $hasSearch = $this->patientReportHasSearch($request);
 
         $patients = [
@@ -425,7 +463,7 @@ class PatientController extends Controller
             }
         }
 
-        return Inertia::render('Patients/Report', [
+        return [
             'patients' => $patients,
             'summary' => $summary,
             'analytics' => $analytics,
@@ -436,12 +474,64 @@ class PatientController extends Controller
                 'districts' => District::query()->orderBy('name_dr')->get(['id', 'name_dr', 'province_id']),
                 'recipients' => Recipient::query()->orderBy('name')->get(['id', 'name']),
             ],
-            'urls' => [
-                'current' => route('patients.report'),
-                'index' => route('patients.index'),
-                'export' => route('patients.export-report'),
+        ];
+    }
+
+    /**
+     * @param  \App\Models\User  $user
+     * @return array<string, mixed>
+     */
+    private function buildDepartmentReportTab(Request $request, $user, int $branchId): array
+    {
+        $hasSearch = $this->departmentReportHasSearch($request);
+
+        $appointments = [
+            'data' => [],
+            'links' => [],
+            'meta' => [
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => 25,
+                'total' => 0,
+                'from' => null,
+                'to' => null,
             ],
-        ]);
+        ];
+        $summary = [
+            'total' => 0,
+            'male' => 0,
+            'female' => 0,
+        ];
+        $analytics = [
+            'by_gender' => [],
+        ];
+
+        if ($hasSearch) {
+            $query = $this->departmentReportBaseQuery($request, $branchId);
+            $analytics = $this->departmentReportAnalytics($query);
+            $summary = [
+                'total' => $analytics['total'],
+                'male' => $analytics['male'],
+                'female' => $analytics['female'],
+            ];
+
+            $paginator = $this->paginateQuery($query, $request, 25, [10, 25, 50, 100]);
+            $appointments = $this->paginationPayload(
+                $paginator,
+                fn (Appointment $item) => $this->transformDepartmentReportItem($item),
+            );
+        }
+
+        return [
+            'appointments' => $appointments,
+            'summary' => $summary,
+            'analytics' => $analytics,
+            'hasSearch' => $hasSearch,
+            'filters' => $this->collectFilters($request, $this->departmentReportFilterKeys()),
+            'filterOptions' => [
+                'departments' => $this->departmentsForReportUser($user),
+            ],
+        ];
     }
 
     /**

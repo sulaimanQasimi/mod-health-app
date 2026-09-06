@@ -7,7 +7,10 @@ export { default as ReportFilterPanel } from './ReportFilterPanel';
 export { default as ReportKpiGrid } from './ReportKpiGrid';
 export { default as ReportPageShell } from './ReportPageShell';
 export { default as ReportResultsCard } from './ReportResultsCard';
+export { default as ReportTabs } from './ReportTabs';
 export { default as ReportTrendChart } from './ReportTrendChart';
+export { default as PatientsReportPanel } from './PatientsReportPanel';
+export { default as DepartmentReportPanel } from './DepartmentReportPanel';
 export type {
     DateCount,
     NamedCount,

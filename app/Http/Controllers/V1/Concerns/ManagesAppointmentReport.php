@@ -257,36 +257,6 @@ trait ManagesAppointmentReport
     }
 
     /**
-     * @return array{total: int, male: int, female: int, by_gender: list<array{name: string, count: int}>}
-     */
-    protected function departmentReportAnalytics(Builder $query): array
-    {
-        $items = (clone $query)->with('patient:id,gender')->get();
-        $male = 0;
-        $female = 0;
-
-        foreach ($items as $appointment) {
-            if ((string) ($appointment->patient?->gender ?? '') === '1') {
-                $female++;
-            } elseif ($appointment->patient?->gender !== null && $appointment->patient?->gender !== '') {
-                $male++;
-            }
-        }
-
-        $total = $items->count();
-
-        return [
-            'total' => $total,
-            'male' => $male,
-            'female' => $female,
-            'by_gender' => [
-                ['name' => 'male', 'count' => $male],
-                ['name' => 'female', 'count' => $female],
-            ],
-        ];
-    }
-
-    /**
      * @return array<string, mixed>
      */
     protected function transformAppointmentReportItem(Appointment $appointment): array
@@ -340,6 +310,7 @@ trait ManagesAppointmentReport
         'department_id',
         'date_from',
         'date_to',
+        'per_page',
     ];
 
     protected function departmentReportHasSearch(Request $request): bool
@@ -348,7 +319,35 @@ trait ManagesAppointmentReport
     }
 
     /**
-     * @return Builder<Appointment>
+     * @return array{total: int, male: int, female: int, by_gender: list<array{name: string, count: int}>}
+     */
+    protected function departmentReportAnalytics(Builder $query): array
+    {
+        $total = (clone $query)->count();
+        $female = (clone $query)
+            ->whereHas('patient', fn ($q) => $q->where('gender', '1'))
+            ->count();
+        $male = (clone $query)
+            ->whereHas('patient', function ($q) {
+                $q->whereNotNull('gender')
+                    ->where('gender', '!=', '')
+                    ->where('gender', '!=', '1');
+            })
+            ->count();
+
+        return [
+            'total' => $total,
+            'male' => $male,
+            'female' => $female,
+            'by_gender' => [
+                ['name' => 'male', 'count' => $male],
+                ['name' => 'female', 'count' => $female],
+            ],
+        ];
+    }
+
+    /**
+     * @return Builder<\App\Models\Appointment>
      */
     protected function departmentReportBaseQuery(Request $request, int $branchId): Builder
     {
@@ -415,5 +414,17 @@ trait ManagesAppointmentReport
     protected function departmentReportFilterKeys(): array
     {
         return self::DEPARTMENT_REPORT_FILTER_KEYS;
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string}>
+     */
+    protected function departmentsForReportUser($user): array
+    {
+        $query = $user->category_id
+            ? \App\Models\Department::query()->where('category_id', $user->category_id)
+            : \App\Models\Department::query();
+
+        return $query->orderBy('name')->get(['id', 'name'])->all();
     }
 }

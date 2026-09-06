@@ -33,7 +33,6 @@ class SidebarMenuService
                 $this->item('patients-create', 'global.create_patient', null, 'patients.create'),
                 $this->item('patients-index', 'global.patients_list', null, 'patients.index'),
                 $this->item('appointments-index', 'global.all_appointments', null, 'appointments.index'),
-                $this->item('appointments-department-report', 'global.department_report', null, 'appointments.department-report'),
                 $this->item('patients-report', 'global.reports', null, 'patients.report'),
                 $this->item('doctor-performance-report', 'global.user_performance_report', null, 'doctor-performance-report'),
             ]);

@@ -681,60 +681,12 @@ class AppointmentController extends Controller
         ];
     }
 
-    public function departmentReport(Request $request): Response
+    public function departmentReport(Request $request)
     {
-        $this->authorize('viewAny', Appointment::class);
-
-        $user = $request->user();
-        $branchId = (int) $user->branch_id;
-        $hasSearch = $this->departmentReportHasSearch($request);
-
-        $appointments = [
-            'data' => [],
-            'meta' => ['total' => 0],
-        ];
-
-        $summary = [
-            'total' => 0,
-            'male' => 0,
-            'female' => 0,
-        ];
-        $analytics = [
-            'by_gender' => [],
-        ];
-
-        if ($hasSearch) {
-            $query = $this->departmentReportBaseQuery($request, $branchId);
-            $items = $query->get();
-            $appointments = [
-                'data' => $items
-                    ->map(fn (Appointment $item) => $this->transformDepartmentReportItem($item))
-                    ->values()
-                    ->all(),
-                'meta' => ['total' => $items->count()],
-            ];
-            $analytics = $this->departmentReportAnalytics($query);
-            $summary = [
-                'total' => $analytics['total'],
-                'male' => $analytics['male'],
-                'female' => $analytics['female'],
-            ];
-        }
-
-        return Inertia::render('Appointments/DepartmentReport', [
-            'appointments' => $appointments,
-            'summary' => $summary,
-            'analytics' => $analytics,
-            'hasSearch' => $hasSearch,
-            'filters' => $this->collectFilters($request, $this->departmentReportFilterKeys()),
-            'filterOptions' => [
-                'departments' => $this->departmentsForUser($user),
-            ],
-            'urls' => [
-                'current' => route('appointments.department-report'),
-                'index' => route('appointments.index'),
-            ],
-        ]);
+        return redirect()->route('patients.report', array_merge(
+            $request->query(),
+            ['tab' => 'department']
+        ));
     }
 
     public function department(Request $request): Response
@@ -1109,16 +1061,9 @@ class AppointmentController extends Controller
         ];
     }
 
-    /**
-     * @return array<int, array{id: int, name: string}>
-     */
     private function departmentsForUser($user): array
     {
-        $query = $user->category_id
-            ? Department::query()->where('category_id', $user->category_id)
-            : Department::query();
-
-        return $query->orderBy('name')->get(['id', 'name'])->all();
+        return $this->departmentsForReportUser($user);
     }
 
     /**

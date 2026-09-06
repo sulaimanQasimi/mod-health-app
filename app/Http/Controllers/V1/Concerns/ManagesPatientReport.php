@@ -168,9 +168,7 @@ trait ManagesPatientReport
      */
     protected function patientReportAnalytics(Builder $query): array
     {
-        $byGender = (clone $query)
-            ->reorder()
-            ->selectRaw('patients.gender as value, COUNT(*) as aggregate_count')
+        $byGender = $this->patientReportAggregateQuery($query, 'patients.gender as value, COUNT(*) as aggregate_count')
             ->groupBy('patients.gender')
             ->get()
             ->map(fn ($row) => [
@@ -178,9 +176,7 @@ trait ManagesPatientReport
                 'count' => (int) $row->aggregate_count,
             ])->values()->all();
 
-        $byType = (clone $query)
-            ->reorder()
-            ->selectRaw('patients.type as value, COUNT(*) as aggregate_count')
+        $byType = $this->patientReportAggregateQuery($query, 'patients.type as value, COUNT(*) as aggregate_count')
             ->groupBy('patients.type')
             ->get()
             ->map(fn ($row) => [
@@ -193,9 +189,10 @@ trait ManagesPatientReport
                 'count' => (int) $row->aggregate_count,
             ])->values()->all();
 
-        $byDate = (clone $query)
-            ->reorder()
-            ->selectRaw('DATE(patients.registration_date) as day, COUNT(*) as aggregate_count')
+        $byDate = $this->patientReportAggregateQuery(
+            $query,
+            'DATE(patients.registration_date) as day, COUNT(*) as aggregate_count'
+        )
             ->whereNotNull('patients.registration_date')
             ->groupBy('day')
             ->orderBy('day')
@@ -215,6 +212,19 @@ trait ManagesPatientReport
             'by_type' => $byType,
             'by_date' => $byDate,
         ];
+    }
+
+    /**
+     * Clone the report query and replace its SELECT list for aggregate-only analytics.
+     *
+     * @return Builder<Patient>
+     */
+    protected function patientReportAggregateQuery(Builder $query, string $selectRaw): Builder
+    {
+        $aggregate = (clone $query)->reorder();
+        $aggregate->getQuery()->columns = null;
+
+        return $aggregate->selectRaw($selectRaw);
     }
 
     /**

@@ -24,7 +24,7 @@ const BG_ICONS = [
 
 export default function Login({ status }: LoginProps) {
     const { t, direction } = useTranslation();
-    const { urls } = usePage<SharedPageProps>().props;
+    const { appUrls } = usePage<SharedPageProps>().props;
     const isRtl = direction === 'rtl';
     const [showPassword, setShowPassword] = useState(false);
 
@@ -36,7 +36,7 @@ export default function Login({ status }: LoginProps) {
 
     const submit = (event: FormEvent) => {
         event.preventDefault();
-        form.post(urls.login, {
+        form.post(appUrls.login, {
             onFinish: () => form.reset('password'),
         });
     };

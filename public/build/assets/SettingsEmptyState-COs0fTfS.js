@@ -1,1 +1,0 @@
-import{j as e}from"./app-E3mbKQzh.js";import{u as o}from"./useTranslation-D9amgM23.js";function d({message:r}){const{t}=o();return e.jsx("div",{className:"rounded-lg border border-dashed border-gray-200 py-12 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400",children:r??t("global.no_results_found")})}export{d as S};

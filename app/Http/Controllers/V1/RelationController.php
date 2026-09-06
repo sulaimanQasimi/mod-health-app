@@ -41,10 +41,10 @@ class RelationController extends Controller
                 'delete-relations',
             ),
             'urls' => [
-                'index' => route('react.relations.index'),
-                'create' => route('react.relations.create'),
-                'edit' => url('/react/relations'),
-                'destroy' => url('/react/relations'),
+                'index' => route('relations.index'),
+                'create' => route('relations.create'),
+                'edit' => url('/relations'),
+                'destroy' => url('/relations'),
             ],
         ]);
     }
@@ -69,7 +69,7 @@ class RelationController extends Controller
         Relation::create($data);
 
         return redirect()
-            ->route('react.relations.index')
+            ->route('relations.index')
             ->with('success', localize('global.relation_created_successfully.'));
     }
 
@@ -97,7 +97,7 @@ class RelationController extends Controller
         $relation->update($data);
 
         return redirect()
-            ->route('react.relations.index')
+            ->route('relations.index')
             ->with('success', localize('global.relation_updated_successfully.'));
     }
 
@@ -108,7 +108,7 @@ class RelationController extends Controller
         $relation->delete();
 
         return redirect()
-            ->route('react.relations.index')
+            ->route('relations.index')
             ->with('success', localize('global.relation_deleted_successfully.'));
     }
 
@@ -118,10 +118,10 @@ class RelationController extends Controller
     private function formUrls(?Relation $relation = null): array
     {
         return [
-            'index' => route('react.relations.index'),
-            'store' => route('react.relations.store'),
-            'update' => $relation ? route('react.relations.update', $relation) : '',
-            'back' => route('react.relations.index'),
+            'index' => route('relations.index'),
+            'store' => route('relations.store'),
+            'update' => $relation ? route('relations.update', $relation) : '',
+            'back' => route('relations.index'),
         ];
     }
 }

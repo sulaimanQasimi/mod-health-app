@@ -47,7 +47,7 @@ interface HospitalizationSectionData {
 export default function HospitalizationSection({ appointmentId }: HospitalizationSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/hospitalization`;
+    const baseUrl = `/appointments/${appointmentId}/hospitalization`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

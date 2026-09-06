@@ -188,7 +188,7 @@ class BloodBankController extends Controller
             ],
             'filters' => $this->collectFilters($request, ['movement_type', 'from', 'to', 'bag_number', 'per_page']),
             'urls' => [
-                'current' => route('react.blood-banks.movements'),
+                'current' => route('blood-banks.movements'),
                 ...$this->bloodBankListUrls(),
             ],
         ]);
@@ -243,7 +243,7 @@ class BloodBankController extends Controller
                 'statuses' => ['new', 'approved', 'rejected', 'delivered'],
             ],
             'urls' => [
-                'current' => route('react.blood-banks.report'),
+                'current' => route('blood-banks.report'),
                 'export' => route('blood_banks.export-report'),
                 ...$this->bloodBankListUrls(),
             ],
@@ -406,19 +406,19 @@ class BloodBankController extends Controller
             ],
             'urls' => [
                 'back' => $this->backUrlForBloodRequest($bloodBank),
-                'approve' => route('react.blood-banks.approve', $bloodBank),
-                'reject' => route('react.blood-banks.reject', $bloodBank),
-                'deliver' => route('react.blood-banks.deliver', $bloodBank),
-                'bloodCheck' => route('react.blood-banks.blood-check.store', $bloodBank),
-                'storeSample' => route('react.blood-banks.crossmatch.samples.store', $bloodBank),
-                'inventory' => route('react.blood-banks.inventory', [
+                'approve' => route('blood-banks.approve', $bloodBank),
+                'reject' => route('blood-banks.reject', $bloodBank),
+                'deliver' => route('blood-banks.deliver', $bloodBank),
+                'bloodCheck' => route('blood-banks.blood-check.store', $bloodBank),
+                'storeSample' => route('blood-banks.crossmatch.samples.store', $bloodBank),
+                'inventory' => route('blood-banks.inventory', [
                     'status' => 'available',
                     'blood_group' => $bloodBank->group,
                     'rh' => $bloodBank->rh,
                     'component_type' => $bloodBank->type,
                 ]),
                 'legacyInventoryShow' => url('/blood_banks/inventory'),
-                'nursesByDepartment' => route('react.blood-banks.nurses-by-department', ['department' => '__DEPARTMENT__']),
+                'nursesByDepartment' => route('blood-banks.nurses-by-department', ['department' => '__DEPARTMENT__']),
                 ...$this->bloodBankListUrls(),
             ],
             'flash' => [
@@ -437,7 +437,7 @@ class BloodBankController extends Controller
         $bloodBank->approve();
 
         return redirect()
-            ->route('react.blood-banks.show', $bloodBank)
+            ->route('blood-banks.show', $bloodBank)
             ->with('success', localize('global.approved'));
     }
 
@@ -455,7 +455,7 @@ class BloodBankController extends Controller
         $bloodBank->update(['reject_reason' => $validated['reject_reason'] ?? null]);
 
         return redirect()
-            ->route('react.blood-banks.rejected')
+            ->route('blood-banks.rejected')
             ->with('success', localize('global.rejected'));
     }
 
@@ -649,7 +649,7 @@ class BloodBankController extends Controller
             'component_type' => $unit->component_type,
             'expires_at' => $unit->expires_at ? verta($unit->expires_at)->format('Y-m-d') : null,
             'urls' => [
-                'show' => route('react.blood-banks.inventory.show', $unit),
+                'show' => route('blood-banks.inventory.show', $unit),
             ],
         ];
     }
@@ -735,7 +735,7 @@ class BloodBankController extends Controller
                 'filled_test_by_name' => $test->filledTestBy?->name,
                 'filled_at' => $test->updated_at && $test->result ? verta($test->updated_at)->format('Y-m-d H:i') : null,
                 'urls' => [
-                    'fill' => route('react.blood-banks.tests.fill', [$bloodBank, $test]),
+                    'fill' => route('blood-banks.tests.fill', [$bloodBank, $test]),
                 ],
             ])->values()->all(),
             'crossmatches' => $bloodBank->crossmatches->map(fn ($cx) => [
@@ -760,7 +760,7 @@ class BloodBankController extends Controller
                         ? verta($u->pivot->issued_at)->format('Y-m-d H:i')
                         : null,
                     'urls' => [
-                        'show' => route('react.blood-banks.inventory.show', $u),
+                        'show' => route('blood-banks.inventory.show', $u),
                     ],
                 ])
                 ->values()
@@ -802,14 +802,14 @@ class BloodBankController extends Controller
                 'auto_reason' => $cx->auto_reason,
                 'patient_sample_id' => $cx->patient_sample_id,
                 'urls' => [
-                    'reserve' => route('react.blood-banks.crossmatch.reserve', [$bloodBank, $cx]),
-                    'override' => route('react.blood-banks.crossmatch.override', [$bloodBank, $cx]),
+                    'reserve' => route('blood-banks.crossmatch.reserve', [$bloodBank, $cx]),
+                    'override' => route('blood-banks.crossmatch.override', [$bloodBank, $cx]),
                 ],
             ] : null,
             'urls' => [
-                'saveCrossmatch' => route('react.blood-banks.crossmatch.save', [$bloodBank, $unit]),
-                'unreserve' => route('react.blood-banks.crossmatch.unreserve', [$bloodBank, $unit]),
-                'inventoryShow' => route('react.blood-banks.inventory.show', $unit),
+                'saveCrossmatch' => route('blood-banks.crossmatch.save', [$bloodBank, $unit]),
+                'unreserve' => route('blood-banks.crossmatch.unreserve', [$bloodBank, $unit]),
+                'inventoryShow' => route('blood-banks.inventory.show', $unit),
             ],
         ];
     }
@@ -833,7 +833,7 @@ class BloodBankController extends Controller
             'screening_status' => $unit->test?->overall_status ?? 'pending',
             'crossmatch_status' => $cx?->status,
             'urls' => [
-                'show' => route('react.blood-banks.inventory.show', $unit),
+                'show' => route('blood-banks.inventory.show', $unit),
             ],
         ];
     }

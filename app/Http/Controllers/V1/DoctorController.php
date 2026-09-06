@@ -76,12 +76,12 @@ class DoctorController extends Controller
             ],
             'permissions' => $this->doctorPermissions($user),
             'urls' => [
-                'index' => route('react.doctors.index'),
-                'create' => route('react.doctors.create'),
-                'show' => url('/react/doctors'),
-                'edit' => url('/react/doctors'),
-                'destroy' => url('/react/doctors'),
-                'updateStatus' => url('/react/doctors'),
+                'index' => route('doctors.index'),
+                'create' => route('doctors.create'),
+                'show' => url('/doctors'),
+                'edit' => url('/doctors'),
+                'destroy' => url('/doctors'),
+                'updateStatus' => url('/doctors'),
             ],
         ]);
     }
@@ -103,9 +103,9 @@ class DoctorController extends Controller
                 'delete' => $request->user()->can('delete', $doctor),
             ],
             'urls' => [
-                'index' => route('react.doctors.index'),
-                'edit' => route('react.doctors.edit', $doctor),
-                'destroy' => route('react.doctors.destroy', $doctor),
+                'index' => route('doctors.index'),
+                'edit' => route('doctors.edit', $doctor),
+                'destroy' => route('doctors.destroy', $doctor),
             ],
         ]);
     }
@@ -131,7 +131,7 @@ class DoctorController extends Controller
         Doctor::create($data);
 
         return redirect()
-            ->route('react.doctors.index')
+            ->route('doctors.index')
             ->with('success', localize('global.doctor_created_successfully'));
     }
 
@@ -157,7 +157,7 @@ class DoctorController extends Controller
         $doctor->update($data);
 
         return redirect()
-            ->route('react.doctors.index')
+            ->route('doctors.index')
             ->with('success', localize('global.doctor_updated_successfully'));
     }
 
@@ -168,7 +168,7 @@ class DoctorController extends Controller
         $doctor->delete();
 
         return redirect()
-            ->route('react.doctors.index')
+            ->route('doctors.index')
             ->with('success', localize('global.doctor_deleted_successfully'));
     }
 
@@ -360,10 +360,10 @@ class DoctorController extends Controller
     private function buildFormUrls(?Doctor $doctor = null): array
     {
         return [
-            'index' => route('react.doctors.index'),
-            'store' => route('react.doctors.store'),
-            'update' => $doctor ? route('react.doctors.update', $doctor) : '',
-            'back' => route('react.doctors.index'),
+            'index' => route('doctors.index'),
+            'store' => route('doctors.store'),
+            'update' => $doctor ? route('doctors.update', $doctor) : '',
+            'back' => route('doctors.index'),
         ];
     }
 

@@ -113,7 +113,7 @@ export function HospitalizationVisitsSection({ appointmentId }: SectionProps) {
 export function AnesthesiaSection({ appointmentId }: SectionProps) {
     return (
         <AnesthesiaReferralSection
-            baseUrl={`/react/appointments/${appointmentId}/anesthesia`}
+            baseUrl={`/appointments/${appointmentId}/anesthesia`}
             accordionId={`anesthesia-${appointmentId}`}
         />
     );

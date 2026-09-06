@@ -82,7 +82,7 @@ class PhysiotherapyController extends Controller
                     'end_date' => $item->end_date ? verta($item->end_date)->format('Y-m-d') : null,
                     'reviews_count' => $item->reviews->count(),
                     'urls' => [
-                        'show' => route('react.physiotherapy-procedures.show', $item->id),
+                        'show' => route('physiotherapy-procedures.show', $item->id),
                     ],
                 ];
             })
@@ -149,7 +149,7 @@ class PhysiotherapyController extends Controller
                     ? verta($physiotherapyProcedure->created_at)->format('Y-m-d H:i')
                     : null,
                 'urls' => [
-                    'show' => route('react.physiotherapy-procedures.show', $physiotherapyProcedure->id),
+                    'show' => route('physiotherapy-procedures.show', $physiotherapyProcedure->id),
                 ],
             ],
         ]);

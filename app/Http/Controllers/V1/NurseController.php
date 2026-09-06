@@ -53,11 +53,11 @@ class NurseController extends Controller
             ],
             'permissions' => $this->nursePermissions($request->user()),
             'urls' => [
-                'index' => route('react.nurses.index'),
-                'create' => route('react.nurses.create'),
-                'show' => url('/react/nurses'),
-                'edit' => url('/react/nurses'),
-                'destroy' => url('/react/nurses'),
+                'index' => route('nurses.index'),
+                'create' => route('nurses.create'),
+                'show' => url('/nurses'),
+                'edit' => url('/nurses'),
+                'destroy' => url('/nurses'),
             ],
         ]);
     }
@@ -81,9 +81,9 @@ class NurseController extends Controller
                 'delete' => $request->user()->can('delete', $nurse),
             ],
             'urls' => [
-                'index' => route('react.nurses.index'),
-                'edit' => route('react.nurses.edit', $nurse),
-                'destroy' => route('react.nurses.destroy', $nurse),
+                'index' => route('nurses.index'),
+                'edit' => route('nurses.edit', $nurse),
+                'destroy' => route('nurses.destroy', $nurse),
             ],
         ]);
     }
@@ -106,7 +106,7 @@ class NurseController extends Controller
         Nurse::create($this->validateNurse($request));
 
         return redirect()
-            ->route('react.nurses.index')
+            ->route('nurses.index')
             ->with('success', localize('global.nurse_created_successfully'));
     }
 
@@ -129,7 +129,7 @@ class NurseController extends Controller
         $nurse->update($this->validateNurse($request, $nurse));
 
         return redirect()
-            ->route('react.nurses.index')
+            ->route('nurses.index')
             ->with('success', localize('global.nurse_updated_successfully'));
     }
 
@@ -140,7 +140,7 @@ class NurseController extends Controller
         $nurse->delete();
 
         return redirect()
-            ->route('react.nurses.index')
+            ->route('nurses.index')
             ->with('success', localize('global.nurse_deleted_successfully'));
     }
 
@@ -303,10 +303,10 @@ class NurseController extends Controller
     private function buildFormUrls(?Nurse $nurse = null): array
     {
         return [
-            'index' => route('react.nurses.index'),
-            'store' => route('react.nurses.store'),
-            'update' => $nurse ? route('react.nurses.update', $nurse) : '',
-            'back' => route('react.nurses.index'),
+            'index' => route('nurses.index'),
+            'store' => route('nurses.store'),
+            'update' => $nurse ? route('nurses.update', $nurse) : '',
+            'back' => route('nurses.index'),
         ];
     }
 

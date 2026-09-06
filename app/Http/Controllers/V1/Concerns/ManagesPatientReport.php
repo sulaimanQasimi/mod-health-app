@@ -239,7 +239,7 @@ trait ManagesPatientReport
                 ? verta($patient->registration_date)->format('Y/m/d')
                 : null,
             'urls' => [
-                'show' => route('react.patients.show', $patient),
+                'show' => route('patients.show', $patient),
             ],
         ];
     }

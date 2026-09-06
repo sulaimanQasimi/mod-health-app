@@ -95,7 +95,7 @@ export default function UnderReviewSection({
 }: UnderReviewSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = baseUrlProp ?? `/react/appointments/${appointmentId}/under-review`;
+    const baseUrl = baseUrlProp ?? `/appointments/${appointmentId}/under-review`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

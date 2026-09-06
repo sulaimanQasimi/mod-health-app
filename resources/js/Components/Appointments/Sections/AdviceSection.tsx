@@ -49,7 +49,7 @@ export default function AdviceSection({ appointmentId }: AdviceSectionProps) {
     const [description, setDescription] = useState('');
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const baseUrl = `/react/appointments/${appointmentId}/advice`;
+    const baseUrl = `/appointments/${appointmentId}/advice`;
 
     const loadData = useCallback(async () => {
         setLoading(true);

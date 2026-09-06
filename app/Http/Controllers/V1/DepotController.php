@@ -79,12 +79,12 @@ class DepotController extends Controller
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
-                'index' => route('react.depots.index'),
-                'create' => route('react.depots.create'),
-                'show' => url('/react/depots'),
-                'edit' => url('/react/depots'),
-                'destroy' => url('/react/depots'),
-                'stock' => url('/react/depots'),
+                'index' => route('depots.index'),
+                'create' => route('depots.create'),
+                'show' => url('/depots'),
+                'edit' => url('/depots'),
+                'destroy' => url('/depots'),
+                'stock' => url('/depots'),
             ],
         ]);
     }
@@ -98,8 +98,8 @@ class DepotController extends Controller
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
-                'index' => route('react.depots.index'),
-                'store' => route('react.depots.store'),
+                'index' => route('depots.index'),
+                'store' => route('depots.store'),
             ],
         ]);
     }
@@ -137,7 +137,7 @@ class DepotController extends Controller
         });
 
         return redirect()
-            ->route('react.depots.show', $depot)
+            ->route('depots.show', $depot)
             ->with('success', localize('global.depot.depot_created_successfully.'));
     }
 
@@ -214,13 +214,13 @@ class DepotController extends Controller
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
-                'index' => route('react.depots.index'),
-                'edit' => route('react.depots.edit', $depot),
-                'destroy' => route('react.depots.destroy', $depot),
-                'stock' => route('react.depots.stock', $depot),
-                'transactionCreate' => route('react.depots.transactions.create', ['depot_id' => $depot->id]),
-                'requestCreate' => route('react.depots.requests.create', ['requesting_depot_id' => $depot->id]),
-                'depotToPharmacy' => route('react.depots.movements.depot-to-pharmacy', array_filter([
+                'index' => route('depots.index'),
+                'edit' => route('depots.edit', $depot),
+                'destroy' => route('depots.destroy', $depot),
+                'stock' => route('depots.stock', $depot),
+                'transactionCreate' => route('depots.transactions.create', ['depot_id' => $depot->id]),
+                'requestCreate' => route('depots.requests.create', ['requesting_depot_id' => $depot->id]),
+                'depotToPharmacy' => route('depots.movements.depot-to-pharmacy', array_filter([
                     'from_depot_id' => $depot->id,
                     'pharmacy_id' => $depot->pharmacy_id,
                 ])),
@@ -277,10 +277,10 @@ class DepotController extends Controller
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
-                'show' => route('react.depots.show', $depot),
-                'stock' => route('react.depots.stock', $depot),
-                'requestCreate' => route('react.depots.requests.create', ['source_depot_id' => $depot->id]),
-                'transactionCreate' => route('react.depots.transactions.create', ['depot_id' => $depot->id]),
+                'show' => route('depots.show', $depot),
+                'stock' => route('depots.stock', $depot),
+                'requestCreate' => route('depots.requests.create', ['source_depot_id' => $depot->id]),
+                'transactionCreate' => route('depots.transactions.create', ['depot_id' => $depot->id]),
             ],
             'permissions' => [
                 'request_create' => $this->userCanDepotAction(
@@ -320,9 +320,9 @@ class DepotController extends Controller
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
-                'index' => route('react.depots.index'),
-                'show' => route('react.depots.show', $depot),
-                'update' => route('react.depots.update', $depot),
+                'index' => route('depots.index'),
+                'show' => route('depots.show', $depot),
+                'update' => route('depots.update', $depot),
             ],
         ]);
     }
@@ -358,7 +358,7 @@ class DepotController extends Controller
         });
 
         return redirect()
-            ->route('react.depots.show', $depot)
+            ->route('depots.show', $depot)
             ->with('success', localize('global.depot.depot_updated_successfully.'));
     }
 
@@ -369,7 +369,7 @@ class DepotController extends Controller
         $depot->delete();
 
         return redirect()
-            ->route('react.depots.index')
+            ->route('depots.index')
             ->with('success', localize('global.depot.depot_deleted_successfully.'));
     }
 
@@ -437,7 +437,7 @@ class DepotController extends Controller
             'quantity' => $tx->quantity,
             'item_name' => $tx->medicine?->name ?? $tx->tool?->name,
             'transaction_date' => $tx->transaction_date?->format('Y-m-d'),
-            'show_url' => route('react.depots.transactions.show', $tx),
+            'show_url' => route('depots.transactions.show', $tx),
         ];
     }
 
@@ -453,7 +453,7 @@ class DepotController extends Controller
             'quantity' => $request->quantity,
             'item_name' => $request->itemsSummary(),
             'counterparty_name' => $request->sourceDepot?->name ?? $request->requestingDepot?->name,
-            'show_url' => route('react.depots.requests.show', $request),
+            'show_url' => route('depots.requests.show', $request),
         ];
     }
 }

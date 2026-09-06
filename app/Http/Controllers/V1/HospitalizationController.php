@@ -82,7 +82,7 @@ class HospitalizationController extends Controller
             'doctor_name' => $item->doctor?->name,
             'admission_date' => $this->formatDate($item->created_at),
             'urls' => [
-                'show' => route('react.hospitalizations.show', $item),
+                'show' => route('hospitalizations.show', $item),
             ],
         ]);
 
@@ -129,7 +129,7 @@ class HospitalizationController extends Controller
             'discharged_at' => $this->formatDate($item->discharged_at),
             'discharge_status' => $item->discharge_status,
             'urls' => [
-                'show' => route('react.hospitalizations.show', $item),
+                'show' => route('hospitalizations.show', $item),
             ],
         ]);
 
@@ -153,8 +153,8 @@ class HospitalizationController extends Controller
                     ->get(['id', 'name']),
             ],
             'urls' => [
-                'current' => route('react.hospitalizations.discharged'),
-                'index' => route('react.hospitalizations.index'),
+                'current' => route('hospitalizations.discharged'),
+                'index' => route('hospitalizations.index'),
             ],
         ]);
     }
@@ -221,11 +221,11 @@ class HospitalizationController extends Controller
                 'operations' => $user->can('show-operations-menu'),
             ],
             'urls' => [
-                'index' => route('react.hospitalizations.index'),
-                'edit' => route('react.hospitalizations.edit', $hospitalization),
-                'discharge' => route('react.hospitalizations.discharge', $hospitalization),
+                'index' => route('hospitalizations.index'),
+                'edit' => route('hospitalizations.edit', $hospitalization),
+                'discharge' => route('hospitalizations.discharge', $hospitalization),
                 'appointment' => $hospitalization->appointment_id
-                    ? route('react.appointments.show', $hospitalization->appointment_id)
+                    ? route('appointments.show', $hospitalization->appointment_id)
                     : null,
             ],
         ]);
@@ -261,8 +261,8 @@ class HospitalizationController extends Controller
             'foodTypes' => FoodType::query()->orderBy('name')->get(['id', 'name']),
             'relations' => Relation::query()->orderBy('name')->get(['id', 'name']),
             'urls' => [
-                'show' => route('react.hospitalizations.show', $hospitalization),
-                'update' => route('react.hospitalizations.update', $hospitalization),
+                'show' => route('hospitalizations.show', $hospitalization),
+                'update' => route('hospitalizations.update', $hospitalization),
             ],
         ]);
     }
@@ -319,7 +319,7 @@ class HospitalizationController extends Controller
         ]);
 
         return redirect()
-            ->route('react.hospitalizations.show', $hospitalization)
+            ->route('hospitalizations.show', $hospitalization)
             ->with('success', localize('global.hospitalization_updated_successfully.'));
     }
 
@@ -347,7 +347,7 @@ class HospitalizationController extends Controller
         });
 
         return redirect()
-            ->route('react.hospitalizations.show', $hospitalization)
+            ->route('hospitalizations.show', $hospitalization)
             ->with('success', localize('global.hospitalization_updated_successfully.'));
     }
 
@@ -397,8 +397,8 @@ class HospitalizationController extends Controller
                 'foodTypes' => FoodType::query()->orderBy('name')->get(['id', 'name']),
             ],
             'urls' => [
-                'current' => route('react.hospitalizations.report'),
-                'index' => route('react.hospitalizations.index'),
+                'current' => route('hospitalizations.report'),
+                'index' => route('hospitalizations.index'),
                 'export' => route('hospitalizations.export-report'),
             ],
         ]);
@@ -446,7 +446,7 @@ class HospitalizationController extends Controller
                         : null,
                     'hospitalization_id' => $hospitalization?->id,
                     'hospitalization_url' => $hospitalization
-                        ? route('react.hospitalizations.show', $hospitalization)
+                        ? route('hospitalizations.show', $hospitalization)
                         : null,
                 ];
             })->values()->all();
@@ -463,8 +463,8 @@ class HospitalizationController extends Controller
             'beds' => $beds,
             'filters' => ['room_id' => (string) $selectedRoomId],
             'urls' => [
-                'current' => route('react.hospitalizations.room-management'),
-                'index' => route('react.hospitalizations.index'),
+                'current' => route('hospitalizations.room-management'),
+                'index' => route('hospitalizations.index'),
             ],
         ]);
     }
@@ -776,7 +776,7 @@ class HospitalizationController extends Controller
             'admission_date' => $this->formatDate($item->created_at),
             'discharged_at' => $this->formatDate($item->discharged_at),
             'is_discharged' => (bool) $item->is_discharged,
-            'urls' => ['show' => route('react.hospitalizations.show', $item)],
+            'urls' => ['show' => route('hospitalizations.show', $item)],
         ])->values()->all();
     }
 
@@ -844,11 +844,11 @@ class HospitalizationController extends Controller
         $user = $request->user();
 
         return [
-            'current' => route('react.hospitalizations.index'),
-            'discharged' => route('react.hospitalizations.discharged'),
-            'report' => route('react.hospitalizations.report'),
+            'current' => route('hospitalizations.index'),
+            'discharged' => route('hospitalizations.discharged'),
+            'report' => route('hospitalizations.report'),
             'room_management' => $user?->can('manageAny', Room::class)
-                ? route('react.hospitalizations.room-management')
+                ? route('hospitalizations.room-management')
                 : null,
         ];
     }

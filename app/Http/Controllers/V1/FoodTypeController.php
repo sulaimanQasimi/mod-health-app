@@ -41,10 +41,10 @@ class FoodTypeController extends Controller
                 'delete-hospitalization-foods',
             ),
             'urls' => [
-                'index' => route('react.food-types.index'),
-                'create' => route('react.food-types.create'),
-                'edit' => url('/react/food-types'),
-                'destroy' => url('/react/food-types'),
+                'index' => route('food-types.index'),
+                'create' => route('food-types.create'),
+                'edit' => url('/food-types'),
+                'destroy' => url('/food-types'),
             ],
         ]);
     }
@@ -69,7 +69,7 @@ class FoodTypeController extends Controller
         FoodType::create($data);
 
         return redirect()
-            ->route('react.food-types.index')
+            ->route('food-types.index')
             ->with('success', localize('global.food_type_created_successfully.'));
     }
 
@@ -97,7 +97,7 @@ class FoodTypeController extends Controller
         $foodType->update($data);
 
         return redirect()
-            ->route('react.food-types.index')
+            ->route('food-types.index')
             ->with('success', localize('global.food_type_updated_successfully'));
     }
 
@@ -108,7 +108,7 @@ class FoodTypeController extends Controller
         $foodType->delete();
 
         return redirect()
-            ->route('react.food-types.index')
+            ->route('food-types.index')
             ->with('success', localize('global.food_type_deleted_successfully.'));
     }
 
@@ -118,10 +118,10 @@ class FoodTypeController extends Controller
     private function formUrls(?FoodType $foodType = null): array
     {
         return [
-            'index' => route('react.food-types.index'),
-            'store' => route('react.food-types.store'),
-            'update' => $foodType ? route('react.food-types.update', $foodType) : '',
-            'back' => route('react.food-types.index'),
+            'index' => route('food-types.index'),
+            'store' => route('food-types.store'),
+            'update' => $foodType ? route('food-types.update', $foodType) : '',
+            'back' => route('food-types.index'),
         ];
     }
 }

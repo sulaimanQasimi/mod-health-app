@@ -76,7 +76,7 @@ const MODAL_BODY_CLASS = 'max-h-[min(72vh,760px)] overflow-y-auto';
 export default function IcuReferralSection({ appointmentId }: IcuReferralSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/icu`;
+    const baseUrl = `/appointments/${appointmentId}/icu`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

@@ -49,7 +49,7 @@ class PhysiotherapyReportController extends Controller
             'byType' => $byType,
             'byPhysiotherapist' => $byPhysiotherapist,
             'urls' => [
-                'current' => route('react.physiotherapy-reports.index'),
+                'current' => route('physiotherapy-reports.index'),
                 'export' => route('physiotherapy-reports.export'),
             ],
         ]);

@@ -136,7 +136,7 @@ trait ManagesAnesthesiaListing
             'time' => $anesthesia->time,
             'status' => $anesthesia->status,
             'urls' => [
-                'show' => route('react.anesthesias.show', $anesthesia),
+                'show' => route('anesthesias.show', $anesthesia),
             ],
         ];
     }
@@ -163,19 +163,19 @@ trait ManagesAnesthesiaListing
     protected function anesthesiaListUrls(): array
     {
         return [
-            'new' => route('react.anesthesias.new'),
-            'approved' => route('react.anesthesias.approved'),
-            'rejected' => route('react.anesthesias.rejected'),
-            'report' => route('react.anesthesias.report'),
+            'new' => route('anesthesias.new'),
+            'approved' => route('anesthesias.approved'),
+            'rejected' => route('anesthesias.rejected'),
+            'report' => route('anesthesias.report'),
         ];
     }
 
     protected function backUrlForAnesthesiaStatus(string $status): string
     {
         return match ($status) {
-            'approved' => route('react.anesthesias.approved'),
-            'rejected' => route('react.anesthesias.rejected'),
-            default => route('react.anesthesias.new'),
+            'approved' => route('anesthesias.approved'),
+            'rejected' => route('anesthesias.rejected'),
+            default => route('anesthesias.new'),
         };
     }
 }

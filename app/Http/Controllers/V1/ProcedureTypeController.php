@@ -42,10 +42,10 @@ class ProcedureTypeController extends Controller
                 'delete-procedure-types',
             ),
             'urls' => [
-                'index' => route('react.procedure-types.index'),
-                'create' => route('react.procedure-types.create'),
-                'edit' => url('/react/procedure-types'),
-                'destroy' => url('/react/procedure-types'),
+                'index' => route('procedure-types.index'),
+                'create' => route('procedure-types.create'),
+                'edit' => url('/procedure-types'),
+                'destroy' => url('/procedure-types'),
             ],
         ]);
     }
@@ -70,7 +70,7 @@ class ProcedureTypeController extends Controller
         ICUProcedureType::create($data);
 
         return redirect()
-            ->route('react.procedure-types.index')
+            ->route('procedure-types.index')
             ->with('success', localize('global.icu_procedure_type_created_successfully.'));
     }
 
@@ -103,7 +103,7 @@ class ProcedureTypeController extends Controller
         $icuProcedureType->update($data);
 
         return redirect()
-            ->route('react.procedure-types.index')
+            ->route('procedure-types.index')
             ->with('success', localize('global.icu_procedure_type_updated_successfully.'));
     }
 
@@ -114,7 +114,7 @@ class ProcedureTypeController extends Controller
         $icuProcedureType->delete();
 
         return redirect()
-            ->route('react.procedure-types.index')
+            ->route('procedure-types.index')
             ->with('success', localize('global.icu_procedure_type_deleted_successfully.'));
     }
 
@@ -124,10 +124,10 @@ class ProcedureTypeController extends Controller
     private function formUrls(?ICUProcedureType $icuProcedureType = null): array
     {
         return [
-            'index' => route('react.procedure-types.index'),
-            'store' => route('react.procedure-types.store'),
-            'update' => $icuProcedureType ? route('react.procedure-types.update', $icuProcedureType) : '',
-            'back' => route('react.procedure-types.index'),
+            'index' => route('procedure-types.index'),
+            'store' => route('procedure-types.store'),
+            'update' => $icuProcedureType ? route('procedure-types.update', $icuProcedureType) : '',
+            'back' => route('procedure-types.index'),
         ];
     }
 }

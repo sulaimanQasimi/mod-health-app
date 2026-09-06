@@ -48,9 +48,9 @@ class ProstheticCatalogController extends Controller
                 'manage' => $this->canManageCatalog(),
             ],
             'urls' => [
-                'current' => route('react.prosthetics.catalog.index'),
-                'create' => route('react.prosthetics.catalog.create'),
-                'edit' => url('/react/prosthetics/catalog'),
+                'current' => route('prosthetics.catalog.index'),
+                'create' => route('prosthetics.catalog.create'),
+                'edit' => url('/prosthetics/catalog'),
             ],
         ]);
     }
@@ -62,8 +62,8 @@ class ProstheticCatalogController extends Controller
 
         return Inertia::render('Prosthetics/Catalog/Create', [
             'urls' => [
-                'index' => route('react.prosthetics.catalog.index'),
-                'store' => route('react.prosthetics.catalog.store'),
+                'index' => route('prosthetics.catalog.index'),
+                'store' => route('prosthetics.catalog.store'),
             ],
         ]);
     }
@@ -95,7 +95,7 @@ class ProstheticCatalogController extends Controller
         ProstheticComponentCatalog::create($data);
 
         return redirect()
-            ->route('react.prosthetics.catalog.index')
+            ->route('prosthetics.catalog.index')
             ->with('success', __('global.success'));
     }
 
@@ -120,8 +120,8 @@ class ProstheticCatalogController extends Controller
                 'is_active' => (bool) $item->is_active,
             ],
             'urls' => [
-                'index' => route('react.prosthetics.catalog.index'),
-                'update' => route('react.prosthetics.catalog.update', $item),
+                'index' => route('prosthetics.catalog.index'),
+                'update' => route('prosthetics.catalog.update', $item),
             ],
         ]);
     }
@@ -152,7 +152,7 @@ class ProstheticCatalogController extends Controller
         $item->update($data);
 
         return redirect()
-            ->route('react.prosthetics.catalog.index')
+            ->route('prosthetics.catalog.index')
             ->with('success', __('global.success'));
     }
 }

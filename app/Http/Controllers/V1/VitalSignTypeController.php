@@ -39,11 +39,11 @@ class VitalSignTypeController extends Controller
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
             'permissions' => $this->vitalSignTypePermissions($request->user()),
             'urls' => [
-                'index' => route('react.vital-sign-types.index'),
-                'create' => route('react.vital-sign-types.create'),
-                'show' => url('/react/vital-sign-types'),
-                'edit' => url('/react/vital-sign-types'),
-                'destroy' => url('/react/vital-sign-types'),
+                'index' => route('vital-sign-types.index'),
+                'create' => route('vital-sign-types.create'),
+                'show' => url('/vital-sign-types'),
+                'edit' => url('/vital-sign-types'),
+                'destroy' => url('/vital-sign-types'),
             ],
         ]);
     }
@@ -67,9 +67,9 @@ class VitalSignTypeController extends Controller
                 'delete' => $request->user()->can('delete', $vitalSignType),
             ],
             'urls' => [
-                'index' => route('react.vital-sign-types.index'),
-                'edit' => route('react.vital-sign-types.edit', $vitalSignType),
-                'destroy' => route('react.vital-sign-types.destroy', $vitalSignType),
+                'index' => route('vital-sign-types.index'),
+                'edit' => route('vital-sign-types.edit', $vitalSignType),
+                'destroy' => route('vital-sign-types.destroy', $vitalSignType),
             ],
         ]);
     }
@@ -94,7 +94,7 @@ class VitalSignTypeController extends Controller
         VitalSignType::create($data);
 
         return redirect()
-            ->route('react.vital-sign-types.index')
+            ->route('vital-sign-types.index')
             ->with('success', localize('global.vital_sign_type_created_successfully'));
     }
 
@@ -127,7 +127,7 @@ class VitalSignTypeController extends Controller
         $vitalSignType->update($data);
 
         return redirect()
-            ->route('react.vital-sign-types.index')
+            ->route('vital-sign-types.index')
             ->with('success', localize('global.vital_sign_type_updated_successfully'));
     }
 
@@ -137,14 +137,14 @@ class VitalSignTypeController extends Controller
 
         if ($vitalSignType->vitalSigns()->exists()) {
             return redirect()
-                ->route('react.vital-sign-types.index')
+                ->route('vital-sign-types.index')
                 ->with('error', 'Cannot delete vital sign type with associated vital signs.');
         }
 
         $vitalSignType->delete();
 
         return redirect()
-            ->route('react.vital-sign-types.index')
+            ->route('vital-sign-types.index')
             ->with('success', localize('global.vital_sign_type_deleted_successfully'));
     }
 
@@ -154,10 +154,10 @@ class VitalSignTypeController extends Controller
     private function formUrls(?VitalSignType $vitalSignType = null): array
     {
         return [
-            'index' => route('react.vital-sign-types.index'),
-            'store' => route('react.vital-sign-types.store'),
-            'update' => $vitalSignType ? route('react.vital-sign-types.update', $vitalSignType) : '',
-            'back' => route('react.vital-sign-types.index'),
+            'index' => route('vital-sign-types.index'),
+            'store' => route('vital-sign-types.store'),
+            'update' => $vitalSignType ? route('vital-sign-types.update', $vitalSignType) : '',
+            'back' => route('vital-sign-types.index'),
         ];
     }
 

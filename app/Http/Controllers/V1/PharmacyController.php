@@ -57,12 +57,12 @@ class PharmacyController extends Controller
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
             'permissions' => $this->pharmacyPermissions($request->user()),
             'urls' => [
-                'index' => route('react.pharmacies.index'),
-                'create' => route('react.pharmacies.create'),
-                'show' => url('/react/pharmacies'),
-                'edit' => url('/react/pharmacies'),
-                'manageUsers' => url('/react/pharmacies'),
-                'destroy' => url('/react/pharmacies'),
+                'index' => route('pharmacies.index'),
+                'create' => route('pharmacies.create'),
+                'show' => url('/pharmacies'),
+                'edit' => url('/pharmacies'),
+                'manageUsers' => url('/pharmacies'),
+                'destroy' => url('/pharmacies'),
             ],
         ]);
     }
@@ -94,7 +94,7 @@ class PharmacyController extends Controller
         });
 
         return redirect()
-            ->route('react.pharmacies.index')
+            ->route('pharmacies.index')
             ->with('success', localize('global.pharmacy_created_successfully.'));
     }
 
@@ -141,10 +141,10 @@ class PharmacyController extends Controller
                 'manage_users' => $request->user()->can('manageUsers', $pharmacy),
             ],
             'urls' => [
-                'index' => route('react.pharmacies.index'),
-                'edit' => route('react.pharmacies.edit', $pharmacy),
-                'destroy' => route('react.pharmacies.destroy', $pharmacy),
-                'manageUsers' => route('react.pharmacies.manage-users', $pharmacy),
+                'index' => route('pharmacies.index'),
+                'edit' => route('pharmacies.edit', $pharmacy),
+                'destroy' => route('pharmacies.destroy', $pharmacy),
+                'manageUsers' => route('pharmacies.manage-users', $pharmacy),
             ],
         ]);
     }
@@ -189,7 +189,7 @@ class PharmacyController extends Controller
         });
 
         return redirect()
-            ->route('react.pharmacies.index')
+            ->route('pharmacies.index')
             ->with('success', localize('global.pharmacy_updated_successfully.'));
     }
 
@@ -200,7 +200,7 @@ class PharmacyController extends Controller
         $pharmacy->delete();
 
         return redirect()
-            ->route('react.pharmacies.index')
+            ->route('pharmacies.index')
             ->with('success', localize('global.pharmacy_deleted_successfully.'));
     }
 
@@ -236,11 +236,11 @@ class PharmacyController extends Controller
                 ->all(),
             'roles' => self::PHARMACY_ROLES,
             'urls' => [
-                'show' => route('react.pharmacies.show', $pharmacy),
-                'index' => route('react.pharmacies.index'),
-                'addUser' => route('react.pharmacies.users.store', $pharmacy),
-                'removeUser' => route('react.pharmacies.users.remove', $pharmacy),
-                'updateUser' => url("/react/pharmacies/{$pharmacy->id}/users"),
+                'show' => route('pharmacies.show', $pharmacy),
+                'index' => route('pharmacies.index'),
+                'addUser' => route('pharmacies.users.store', $pharmacy),
+                'removeUser' => route('pharmacies.users.remove', $pharmacy),
+                'updateUser' => url("/pharmacies/{$pharmacy->id}/users"),
             ],
         ]);
     }
@@ -345,10 +345,10 @@ class PharmacyController extends Controller
     private function formUrls(?Pharmacy $pharmacy = null): array
     {
         return [
-            'index' => route('react.pharmacies.index'),
-            'store' => route('react.pharmacies.store'),
-            'update' => $pharmacy ? route('react.pharmacies.update', $pharmacy) : '',
-            'back' => route('react.pharmacies.index'),
+            'index' => route('pharmacies.index'),
+            'store' => route('pharmacies.store'),
+            'update' => $pharmacy ? route('pharmacies.update', $pharmacy) : '',
+            'back' => route('pharmacies.index'),
         ];
     }
 

@@ -7,7 +7,7 @@ interface OperationSectionProps {
 export default function OperationSection({ appointmentId }: OperationSectionProps) {
     return (
         <OperationReferralSection
-            baseUrl={`/react/appointments/${appointmentId}/operations`}
+            baseUrl={`/appointments/${appointmentId}/operations`}
             accordionId={`operations-${appointmentId}`}
         />
     );

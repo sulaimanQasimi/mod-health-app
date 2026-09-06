@@ -51,9 +51,9 @@ class PermissionController extends Controller
                 'delete' => false,
             ],
             'urls' => [
-                'index' => route('react.permissions.index'),
-                'create' => route('react.permissions.create'),
-                'edit' => url('/react/permissions'),
+                'index' => route('permissions.index'),
+                'create' => route('permissions.create'),
+                'edit' => url('/permissions'),
             ],
         ]);
     }
@@ -80,7 +80,7 @@ class PermissionController extends Controller
         ]);
 
         return redirect()
-            ->route('react.permissions.index')
+            ->route('permissions.index')
             ->with('success', localize('global.permission_create_success'));
     }
 
@@ -122,7 +122,7 @@ class PermissionController extends Controller
         ]);
 
         return redirect()
-            ->route('react.permissions.index')
+            ->route('permissions.index')
             ->with('success', localize('global.permission_update_success'));
     }
 
@@ -155,10 +155,10 @@ class PermissionController extends Controller
     private function formUrls(?Permission $permission = null): array
     {
         return [
-            'index' => route('react.permissions.index'),
-            'store' => route('react.permissions.store'),
-            'update' => $permission ? route('react.permissions.update', $permission) : '',
-            'back' => route('react.permissions.index'),
+            'index' => route('permissions.index'),
+            'store' => route('permissions.store'),
+            'update' => $permission ? route('permissions.update', $permission) : '',
+            'back' => route('permissions.index'),
         ];
     }
 

@@ -70,9 +70,9 @@ class ProstheticCaseController extends Controller
             'filters' => array_merge(['q' => '', 'status' => ''], $request->only(['q', 'status'])),
             'statusOptions' => ProstheticCase::statusList(),
             'urls' => [
-                'current' => route('react.prosthetics.cases.index'),
-                'create' => route('react.prosthetics.cases.create'),
-                'show' => url('/react/prosthetics/cases'),
+                'current' => route('prosthetics.cases.index'),
+                'create' => route('prosthetics.cases.create'),
+                'show' => url('/prosthetics/cases'),
             ],
         ]);
     }
@@ -100,8 +100,8 @@ class ProstheticCaseController extends Controller
             'prefill' => $prefill,
             'formOptions' => $this->caseFormOptions(),
             'urls' => [
-                'index' => route('react.prosthetics.cases.index'),
-                'store' => route('react.prosthetics.cases.store'),
+                'index' => route('prosthetics.cases.index'),
+                'store' => route('prosthetics.cases.store'),
             ],
         ]);
     }
@@ -139,7 +139,7 @@ class ProstheticCaseController extends Controller
         $case->save();
 
         return redirect()
-            ->route('react.prosthetics.cases.show', $case)
+            ->route('prosthetics.cases.show', $case)
             ->with('success', __('global.success'));
     }
 
@@ -435,27 +435,27 @@ class ProstheticCaseController extends Controller
     private function caseUrls(ProstheticCase $case, $activeWorkOrder): array
     {
         $urls = [
-            'index' => route('react.prosthetics.cases.index'),
+            'index' => route('prosthetics.cases.index'),
             'print' => route('prosthetics.cases.print', $case),
-            'assessment' => route('react.prosthetics.cases.assessment', $case),
-            'measurements' => route('react.prosthetics.cases.measurements', $case),
-            'measurements_lock' => route('react.prosthetics.cases.measurements.lock', $case),
-            'prescription' => route('react.prosthetics.cases.prescription', $case),
-            'estimate' => route('react.prosthetics.cases.estimate', $case),
-            'submit_approval' => route('react.prosthetics.cases.submit_approval', $case),
-            'approve' => route('react.prosthetics.cases.approve', $case),
-            'work_order' => route('react.prosthetics.cases.work_order', $case),
-            'issue_stock' => route('react.prosthetics.cases.issue_stock', $case),
-            'fitting' => route('react.prosthetics.cases.fitting', $case),
-            'delivery' => route('react.prosthetics.cases.delivery', $case),
-            'follow_up' => route('react.prosthetics.cases.follow_up', $case),
-            'close' => route('react.prosthetics.cases.close', $case),
-            'attachments_upload' => route('react.prosthetics.cases.attachments.upload', $case),
-            'attachment_delete' => url('/react/prosthetics/attachments'),
+            'assessment' => route('prosthetics.cases.assessment', $case),
+            'measurements' => route('prosthetics.cases.measurements', $case),
+            'measurements_lock' => route('prosthetics.cases.measurements.lock', $case),
+            'prescription' => route('prosthetics.cases.prescription', $case),
+            'estimate' => route('prosthetics.cases.estimate', $case),
+            'submit_approval' => route('prosthetics.cases.submit_approval', $case),
+            'approve' => route('prosthetics.cases.approve', $case),
+            'work_order' => route('prosthetics.cases.work_order', $case),
+            'issue_stock' => route('prosthetics.cases.issue_stock', $case),
+            'fitting' => route('prosthetics.cases.fitting', $case),
+            'delivery' => route('prosthetics.cases.delivery', $case),
+            'follow_up' => route('prosthetics.cases.follow_up', $case),
+            'close' => route('prosthetics.cases.close', $case),
+            'attachments_upload' => route('prosthetics.cases.attachments.upload', $case),
+            'attachment_delete' => url('/prosthetics/attachments'),
         ];
 
         if ($activeWorkOrder) {
-            $urls['work_order_update'] = route('react.prosthetics.work_orders.update', $activeWorkOrder);
+            $urls['work_order_update'] = route('prosthetics.work_orders.update', $activeWorkOrder);
         }
 
         return $urls;

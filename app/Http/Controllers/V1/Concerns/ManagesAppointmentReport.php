@@ -318,7 +318,7 @@ trait ManagesAppointmentReport
             'date' => $this->formatAppointmentReportDate($appointment->date),
             'time' => $appointment->time,
             'urls' => [
-                'show' => route('react.appointments.show', $appointment),
+                'show' => route('appointments.show', $appointment),
             ],
         ];
     }

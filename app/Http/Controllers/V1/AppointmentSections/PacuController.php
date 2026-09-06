@@ -122,7 +122,7 @@ class PacuController extends Controller
             'status' => $pacu->status,
             'created_at' => $this->formatDate($pacu->created_at),
             'urls' => [
-                'show' => route('react.pacus.show', $pacu),
+                'show' => route('pacus.show', $pacu),
             ],
         ];
     }

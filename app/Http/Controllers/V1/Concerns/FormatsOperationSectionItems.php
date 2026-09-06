@@ -23,7 +23,7 @@ trait FormatsOperationSectionItems
                 'is_operation_done' => (bool) $item->is_operation_done,
                 'is_reserved' => (bool) $item->is_reserved,
                 'urls' => [
-                    'show' => route('react.operations.show', $item),
+                    'show' => route('operations.show', $item),
                 ],
             ])
             ->values()

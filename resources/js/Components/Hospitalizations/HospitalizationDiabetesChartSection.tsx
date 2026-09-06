@@ -231,7 +231,7 @@ export default function HospitalizationDiabetesChartSection({
 }: HospitalizationDiabetesChartSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = baseUrlProp ?? `/react/hospitalizations/${hospitalizationId}/diabetes-charts`;
+    const baseUrl = baseUrlProp ?? `/hospitalizations/${hospitalizationId}/diabetes-charts`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

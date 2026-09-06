@@ -76,7 +76,7 @@ export default function IcuProcedureSection({
 }: IcuProcedureSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/icus/${icuId}/procedures`;
+    const baseUrl = `/icus/${icuId}/procedures`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

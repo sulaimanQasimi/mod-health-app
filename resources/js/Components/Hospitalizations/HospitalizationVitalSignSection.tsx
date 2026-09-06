@@ -126,7 +126,7 @@ export default function HospitalizationVitalSignSection({
 }: HospitalizationVitalSignSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = baseUrlProp ?? `/react/hospitalizations/${hospitalizationId}/vital-signs`;
+    const baseUrl = baseUrlProp ?? `/hospitalizations/${hospitalizationId}/vital-signs`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

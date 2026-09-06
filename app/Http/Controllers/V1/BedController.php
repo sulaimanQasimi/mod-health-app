@@ -56,10 +56,10 @@ class BedController extends Controller
                 'delete-beds',
             ),
             'urls' => [
-                'index' => route('react.beds.index'),
-                'create' => route('react.beds.create'),
-                'edit' => url('/react/beds'),
-                'destroy' => url('/react/beds'),
+                'index' => route('beds.index'),
+                'create' => route('beds.create'),
+                'edit' => url('/beds'),
+                'destroy' => url('/beds'),
             ],
         ]);
     }
@@ -91,7 +91,7 @@ class BedController extends Controller
         Bed::create($data);
 
         return redirect()
-            ->route('react.beds.index')
+            ->route('beds.index')
             ->with('success', localize('global.bed_created_successfully.'));
     }
 
@@ -128,7 +128,7 @@ class BedController extends Controller
         $bed->update($data);
 
         return redirect()
-            ->route('react.beds.index')
+            ->route('beds.index')
             ->with('success', localize('global.bed_updated_successfully.'));
     }
 
@@ -139,7 +139,7 @@ class BedController extends Controller
         $bed->delete();
 
         return redirect()
-            ->route('react.beds.index')
+            ->route('beds.index')
             ->with('success', localize('global.bed_deleted_successfully.'));
     }
 
@@ -149,10 +149,10 @@ class BedController extends Controller
     private function formUrls(?Bed $bed = null): array
     {
         return [
-            'index' => route('react.beds.index'),
-            'store' => route('react.beds.store'),
-            'update' => $bed ? route('react.beds.update', $bed) : '',
-            'back' => route('react.beds.index'),
+            'index' => route('beds.index'),
+            'store' => route('beds.store'),
+            'update' => $bed ? route('beds.update', $bed) : '',
+            'back' => route('beds.index'),
         ];
     }
 }

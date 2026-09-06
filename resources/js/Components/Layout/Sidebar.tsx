@@ -309,7 +309,7 @@ export default function Sidebar({
                 )}
             >
                 <Link
-                    href="/react"
+                    href="/"
                     className={mergeClasses(
                         'app-brand-link flex min-w-0 items-center',
                         effectiveCollapsed ? 'justify-center' : 'flex-1 pe-6',

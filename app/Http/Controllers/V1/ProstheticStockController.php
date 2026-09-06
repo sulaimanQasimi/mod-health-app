@@ -79,8 +79,8 @@ class ProstheticStockController extends Controller
                 'manage' => $this->canManageStock(),
             ],
             'urls' => [
-                'current' => route('react.prosthetics.stock.index'),
-                'receive' => route('react.prosthetics.stock.receive'),
+                'current' => route('prosthetics.stock.index'),
+                'receive' => route('prosthetics.stock.receive'),
             ],
         ]);
     }

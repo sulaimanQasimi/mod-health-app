@@ -266,7 +266,7 @@ const NumberOfPatientTestRegistrations: React.FC<NumberOfPatientTestRegistration
             department_id: departmentId,
         });
 
-        get(`/react/api/reports/general/patient-test-registrations?${params.toString()}`)
+        get(`/api/reports/general/patient-test-registrations?${params.toString()}`)
             .then((response) => {
                 const payload = response as {
                     data?: TestRegistrationApiRow[];

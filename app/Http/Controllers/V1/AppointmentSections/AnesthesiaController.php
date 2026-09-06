@@ -42,8 +42,8 @@ class AnesthesiaController extends Controller
                 'status' => $item->status,
                 'date' => $item->date ? verta($item->date)->format('Y-m-d') : null,
                 'urls' => [
-                    'show' => route('react.anesthesias.show', $item),
-                    'edit' => route('react.anesthesias.edit', $item),
+                    'show' => route('anesthesias.show', $item),
+                    'edit' => route('anesthesias.edit', $item),
                 ],
             ])
             ->values()

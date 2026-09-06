@@ -19,7 +19,6 @@
     <!-- Webcam JS -->
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/webcamjs/webcam.min.js') }}"></script>
-    @vite('resources/js/app.js')
     <style>
         @font-face {
             font-family: "persian_font";

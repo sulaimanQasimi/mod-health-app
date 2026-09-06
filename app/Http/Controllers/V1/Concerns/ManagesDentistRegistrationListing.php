@@ -278,9 +278,9 @@ trait ManagesDentistRegistrationListing
             'implant_length' => $implant['implant_length'] ?? null,
             'implant_status' => $implant['implant_status'] ?? null,
             'implant_notes' => $implant['implant_notes'] ?? null,
-            'edit_url' => route('react.dental-charts.edit', $chart->id),
-            'update_url' => route('react.dental-charts.update', $chart->id),
-            'destroy_url' => route('react.dental-charts.destroy', $chart->id),
+            'edit_url' => route('dental-charts.edit', $chart->id),
+            'update_url' => route('dental-charts.update', $chart->id),
+            'destroy_url' => route('dental-charts.destroy', $chart->id),
         ];
     }
 

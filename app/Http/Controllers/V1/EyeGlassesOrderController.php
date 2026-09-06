@@ -85,7 +85,7 @@ class EyeGlassesOrderController extends Controller
                 'delete' => $request->user()->can('delete-ophthalmology-registrations'),
             ],
             'urls' => [
-                'current' => route('react.eye-glasses-orders.index'),
+                'current' => route('eye-glasses-orders.index'),
             ],
         ]);
     }
@@ -106,20 +106,20 @@ class EyeGlassesOrderController extends Controller
             ],
             'permissions' => $this->actionPermissions($request, $eyeGlassesOrder),
             'urls' => [
-                'update' => route('react.eye-glasses-orders.update', $eyeGlassesOrder),
-                'process' => route('react.eye-glasses-orders.process', $eyeGlassesOrder),
-                'payment' => route('react.eye-glasses-orders.payment', $eyeGlassesOrder),
-                'deliver' => route('react.eye-glasses-orders.deliver', $eyeGlassesOrder),
-                'cancel' => route('react.eye-glasses-orders.cancel', $eyeGlassesOrder),
-                'destroy' => route('react.eye-glasses-orders.destroy', $eyeGlassesOrder),
-                'print' => route('react.eye-glasses-orders.print', $eyeGlassesOrder),
-                'appointment' => route('react.appointments.show', $eyeGlassesOrder->appointment_id),
-                'index' => route('react.eye-glasses-orders.index'),
+                'update' => route('eye-glasses-orders.update', $eyeGlassesOrder),
+                'process' => route('eye-glasses-orders.process', $eyeGlassesOrder),
+                'payment' => route('eye-glasses-orders.payment', $eyeGlassesOrder),
+                'deliver' => route('eye-glasses-orders.deliver', $eyeGlassesOrder),
+                'cancel' => route('eye-glasses-orders.cancel', $eyeGlassesOrder),
+                'destroy' => route('eye-glasses-orders.destroy', $eyeGlassesOrder),
+                'print' => route('eye-glasses-orders.print', $eyeGlassesOrder),
+                'appointment' => route('appointments.show', $eyeGlassesOrder->appointment_id),
+                'index' => route('eye-glasses-orders.index'),
                 'patient' => $eyeGlassesOrder->appointment?->patient_id
-                    ? route('react.patients.show', $eyeGlassesOrder->appointment->patient_id)
+                    ? route('patients.show', $eyeGlassesOrder->appointment->patient_id)
                     : null,
                 'ophthalmology' => $eyeGlassesOrder->ophthalmology_registration_id
-                    ? route('react.ophthalmology-registrations.show', $eyeGlassesOrder->ophthalmology_registration_id)
+                    ? route('ophthalmology-registrations.show', $eyeGlassesOrder->ophthalmology_registration_id)
                     : null,
             ],
         ]);
@@ -168,7 +168,7 @@ class EyeGlassesOrderController extends Controller
         $eyeGlassesOrder->update($validated);
 
         return redirect()
-            ->route('react.eye-glasses-orders.show', $eyeGlassesOrder)
+            ->route('eye-glasses-orders.show', $eyeGlassesOrder)
             ->with('success', localize('global.eye_glasses_order_updated_successfully'));
     }
 
@@ -195,7 +195,7 @@ class EyeGlassesOrderController extends Controller
         ]);
 
         return redirect()
-            ->route('react.eye-glasses-orders.show', $eyeGlassesOrder)
+            ->route('eye-glasses-orders.show', $eyeGlassesOrder)
             ->with('success', localize('global.eye_glasses_order_processed_successfully'));
     }
 
@@ -228,7 +228,7 @@ class EyeGlassesOrderController extends Controller
         ]);
 
         return redirect()
-            ->route('react.eye-glasses-orders.show', $eyeGlassesOrder)
+            ->route('eye-glasses-orders.show', $eyeGlassesOrder)
             ->with('success', localize('global.eye_glasses_payment_recorded_successfully'));
     }
 
@@ -257,7 +257,7 @@ class EyeGlassesOrderController extends Controller
         ]);
 
         return redirect()
-            ->route('react.eye-glasses-orders.show', $eyeGlassesOrder)
+            ->route('eye-glasses-orders.show', $eyeGlassesOrder)
             ->with('success', localize('global.eye_glasses_order_delivered_successfully'));
     }
 
@@ -284,7 +284,7 @@ class EyeGlassesOrderController extends Controller
         ]);
 
         return redirect()
-            ->route('react.eye-glasses-orders.show', $eyeGlassesOrder)
+            ->route('eye-glasses-orders.show', $eyeGlassesOrder)
             ->with('success', localize('global.eye_glasses_order_cancelled_successfully'));
     }
 
@@ -296,7 +296,7 @@ class EyeGlassesOrderController extends Controller
         $eyeGlassesOrder->delete();
 
         return redirect()
-            ->route('react.eye-glasses-orders.index')
+            ->route('eye-glasses-orders.index')
             ->with('success', localize('global.eye_glasses_order_deleted_successfully'));
     }
 
@@ -313,8 +313,8 @@ class EyeGlassesOrderController extends Controller
             'frame_type' => $item->frame_type,
             'lens_type' => $item->lens_type,
             'amount' => $item->amount,
-            'show_url' => route('react.eye-glasses-orders.show', $item),
-            'delete_url' => route('react.eye-glasses-orders.destroy', $item),
+            'show_url' => route('eye-glasses-orders.show', $item),
+            'delete_url' => route('eye-glasses-orders.destroy', $item),
         ];
     }
 

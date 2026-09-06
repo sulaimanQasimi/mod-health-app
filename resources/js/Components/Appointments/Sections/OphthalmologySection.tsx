@@ -39,7 +39,7 @@ const STATUS_COLORS: Record<string, 'warning' | 'info' | 'success' | 'failure'> 
 export default function OphthalmologySection({ appointmentId }: Props) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/ophthalmology`;
+    const baseUrl = `/appointments/${appointmentId}/ophthalmology`;
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [open, setOpen] = useState(false);

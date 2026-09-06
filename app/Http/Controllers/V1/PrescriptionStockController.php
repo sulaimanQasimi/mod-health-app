@@ -87,8 +87,8 @@ class PrescriptionStockController extends Controller
                     || $this->isPharmacyAdmin($request->user()),
             ],
             'urls' => [
-                'index' => route('react.prescription-stocks.index'),
-                'createIncome' => route('react.incomes.create'),
+                'index' => route('prescription-stocks.index'),
+                'createIncome' => route('incomes.create'),
             ],
         ]);
     }

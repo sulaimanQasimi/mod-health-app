@@ -53,10 +53,10 @@ class RoleController extends Controller
                 'edit-roles',
             ),
             'urls' => [
-                'index' => route('react.roles.index'),
-                'create' => route('react.roles.create'),
-                'edit' => url('/react/roles'),
-                'destroy' => url('/react/roles'),
+                'index' => route('roles.index'),
+                'create' => route('roles.create'),
+                'edit' => url('/roles'),
+                'destroy' => url('/roles'),
             ],
         ]);
     }
@@ -87,7 +87,7 @@ class RoleController extends Controller
         $role->syncPermissionIds($data['permission']);
 
         return redirect()
-            ->route('react.roles.index')
+            ->route('roles.index')
             ->with('success', localize('global.role_create_success'));
     }
 
@@ -119,7 +119,7 @@ class RoleController extends Controller
         $role->syncPermissionIds($data['permission']);
 
         return redirect()
-            ->route('react.roles.index')
+            ->route('roles.index')
             ->with('success', localize('global.role_update_success'));
     }
 
@@ -130,7 +130,7 @@ class RoleController extends Controller
         $role->delete();
 
         return redirect()
-            ->route('react.roles.index')
+            ->route('roles.index')
             ->with('success', localize('global.role_delete_success'));
     }
 
@@ -150,10 +150,10 @@ class RoleController extends Controller
     private function formUrls(?Role $role = null): array
     {
         return [
-            'index' => route('react.roles.index'),
-            'store' => route('react.roles.store'),
-            'update' => $role ? route('react.roles.update', $role) : '',
-            'back' => route('react.roles.index'),
+            'index' => route('roles.index'),
+            'store' => route('roles.store'),
+            'update' => $role ? route('roles.update', $role) : '',
+            'back' => route('roles.index'),
         ];
     }
 

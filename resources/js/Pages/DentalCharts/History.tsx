@@ -123,7 +123,7 @@ export default function HistoryDentalCharts({
                                         <TableActionsCell>
                                             <TableActionButton
                                                 kind="edit"
-                                                href={`/react/dental-charts/entry/${chart.id}/edit`}
+                                                href={`/dental-charts/entry/${chart.id}/edit`}
                                             />
                                         </TableActionsCell>
                                     </TableRow>

@@ -146,14 +146,14 @@ class AppointmentController extends Controller
             ],
             'permissions' => $this->appointmentPermissions($user),
             'urls' => [
-                'index' => route('react.appointments.index'),
-                'trashed' => route('react.appointments.trashed'),
-                'show' => url('/react/appointments'),
-                'edit' => url('/react/appointments'),
-                'destroy' => url('/react/appointments'),
+                'index' => route('appointments.index'),
+                'trashed' => route('appointments.trashed'),
+                'show' => url('/appointments'),
+                'edit' => url('/appointments'),
+                'destroy' => url('/appointments'),
                 'patientHistory' => url('/patients/history'),
-                'patientsIndex' => route('react.patients.index'),
-                'patientsCreate' => route('react.patients.create'),
+                'patientsIndex' => route('patients.index'),
+                'patientsCreate' => route('patients.create'),
             ],
         ]);
     }
@@ -224,14 +224,14 @@ class AppointmentController extends Controller
                 'operations' => $request->user()->can('show-operations-menu'),
             ],
             'formData' => [
-                'doctorsByDepartment' => url('/react/patients/doctors-by-department'),
+                'doctorsByDepartment' => url('/patients/doctors-by-department'),
             ],
             'urls' => [
-                'index' => route('react.appointments.index'),
-                'edit' => route('react.appointments.edit', $appointment),
+                'index' => route('appointments.index'),
+                'edit' => route('appointments.edit', $appointment),
                 'printToken' => url("/appointments/{$appointment->id}/printToken"),
-                'complete' => route('react.appointments.complete', $appointment),
-                'assignDoctor' => route('react.appointments.assign-doctor', $appointment),
+                'complete' => route('appointments.complete', $appointment),
+                'assignDoctor' => route('appointments.assign-doctor', $appointment),
                 'legacyShow' => url("/appointments/show/{$appointment->id}"),
             ],
         ]);
@@ -295,7 +295,7 @@ class AppointmentController extends Controller
         ]);
 
         return redirect()
-            ->route('react.appointments.completed')
+            ->route('appointments.completed')
             ->with('success', localize('global.appointment_updated_successfully.'));
     }
 
@@ -315,16 +315,16 @@ class AppointmentController extends Controller
             'appointment' => $this->transformAppointmentForForm($appointment),
             'formData' => [
                 'clinicType' => $user->clinic_type,
-                'doctorsByDepartment' => url('/react/patients/doctors-by-department'),
+                'doctorsByDepartment' => url('/patients/doctors-by-department'),
             ],
             'permissions' => [
                 'delete' => $user->can('delete', $appointment),
             ],
             'urls' => [
-                'index' => route('react.appointments.index'),
-                'update' => route('react.appointments.update', $appointment),
-                'destroy' => route('react.appointments.destroy', $appointment),
-                'show' => route('react.appointments.show', $appointment),
+                'index' => route('appointments.index'),
+                'update' => route('appointments.update', $appointment),
+                'destroy' => route('appointments.destroy', $appointment),
+                'show' => route('appointments.show', $appointment),
             ],
         ]);
     }
@@ -376,7 +376,7 @@ class AppointmentController extends Controller
         $appointment->update($validatedData);
 
         return redirect()
-            ->route('react.appointments.index')
+            ->route('appointments.index')
             ->with('success', localize('global.appointment_updated_successfully'));
     }
 
@@ -387,7 +387,7 @@ class AppointmentController extends Controller
         $appointment->delete();
 
         return redirect()
-            ->route('react.appointments.index')
+            ->route('appointments.index')
             ->with('success', localize('global.appointment_deleted_successfully'));
     }
 
@@ -450,9 +450,9 @@ class AppointmentController extends Controller
             ],
             'permissions' => $this->appointmentPermissions($user),
             'urls' => [
-                'index' => route('react.appointments.index'),
-                'trashed' => route('react.appointments.trashed'),
-                'restore' => url('/react/appointments'),
+                'index' => route('appointments.index'),
+                'trashed' => route('appointments.trashed'),
+                'restore' => url('/appointments'),
             ],
         ]);
     }
@@ -466,7 +466,7 @@ class AppointmentController extends Controller
         $appointment->restore();
 
         return redirect()
-            ->route('react.appointments.trashed')
+            ->route('appointments.trashed')
             ->with('success', localize('global.appointment_restored_successfully'));
     }
 
@@ -596,8 +596,8 @@ class AppointmentController extends Controller
                 'departments' => $this->departmentsForUser($user),
             ],
             'urls' => [
-                'current' => route('react.appointments.department-report'),
-                'index' => route('react.appointments.index'),
+                'current' => route('appointments.department-report'),
+                'index' => route('appointments.index'),
             ],
         ]);
     }
@@ -823,8 +823,8 @@ class AppointmentController extends Controller
                     ->get(['id', 'name']),
             ],
             'urls' => [
-                'current' => route('react.appointments.report'),
-                'index' => route('react.appointments.index'),
+                'current' => route('appointments.report'),
+                'index' => route('appointments.index'),
                 'export' => route('appointments.export-report'),
             ],
         ]);
@@ -1003,13 +1003,13 @@ class AppointmentController extends Controller
     private function myVisitUrls(): array
     {
         return [
-            'department' => route('react.appointments.department'),
-            'doctor' => route('react.appointments.doctor'),
-            'completed' => route('react.appointments.completed'),
-            'show' => url('/react/appointments'),
+            'department' => route('appointments.department'),
+            'doctor' => route('appointments.doctor'),
+            'completed' => route('appointments.completed'),
+            'show' => url('/appointments'),
             'patientHistory' => url('/patients/history'),
-            'accept' => url('/react/appointments'),
-            'changeDepartment' => url('/react/appointments'),
+            'accept' => url('/appointments'),
+            'changeDepartment' => url('/appointments'),
         ];
     }
 

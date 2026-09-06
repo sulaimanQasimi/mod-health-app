@@ -56,10 +56,10 @@ class RecipientPartController extends Controller
                 'delete-recipient-parts',
             ),
             'urls' => [
-                'index' => route('react.recipient-parts.index'),
-                'create' => route('react.recipient-parts.create'),
-                'edit' => url('/react/recipient-parts'),
-                'destroy' => url('/react/recipient-parts'),
+                'index' => route('recipient-parts.index'),
+                'create' => route('recipient-parts.create'),
+                'edit' => url('/recipient-parts'),
+                'destroy' => url('/recipient-parts'),
             ],
         ]);
     }
@@ -81,7 +81,7 @@ class RecipientPartController extends Controller
         RecipientPart::create($this->validateRecipientPart($request));
 
         return redirect()
-            ->route('react.recipient-parts.index')
+            ->route('recipient-parts.index')
             ->with('success', localize('global.recipient_part_created_successfully.'));
     }
 
@@ -108,7 +108,7 @@ class RecipientPartController extends Controller
         $recipientPart->update($this->validateRecipientPart($request, $recipientPart));
 
         return redirect()
-            ->route('react.recipient-parts.index')
+            ->route('recipient-parts.index')
             ->with('success', localize('global.recipient_part_updated_successfully.'));
     }
 
@@ -119,7 +119,7 @@ class RecipientPartController extends Controller
         $recipientPart->delete();
 
         return redirect()
-            ->route('react.recipient-parts.index')
+            ->route('recipient-parts.index')
             ->with('success', localize('global.recipient_part_deleted_successfully.'));
     }
 
@@ -139,10 +139,10 @@ class RecipientPartController extends Controller
     private function formUrls(?RecipientPart $recipientPart = null): array
     {
         return [
-            'index' => route('react.recipient-parts.index'),
-            'store' => route('react.recipient-parts.store'),
-            'update' => $recipientPart ? route('react.recipient-parts.update', $recipientPart) : '',
-            'back' => route('react.recipient-parts.index'),
+            'index' => route('recipient-parts.index'),
+            'store' => route('recipient-parts.store'),
+            'update' => $recipientPart ? route('recipient-parts.update', $recipientPart) : '',
+            'back' => route('recipient-parts.index'),
         ];
     }
 

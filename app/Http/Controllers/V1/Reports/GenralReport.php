@@ -39,7 +39,7 @@ class GenralReport extends Controller
                 'branches' => $branches,
             ],
             'urls' => [
-                'current' => route('react.reports.general.index'),
+                'current' => route('reports.general.index'),
             ],
         ]);
     }

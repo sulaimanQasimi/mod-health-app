@@ -70,8 +70,8 @@ class ActivityLogController extends Controller
                 'subjectTypes' => $subjectTypes,
             ],
             'urls' => [
-                'index' => route('react.activity-logs.index'),
-                'show' => url('/react/activity-logs'),
+                'index' => route('activity-logs.index'),
+                'show' => url('/activity-logs'),
             ],
         ]);
     }
@@ -85,7 +85,7 @@ class ActivityLogController extends Controller
         return Inertia::render('ActivityLogs/Show', [
             'activity' => $this->transformActivity($activity, detailed: true),
             'urls' => [
-                'index' => route('react.activity-logs.index'),
+                'index' => route('activity-logs.index'),
             ],
         ]);
     }

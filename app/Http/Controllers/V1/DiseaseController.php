@@ -60,13 +60,13 @@ class DiseaseController extends Controller
                 'delete-diseases',
             ),
             'urls' => [
-                'index' => route('react.diseases.index'),
-                'create' => route('react.diseases.create'),
-                'edit' => url('/react/diseases'),
-                'destroy' => url('/react/diseases'),
-                'storeCategory' => route('react.diseases.categories.store'),
-                'updateCategory' => url('/react/diseases/categories'),
-                'destroyCategory' => url('/react/diseases/categories'),
+                'index' => route('diseases.index'),
+                'create' => route('diseases.create'),
+                'edit' => url('/diseases'),
+                'destroy' => url('/diseases'),
+                'storeCategory' => route('diseases.categories.store'),
+                'updateCategory' => url('/diseases/categories'),
+                'destroyCategory' => url('/diseases/categories'),
             ],
         ]);
     }
@@ -88,7 +88,7 @@ class DiseaseController extends Controller
         Disease::create($this->validateDisease($request));
 
         return redirect()
-            ->route('react.diseases.index')
+            ->route('diseases.index')
             ->with('success', localize('global.disease_created_successfully.'));
     }
 
@@ -118,7 +118,7 @@ class DiseaseController extends Controller
         $disease->update($this->validateDisease($request, $disease->id));
 
         return redirect()
-            ->route('react.diseases.index')
+            ->route('diseases.index')
             ->with('success', localize('global.disease_updated_successfully.'));
     }
 
@@ -129,7 +129,7 @@ class DiseaseController extends Controller
         $disease->delete();
 
         return redirect()
-            ->route('react.diseases.index')
+            ->route('diseases.index')
             ->with('success', localize('global.disease_deleted_successfully.'));
     }
 
@@ -144,7 +144,7 @@ class DiseaseController extends Controller
         DiseaseCategory::create($data);
 
         return redirect()
-            ->route('react.diseases.index')
+            ->route('diseases.index')
             ->with('success', localize('global.disease_category_created_successfully.'));
     }
 
@@ -164,7 +164,7 @@ class DiseaseController extends Controller
         $diseaseCategory->update($data);
 
         return redirect()
-            ->route('react.diseases.index')
+            ->route('diseases.index')
             ->with('success', localize('global.disease_category_updated_successfully.'));
     }
 
@@ -174,14 +174,14 @@ class DiseaseController extends Controller
 
         if ($diseaseCategory->diseases()->exists()) {
             return redirect()
-                ->route('react.diseases.index')
+                ->route('diseases.index')
                 ->with('error', localize('global.disease_category_has_diseases.'));
         }
 
         $diseaseCategory->delete();
 
         return redirect()
-            ->route('react.diseases.index')
+            ->route('diseases.index')
             ->with('success', localize('global.disease_category_deleted_successfully.'));
     }
 
@@ -246,10 +246,10 @@ class DiseaseController extends Controller
     private function formUrls(?Disease $disease = null): array
     {
         return [
-            'index' => route('react.diseases.index'),
-            'store' => route('react.diseases.store'),
-            'update' => $disease ? route('react.diseases.update', $disease) : '',
-            'back' => route('react.diseases.index'),
+            'index' => route('diseases.index'),
+            'store' => route('diseases.store'),
+            'update' => $disease ? route('diseases.update', $disease) : '',
+            'back' => route('diseases.index'),
         ];
     }
 }

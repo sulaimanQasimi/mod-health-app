@@ -89,7 +89,7 @@ class PACUController extends Controller
                 'date_to',
             ]),
             'urls' => [
-                'current' => route('react.pacus.report'),
+                'current' => route('pacus.report'),
                 'export' => route('pacus.export-report'),
                 ...$this->pacuListUrls(),
             ],
@@ -119,8 +119,8 @@ class PACUController extends Controller
                 'add_visit' => $pacu->status === 'new' && $user->can('show-pacu-menu'),
             ],
             'urls' => [
-                'complete' => route('react.pacus.complete', $pacu),
-                'store_visit' => route('react.pacus.visits.store', $pacu),
+                'complete' => route('pacus.complete', $pacu),
+                'store_visit' => route('pacus.visits.store', $pacu),
                 'back' => $this->backUrlForPacuStatus($pacu->status),
                 ...$this->pacuListUrls(),
             ],
@@ -135,7 +135,7 @@ class PACUController extends Controller
         $pacu->complete();
 
         return redirect()
-            ->route('react.pacus.completed')
+            ->route('pacus.completed')
             ->with('success', localize('global.pacu_completed_successfully.'));
     }
 

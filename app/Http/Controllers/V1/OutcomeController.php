@@ -55,8 +55,8 @@ class OutcomeController extends Controller
                     : [],
             ],
             'urls' => [
-                'index' => route('react.outcomes.index'),
-                'report' => route('react.outcomes.report'),
+                'index' => route('outcomes.index'),
+                'report' => route('outcomes.report'),
                 'export' => route('outcomes.export-index-report'),
             ],
         ]);
@@ -121,8 +121,8 @@ class OutcomeController extends Controller
                     : [],
             ],
             'urls' => [
-                'index' => route('react.outcomes.index'),
-                'report' => route('react.outcomes.report'),
+                'index' => route('outcomes.index'),
+                'report' => route('outcomes.report'),
                 'export' => route('outcomes.export-index-report'),
             ],
         ]);

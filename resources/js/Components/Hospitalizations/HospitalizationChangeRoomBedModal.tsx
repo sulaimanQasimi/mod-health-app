@@ -65,7 +65,7 @@ export default function HospitalizationChangeRoomBedModal({
     const tRef = useRef(t);
     tRef.current = t;
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/hospitalizations/${hospitalizationId}/room-bed`;
+    const baseUrl = `/hospitalizations/${hospitalizationId}/room-bed`;
 
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);

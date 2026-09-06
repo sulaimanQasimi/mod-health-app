@@ -21,8 +21,10 @@ class OphthalmologyPermissionSeeder extends Seeder
     public function run(): void
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
-        Permission::where('name', 'manage-ophthalmology-tests')->delete();
-
+     $permission = Permission::where('name', 'manage-ophthalmology-tests')->first();
+        if ($permission) {
+            $permission->delete();
+        }
         foreach (self::PERMISSIONS as $name => [$nameDr, $namePa]) {
             Permission::updateOrCreate(
                 ['name' => $name, 'guard_name' => 'web'],

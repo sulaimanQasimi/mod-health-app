@@ -41,10 +41,10 @@ class MiliteryTypeController extends Controller
                 'delete-militery-types',
             ),
             'urls' => [
-                'index' => route('react.militery-types.index'),
-                'create' => route('react.militery-types.create'),
-                'edit' => url('/react/militery-types'),
-                'destroy' => url('/react/militery-types'),
+                'index' => route('militery-types.index'),
+                'create' => route('militery-types.create'),
+                'edit' => url('/militery-types'),
+                'destroy' => url('/militery-types'),
             ],
         ]);
     }
@@ -69,7 +69,7 @@ class MiliteryTypeController extends Controller
         MiliteryType::create($data);
 
         return redirect()
-            ->route('react.militery-types.index')
+            ->route('militery-types.index')
             ->with('success', localize('global.militery_type_created_successfully.'));
     }
 
@@ -97,7 +97,7 @@ class MiliteryTypeController extends Controller
         $militeryType->update($data);
 
         return redirect()
-            ->route('react.militery-types.index')
+            ->route('militery-types.index')
             ->with('success', localize('global.militery_type_updated_successfully.'));
     }
 
@@ -108,7 +108,7 @@ class MiliteryTypeController extends Controller
         $militeryType->delete();
 
         return redirect()
-            ->route('react.militery-types.index')
+            ->route('militery-types.index')
             ->with('success', localize('global.militery_type_deleted_successfully.'));
     }
 
@@ -118,10 +118,10 @@ class MiliteryTypeController extends Controller
     private function formUrls(?MiliteryType $militeryType = null): array
     {
         return [
-            'index' => route('react.militery-types.index'),
-            'store' => route('react.militery-types.store'),
-            'update' => $militeryType ? route('react.militery-types.update', $militeryType) : '',
-            'back' => route('react.militery-types.index'),
+            'index' => route('militery-types.index'),
+            'store' => route('militery-types.store'),
+            'update' => $militeryType ? route('militery-types.update', $militeryType) : '',
+            'back' => route('militery-types.index'),
         ];
     }
 }

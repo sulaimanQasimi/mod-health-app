@@ -45,7 +45,7 @@ class ChatsPanelProvider extends PanelProvider
                     ->limit(50)
                     ->get();
             })
-            ->redirectToHomeAction(url: url('/react'))
+            ->redirectToHomeAction(url: url('/'))
             ->messagesQueue('messages')
             ->eventsQueue('default')
             ->default();

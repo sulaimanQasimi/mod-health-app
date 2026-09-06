@@ -113,7 +113,7 @@ class LaboratoryController extends Controller
                 'manageResults' => $user->can('manageResults', PatientTestRegistration::class),
             ],
             'urls' => array_merge($this->laboratoryNavUrls(), [
-                'index' => route('react.laboratory.results.pending'),
+                'index' => route('laboratory.results.pending'),
             ]),
             'flash' => [
                 'success' => session('success'),
@@ -138,8 +138,8 @@ class LaboratoryController extends Controller
 
         return Inertia::render('Laboratory/Scan', [
             'urls' => array_merge($this->laboratoryNavUrls(), [
-                'scanSubmit' => route('react.laboratory.scan.submit'),
-                'index' => route('react.laboratory.scan'),
+                'scanSubmit' => route('laboratory.scan.submit'),
+                'index' => route('laboratory.scan'),
             ]),
             'error' => session('error'),
         ]);
@@ -157,15 +157,15 @@ class LaboratoryController extends Controller
 
         if (! $registration) {
             return redirect()
-                ->route('react.laboratory.scan')
+                ->route('laboratory.scan')
                 ->with('error', localize('global.test_not_found'));
         }
 
         if ($registration->status === 'completed') {
-            return redirect()->route('react.laboratory.reports.print', $registration->ref_no);
+            return redirect()->route('laboratory.reports.print', $registration->ref_no);
         }
 
-        return redirect()->route('react.laboratory.results.show', $registration);
+        return redirect()->route('laboratory.results.show', $registration);
     }
 
     public function showResults(PatientTestRegistration $registration): Response|RedirectResponse
@@ -185,7 +185,7 @@ class LaboratoryController extends Controller
             ->findOrFail($registration->id);
 
         if ($registration->status === 'completed') {
-            return redirect()->route('react.laboratory.reports.print', $registration->ref_no);
+            return redirect()->route('laboratory.reports.print', $registration->ref_no);
         }
 
         $patient = $registration->testable?->patient;
@@ -249,10 +249,10 @@ class LaboratoryController extends Controller
                 'canSave' => $canSave,
             ],
             'urls' => [
-                'update' => route('react.laboratory.results.update', $registration),
-                'accept' => route('react.laboratory.results.accept', $registration),
-                'print' => route('react.laboratory.reports.print', $registration->ref_no),
-                'back' => route('react.laboratory.results.in-progress'),
+                'update' => route('laboratory.results.update', $registration),
+                'accept' => route('laboratory.results.accept', $registration),
+                'print' => route('laboratory.reports.print', $registration->ref_no),
+                'back' => route('laboratory.results.in-progress'),
             ],
             'flash' => [
                 'success' => session('success'),
@@ -379,7 +379,7 @@ class LaboratoryController extends Controller
 
         if ($registration->status === 'completed') {
             return redirect()
-                ->route('react.laboratory.reports.print', $registration->ref_no)
+                ->route('laboratory.reports.print', $registration->ref_no)
                 ->with('error', localize('global.cannot_update_completed_test'));
         }
 
@@ -453,7 +453,7 @@ class LaboratoryController extends Controller
             $registration->markCompleted();
 
             return redirect()
-                ->route('react.laboratory.reports.print', $registration->ref_no)
+                ->route('laboratory.reports.print', $registration->ref_no)
                 ->with('success', localize('global.results_updated_successfully'))
                 ->with('completed', true);
         }
@@ -528,7 +528,7 @@ class LaboratoryController extends Controller
                             'status' => $registration->status,
                             'priority' => $registration->priority,
                             'doctor_name' => $registration->doctor?->name,
-                            'print_url' => route('react.laboratory.reports.print', $registration->ref_no),
+                            'print_url' => route('laboratory.reports.print', $registration->ref_no),
                         ])
                         ->values()
                         ->all(),
@@ -641,7 +641,7 @@ class LaboratoryController extends Controller
                 'labTypes' => $this->labTypesForUser($user),
             ],
             'urls' => [
-                'report' => route('react.laboratory.registrations.report'),
+                'report' => route('laboratory.registrations.report'),
                 'export' => route('laboratory.registrations.export-report'),
             ],
         ]);
@@ -741,7 +741,7 @@ class LaboratoryController extends Controller
                     ->get(['id', 'name', 'department_id']),
             ],
             'urls' => [
-                'report' => route('react.laboratory.registrations.report-detailed'),
+                'report' => route('laboratory.registrations.report-detailed'),
                 'export' => route('laboratory.registrations.export-report-detailed'),
             ],
         ]);
@@ -861,9 +861,9 @@ class LaboratoryController extends Controller
             ],
             'urls' => array_merge($this->laboratoryNavUrls(), [
                 'index' => match ($listMode) {
-                    'pending' => route('react.laboratory.results.pending'),
-                    'in_progress' => route('react.laboratory.results.in-progress'),
-                    default => route('react.laboratory.results.completed'),
+                    'pending' => route('laboratory.results.pending'),
+                    'in_progress' => route('laboratory.results.in-progress'),
+                    default => route('laboratory.results.completed'),
                 },
             ]),
             'flash' => [
@@ -1057,11 +1057,11 @@ class LaboratoryController extends Controller
     private function laboratoryNavUrls(): array
     {
         return [
-            'pending' => route('react.laboratory.results.pending'),
-            'inProgress' => route('react.laboratory.results.in-progress'),
-            'completed' => route('react.laboratory.results.completed'),
-            'grouped' => route('react.laboratory.results.grouped'),
-            'scan' => route('react.laboratory.scan'),
+            'pending' => route('laboratory.results.pending'),
+            'inProgress' => route('laboratory.results.in-progress'),
+            'completed' => route('laboratory.results.completed'),
+            'grouped' => route('laboratory.results.grouped'),
+            'scan' => route('laboratory.scan'),
         ];
     }
 }

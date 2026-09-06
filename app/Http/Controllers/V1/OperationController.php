@@ -88,7 +88,7 @@ class OperationController extends Controller
             ]),
             'filterOptions' => $this->reportFilterOptions(),
             'urls' => [
-                'current' => route('react.operations.report'),
+                'current' => route('operations.report'),
                 'export' => route('operations.export-report'),
                 ...$this->operationListUrls(),
             ],
@@ -130,16 +130,16 @@ class OperationController extends Controller
                     && $user->can('patient-hospitalization'),
             ],
             'urls' => [
-                'update' => route('react.operations.update', $operation),
-                'complete' => route('react.operations.complete', $operation),
-                'reserve' => route('react.operations.reserve', $operation),
-                'unreserve' => route('react.operations.unreserve', $operation),
+                'update' => route('operations.update', $operation),
+                'complete' => route('operations.complete', $operation),
+                'reserve' => route('operations.reserve', $operation),
+                'unreserve' => route('operations.unreserve', $operation),
                 'back' => $this->backUrlForOperation($operation),
                 'appointment' => $operation->appointment_id
-                    ? route('react.appointments.show', $operation->appointment_id)
+                    ? route('appointments.show', $operation->appointment_id)
                     : null,
                 'hospitalizationMeta' => $operation->appointment_id
-                    ? route('react.appointments.sections.hospitalization.meta', $operation->appointment_id)
+                    ? route('appointments.sections.hospitalization.meta', $operation->appointment_id)
                     : null,
                 ...$this->operationListUrls(),
             ],
@@ -184,7 +184,7 @@ class OperationController extends Controller
             $operation->update($data);
 
             return redirect()
-                ->route('react.operations.reserved')
+                ->route('operations.reserved')
                 ->with('success', localize('global.operation_reserved_successfully.'));
         }
 
@@ -251,7 +251,7 @@ class OperationController extends Controller
         $operation->update($data);
 
         return redirect()
-            ->route('react.operations.reserved')
+            ->route('operations.reserved')
             ->with('success', localize('global.operation_reserved_successfully.'));
     }
 

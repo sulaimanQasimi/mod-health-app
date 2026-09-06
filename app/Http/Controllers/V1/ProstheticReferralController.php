@@ -105,9 +105,9 @@ class ProstheticReferralController extends Controller
                 'drafted', 'submitted', 'received', 'under_review', 'accepted', 'rejected', 'cancelled', 'converted_to_case',
             ],
             'urls' => [
-                'current' => route('react.prosthetics.referrals.index'),
-                'create' => route('react.prosthetics.referrals.create'),
-                'show' => url('/react/prosthetics/referrals'),
+                'current' => route('prosthetics.referrals.index'),
+                'create' => route('prosthetics.referrals.create'),
+                'show' => url('/prosthetics/referrals'),
             ],
         ]);
     }
@@ -121,9 +121,9 @@ class ProstheticReferralController extends Controller
                 'patient_id' => $request->filled('patient_id') ? (int) $request->patient_id : null,
             ],
             'urls' => [
-                'index' => route('react.prosthetics.referrals.index'),
-                'store' => route('react.prosthetics.referrals.store'),
-                'patientSearch' => route('react.prosthetics.referrals.patients.search'),
+                'index' => route('prosthetics.referrals.index'),
+                'store' => route('prosthetics.referrals.store'),
+                'patientSearch' => route('prosthetics.referrals.patients.search'),
             ],
         ]);
     }
@@ -154,7 +154,7 @@ class ProstheticReferralController extends Controller
         $referral->save();
 
         return redirect()
-            ->route('react.prosthetics.referrals.show', $referral)
+            ->route('prosthetics.referrals.show', $referral)
             ->with('success', __('global.success'));
     }
 
@@ -206,7 +206,7 @@ class ProstheticReferralController extends Controller
         $referral->save();
 
         return redirect()
-            ->route('react.prosthetics.referrals.show', $referral)
+            ->route('prosthetics.referrals.show', $referral)
             ->with('success', __('global.success'));
     }
 
@@ -229,7 +229,7 @@ class ProstheticReferralController extends Controller
         $this->authorizeReferral($referral);
 
         if ($referral->converted_case_id) {
-            return redirect()->route('react.prosthetics.cases.show', $referral->converted_case_id);
+            return redirect()->route('prosthetics.cases.show', $referral->converted_case_id);
         }
 
         $case = DB::transaction(function () use ($referral) {
@@ -254,7 +254,7 @@ class ProstheticReferralController extends Controller
         });
 
         return redirect()
-            ->route('react.prosthetics.cases.show', $case)
+            ->route('prosthetics.cases.show', $case)
             ->with('success', __('global.success'));
     }
 
@@ -298,7 +298,7 @@ class ProstheticReferralController extends Controller
                 : null,
             'patient_nid' => $referral->patient?->nid,
             'urls' => [
-                'show' => route('react.prosthetics.referrals.show', $referral),
+                'show' => route('prosthetics.referrals.show', $referral),
             ],
         ];
     }
@@ -342,15 +342,15 @@ class ProstheticReferralController extends Controller
     private function referralUrls(ProstheticReferral $referral): array
     {
         return [
-            'index' => route('react.prosthetics.referrals.index'),
-            'show' => route('react.prosthetics.referrals.show', $referral),
-            'edit' => route('react.prosthetics.referrals.edit', $referral),
-            'update' => route('react.prosthetics.referrals.update', $referral),
-            'accept' => route('react.prosthetics.referrals.accept', $referral),
-            'reject' => route('react.prosthetics.referrals.reject', $referral),
-            'convert' => route('react.prosthetics.referrals.convert', $referral),
+            'index' => route('prosthetics.referrals.index'),
+            'show' => route('prosthetics.referrals.show', $referral),
+            'edit' => route('prosthetics.referrals.edit', $referral),
+            'update' => route('prosthetics.referrals.update', $referral),
+            'accept' => route('prosthetics.referrals.accept', $referral),
+            'reject' => route('prosthetics.referrals.reject', $referral),
+            'convert' => route('prosthetics.referrals.convert', $referral),
             'caseShow' => $referral->converted_case_id
-                ? route('react.prosthetics.cases.show', $referral->converted_case_id)
+                ? route('prosthetics.cases.show', $referral->converted_case_id)
                 : '',
         ];
     }

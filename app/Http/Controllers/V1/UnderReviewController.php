@@ -183,7 +183,7 @@ class UnderReviewController extends Controller
         ]);
 
         return redirect()
-            ->route('react.under-reviews.my-cases')
+            ->route('under-reviews.my-cases')
             ->with('success', localize('global.appointment_accepted_successfully'));
     }
 
@@ -263,14 +263,14 @@ class UnderReviewController extends Controller
                 'hospitalization' => $accepted && $user->can('show-hospitalizations-menu') && (bool) $underReview->appointment_id,
             ],
             'urls' => [
-                'index' => route('react.under-reviews.index'),
-                'pending' => route('react.under-reviews.pending'),
-                'myCases' => route('react.under-reviews.my-cases'),
-                'discharged' => route('react.under-reviews.discharged'),
-                'accept' => route('react.under-reviews.accept', $underReview),
-                'discharge' => route('react.under-reviews.discharge', $underReview),
-                'visit_store' => route('react.under-reviews.visits.store', $underReview),
-                'visit_update' => url('/react/under-reviews/'.$underReview->id.'/visits'),
+                'index' => route('under-reviews.index'),
+                'pending' => route('under-reviews.pending'),
+                'myCases' => route('under-reviews.my-cases'),
+                'discharged' => route('under-reviews.discharged'),
+                'accept' => route('under-reviews.accept', $underReview),
+                'discharge' => route('under-reviews.discharge', $underReview),
+                'visit_store' => route('under-reviews.visits.store', $underReview),
+                'visit_update' => url('/under-reviews/'.$underReview->id.'/visits'),
             ],
         ]);
     }
@@ -313,8 +313,8 @@ class UnderReviewController extends Controller
                 ->orderBy('number')
                 ->get(['id', 'number', 'room_id', 'is_occupied']),
             'urls' => [
-                'show' => route('react.under-reviews.show', $underReview),
-                'update' => route('react.under-reviews.update', $underReview),
+                'show' => route('under-reviews.show', $underReview),
+                'update' => route('under-reviews.update', $underReview),
             ],
         ]);
     }
@@ -366,7 +366,7 @@ class UnderReviewController extends Controller
         $underReview->update($validated);
 
         return redirect()
-            ->route('react.under-reviews.show', $underReview)
+            ->route('under-reviews.show', $underReview)
             ->with('success', localize('global.advice_updated_successfully.'));
     }
 
@@ -388,7 +388,7 @@ class UnderReviewController extends Controller
         });
 
         return redirect()
-            ->route('react.under-reviews.discharged')
+            ->route('under-reviews.discharged')
             ->with('success', localize('global.under_review_updated_successfully.'));
     }
 
@@ -411,7 +411,7 @@ class UnderReviewController extends Controller
         ]);
 
         return redirect()
-            ->route('react.under-reviews.show', $underReview)
+            ->route('under-reviews.show', $underReview)
             ->with('success', localize('global.visit_created_successfully.'));
     }
 
@@ -429,7 +429,7 @@ class UnderReviewController extends Controller
         $visit->update($validated);
 
         return redirect()
-            ->route('react.under-reviews.show', $underReview)
+            ->route('under-reviews.show', $underReview)
             ->with('success', localize('global.visit_updated_successfully.'));
     }
 
@@ -443,7 +443,7 @@ class UnderReviewController extends Controller
         $visit->delete();
 
         return redirect()
-            ->route('react.under-reviews.show', $underReview)
+            ->route('under-reviews.show', $underReview)
             ->with('success', localize('global.visit_deleted_successfully.'));
     }
 

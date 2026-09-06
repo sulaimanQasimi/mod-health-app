@@ -70,7 +70,7 @@ class EyeGlassesController extends Controller
                 'frame_type' => $item->frame_type,
                 'lens_type' => $item->lens_type,
                 'urls' => [
-                    'show' => route('react.eye-glasses-orders.show', $item),
+                    'show' => route('eye-glasses-orders.show', $item),
                 ],
             ])->values()->all();
 
@@ -125,7 +125,7 @@ class EyeGlassesController extends Controller
             'message' => localize('global.eye_glasses_order_created_successfully'),
             'data' => [
                 'id' => $order->id,
-                'url' => route('react.eye-glasses-orders.show', $order),
+                'url' => route('eye-glasses-orders.show', $order),
             ],
         ], 201);
     }

@@ -252,7 +252,7 @@ const NumberOfPrescriptions: React.FC<NumberOfPrescriptionsProps> = ({
             date_to: date_to ?? '',
         });
 
-        get(`/react/api/reports/general/prescriptions?${params.toString()}`)
+        get(`/api/reports/general/prescriptions?${params.toString()}`)
             .then((response) => {
                 const payload = response as { data?: PrescriptionApiRow[] };
                 const data = (payload?.data ?? []).map(normalizePrescriptionRow);

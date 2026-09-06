@@ -48,10 +48,10 @@ class UnitController extends Controller
                 'delete-units',
             ),
             'urls' => [
-                'index' => route('react.units.index'),
-                'create' => route('react.units.create'),
-                'edit' => url('/react/units'),
-                'destroy' => url('/react/units'),
+                'index' => route('units.index'),
+                'create' => route('units.create'),
+                'edit' => url('/units'),
+                'destroy' => url('/units'),
             ],
         ]);
     }
@@ -72,7 +72,7 @@ class UnitController extends Controller
         Unit::create($this->validateUnit($request));
 
         return redirect()
-            ->route('react.units.index')
+            ->route('units.index')
             ->with('success', localize('global.unit_created_successfully'));
     }
 
@@ -98,7 +98,7 @@ class UnitController extends Controller
         $unit->update($this->validateUnit($request, $unit));
 
         return redirect()
-            ->route('react.units.index')
+            ->route('units.index')
             ->with('success', localize('global.unit_updated_successfully'));
     }
 
@@ -109,7 +109,7 @@ class UnitController extends Controller
         $unit->delete();
 
         return redirect()
-            ->route('react.units.index')
+            ->route('units.index')
             ->with('success', localize('global.unit_deleted_successfully'));
     }
 
@@ -119,10 +119,10 @@ class UnitController extends Controller
     private function formUrls(?Unit $unit = null): array
     {
         return [
-            'index' => route('react.units.index'),
-            'store' => route('react.units.store'),
-            'update' => $unit ? route('react.units.update', $unit) : '',
-            'back' => route('react.units.index'),
+            'index' => route('units.index'),
+            'store' => route('units.store'),
+            'update' => $unit ? route('units.update', $unit) : '',
+            'back' => route('units.index'),
         ];
     }
 

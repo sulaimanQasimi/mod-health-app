@@ -150,7 +150,7 @@ trait ManagesIcuListing
             'discharge_status' => $icu->discharge_status,
             'created_at' => $this->formatIcuDate($icu->created_at),
             'urls' => [
-                'show' => route('react.icus.show', $icu),
+                'show' => route('icus.show', $icu),
             ],
         ];
     }
@@ -175,10 +175,10 @@ trait ManagesIcuListing
     protected function icuListUrls(): array
     {
         return [
-            'new' => route('react.icus.new'),
-            'approved' => route('react.icus.approved'),
-            'rejected' => route('react.icus.rejected'),
-            'report' => route('react.icus.report'),
+            'new' => route('icus.new'),
+            'approved' => route('icus.approved'),
+            'rejected' => route('icus.rejected'),
+            'report' => route('icus.report'),
         ];
     }
 }

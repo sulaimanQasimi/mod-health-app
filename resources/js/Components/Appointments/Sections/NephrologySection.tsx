@@ -84,7 +84,7 @@ const STATUS_COLORS: Record<string, 'warning' | 'info' | 'success' | 'failure' |
 export default function NephrologySection({ appointmentId }: NephrologySectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/nephrology`;
+    const baseUrl = `/appointments/${appointmentId}/nephrology`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

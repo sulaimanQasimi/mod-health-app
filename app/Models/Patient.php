@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Auth;
 
 class Patient extends Model
@@ -37,6 +38,7 @@ class Patient extends Model
         'referral_phone',
         'referral_recipient',
         'type',
+        'is_vip',
         'id_card',
         'job_category',
         'referred_by',
@@ -47,6 +49,76 @@ class Patient extends Model
         'militery_type_id',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_vip' => 'boolean',
+        ];
+    }
+
+    public function isVipRecord(): bool
+    {
+        return (bool) ($this->attributes['is_vip'] ?? false);
+    }
+
+    public function currentUserCanAccessVip(): bool
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->hasRole(['super_admin', 'admin'])
+            || $user->can('access-to-vip');
+    }
+
+    protected function shouldMaskVipIdentity(): bool
+    {
+        return $this->isVipRecord() && ! $this->currentUserCanAccessVip();
+    }
+
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
+
+    protected function lastName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
+
+    protected function fatherName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
+
+    protected function referralName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
+
+    protected function referralLastName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
+
+    protected function referralFatherName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
 
     public static function boot()
     {

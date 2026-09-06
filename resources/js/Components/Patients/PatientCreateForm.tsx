@@ -187,9 +187,10 @@ export default function PatientCreateForm({
     const showRankField =
         patientType === '1' ||
         patientType === '3' ||
+        patientType === '4' ||
         (patientType === '0' && form.job_category === '1');
     const rankLabel =
-        (patientType === '1' || patientType === '3') && form.job_category === '1'
+        (patientType === '1' || patientType === '3' || patientType === '4') && form.job_category === '1'
             ? t('global.bast')
             : t('global.rank');
     const showRecipientFields = patientType === '0' || patientType === '1';
@@ -309,6 +310,7 @@ export default function PatientCreateForm({
         const payload = new FormData();
         payload.append('_token', csrfToken);
         payload.append('type', patientType);
+        payload.append('is_vip', patientType === '4' ? '1' : '0');
         payload.append('branch_id', String(formData.branchId));
         payload.append('registration_date', formData.registrationDate);
         payload.append('name', form.name);
@@ -350,7 +352,7 @@ export default function PatientCreateForm({
             }
         }
 
-        if (patientType === '3') {
+        if (patientType === '3' || patientType === '4') {
             payload.append('job_category', form.job_category);
             payload.append('rank', form.rank);
             if (form.commanded_by) {
@@ -652,7 +654,7 @@ export default function PatientCreateForm({
                         </>
                     )}
 
-                    {patientType === '3' && (
+                    {(patientType === '3' || patientType === '4') && (
                         <FormField label={t('global.commanded_by')} error={errors.commanded_by} compact>
                             <TextInput
                                 id="commanded_by"

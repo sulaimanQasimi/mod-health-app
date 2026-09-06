@@ -33,13 +33,14 @@ export interface PatientFormUrls {
 /** @deprecated Use PatientFormUrls */
 export type PatientCreateUrls = PatientFormUrls;
 
-export type PatientType = '0' | '1' | '2' | '3';
+export type PatientType = '0' | '1' | '2' | '3' | '4';
 
 export type PatientFormMode = 'create' | 'edit';
 
 export interface PatientFormValues {
     id: number;
     type: PatientType;
+    is_vip?: boolean;
     id_card: string;
     name: string;
     last_name: string;
@@ -115,6 +116,7 @@ export interface PatientListItem {
     name: string;
     last_name: string | null;
     father_name: string | null;
+    is_vip?: boolean;
     location: string;
     age: string | null;
     militery_type: string | null;
@@ -136,6 +138,7 @@ export interface PatientDetail {
     rank: string | null;
     job_category: number | string | null;
     type: number | string | null;
+    is_vip?: boolean;
     province: string | null;
     district: string | null;
     militery_type: string | null;

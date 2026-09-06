@@ -148,6 +148,7 @@ class PatientController extends Controller
             'referral_recipient' => 'nullable',
             'referral_recipient_part_id' => 'nullable|exists:recipient_parts,id',
             'type' => 'nullable',
+            'is_vip' => 'nullable|boolean',
             'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
@@ -157,6 +158,21 @@ class PatientController extends Controller
             'appointment_doctor_id' => 'nullable|exists:doctors,id',
             'appointment_department_id' => 'required_with:appointment_doctor_id|exists:departments,id'
         ]);
+
+        $wantsVip = $request->boolean('is_vip') || (string) ($data['type'] ?? '') === '4';
+        if ($wantsVip && ! auth()->user()->can('access-to-vip') && ! auth()->user()->hasRole(['super_admin', 'admin'])) {
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.access_to_vip'),
+                    'errors' => ['is_vip' => [localize('global.access_to_vip')]],
+                ], 403);
+            }
+
+            abort(403);
+        }
+
+        $data['is_vip'] = $wantsVip;
 
         // Format age from dropdowns if provided (priority: year > month > day)
         if (!$data['age'] || empty($data['age'])) {
@@ -358,12 +374,41 @@ class PatientController extends Controller
             'referral_recipient' => 'nullable',
             'referral_recipient_part_id' => 'nullable|exists:recipient_parts,id',
             'type' => 'nullable',
+            'is_vip' => 'nullable|boolean',
             'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
             'commanded_by' => 'nullable|string|max:255',
             'recipient_part_id' => 'nullable|exists:recipient_parts,id',
         ]);
+
+        if ($patient->isVipRecord() && ! auth()->user()->can('access-to-vip') && ! auth()->user()->hasRole(['super_admin', 'admin'])) {
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.access_to_vip'),
+                ], 403);
+            }
+
+            abort(403);
+        }
+
+        $wantsVip = $request->boolean('is_vip') || (string) ($data['type'] ?? '') === '4';
+        if ($wantsVip && ! auth()->user()->can('access-to-vip') && ! auth()->user()->hasRole(['super_admin', 'admin'])) {
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.access_to_vip'),
+                    'errors' => ['is_vip' => [localize('global.access_to_vip')]],
+                ], 403);
+            }
+
+            abort(403);
+        }
+
+        if ($request->has('is_vip') || (string) ($data['type'] ?? '') === '4') {
+            $data['is_vip'] = $wantsVip;
+        }
 
         // Format age from dropdowns if provided (priority: year > month > day)
         if (!$data['age'] || empty($data['age'])) {

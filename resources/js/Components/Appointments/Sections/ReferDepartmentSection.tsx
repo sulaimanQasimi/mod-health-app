@@ -41,7 +41,7 @@ const MODAL_BODY_CLASS = 'max-h-[min(72vh,760px)] overflow-y-auto';
 export default function ReferDepartmentSection({ appointmentId }: ReferDepartmentSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/refer-department`;
+    const baseUrl = `/appointments/${appointmentId}/refer-department`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

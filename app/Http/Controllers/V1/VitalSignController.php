@@ -96,8 +96,8 @@ class VitalSignController extends Controller
             ],
             'permissions' => $this->vitalSignPermissions($request->user()),
             'urls' => [
-                'index' => route('react.vital-signs.index'),
-                'show' => url('/react/vital-signs'),
+                'index' => route('vital-signs.index'),
+                'show' => url('/vital-signs'),
             ],
         ]);
     }
@@ -147,7 +147,7 @@ class VitalSignController extends Controller
                 'view' => $request->user()->can('view', $vitalSign),
             ],
             'urls' => [
-                'index' => route('react.vital-signs.index'),
+                'index' => route('vital-signs.index'),
             ],
         ]);
     }

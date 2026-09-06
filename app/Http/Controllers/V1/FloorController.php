@@ -50,10 +50,10 @@ class FloorController extends Controller
                 'delete-floors',
             ),
             'urls' => [
-                'index' => route('react.floors.index'),
-                'create' => route('react.floors.create'),
-                'edit' => url('/react/floors'),
-                'destroy' => url('/react/floors'),
+                'index' => route('floors.index'),
+                'create' => route('floors.create'),
+                'edit' => url('/floors'),
+                'destroy' => url('/floors'),
             ],
         ]);
     }
@@ -75,7 +75,7 @@ class FloorController extends Controller
         Floor::create($this->validateFloor($request));
 
         return redirect()
-            ->route('react.floors.index')
+            ->route('floors.index')
             ->with('success', localize('global.floor_created_successfully.'));
     }
 
@@ -101,7 +101,7 @@ class FloorController extends Controller
         $floor->update($this->validateFloor($request));
 
         return redirect()
-            ->route('react.floors.index')
+            ->route('floors.index')
             ->with('success', localize('global.floor_updated_successfully.'));
     }
 
@@ -112,7 +112,7 @@ class FloorController extends Controller
         $floor->delete();
 
         return redirect()
-            ->route('react.floors.index')
+            ->route('floors.index')
             ->with('success', localize('global.floor_deleted_successfully.'));
     }
 
@@ -132,10 +132,10 @@ class FloorController extends Controller
     private function formUrls(?Floor $floor = null): array
     {
         return [
-            'index' => route('react.floors.index'),
-            'store' => route('react.floors.store'),
-            'update' => $floor ? route('react.floors.update', $floor) : '',
-            'back' => route('react.floors.index'),
+            'index' => route('floors.index'),
+            'store' => route('floors.store'),
+            'update' => $floor ? route('floors.update', $floor) : '',
+            'back' => route('floors.index'),
         ];
     }
 

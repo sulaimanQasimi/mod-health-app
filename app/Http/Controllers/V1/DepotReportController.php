@@ -102,7 +102,7 @@ class DepotReportController extends Controller
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
-                'export' => route('react.depots.reports.export'),
+                'export' => route('depots.reports.export'),
             ],
         ]);
     }

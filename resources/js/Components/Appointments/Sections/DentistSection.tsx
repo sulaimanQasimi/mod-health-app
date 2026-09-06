@@ -95,7 +95,7 @@ const EMPTY_FORM = {
 export default function DentistSection({ appointmentId }: DentistSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/dentist`;
+    const baseUrl = `/appointments/${appointmentId}/dentist`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

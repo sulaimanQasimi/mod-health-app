@@ -108,7 +108,7 @@ trait ManagesUnderReviewWorkflow
             'processed_by' => $processedBy,
             'is_discharged' => (bool) $item->is_discharged,
             'urls' => [
-                'show' => route('react.under-reviews.show', $item),
+                'show' => route('under-reviews.show', $item),
             ],
         ];
 
@@ -127,12 +127,12 @@ trait ManagesUnderReviewWorkflow
     protected function underReviewWorkflowUrls(): array
     {
         return [
-            'index' => route('react.under-reviews.index'),
-            'pending' => route('react.under-reviews.pending'),
-            'myCases' => route('react.under-reviews.my-cases'),
-            'discharged' => route('react.under-reviews.discharged'),
-            'show' => url('/react/under-reviews'),
-            'accept' => url('/react/under-reviews'),
+            'index' => route('under-reviews.index'),
+            'pending' => route('under-reviews.pending'),
+            'myCases' => route('under-reviews.my-cases'),
+            'discharged' => route('under-reviews.discharged'),
+            'show' => url('/under-reviews'),
+            'accept' => url('/under-reviews'),
         ];
     }
 }

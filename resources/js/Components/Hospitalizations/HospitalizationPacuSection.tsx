@@ -73,7 +73,7 @@ export default function HospitalizationPacuSection({
 }: HospitalizationPacuSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/hospitalizations/${hospitalizationId}/pacus`;
+    const baseUrl = `/hospitalizations/${hospitalizationId}/pacus`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

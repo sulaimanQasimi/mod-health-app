@@ -206,9 +206,9 @@ class PharmacyFulfillmentController extends Controller
                 'name' => $pharmacy->name,
             ])->values()->all(),
             'urls' => [
-                'index' => route('react.pharmacy-stock.index'),
-                'requests' => route('react.depots.requests.index'),
-                'outcomes' => route('react.outcomes.index'),
+                'index' => route('pharmacy-stock.index'),
+                'requests' => route('depots.requests.index'),
+                'outcomes' => route('outcomes.index'),
             ],
         ];
     }

@@ -71,10 +71,10 @@ class DepotTransactionController extends Controller
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
-                'index' => route('react.depots.transactions.index'),
-                'create' => route('react.depots.transactions.create'),
-                'show' => url('/react/depots/transactions'),
-                'cancel' => url('/react/depots/transactions'),
+                'index' => route('depots.transactions.index'),
+                'create' => route('depots.transactions.create'),
+                'show' => url('/depots/transactions'),
+                'cancel' => url('/depots/transactions'),
             ],
         ]);
     }
@@ -100,9 +100,9 @@ class DepotTransactionController extends Controller
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
-                'index' => route('react.depots.transactions.index'),
-                'store' => route('react.depots.transactions.store'),
-                'stockAvailable' => route('react.depots.stock.available'),
+                'index' => route('depots.transactions.index'),
+                'store' => route('depots.transactions.store'),
+                'stockAvailable' => route('depots.stock.available'),
             ],
         ]);
     }
@@ -139,7 +139,7 @@ class DepotTransactionController extends Controller
         });
 
         return redirect()
-            ->route('react.depots.transactions.index')
+            ->route('depots.transactions.index')
             ->with('success', localize('global.depot.transaction_created_successfully.'));
     }
 
@@ -166,8 +166,8 @@ class DepotTransactionController extends Controller
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
-                'index' => route('react.depots.transactions.index'),
-                'cancel' => route('react.depots.transactions.cancel', $depotTransaction),
+                'index' => route('depots.transactions.index'),
+                'cancel' => route('depots.transactions.cancel', $depotTransaction),
             ],
         ]);
     }
@@ -194,7 +194,7 @@ class DepotTransactionController extends Controller
         });
 
         return redirect()
-            ->route('react.depots.transactions.index')
+            ->route('depots.transactions.index')
             ->with('success', localize('global.depot.transaction_cancelled_successfully.'));
     }
 

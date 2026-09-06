@@ -69,8 +69,8 @@ class OphthalmologyRegistrationController extends Controller
                     'follow_up_date' => $item->follow_up_date ? verta($item->follow_up_date)->format('Y-m-d') : null,
                     'status' => $item->status,
                     'diagnosis' => $item->diagnosis,
-                    'show_url' => route('react.ophthalmology-registrations.show', $item),
-                    'delete_url' => route('react.ophthalmology-registrations.destroy', $item),
+                    'show_url' => route('ophthalmology-registrations.show', $item),
+                    'delete_url' => route('ophthalmology-registrations.destroy', $item),
                 ])->values()->all(),
                 'links' => $paginator->linkCollection()->toArray(),
                 'meta' => [
@@ -112,7 +112,7 @@ class OphthalmologyRegistrationController extends Controller
                 'delete' => $request->user()->can('delete-ophthalmology-registrations'),
             ],
             'urls' => [
-                'current' => route('react.ophthalmology-registrations.index'),
+                'current' => route('ophthalmology-registrations.index'),
             ],
         ]);
     }
@@ -148,7 +148,7 @@ class OphthalmologyRegistrationController extends Controller
                     'diagnosis' => $item->diagnosis,
                     'visual_examination' => $item->visual_examination ?? [],
                     'refraction' => $item->refraction ?? [],
-                    'show_url' => route('react.ophthalmology-registrations.show', $item),
+                    'show_url' => route('ophthalmology-registrations.show', $item),
                 ])
                 ->values()
                 ->all()
@@ -191,13 +191,13 @@ class OphthalmologyRegistrationController extends Controller
                     && $request->user()->can('upload-ophthalmology-images'),
             ],
             'urls' => [
-                'update' => route('react.ophthalmology-registrations.update', $ophthalmologyRegistration),
-                'appointment' => route('react.appointments.show', $ophthalmologyRegistration->appointment_id),
-                'print' => route('react.ophthalmology-registrations.print', $ophthalmologyRegistration),
+                'update' => route('ophthalmology-registrations.update', $ophthalmologyRegistration),
+                'appointment' => route('appointments.show', $ophthalmologyRegistration->appointment_id),
+                'print' => route('ophthalmology-registrations.print', $ophthalmologyRegistration),
                 'patient' => $patientId
-                    ? route('react.patients.show', $patientId)
+                    ? route('patients.show', $patientId)
                     : null,
-                'index' => route('react.ophthalmology-registrations.index'),
+                'index' => route('ophthalmology-registrations.index'),
             ],
         ]);
     }
@@ -377,7 +377,7 @@ class OphthalmologyRegistrationController extends Controller
         $ophthalmologyRegistration->update($data);
 
         return redirect()
-            ->route('react.ophthalmology-registrations.show', $ophthalmologyRegistration)
+            ->route('ophthalmology-registrations.show', $ophthalmologyRegistration)
             ->with('success', localize('global.ophthalmology_registration_updated_successfully'));
     }
 
@@ -389,7 +389,7 @@ class OphthalmologyRegistrationController extends Controller
         $ophthalmologyRegistration->delete();
 
         return redirect()
-            ->route('react.ophthalmology-registrations.index')
+            ->route('ophthalmology-registrations.index')
             ->with('success', localize('global.ophthalmology_registration_deleted_successfully'));
     }
 

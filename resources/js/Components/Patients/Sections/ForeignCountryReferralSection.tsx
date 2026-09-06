@@ -187,7 +187,7 @@ function DetailTile({ label, value, icon }: { label: string; value: string | nul
 export default function ForeignCountryReferralSection({ patientId }: ForeignCountryReferralSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/patients/${patientId}/foreign-country-referral`;
+    const baseUrl = `/patients/${patientId}/foreign-country-referral`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

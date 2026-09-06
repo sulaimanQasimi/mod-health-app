@@ -115,7 +115,7 @@ export default function PhysiotherapySection({
 }: PhysiotherapySectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/physiotherapy`;
+    const baseUrl = `/appointments/${appointmentId}/physiotherapy`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

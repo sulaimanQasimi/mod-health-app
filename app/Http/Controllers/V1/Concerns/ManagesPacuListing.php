@@ -121,7 +121,7 @@ trait ManagesPacuListing
             'status' => $pacu->status,
             'created_at' => $this->formatPacuDate($pacu->created_at),
             'urls' => [
-                'show' => route('react.pacus.show', $pacu),
+                'show' => route('pacus.show', $pacu),
             ],
         ];
     }
@@ -140,16 +140,16 @@ trait ManagesPacuListing
     protected function pacuListUrls(): array
     {
         return [
-            'new' => route('react.pacus.index'),
-            'completed' => route('react.pacus.completed'),
-            'report' => route('react.pacus.report'),
+            'new' => route('pacus.index'),
+            'completed' => route('pacus.completed'),
+            'report' => route('pacus.report'),
         ];
     }
 
     protected function backUrlForPacuStatus(string $status): string
     {
         return $status === 'completed'
-            ? route('react.pacus.completed')
-            : route('react.pacus.index');
+            ? route('pacus.completed')
+            : route('pacus.index');
     }
 }

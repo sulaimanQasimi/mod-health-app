@@ -39,7 +39,7 @@ class NephrologyController extends Controller
                 'status' => $item->status,
                 'needs_acceptance' => $item->needsAcceptance(),
                 'urls' => [
-                    'show' => route('react.nephrology-registrations.show', $item->id),
+                    'show' => route('nephrology-registrations.show', $item->id),
                 ],
             ])
             ->values()
@@ -96,8 +96,8 @@ class NephrologyController extends Controller
                     ? verta($nephrologyRegistration->created_at)->format('Y-m-d H:i')
                     : null,
                 'urls' => [
-                    'show' => route('react.nephrology-registrations.show', $nephrologyRegistration->id),
-                    'index' => route('react.nephrology-registrations.index'),
+                    'show' => route('nephrology-registrations.show', $nephrologyRegistration->id),
+                    'index' => route('nephrology-registrations.index'),
                 ],
             ],
         ]);

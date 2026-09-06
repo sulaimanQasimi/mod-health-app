@@ -60,7 +60,7 @@ trait ManagesBloodBankWorkflow
         ]);
 
         return redirect()
-            ->route('react.blood-banks.show', $bloodBank)
+            ->route('blood-banks.show', $bloodBank)
             ->with('success', localize('global.crossmatch_sample_saved'));
     }
 
@@ -72,7 +72,7 @@ trait ManagesBloodBankWorkflow
 
         if ($bloodBank->status !== 'approved') {
             return redirect()
-                ->route('react.blood-banks.show', $bloodBank)
+                ->route('blood-banks.show', $bloodBank)
                 ->with('error', localize('global.blood_check_only_when_approved'));
         }
 
@@ -135,7 +135,7 @@ trait ManagesBloodBankWorkflow
         ]);
 
         return redirect()
-            ->route('react.blood-banks.show', $bloodBank)
+            ->route('blood-banks.show', $bloodBank)
             ->with('success', localize('global.blood_check_saved'));
     }
 
@@ -151,7 +151,7 @@ trait ManagesBloodBankWorkflow
 
         if ($bloodBank->status !== 'approved') {
             return redirect()
-                ->route('react.blood-banks.show', $bloodBank)
+                ->route('blood-banks.show', $bloodBank)
                 ->with('error', localize('global.blood_bank_tests_only_when_approved'));
         }
 
@@ -167,7 +167,7 @@ trait ManagesBloodBankWorkflow
         ]);
 
         return redirect()
-            ->route('react.blood-banks.show', $bloodBank)
+            ->route('blood-banks.show', $bloodBank)
             ->with('success', localize('global.blood_bank_test_saved'));
     }
 
@@ -194,7 +194,7 @@ trait ManagesBloodBankWorkflow
                 ->first();
             if (! $sample) {
                 return redirect()
-                    ->route('react.blood-banks.show', $bloodBank)
+                    ->route('blood-banks.show', $bloodBank)
                     ->with('error', localize('global.crossmatch_invalid_sample'));
             }
         }
@@ -224,7 +224,7 @@ trait ManagesBloodBankWorkflow
         );
 
         return redirect()
-            ->route('react.blood-banks.show', $bloodBank)
+            ->route('blood-banks.show', $bloodBank)
             ->with('success', localize('global.crossmatch_saved'));
     }
 
@@ -248,7 +248,7 @@ trait ManagesBloodBankWorkflow
         app(BloodCrossmatchService::class)->overrideCompatible($crossmatch, (int) $request->user()->id, $validated['override_reason']);
 
         return redirect()
-            ->route('react.blood-banks.show', $bloodBank)
+            ->route('blood-banks.show', $bloodBank)
             ->with('success', localize('global.crossmatch_override_saved'));
     }
 
@@ -264,7 +264,7 @@ trait ManagesBloodBankWorkflow
 
         if (! in_array($crossmatch->status, ['compatible', 'overridden'], true)) {
             return redirect()
-                ->route('react.blood-banks.show', $bloodBank)
+                ->route('blood-banks.show', $bloodBank)
                 ->with('error', localize('global.crossmatch_cannot_reserve_incompatible'));
         }
 
@@ -306,12 +306,12 @@ trait ManagesBloodBankWorkflow
             });
         } catch (\Throwable $e) {
             return redirect()
-                ->route('react.blood-banks.show', $bloodBank)
+                ->route('blood-banks.show', $bloodBank)
                 ->with('error', $e->getMessage());
         }
 
         return redirect()
-            ->route('react.blood-banks.show', $bloodBank)
+            ->route('blood-banks.show', $bloodBank)
             ->with('success', localize('global.crossmatch_unit_reserved'));
     }
 
@@ -353,12 +353,12 @@ trait ManagesBloodBankWorkflow
             });
         } catch (\Throwable $e) {
             return redirect()
-                ->route('react.blood-banks.show', $bloodBank)
+                ->route('blood-banks.show', $bloodBank)
                 ->with('error', $e->getMessage());
         }
 
         return redirect()
-            ->route('react.blood-banks.show', $bloodBank)
+            ->route('blood-banks.show', $bloodBank)
             ->with('success', localize('global.crossmatch_unit_unreserved'));
     }
 }

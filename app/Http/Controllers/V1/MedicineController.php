@@ -56,10 +56,10 @@ class MedicineController extends Controller
                 'delete-medicines',
             ),
             'urls' => [
-                'index' => route('react.medicines.index'),
-                'create' => route('react.medicines.create'),
-                'edit' => url('/react/medicines'),
-                'destroy' => url('/react/medicines'),
+                'index' => route('medicines.index'),
+                'create' => route('medicines.create'),
+                'edit' => url('/medicines'),
+                'destroy' => url('/medicines'),
             ],
         ]);
     }
@@ -84,7 +84,7 @@ class MedicineController extends Controller
         Medicine::create($data);
 
         return redirect()
-            ->route('react.medicines.index')
+            ->route('medicines.index')
             ->with('success', localize('global.medicine_created_successfully.'));
     }
 
@@ -112,7 +112,7 @@ class MedicineController extends Controller
         $medicine->update($data);
 
         return redirect()
-            ->route('react.medicines.index')
+            ->route('medicines.index')
             ->with('success', localize('global.medicine_updated_successfully.'));
     }
 
@@ -123,7 +123,7 @@ class MedicineController extends Controller
         $medicine->delete();
 
         return redirect()
-            ->route('react.medicines.index')
+            ->route('medicines.index')
             ->with('success', localize('global.medicine_deleted_successfully.'));
     }
 
@@ -133,10 +133,10 @@ class MedicineController extends Controller
     private function formUrls(?Medicine $medicine = null): array
     {
         return [
-            'index' => route('react.medicines.index'),
-            'store' => route('react.medicines.store'),
-            'update' => $medicine ? route('react.medicines.update', $medicine) : '',
-            'back' => route('react.medicines.index'),
+            'index' => route('medicines.index'),
+            'store' => route('medicines.store'),
+            'update' => $medicine ? route('medicines.update', $medicine) : '',
+            'back' => route('medicines.index'),
         ];
     }
 }

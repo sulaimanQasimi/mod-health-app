@@ -34,7 +34,7 @@ interface OrderItem {
 export default function EyeGlassesSection({ appointmentId }: Props) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/eye-glasses`;
+    const baseUrl = `/appointments/${appointmentId}/eye-glasses`;
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [open, setOpen] = useState(false);

@@ -69,7 +69,7 @@ class DentistController extends Controller
                 'xrays_count' => $item->xrays_count,
                 'notes_count' => $item->dental_notes_count,
                 'urls' => [
-                    'show' => route('react.dentist-registrations.show', $item->id),
+                    'show' => route('dentist-registrations.show', $item->id),
                 ],
             ])
             ->values()
@@ -122,7 +122,7 @@ class DentistController extends Controller
                     ? verta($dentistRegistration->created_at)->format('Y-m-d H:i')
                     : null,
                 'urls' => [
-                    'show' => route('react.dentist-registrations.show', $dentistRegistration->id),
+                    'show' => route('dentist-registrations.show', $dentistRegistration->id),
                 ],
             ],
         ]);

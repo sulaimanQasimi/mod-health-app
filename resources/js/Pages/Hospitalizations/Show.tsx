@@ -283,7 +283,7 @@ export default function HospitalizationsShow({
                         {sectionPermissions.underReview && (
                             <UnderReviewSection
                                 appointmentId={hospitalization.appointment_id!}
-                                baseUrl={`/react/hospitalizations/${hospitalization.id}/under-review`}
+                                baseUrl={`/hospitalizations/${hospitalization.id}/under-review`}
                                 isDischarged={hospitalization.is_discharged}
                                 onReferralSuccess={() =>
                                     router.reload({ preserveScroll: true })

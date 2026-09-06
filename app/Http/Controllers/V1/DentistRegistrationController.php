@@ -46,8 +46,8 @@ class DentistRegistrationController extends Controller
             'filterOptions' => $this->filterOptions($request),
             'permissions' => $this->listPermissions($request->user()),
             'urls' => [
-                'current' => route('react.dentist-registrations.index'),
-                'show' => url('/react/dentist-registrations'),
+                'current' => route('dentist-registrations.index'),
+                'show' => url('/dentist-registrations'),
             ],
         ]);
     }
@@ -109,7 +109,7 @@ class DentistRegistrationController extends Controller
         ]);
 
         return redirect()
-            ->route('react.dentist-registrations.show', $dentistRegistration)
+            ->route('dentist-registrations.show', $dentistRegistration)
             ->with('success', localize('global.dentist_registration_updated_successfully'));
     }
 
@@ -121,7 +121,7 @@ class DentistRegistrationController extends Controller
         $dentistRegistration->delete();
 
         return redirect()
-            ->route('react.dentist-registrations.index')
+            ->route('dentist-registrations.index')
             ->with('success', localize('global.dentist_registration_deleted_successfully'));
     }
 
@@ -286,26 +286,26 @@ class DentistRegistrationController extends Controller
     private function registrationUrls(DentistRegistration $dentistRegistration): array
     {
         return [
-            'index' => route('react.dentist-registrations.index'),
-            'show' => route('react.dentist-registrations.show', $dentistRegistration),
-            'update' => route('react.dentist-registrations.update', $dentistRegistration),
-            'destroy' => route('react.dentist-registrations.destroy', $dentistRegistration),
-            'markCompleted' => route('react.dentist-registrations.mark-completed', $dentistRegistration),
-            'markInProgress' => route('react.dentist-registrations.mark-in-progress', $dentistRegistration),
-            'cancel' => route('react.dentist-registrations.cancel', $dentistRegistration),
-            'storeTreatment' => route('react.dentist-registrations.treatments.store', $dentistRegistration),
-            'storeXray' => route('react.dentist-registrations.xrays.store', $dentistRegistration),
-            'storeNote' => route('react.dentist-registrations.notes.store', $dentistRegistration),
+            'index' => route('dentist-registrations.index'),
+            'show' => route('dentist-registrations.show', $dentistRegistration),
+            'update' => route('dentist-registrations.update', $dentistRegistration),
+            'destroy' => route('dentist-registrations.destroy', $dentistRegistration),
+            'markCompleted' => route('dentist-registrations.mark-completed', $dentistRegistration),
+            'markInProgress' => route('dentist-registrations.mark-in-progress', $dentistRegistration),
+            'cancel' => route('dentist-registrations.cancel', $dentistRegistration),
+            'storeTreatment' => route('dentist-registrations.treatments.store', $dentistRegistration),
+            'storeXray' => route('dentist-registrations.xrays.store', $dentistRegistration),
+            'storeNote' => route('dentist-registrations.notes.store', $dentistRegistration),
             'appointment' => $dentistRegistration->appointment_id
-                ? route('react.appointments.show', $dentistRegistration->appointment_id)
+                ? route('appointments.show', $dentistRegistration->appointment_id)
                 : null,
-            'chartIndex' => route('react.dental-charts.index', $dentistRegistration),
-            'chartCreate' => route('react.dental-charts.create', $dentistRegistration),
-            'chartStore' => route('react.dental-charts.store', $dentistRegistration),
-            'chartHistory' => route('react.dental-charts.history', $dentistRegistration),
-            'chartCompare' => route('react.dental-charts.compare', $dentistRegistration),
-            'chartPrint' => route('react.dental-charts.print', $dentistRegistration),
-            'chartExport' => route('react.dental-charts.export', $dentistRegistration),
+            'chartIndex' => route('dental-charts.index', $dentistRegistration),
+            'chartCreate' => route('dental-charts.create', $dentistRegistration),
+            'chartStore' => route('dental-charts.store', $dentistRegistration),
+            'chartHistory' => route('dental-charts.history', $dentistRegistration),
+            'chartCompare' => route('dental-charts.compare', $dentistRegistration),
+            'chartPrint' => route('dental-charts.print', $dentistRegistration),
+            'chartExport' => route('dental-charts.export', $dentistRegistration),
         ];
     }
 }

@@ -79,7 +79,7 @@ class DentalChartController extends Controller
         DentalChart::create($payload);
 
         return redirect()
-            ->route('react.dentist-registrations.show', $dentistRegistration)
+            ->route('dentist-registrations.show', $dentistRegistration)
             ->with('success', localize('global.dental_chart_created_successfully'));
     }
 
@@ -105,7 +105,7 @@ class DentalChartController extends Controller
         $dentalChart->update($this->chartPayloadFromValidated($validated, $dentalChart));
 
         return redirect()
-            ->route('react.dentist-registrations.show', $dentalChart->dentist_registration_id)
+            ->route('dentist-registrations.show', $dentalChart->dentist_registration_id)
             ->with('success', localize('global.dental_chart_updated_successfully'));
     }
 
@@ -116,7 +116,7 @@ class DentalChartController extends Controller
         $dentalChart->delete();
 
         return redirect()
-            ->route('react.dentist-registrations.show', $registrationId)
+            ->route('dentist-registrations.show', $registrationId)
             ->with('success', localize('global.dental_chart_deleted_successfully'));
     }
 
@@ -246,20 +246,20 @@ class DentalChartController extends Controller
     private function chartUrls(DentistRegistration $dentistRegistration, ?DentalChart $dentalChart = null): array
     {
         $urls = [
-            'registrationShow' => route('react.dentist-registrations.show', $dentistRegistration),
-            'index' => route('react.dental-charts.index', $dentistRegistration),
-            'create' => route('react.dental-charts.create', $dentistRegistration),
-            'store' => route('react.dental-charts.store', $dentistRegistration),
-            'history' => route('react.dental-charts.history', $dentistRegistration),
-            'compare' => route('react.dental-charts.compare', $dentistRegistration),
-            'print' => route('react.dental-charts.print', $dentistRegistration),
-            'export' => route('react.dental-charts.export', $dentistRegistration),
+            'registrationShow' => route('dentist-registrations.show', $dentistRegistration),
+            'index' => route('dental-charts.index', $dentistRegistration),
+            'create' => route('dental-charts.create', $dentistRegistration),
+            'store' => route('dental-charts.store', $dentistRegistration),
+            'history' => route('dental-charts.history', $dentistRegistration),
+            'compare' => route('dental-charts.compare', $dentistRegistration),
+            'print' => route('dental-charts.print', $dentistRegistration),
+            'export' => route('dental-charts.export', $dentistRegistration),
         ];
 
         if ($dentalChart) {
-            $urls['update'] = route('react.dental-charts.update', $dentalChart);
-            $urls['destroy'] = route('react.dental-charts.destroy', $dentalChart);
-            $urls['edit'] = route('react.dental-charts.edit', $dentalChart);
+            $urls['update'] = route('dental-charts.update', $dentalChart);
+            $urls['destroy'] = route('dental-charts.destroy', $dentalChart);
+            $urls['edit'] = route('dental-charts.edit', $dentalChart);
         }
 
         return $urls;

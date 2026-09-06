@@ -55,11 +55,11 @@ class DepartmentController extends Controller
                 'delete-departments',
             ),
             'urls' => [
-                'index' => route('react.departments.index'),
-                'create' => route('react.departments.create'),
-                'show' => url('/react/departments'),
-                'edit' => url('/react/departments'),
-                'destroy' => url('/react/departments'),
+                'index' => route('departments.index'),
+                'create' => route('departments.create'),
+                'show' => url('/departments'),
+                'edit' => url('/departments'),
+                'destroy' => url('/departments'),
             ],
         ]);
     }
@@ -84,9 +84,9 @@ class DepartmentController extends Controller
                 'delete' => $request->user()->can('delete', $department),
             ],
             'urls' => [
-                'index' => route('react.departments.index'),
-                'edit' => route('react.departments.edit', $department),
-                'destroy' => route('react.departments.destroy', $department),
+                'index' => route('departments.index'),
+                'edit' => route('departments.edit', $department),
+                'destroy' => route('departments.destroy', $department),
             ],
         ]);
     }
@@ -109,7 +109,7 @@ class DepartmentController extends Controller
         Department::create($data);
 
         return redirect()
-            ->route('react.departments.index')
+            ->route('departments.index')
             ->with('success', localize('global.department_created_successfully.'));
     }
 
@@ -136,7 +136,7 @@ class DepartmentController extends Controller
         $department->update($this->validateDepartment($request, $department));
 
         return redirect()
-            ->route('react.departments.index')
+            ->route('departments.index')
             ->with('success', localize('global.department_updated_successfully.'));
     }
 
@@ -147,7 +147,7 @@ class DepartmentController extends Controller
         $department->delete();
 
         return redirect()
-            ->route('react.departments.index')
+            ->route('departments.index')
             ->with('success', localize('global.department_deleted_successfully.'));
     }
 
@@ -167,10 +167,10 @@ class DepartmentController extends Controller
     private function formUrls(?Department $department = null): array
     {
         return [
-            'index' => route('react.departments.index'),
-            'store' => route('react.departments.store'),
-            'update' => $department ? route('react.departments.update', $department) : '',
-            'back' => route('react.departments.index'),
+            'index' => route('departments.index'),
+            'store' => route('departments.store'),
+            'update' => $department ? route('departments.update', $department) : '',
+            'back' => route('departments.index'),
         ];
     }
 

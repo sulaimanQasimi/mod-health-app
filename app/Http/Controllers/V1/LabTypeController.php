@@ -67,16 +67,16 @@ class LabTypeController extends Controller
             'categories' => $this->categoryListPayload(),
             'permissions' => $this->labTypePermissions($request->user()),
             'urls' => [
-                'index' => route('react.lab-types.index'),
-                'create' => route('react.lab-types.create'),
-                'show' => url('/react/lab-types'),
-                'edit' => url('/react/lab-types'),
-                'destroy' => url('/react/lab-types'),
+                'index' => route('lab-types.index'),
+                'create' => route('lab-types.create'),
+                'show' => url('/lab-types'),
+                'edit' => url('/lab-types'),
+                'destroy' => url('/lab-types'),
             ],
             'categoryUrls' => [
-                'store' => route('react.lab-types.categories.store'),
-                'update' => url('/react/lab-types/categories'),
-                'destroy' => url('/react/lab-types/categories'),
+                'store' => route('lab-types.categories.store'),
+                'update' => url('/lab-types/categories'),
+                'destroy' => url('/lab-types/categories'),
             ],
             'flash' => [
                 'success' => session('success'),
@@ -96,7 +96,7 @@ class LabTypeController extends Controller
         Category::create($data);
 
         return redirect()
-            ->route('react.lab-types.index')
+            ->route('lab-types.index')
             ->with('success', localize('global.category_created_successfully.'));
     }
 
@@ -111,7 +111,7 @@ class LabTypeController extends Controller
         $category->update($data);
 
         return redirect()
-            ->route('react.lab-types.index')
+            ->route('lab-types.index')
             ->with('success', localize('global.category_updated_successfully.'));
     }
 
@@ -121,14 +121,14 @@ class LabTypeController extends Controller
 
         if ($category->labTypes()->exists()) {
             return redirect()
-                ->route('react.lab-types.index')
+                ->route('lab-types.index')
                 ->with('error', localize('global.category_cannot_delete_with_lab_types') ?: localize('global.category_cannot_delete'));
         }
 
         $category->delete();
 
         return redirect()
-            ->route('react.lab-types.index')
+            ->route('lab-types.index')
             ->with('success', localize('global.category_deleted_successfully.'));
     }
 
@@ -155,9 +155,9 @@ class LabTypeController extends Controller
                 'delete' => $this->canManageLabTypes($request->user()),
             ],
             'urls' => [
-                'index' => route('react.lab-types.index'),
-                'edit' => route('react.lab-types.edit', $labType),
-                'destroy' => route('react.lab-types.destroy', $labType),
+                'index' => route('lab-types.index'),
+                'edit' => route('lab-types.edit', $labType),
+                'destroy' => route('lab-types.destroy', $labType),
             ],
         ]);
     }
@@ -180,7 +180,7 @@ class LabTypeController extends Controller
         LabType::create($data);
 
         return redirect()
-            ->route('react.lab-types.index')
+            ->route('lab-types.index')
             ->with('success', localize('global.lab_type_created_successfully'));
     }
 
@@ -209,7 +209,7 @@ class LabTypeController extends Controller
         $labType->update($this->validateLabType($request, $labType));
 
         return redirect()
-            ->route('react.lab-types.index')
+            ->route('lab-types.index')
             ->with('success', localize('global.lab_type_updated_successfully'));
     }
 
@@ -220,14 +220,14 @@ class LabTypeController extends Controller
 
         if ($labType->patientTestRegistrations()->exists()) {
             return redirect()
-                ->route('react.lab-types.index')
+                ->route('lab-types.index')
                 ->with('error', localize('global.lab_type_cannot_delete_with_registrations'));
         }
 
         $labType->delete();
 
         return redirect()
-            ->route('react.lab-types.index')
+            ->route('lab-types.index')
             ->with('success', localize('global.lab_type_deleted_successfully'));
     }
 
@@ -369,10 +369,10 @@ class LabTypeController extends Controller
     private function formUrls(?LabType $labType = null): array
     {
         return [
-            'index' => route('react.lab-types.index'),
-            'store' => route('react.lab-types.store'),
-            'update' => $labType ? route('react.lab-types.update', $labType) : '',
-            'back' => route('react.lab-types.index'),
+            'index' => route('lab-types.index'),
+            'store' => route('lab-types.store'),
+            'update' => $labType ? route('lab-types.update', $labType) : '',
+            'back' => route('lab-types.index'),
         ];
     }
 

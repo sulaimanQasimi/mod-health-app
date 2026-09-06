@@ -113,7 +113,7 @@ export default function LabTestSection({
 }: LabTestSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/lab-tests`;
+    const baseUrl = `/appointments/${appointmentId}/lab-tests`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

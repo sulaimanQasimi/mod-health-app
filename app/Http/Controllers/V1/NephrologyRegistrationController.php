@@ -42,8 +42,8 @@ class NephrologyRegistrationController extends Controller
             'filterOptions' => $this->filterOptions($request),
             'permissions' => $this->listPermissions($request->user()),
             'urls' => [
-                'current' => route('react.nephrology-registrations.index'),
-                'show' => url('/react/nephrology-registrations'),
+                'current' => route('nephrology-registrations.index'),
+                'show' => url('/nephrology-registrations'),
             ],
         ]);
     }
@@ -54,7 +54,7 @@ class NephrologyRegistrationController extends Controller
 
         if ($nephrologyRegistration->needsAcceptance()) {
             return redirect()
-                ->route('react.nephrology-registrations.index')
+                ->route('nephrology-registrations.index')
                 ->with('error', localize('global.nephrology_accept_on_index_hint'));
         }
 
@@ -136,7 +136,7 @@ class NephrologyRegistrationController extends Controller
         $nephrologyRegistration->update($validated);
 
         return redirect()
-            ->route('react.nephrology-registrations.show', $nephrologyRegistration)
+            ->route('nephrology-registrations.show', $nephrologyRegistration)
             ->with('success', localize('global.nephrology_registration_updated_successfully'));
     }
 
@@ -148,7 +148,7 @@ class NephrologyRegistrationController extends Controller
         $nephrologyRegistration->delete();
 
         return redirect()
-            ->route('react.nephrology-registrations.index')
+            ->route('nephrology-registrations.index')
             ->with('success', localize('global.nephrology_registration_deleted_successfully'));
     }
 
@@ -186,7 +186,7 @@ class NephrologyRegistrationController extends Controller
         }
 
         return redirect()
-            ->route('react.nephrology-registrations.show', $nephrologyRegistration)
+            ->route('nephrology-registrations.show', $nephrologyRegistration)
             ->with('success', localize('global.registration_accepted_successfully'));
     }
 
@@ -208,21 +208,21 @@ class NephrologyRegistrationController extends Controller
         $patientId = $nephrologyRegistration->patient_id;
 
         return [
-            'index' => route('react.nephrology-registrations.index'),
-            'show' => route('react.nephrology-registrations.show', $nephrologyRegistration),
-            'update' => route('react.nephrology-registrations.update', $nephrologyRegistration),
-            'destroy' => route('react.nephrology-registrations.destroy', $nephrologyRegistration),
-            'markCompleted' => route('react.nephrology-registrations.mark-completed', $nephrologyRegistration),
-            'markInProgress' => route('react.nephrology-registrations.mark-in-progress', $nephrologyRegistration),
-            'cancel' => route('react.nephrology-registrations.cancel', $nephrologyRegistration),
+            'index' => route('nephrology-registrations.index'),
+            'show' => route('nephrology-registrations.show', $nephrologyRegistration),
+            'update' => route('nephrology-registrations.update', $nephrologyRegistration),
+            'destroy' => route('nephrology-registrations.destroy', $nephrologyRegistration),
+            'markCompleted' => route('nephrology-registrations.mark-completed', $nephrologyRegistration),
+            'markInProgress' => route('nephrology-registrations.mark-in-progress', $nephrologyRegistration),
+            'cancel' => route('nephrology-registrations.cancel', $nephrologyRegistration),
             'appointment' => $nephrologyRegistration->appointment_id
-                ? route('react.appointments.show', $nephrologyRegistration->appointment_id)
+                ? route('appointments.show', $nephrologyRegistration->appointment_id)
                 : null,
-            'hemodialysisCreate' => route('react.hemodialysis-sessions.create', [
+            'hemodialysisCreate' => route('hemodialysis-sessions.create', [
                 'nephrology_registration_id' => $nephrologyRegistration->id,
                 'patient_id' => $patientId,
             ]),
-            'hemodialysisIndex' => route('react.hemodialysis-sessions.index', [
+            'hemodialysisIndex' => route('hemodialysis-sessions.index', [
                 'patient_id' => $patientId,
             ]),
         ];

@@ -65,8 +65,8 @@ class HospitalizationController extends Controller
                 'bed_number' => $item->bed?->number,
                 'is_active' => ! (bool) $item->is_discharged,
                 'urls' => [
-                    'show' => route('react.hospitalizations.show', $item),
-                    'edit' => route('react.hospitalizations.edit', $item),
+                    'show' => route('hospitalizations.show', $item),
+                    'edit' => route('hospitalizations.edit', $item),
                 ],
             ])
             ->values()

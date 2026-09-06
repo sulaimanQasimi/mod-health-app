@@ -24,7 +24,7 @@ class DepotMovementController extends Controller
             $this->authorizeDepotPermission('depot.request.create');
         }
 
-        return redirect()->route('react.depots.requests.create', [
+        return redirect()->route('depots.requests.create', [
             'source_depot_id' => $request->query('from_depot_id'),
             'requesting_depot_id' => $request->query('to_depot_id'),
         ]);
@@ -40,7 +40,7 @@ class DepotMovementController extends Controller
             $this->authorizeDepotPermission('depot.movement.depot_to_pharmacy');
         }
 
-        return redirect()->route('react.depots.requests.create', [
+        return redirect()->route('depots.requests.create', [
             'destination' => 'pharmacy',
             'source_depot_id' => $request->query('from_depot_id'),
             'pharmacy_id' => $request->query('pharmacy_id'),

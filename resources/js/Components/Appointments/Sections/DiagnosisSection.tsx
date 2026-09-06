@@ -76,7 +76,7 @@ export default function DiagnosisSection({ appointmentId, embedded = false }: Di
     const [form, setForm] = useState<DiagnosisFormState>(EMPTY_FORM);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const baseUrl = `/react/appointments/${appointmentId}/diagnosis`;
+    const baseUrl = `/appointments/${appointmentId}/diagnosis`;
 
     const loadData = useCallback(async () => {
         setLoading(true);

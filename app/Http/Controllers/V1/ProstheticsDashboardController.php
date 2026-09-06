@@ -68,9 +68,9 @@ class ProstheticsDashboardController extends Controller
             'statusCounts' => $statusCounts,
             'recentCases' => $recentCases,
             'urls' => [
-                'reports' => route('react.prosthetics.reports.index'),
-                'cases' => route('react.prosthetics.cases.index'),
-                'caseShow' => url('/react/prosthetics/cases'),
+                'reports' => route('prosthetics.reports.index'),
+                'cases' => route('prosthetics.cases.index'),
+                'caseShow' => url('/prosthetics/cases'),
             ],
         ]);
     }

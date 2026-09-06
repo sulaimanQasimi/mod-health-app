@@ -281,8 +281,8 @@ export default function HospitalizationVisitSection({
     const { csrfToken } = usePage<SharedPageProps>().props;
     const sectionKey = icuId ?? hospitalizationId;
     const baseUrl = icuId
-        ? `/react/icus/${icuId}/visits`
-        : `/react/hospitalizations/${hospitalizationId}/visits`;
+        ? `/icus/${icuId}/visits`
+        : `/hospitalizations/${hospitalizationId}/visits`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

@@ -52,10 +52,10 @@ class PhysiotherapyTypeController extends Controller
                 'delete-physiotherapy-types',
             ),
             'urls' => [
-                'index' => route('react.physiotherapy-types.index'),
-                'create' => route('react.physiotherapy-types.create'),
-                'edit' => url('/react/physiotherapy-types'),
-                'destroy' => url('/react/physiotherapy-types'),
+                'index' => route('physiotherapy-types.index'),
+                'create' => route('physiotherapy-types.create'),
+                'edit' => url('/physiotherapy-types'),
+                'destroy' => url('/physiotherapy-types'),
             ],
         ]);
     }
@@ -78,7 +78,7 @@ class PhysiotherapyTypeController extends Controller
         PhysiotherapyType::create($data);
 
         return redirect()
-            ->route('react.physiotherapy-types.index')
+            ->route('physiotherapy-types.index')
             ->with('success', localize('global.physiotherapy_type_created_successfully'));
     }
 
@@ -105,7 +105,7 @@ class PhysiotherapyTypeController extends Controller
         $physiotherapyType->update($data);
 
         return redirect()
-            ->route('react.physiotherapy-types.index')
+            ->route('physiotherapy-types.index')
             ->with('success', localize('global.physiotherapy_type_updated_successfully'));
     }
 
@@ -115,14 +115,14 @@ class PhysiotherapyTypeController extends Controller
 
         if ($physiotherapyType->physiotherapyProcedures()->exists()) {
             return redirect()
-                ->route('react.physiotherapy-types.index')
+                ->route('physiotherapy-types.index')
                 ->with('error', localize('global.cannot_delete_physiotherapy_type_with_procedures'));
         }
 
         $physiotherapyType->delete();
 
         return redirect()
-            ->route('react.physiotherapy-types.index')
+            ->route('physiotherapy-types.index')
             ->with('success', localize('global.physiotherapy_type_deleted_successfully'));
     }
 
@@ -152,10 +152,10 @@ class PhysiotherapyTypeController extends Controller
     private function formUrls(?PhysiotherapyType $physiotherapyType = null): array
     {
         return [
-            'index' => route('react.physiotherapy-types.index'),
-            'store' => route('react.physiotherapy-types.store'),
-            'update' => $physiotherapyType ? route('react.physiotherapy-types.update', $physiotherapyType) : '',
-            'back' => route('react.physiotherapy-types.index'),
+            'index' => route('physiotherapy-types.index'),
+            'store' => route('physiotherapy-types.store'),
+            'update' => $physiotherapyType ? route('physiotherapy-types.update', $physiotherapyType) : '',
+            'back' => route('physiotherapy-types.index'),
         ];
     }
 }

@@ -71,7 +71,7 @@ class ConsultationController extends Controller
             }),
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
             'urls' => [
-                'index' => route('react.consultations.index'),
+                'index' => route('consultations.index'),
             ],
         ]);
     }

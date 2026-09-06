@@ -78,8 +78,8 @@ class IncomeController extends Controller
             ],
             'permissions' => $this->incomePermissions($request->user()),
             'urls' => [
-                'index' => route('react.incomes.index'),
-                'create' => route('react.incomes.create'),
+                'index' => route('incomes.index'),
+                'create' => route('incomes.create'),
             ],
         ]);
     }
@@ -94,9 +94,9 @@ class IncomeController extends Controller
                 'incomeTypes' => ['purchase', 'return', 'donation', 'transfer', 'completion'],
             ],
             'urls' => [
-                'index' => route('react.incomes.index'),
-                'store' => route('react.incomes.store'),
-                'back' => route('react.incomes.index'),
+                'index' => route('incomes.index'),
+                'store' => route('incomes.store'),
+                'back' => route('incomes.index'),
             ],
         ]);
     }
@@ -125,7 +125,7 @@ class IncomeController extends Controller
         Income::create($data);
 
         return redirect()
-            ->route('react.incomes.index')
+            ->route('incomes.index')
             ->with('success', localize('global.income_record_created_successfully'));
     }
 }

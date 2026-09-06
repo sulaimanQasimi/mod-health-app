@@ -39,7 +39,7 @@ class ProstheticsController extends Controller
                 'status' => $referral->status,
                 'date' => $referral->referral_date?->format('Y-m-d'),
                 'urls' => [
-                    'show' => route('react.prosthetics.referrals.show', $referral),
+                    'show' => route('prosthetics.referrals.show', $referral),
                 ],
             ]);
 
@@ -55,7 +55,7 @@ class ProstheticsController extends Controller
                 'status' => $case->status,
                 'date' => $case->updated_at?->format('Y-m-d'),
                 'urls' => [
-                    'show' => route('react.prosthetics.cases.show', $case),
+                    'show' => route('prosthetics.cases.show', $case),
                 ],
             ]);
 
@@ -100,9 +100,9 @@ class ProstheticsController extends Controller
                 'converted_case_id' => $referral->converted_case_id,
                 'converted_case_number' => $referral->convertedCase?->case_number,
                 'urls' => [
-                    'show' => route('react.prosthetics.referrals.show', $referral),
+                    'show' => route('prosthetics.referrals.show', $referral),
                     'case_show' => $referral->converted_case_id
-                        ? route('react.prosthetics.cases.show', $referral->converted_case_id)
+                        ? route('prosthetics.cases.show', $referral->converted_case_id)
                         : null,
                 ],
             ],
@@ -141,7 +141,7 @@ class ProstheticsController extends Controller
             'data' => [
                 'id' => $referral->id,
                 'urls' => [
-                    'show' => route('react.prosthetics.referrals.show', $referral),
+                    'show' => route('prosthetics.referrals.show', $referral),
                 ],
             ],
         ]);

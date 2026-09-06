@@ -116,7 +116,7 @@ class ReferDepartmentController extends Controller
                     'time' => $newAppointment->time,
                     'token_url' => url("/appointments/{$newAppointment->id}/printToken"),
                 ],
-                'redirect_url' => route('react.appointments.completed'),
+                'redirect_url' => route('appointments.completed'),
             ],
         ]);
     }

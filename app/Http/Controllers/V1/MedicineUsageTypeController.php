@@ -46,10 +46,10 @@ class MedicineUsageTypeController extends Controller
                 'delete-medicines-usage-types',
             ),
             'urls' => [
-                'index' => route('react.medicine-usage-types.index'),
-                'create' => route('react.medicine-usage-types.create'),
-                'edit' => url('/react/medicine-usage-types'),
-                'destroy' => url('/react/medicine-usage-types'),
+                'index' => route('medicine-usage-types.index'),
+                'create' => route('medicine-usage-types.create'),
+                'edit' => url('/medicine-usage-types'),
+                'destroy' => url('/medicine-usage-types'),
             ],
         ]);
     }
@@ -75,7 +75,7 @@ class MedicineUsageTypeController extends Controller
         MedicineUsageType::create($data);
 
         return redirect()
-            ->route('react.medicine-usage-types.index')
+            ->route('medicine-usage-types.index')
             ->with('success', localize('global.medicine_usage_type_created_successfully.'));
     }
 
@@ -105,7 +105,7 @@ class MedicineUsageTypeController extends Controller
         $medicineUsageType->update($data);
 
         return redirect()
-            ->route('react.medicine-usage-types.index')
+            ->route('medicine-usage-types.index')
             ->with('success', localize('global.medicine_usage_type_updated_successfully.'));
     }
 
@@ -116,7 +116,7 @@ class MedicineUsageTypeController extends Controller
         $medicineUsageType->delete();
 
         return redirect()
-            ->route('react.medicine-usage-types.index')
+            ->route('medicine-usage-types.index')
             ->with('success', localize('global.medicine_usage_type_deleted_successfully.'));
     }
 
@@ -126,10 +126,10 @@ class MedicineUsageTypeController extends Controller
     private function formUrls(?MedicineUsageType $medicineUsageType = null): array
     {
         return [
-            'index' => route('react.medicine-usage-types.index'),
-            'store' => route('react.medicine-usage-types.store'),
-            'update' => $medicineUsageType ? route('react.medicine-usage-types.update', $medicineUsageType) : '',
-            'back' => route('react.medicine-usage-types.index'),
+            'index' => route('medicine-usage-types.index'),
+            'store' => route('medicine-usage-types.store'),
+            'update' => $medicineUsageType ? route('medicine-usage-types.update', $medicineUsageType) : '',
+            'back' => route('medicine-usage-types.index'),
         ];
     }
 }

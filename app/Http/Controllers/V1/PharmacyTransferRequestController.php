@@ -97,8 +97,8 @@ class PharmacyTransferRequestController extends Controller
             'formData' => $this->depotFormOptions(),
             'urls' => [
                 ...$this->pageUrls(),
-                'store' => route('react.pharmacy.transfer-requests.store'),
-                'stockAvailable' => route('react.depots.stock.available'),
+                'store' => route('pharmacy.transfer-requests.store'),
+                'stockAvailable' => route('depots.stock.available'),
             ],
         ]);
     }
@@ -138,7 +138,7 @@ class PharmacyTransferRequestController extends Controller
         }
 
         return redirect()
-            ->route('react.pharmacy.transfer-requests.show', $depotRequest)
+            ->route('pharmacy.transfer-requests.show', $depotRequest)
             ->with('success', localize('global.pharmacy_transfer_request_created.'));
     }
 
@@ -167,10 +167,10 @@ class PharmacyTransferRequestController extends Controller
             'permissions' => $this->requestActionPermissions($depotRequest),
             'urls' => [
                 ...$this->pageUrls(),
-                'edit' => route('react.pharmacy.transfer-requests.edit', $depotRequest),
-                'print' => route('react.depots.requests.print', $depotRequest),
-                'submit' => route('react.pharmacy.transfer-requests.submit', $depotRequest),
-                'cancel' => route('react.pharmacy.transfer-requests.cancel', $depotRequest),
+                'edit' => route('pharmacy.transfer-requests.edit', $depotRequest),
+                'print' => route('depots.requests.print', $depotRequest),
+                'submit' => route('pharmacy.transfer-requests.submit', $depotRequest),
+                'cancel' => route('pharmacy.transfer-requests.cancel', $depotRequest),
             ],
         ]);
     }
@@ -200,9 +200,9 @@ class PharmacyTransferRequestController extends Controller
             'formData' => $this->depotFormOptions(),
             'urls' => [
                 ...$this->pageUrls(),
-                'show' => route('react.pharmacy.transfer-requests.show', $depotRequest),
-                'update' => route('react.pharmacy.transfer-requests.update', $depotRequest),
-                'stockAvailable' => route('react.depots.stock.available'),
+                'show' => route('pharmacy.transfer-requests.show', $depotRequest),
+                'update' => route('pharmacy.transfer-requests.update', $depotRequest),
+                'stockAvailable' => route('depots.stock.available'),
             ],
         ]);
     }
@@ -237,7 +237,7 @@ class PharmacyTransferRequestController extends Controller
         });
 
         return redirect()
-            ->route('react.pharmacy.transfer-requests.show', $depotRequest)
+            ->route('pharmacy.transfer-requests.show', $depotRequest)
             ->with('success', localize('global.updated_successfully.'));
     }
 
@@ -256,7 +256,7 @@ class PharmacyTransferRequestController extends Controller
         }
 
         return redirect()
-            ->route('react.pharmacy.transfer-requests.show', $depotRequest)
+            ->route('pharmacy.transfer-requests.show', $depotRequest)
             ->with('success', localize('global.depot.request_submitted_for_approval.'));
     }
 
@@ -280,7 +280,7 @@ class PharmacyTransferRequestController extends Controller
         }
 
         return redirect()
-            ->route('react.pharmacy.transfer-requests.show', $depotRequest)
+            ->route('pharmacy.transfer-requests.show', $depotRequest)
             ->with('success', localize('global.depot.request_cancelled.'));
     }
 
@@ -290,9 +290,9 @@ class PharmacyTransferRequestController extends Controller
     private function pageUrls(): array
     {
         return [
-            'index' => route('react.pharmacy.transfer-requests.index'),
-            'create' => route('react.pharmacy.transfer-requests.create'),
-            'show' => url('/react/pharmacy/transfer-requests'),
+            'index' => route('pharmacy.transfer-requests.index'),
+            'create' => route('pharmacy.transfer-requests.create'),
+            'show' => url('/pharmacy/transfer-requests'),
         ];
     }
 

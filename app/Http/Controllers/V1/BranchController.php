@@ -46,10 +46,10 @@ class BranchController extends Controller
                 'delete-branches',
             ),
             'urls' => [
-                'index' => route('react.branches.index'),
-                'create' => route('react.branches.create'),
-                'edit' => url('/react/branches'),
-                'destroy' => url('/react/branches'),
+                'index' => route('branches.index'),
+                'create' => route('branches.create'),
+                'edit' => url('/branches'),
+                'destroy' => url('/branches'),
             ],
         ]);
     }
@@ -75,7 +75,7 @@ class BranchController extends Controller
         Branch::create($data);
 
         return redirect()
-            ->route('react.branches.index')
+            ->route('branches.index')
             ->with('success', localize('global.branch_created_successfully.'));
     }
 
@@ -105,7 +105,7 @@ class BranchController extends Controller
         $branch->update($data);
 
         return redirect()
-            ->route('react.branches.index')
+            ->route('branches.index')
             ->with('success', localize('global.branch_updated_successfully.'));
     }
 
@@ -116,7 +116,7 @@ class BranchController extends Controller
         $branch->delete();
 
         return redirect()
-            ->route('react.branches.index')
+            ->route('branches.index')
             ->with('success', localize('global.branch_deleted_successfully.'));
     }
 
@@ -126,10 +126,10 @@ class BranchController extends Controller
     private function formUrls(?Branch $branch = null): array
     {
         return [
-            'index' => route('react.branches.index'),
-            'store' => route('react.branches.store'),
-            'update' => $branch ? route('react.branches.update', $branch) : '',
-            'back' => route('react.branches.index'),
+            'index' => route('branches.index'),
+            'store' => route('branches.store'),
+            'update' => $branch ? route('branches.update', $branch) : '',
+            'back' => route('branches.index'),
         ];
     }
 }

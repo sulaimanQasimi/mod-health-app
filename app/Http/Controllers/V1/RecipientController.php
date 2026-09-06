@@ -46,10 +46,10 @@ class RecipientController extends Controller
                 'edit-recipients',
             ),
             'urls' => [
-                'index' => route('react.recipients.index'),
-                'create' => route('react.recipients.create'),
-                'edit' => url('/react/recipients'),
-                'destroy' => url('/react/recipients'),
+                'index' => route('recipients.index'),
+                'create' => route('recipients.create'),
+                'edit' => url('/recipients'),
+                'destroy' => url('/recipients'),
             ],
         ]);
     }
@@ -75,7 +75,7 @@ class RecipientController extends Controller
         Recipient::create($data);
 
         return redirect()
-            ->route('react.recipients.index')
+            ->route('recipients.index')
             ->with('success', localize('global.add_success_recipient'));
     }
 
@@ -110,7 +110,7 @@ class RecipientController extends Controller
         $recipient->update($data);
 
         return redirect()
-            ->route('react.recipients.index')
+            ->route('recipients.index')
             ->with('success', localize('global.recipient_update_success'));
     }
 
@@ -121,7 +121,7 @@ class RecipientController extends Controller
         $recipient->delete();
 
         return redirect()
-            ->route('react.recipients.index')
+            ->route('recipients.index')
             ->with('success', localize('global.recipient_update_success'));
     }
 
@@ -131,10 +131,10 @@ class RecipientController extends Controller
     private function formUrls(?Recipient $recipient = null): array
     {
         return [
-            'index' => route('react.recipients.index'),
-            'store' => route('react.recipients.store'),
-            'update' => $recipient ? route('react.recipients.update', $recipient) : '',
-            'back' => route('react.recipients.index'),
+            'index' => route('recipients.index'),
+            'store' => route('recipients.store'),
+            'update' => $recipient ? route('recipients.update', $recipient) : '',
+            'back' => route('recipients.index'),
         ];
     }
 }

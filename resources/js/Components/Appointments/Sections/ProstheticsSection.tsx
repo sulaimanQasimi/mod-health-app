@@ -68,7 +68,7 @@ interface ProstheticsSectionData {
 export default function ProstheticsSection({ appointmentId }: ProstheticsSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/prosthetics`;
+    const baseUrl = `/appointments/${appointmentId}/prosthetics`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

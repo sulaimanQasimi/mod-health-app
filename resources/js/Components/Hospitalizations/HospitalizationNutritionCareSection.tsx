@@ -285,7 +285,7 @@ export default function HospitalizationNutritionCareSection({
 }: HospitalizationNutritionCareSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = baseUrlProp ?? `/react/hospitalizations/${hospitalizationId}/nutrition-cares`;
+    const baseUrl = baseUrlProp ?? `/hospitalizations/${hospitalizationId}/nutrition-cares`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

@@ -87,7 +87,7 @@ class AnesthesiaController extends Controller
             ]),
             'filterOptions' => $this->reportFilterOptions($branchId),
             'urls' => [
-                'current' => route('react.anesthesias.report'),
+                'current' => route('anesthesias.report'),
                 'export' => route('anesthesias.export-report'),
                 ...$this->anesthesiaListUrls(),
             ],
@@ -132,13 +132,13 @@ class AnesthesiaController extends Controller
                 'prescription' => $user->can('show-prescriptions-menu') && (bool) $anesthesia->appointment_id,
             ],
             'urls' => [
-                'update' => route('react.anesthesias.update', $anesthesia),
-                'referToOperation' => route('react.anesthesias.refer-to-operation', $anesthesia),
-                'destroy' => route('react.anesthesias.destroy', $anesthesia),
-                'edit' => route('react.anesthesias.edit', $anesthesia),
+                'update' => route('anesthesias.update', $anesthesia),
+                'referToOperation' => route('anesthesias.refer-to-operation', $anesthesia),
+                'destroy' => route('anesthesias.destroy', $anesthesia),
+                'edit' => route('anesthesias.edit', $anesthesia),
                 'back' => $this->backUrlForAnesthesiaStatus($anesthesia->status),
                 'appointment' => $anesthesia->appointment_id
-                    ? route('react.appointments.show', $anesthesia->appointment_id)
+                    ? route('appointments.show', $anesthesia->appointment_id)
                     : null,
                 ...$this->anesthesiaListUrls(),
             ],
@@ -188,9 +188,9 @@ class AnesthesiaController extends Controller
             'hospitalDoctors' => $this->hospitalDoctorOptions(),
             'nurses' => $this->nurseOptions($branchId),
             'urls' => [
-                'update' => route('react.anesthesias.update-details', $anesthesia),
-                'show' => route('react.anesthesias.show', $anesthesia),
-                'back' => route('react.anesthesias.show', $anesthesia),
+                'update' => route('anesthesias.update-details', $anesthesia),
+                'show' => route('anesthesias.show', $anesthesia),
+                'back' => route('anesthesias.show', $anesthesia),
             ],
         ]);
     }
@@ -214,7 +214,7 @@ class AnesthesiaController extends Controller
 
         if (($data['status'] ?? null) === 'approved') {
             return redirect()
-                ->route('react.anesthesias.show', $anesthesia)
+                ->route('anesthesias.show', $anesthesia)
                 ->with('success', localize('global.anesthesia_updated_successfully.'));
         }
 
@@ -236,7 +236,7 @@ class AnesthesiaController extends Controller
         $this->operationReferralService->refer($anesthesia);
 
         return redirect()
-            ->route('react.anesthesias.show', $anesthesia)
+            ->route('anesthesias.show', $anesthesia)
             ->with('success', localize('global.anesthesia_referred_to_operation_successfully.'));
     }
 
@@ -276,7 +276,7 @@ class AnesthesiaController extends Controller
         $anesthesia->update($data);
 
         return redirect()
-            ->route('react.anesthesias.show', $anesthesia)
+            ->route('anesthesias.show', $anesthesia)
             ->with('success', localize('global.anesthesia_updated_successfully.'));
     }
 

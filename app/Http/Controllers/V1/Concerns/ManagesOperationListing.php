@@ -166,7 +166,7 @@ trait ManagesOperationListing
             'reserve_reason' => $operation->reserve_reason,
             'status' => $operation->status,
             'urls' => [
-                'show' => route('react.operations.show', $operation),
+                'show' => route('operations.show', $operation),
             ],
         ];
 
@@ -203,28 +203,28 @@ trait ManagesOperationListing
     protected function operationListUrls(): array
     {
         return [
-            'new' => route('react.operations.new'),
-            'approved' => route('react.operations.approved'),
-            'reserved' => route('react.operations.reserved'),
-            'completed' => route('react.operations.completed'),
-            'report' => route('react.operations.report'),
+            'new' => route('operations.new'),
+            'approved' => route('operations.approved'),
+            'reserved' => route('operations.reserved'),
+            'completed' => route('operations.completed'),
+            'report' => route('operations.report'),
         ];
     }
 
     protected function backUrlForOperation(Anesthesia $operation): string
     {
         if ($operation->is_operation_done) {
-            return route('react.operations.completed');
+            return route('operations.completed');
         }
 
         if ($operation->is_reserved) {
-            return route('react.operations.reserved');
+            return route('operations.reserved');
         }
 
         if ($operation->is_operation_approved) {
-            return route('react.operations.approved');
+            return route('operations.approved');
         }
 
-        return route('react.operations.new');
+        return route('operations.new');
     }
 }

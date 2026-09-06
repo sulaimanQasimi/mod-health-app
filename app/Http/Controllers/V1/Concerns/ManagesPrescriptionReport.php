@@ -201,7 +201,7 @@ trait ManagesPrescriptionReport
             'is_completed' => (bool) $row->is_completed,
             'created_at' => $createdAt,
             'urls' => [
-                'show' => route('react.prescriptions.show', $row->id),
+                'show' => route('prescriptions.show', $row->id),
             ],
         ];
     }

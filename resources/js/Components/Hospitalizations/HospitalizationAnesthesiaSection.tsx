@@ -11,7 +11,7 @@ export default function HospitalizationAnesthesiaSection({
 }: HospitalizationAnesthesiaSectionProps) {
     return (
         <AnesthesiaReferralSection
-            baseUrl={`/react/hospitalizations/${hospitalizationId}/anesthesia`}
+            baseUrl={`/hospitalizations/${hospitalizationId}/anesthesia`}
             accordionId={`hospitalization-anesthesia-${hospitalizationId}`}
             isDischarged={isDischarged}
             reloadPageOnSuccess

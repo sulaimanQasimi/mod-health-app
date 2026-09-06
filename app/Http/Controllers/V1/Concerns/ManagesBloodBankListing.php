@@ -87,7 +87,7 @@ trait ManagesBloodBankListing
             'status' => $bloodBank->status,
             'created_at' => $bloodBank->created_at ? verta($bloodBank->created_at)->format('Y-m-d') : null,
             'urls' => [
-                'show' => route('react.blood-banks.show', $bloodBank),
+                'show' => route('blood-banks.show', $bloodBank),
             ],
         ];
     }
@@ -106,15 +106,15 @@ trait ManagesBloodBankListing
     protected function bloodBankListUrls(): array
     {
         return [
-            'dashboard' => route('react.blood-banks.dashboard'),
-            'new' => route('react.blood-banks.new'),
-            'approved' => route('react.blood-banks.approved'),
-            'rejected' => route('react.blood-banks.rejected'),
-            'delivered' => route('react.blood-banks.delivered'),
-            'inventory' => route('react.blood-banks.inventory'),
-            'movements' => route('react.blood-banks.movements'),
-            'branchTransfers' => route('react.blood-banks.branch-transfers.index'),
-            'report' => route('react.blood-banks.report'),
+            'dashboard' => route('blood-banks.dashboard'),
+            'new' => route('blood-banks.new'),
+            'approved' => route('blood-banks.approved'),
+            'rejected' => route('blood-banks.rejected'),
+            'delivered' => route('blood-banks.delivered'),
+            'inventory' => route('blood-banks.inventory'),
+            'movements' => route('blood-banks.movements'),
+            'branchTransfers' => route('blood-banks.branch-transfers.index'),
+            'report' => route('blood-banks.report'),
         ];
     }
 
@@ -141,10 +141,10 @@ trait ManagesBloodBankListing
     protected function backUrlForBloodRequest(BloodBank $bloodBank): string
     {
         return match ($bloodBank->status) {
-            'approved' => route('react.blood-banks.approved'),
-            'rejected' => route('react.blood-banks.rejected'),
-            'delivered' => route('react.blood-banks.delivered'),
-            default => route('react.blood-banks.new'),
+            'approved' => route('blood-banks.approved'),
+            'rejected' => route('blood-banks.rejected'),
+            'delivered' => route('blood-banks.delivered'),
+            default => route('blood-banks.new'),
         };
     }
 

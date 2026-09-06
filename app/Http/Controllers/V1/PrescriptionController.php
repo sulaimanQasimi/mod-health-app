@@ -47,8 +47,8 @@ class PrescriptionController extends Controller
 
         return Inertia::render('Prescriptions/ScanCode', [
             'urls' => [
-                'scan' => route('react.prescriptions.scan'),
-                'index' => route('react.prescriptions.index'),
+                'scan' => route('prescriptions.scan'),
+                'index' => route('prescriptions.index'),
             ],
             'error' => session('error'),
         ]);
@@ -68,11 +68,11 @@ class PrescriptionController extends Controller
 
         if (! $prescription) {
             return redirect()
-                ->route('react.prescriptions.scan-code')
+                ->route('prescriptions.scan-code')
                 ->with('error', localize('global.prescription_not_found'));
         }
 
-        return redirect()->route('react.prescriptions.show', $prescription);
+        return redirect()->route('prescriptions.show', $prescription);
     }
 
     public function index(Request $request): Response
@@ -171,9 +171,9 @@ class PrescriptionController extends Controller
                 'pharmacies' => Pharmacy::query()->orderBy('name')->get(['id', 'name']),
             ],
             'urls' => [
-                'current' => route('react.prescriptions.report'),
-                'index' => route('react.prescriptions.index'),
-                'pharmacyUsers' => url('/react/prescriptions/report/pharmacies'),
+                'current' => route('prescriptions.report'),
+                'index' => route('prescriptions.index'),
+                'pharmacyUsers' => url('/prescriptions/report/pharmacies'),
                 'export' => url('/prescriptions/report-search'),
             ],
         ]);
@@ -428,7 +428,7 @@ class PrescriptionController extends Controller
         $prescription->delete();
 
         return redirect()
-            ->route('react.prescriptions.index')
+            ->route('prescriptions.index')
             ->with('success', localize('global.prescription_deleted_successfully'));
     }
 
@@ -690,32 +690,32 @@ class PrescriptionController extends Controller
     private function buildIndexUrls(string $mode): array
     {
         return [
-            'index' => route('react.prescriptions.index'),
-            'delivered' => route('react.prescriptions.delivered'),
-            'show' => url('/react/prescriptions'),
-            'bulkUpdateStatus' => route('react.prescriptions.bulk-update-status'),
-            'bulkDelete' => route('react.prescriptions.bulk-delete'),
+            'index' => route('prescriptions.index'),
+            'delivered' => route('prescriptions.delivered'),
+            'show' => url('/prescriptions'),
+            'bulkUpdateStatus' => route('prescriptions.bulk-update-status'),
+            'bulkDelete' => route('prescriptions.bulk-delete'),
             'export' => url('/prescriptions/export-prescriptions'),
             'thermalReceipt' => url('/prescriptions/thermal-receipt'),
-            'scanCode' => route('react.prescriptions.scan-code'),
+            'scanCode' => route('prescriptions.scan-code'),
             'current' => $mode === 'delivered'
-                ? route('react.prescriptions.delivered')
-                : route('react.prescriptions.index'),
+                ? route('prescriptions.delivered')
+                : route('prescriptions.index'),
         ];
     }
 
     private function buildShowUrls(Prescription $prescription): array
     {
         return [
-            'index' => route('react.prescriptions.index'),
-            'delivered' => route('react.prescriptions.delivered'),
-            'updateStatus' => route('react.prescriptions.update-status', $prescription),
-            'markAllDelivered' => route('react.prescriptions.mark-all-delivered', $prescription),
-            'destroy' => route('react.prescriptions.destroy', $prescription),
+            'index' => route('prescriptions.index'),
+            'delivered' => route('prescriptions.delivered'),
+            'updateStatus' => route('prescriptions.update-status', $prescription),
+            'markAllDelivered' => route('prescriptions.mark-all-delivered', $prescription),
+            'destroy' => route('prescriptions.destroy', $prescription),
             'thermalReceipt' => url("/prescriptions/thermal-receipt/{$prescription->id}"),
-            'itemsBase' => url('/react/prescriptions/items'),
-            'alternativesBase' => url('/react/prescriptions/alternatives'),
-            'addAlternative' => route('react.prescriptions.alternatives.store'),
+            'itemsBase' => url('/prescriptions/items'),
+            'alternativesBase' => url('/prescriptions/alternatives'),
+            'addAlternative' => route('prescriptions.alternatives.store'),
         ];
     }
 }

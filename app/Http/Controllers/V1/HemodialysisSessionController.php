@@ -46,10 +46,10 @@ class HemodialysisSessionController extends Controller
             'filterOptions' => $this->filterOptions(),
             'permissions' => $this->listPermissions($request->user()),
             'urls' => [
-                'current' => route('react.hemodialysis-sessions.index'),
-                'create' => route('react.hemodialysis-sessions.create'),
-                'show' => url('/react/hemodialysis-sessions'),
-                'edit' => url('/react/hemodialysis-sessions'),
+                'current' => route('hemodialysis-sessions.index'),
+                'create' => route('hemodialysis-sessions.create'),
+                'show' => url('/hemodialysis-sessions'),
+                'edit' => url('/hemodialysis-sessions'),
             ],
         ]);
     }
@@ -94,8 +94,8 @@ class HemodialysisSessionController extends Controller
                 ] : null,
             ],
             'urls' => [
-                'index' => route('react.hemodialysis-sessions.index'),
-                'store' => route('react.hemodialysis-sessions.store'),
+                'index' => route('hemodialysis-sessions.index'),
+                'store' => route('hemodialysis-sessions.store'),
             ],
         ]);
     }
@@ -121,7 +121,7 @@ class HemodialysisSessionController extends Controller
         $session = HemodialysisSession::create($validated);
 
         return redirect()
-            ->route('react.hemodialysis-sessions.show', $session)
+            ->route('hemodialysis-sessions.show', $session)
             ->with('success', localize('global.hemodialysis_session_created_successfully'));
     }
 
@@ -160,8 +160,8 @@ class HemodialysisSessionController extends Controller
                 'doctors' => $this->nephrologistDoctorsForForm()->all(),
             ],
             'urls' => [
-                'show' => route('react.hemodialysis-sessions.show', $hemodialysisSession),
-                'update' => route('react.hemodialysis-sessions.update', $hemodialysisSession),
+                'show' => route('hemodialysis-sessions.show', $hemodialysisSession),
+                'update' => route('hemodialysis-sessions.update', $hemodialysisSession),
             ],
         ]);
     }
@@ -193,7 +193,7 @@ class HemodialysisSessionController extends Controller
         $hemodialysisSession->update($validated);
 
         return redirect()
-            ->route('react.hemodialysis-sessions.show', $hemodialysisSession)
+            ->route('hemodialysis-sessions.show', $hemodialysisSession)
             ->with('success', localize('global.hemodialysis_session_updated_successfully'));
     }
 
@@ -205,7 +205,7 @@ class HemodialysisSessionController extends Controller
         $hemodialysisSession->delete();
 
         return redirect()
-            ->route('react.hemodialysis-sessions.index')
+            ->route('hemodialysis-sessions.index')
             ->with('success', localize('global.hemodialysis_session_deleted_successfully'));
     }
 
@@ -258,15 +258,15 @@ class HemodialysisSessionController extends Controller
     private function sessionUrls(HemodialysisSession $hemodialysisSession): array
     {
         return [
-            'index' => route('react.hemodialysis-sessions.index'),
-            'show' => route('react.hemodialysis-sessions.show', $hemodialysisSession),
-            'edit' => route('react.hemodialysis-sessions.edit', $hemodialysisSession),
-            'destroy' => route('react.hemodialysis-sessions.destroy', $hemodialysisSession),
+            'index' => route('hemodialysis-sessions.index'),
+            'show' => route('hemodialysis-sessions.show', $hemodialysisSession),
+            'edit' => route('hemodialysis-sessions.edit', $hemodialysisSession),
+            'destroy' => route('hemodialysis-sessions.destroy', $hemodialysisSession),
             'patient' => $hemodialysisSession->patient_id
-                ? route('react.patients.show', $hemodialysisSession->patient_id)
+                ? route('patients.show', $hemodialysisSession->patient_id)
                 : null,
             'nephrologyRegistration' => $hemodialysisSession->nephrology_registration_id
-                ? route('react.nephrology-registrations.show', $hemodialysisSession->nephrology_registration_id)
+                ? route('nephrology-registrations.show', $hemodialysisSession->nephrology_registration_id)
                 : null,
         ];
     }

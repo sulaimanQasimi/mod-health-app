@@ -238,12 +238,12 @@ trait ManagesDepotAccess
     protected function depotNavUrls(): array
     {
         return [
-            'index' => route('react.depots.index'),
-            'transactions' => route('react.depots.transactions.index'),
-            'requests' => route('react.depots.requests.index'),
-            'depotToDepot' => route('react.depots.requests.create'),
-            'reports' => route('react.depots.reports.index'),
-            'tools' => route('react.tools.index'),
+            'index' => route('depots.index'),
+            'transactions' => route('depots.transactions.index'),
+            'requests' => route('depots.requests.index'),
+            'depotToDepot' => route('depots.requests.create'),
+            'reports' => route('depots.reports.index'),
+            'tools' => route('tools.index'),
         ];
     }
 

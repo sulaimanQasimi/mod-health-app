@@ -71,11 +71,11 @@ class RoomController extends Controller
                 ],
             ),
             'urls' => [
-                'index' => route('react.rooms.index'),
-                'create' => route('react.rooms.create'),
-                'show' => url('/react/rooms'),
-                'edit' => url('/react/rooms'),
-                'destroy' => url('/react/rooms'),
+                'index' => route('rooms.index'),
+                'create' => route('rooms.create'),
+                'show' => url('/rooms'),
+                'edit' => url('/rooms'),
+                'destroy' => url('/rooms'),
             ],
         ]);
     }
@@ -109,9 +109,9 @@ class RoomController extends Controller
                 'delete' => $request->user()->can('delete', $room),
             ],
             'urls' => [
-                'index' => route('react.rooms.index'),
-                'edit' => route('react.rooms.edit', $room),
-                'destroy' => route('react.rooms.destroy', $room),
+                'index' => route('rooms.index'),
+                'edit' => route('rooms.edit', $room),
+                'destroy' => route('rooms.destroy', $room),
             ],
         ]);
     }
@@ -133,7 +133,7 @@ class RoomController extends Controller
         Room::create($this->validateRoom($request));
 
         return redirect()
-            ->route('react.rooms.index')
+            ->route('rooms.index')
             ->with('success', localize('global.room_created_successfully.'));
     }
 
@@ -160,7 +160,7 @@ class RoomController extends Controller
         $room->update($this->validateRoom($request, $room));
 
         return redirect()
-            ->route('react.rooms.index')
+            ->route('rooms.index')
             ->with('success', localize('global.room_updated_successfully.'));
     }
 
@@ -171,7 +171,7 @@ class RoomController extends Controller
         $room->delete();
 
         return redirect()
-            ->route('react.rooms.index')
+            ->route('rooms.index')
             ->with('success', localize('global.room_deleted_successfully.'));
     }
 
@@ -192,10 +192,10 @@ class RoomController extends Controller
     private function formUrls(?Room $room = null): array
     {
         return [
-            'index' => route('react.rooms.index'),
-            'store' => route('react.rooms.store'),
-            'update' => $room ? route('react.rooms.update', $room) : '',
-            'back' => route('react.rooms.index'),
+            'index' => route('rooms.index'),
+            'store' => route('rooms.store'),
+            'update' => $room ? route('rooms.update', $room) : '',
+            'back' => route('rooms.index'),
         ];
     }
 

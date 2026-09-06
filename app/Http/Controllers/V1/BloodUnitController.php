@@ -83,7 +83,7 @@ class BloodUnitController extends Controller
                         'expires_at' => $unit->expires_at ? verta($unit->expires_at)->format('Y-m-d') : null,
                         'created_at' => $unit->created_at ? verta($unit->created_at)->format('Y-m-d') : null,
                         'urls' => [
-                            'show' => route('react.blood-banks.inventory.show', $unit),
+                            'show' => route('blood-banks.inventory.show', $unit),
                         ],
                     ];
                 })->values()->all(),
@@ -118,8 +118,8 @@ class BloodUnitController extends Controller
                     || $request->user()->can('manage-blood-inventory'),
             ],
             'urls' => [
-                'current' => route('react.blood-banks.inventory'),
-                'create' => route('react.blood-banks.inventory.create'),
+                'current' => route('blood-banks.inventory'),
+                'create' => route('blood-banks.inventory.create'),
                 ...$this->bloodBankListUrls(),
             ],
         ]);
@@ -137,8 +137,8 @@ class BloodUnitController extends Controller
                 'bloodComponentTypes' => $this->bloodComponentTypes(),
             ],
             'urls' => [
-                'back' => route('react.blood-banks.inventory'),
-                'store' => route('react.blood-banks.inventory.store'),
+                'back' => route('blood-banks.inventory'),
+                'store' => route('blood-banks.inventory.store'),
                 ...$this->bloodBankListUrls(),
             ],
         ]);
@@ -152,7 +152,7 @@ class BloodUnitController extends Controller
         app(BloodUnitReceiveService::class)->receive($request);
 
         return redirect()
-            ->route('react.blood-banks.inventory')
+            ->route('blood-banks.inventory')
             ->with('success', localize('global.blood_unit_received_success'));
     }
 
@@ -191,12 +191,12 @@ class BloodUnitController extends Controller
                 'error' => session('error'),
             ],
             'urls' => [
-                'back' => route('react.blood-banks.inventory'),
-                'saveTests' => route('react.blood-banks.inventory.tests.save', $bloodUnit),
-                'approveAfterTests' => route('react.blood-banks.inventory.tests.approve', $bloodUnit),
-                'quarantine' => route('react.blood-banks.inventory.quarantine', $bloodUnit),
-                'releaseQuarantine' => route('react.blood-banks.inventory.release-quarantine', $bloodUnit),
-                'discard' => route('react.blood-banks.inventory.discard', $bloodUnit),
+                'back' => route('blood-banks.inventory'),
+                'saveTests' => route('blood-banks.inventory.tests.save', $bloodUnit),
+                'approveAfterTests' => route('blood-banks.inventory.tests.approve', $bloodUnit),
+                'quarantine' => route('blood-banks.inventory.quarantine', $bloodUnit),
+                'releaseQuarantine' => route('blood-banks.inventory.release-quarantine', $bloodUnit),
+                'discard' => route('blood-banks.inventory.discard', $bloodUnit),
                 ...$this->bloodBankListUrls(),
             ],
         ]);
@@ -223,7 +223,7 @@ class BloodUnitController extends Controller
         app(BloodUnitManagementService::class)->saveTests($bloodUnit, $validated, (int) $request->user()->id);
 
         return redirect()
-            ->route('react.blood-banks.inventory.show', $bloodUnit)
+            ->route('blood-banks.inventory.show', $bloodUnit)
             ->with('success', localize('global.blood_unit_tests_saved'));
     }
 
@@ -237,16 +237,16 @@ class BloodUnitController extends Controller
             app(BloodUnitManagementService::class)->approveAfterTests($bloodUnit);
         } catch (ValidationException $e) {
             return redirect()
-                ->route('react.blood-banks.inventory.show', $bloodUnit)
+                ->route('blood-banks.inventory.show', $bloodUnit)
                 ->with('error', collect($e->errors())->flatten()->first());
         } catch (\Throwable $e) {
             return redirect()
-                ->route('react.blood-banks.inventory.show', $bloodUnit)
+                ->route('blood-banks.inventory.show', $bloodUnit)
                 ->with('error', $e->getMessage());
         }
 
         return redirect()
-            ->route('react.blood-banks.inventory.show', $bloodUnit)
+            ->route('blood-banks.inventory.show', $bloodUnit)
             ->with('success', localize('global.blood_unit_released_after_tests'));
     }
 
@@ -262,12 +262,12 @@ class BloodUnitController extends Controller
             app(BloodUnitManagementService::class)->discard($bloodUnit, $request->input('reason'));
         } catch (\Throwable $e) {
             return redirect()
-                ->route('react.blood-banks.inventory.show', $bloodUnit)
+                ->route('blood-banks.inventory.show', $bloodUnit)
                 ->with('error', $e->getMessage());
         }
 
         return redirect()
-            ->route('react.blood-banks.inventory')
+            ->route('blood-banks.inventory')
             ->with('success', localize('global.blood_unit_discarded_success'));
     }
 
@@ -283,12 +283,12 @@ class BloodUnitController extends Controller
             app(BloodUnitManagementService::class)->setQuarantine($bloodUnit, true, $request->input('reason'));
         } catch (\Throwable $e) {
             return redirect()
-                ->route('react.blood-banks.inventory.show', $bloodUnit)
+                ->route('blood-banks.inventory.show', $bloodUnit)
                 ->with('error', $e->getMessage());
         }
 
         return redirect()
-            ->route('react.blood-banks.inventory.show', $bloodUnit)
+            ->route('blood-banks.inventory.show', $bloodUnit)
             ->with('success', localize('global.blood_unit_quarantine_set'));
     }
 
@@ -304,12 +304,12 @@ class BloodUnitController extends Controller
             app(BloodUnitManagementService::class)->setQuarantine($bloodUnit, false, $request->input('reason'));
         } catch (\Throwable $e) {
             return redirect()
-                ->route('react.blood-banks.inventory.show', $bloodUnit)
+                ->route('blood-banks.inventory.show', $bloodUnit)
                 ->with('error', $e->getMessage());
         }
 
         return redirect()
-            ->route('react.blood-banks.inventory.show', $bloodUnit)
+            ->route('blood-banks.inventory.show', $bloodUnit)
             ->with('success', localize('global.blood_unit_quarantine_released'));
     }
 
@@ -369,7 +369,7 @@ class BloodUnitController extends Controller
                     'id' => $bloodUnit->donation->donor->patient->id,
                     'name' => trim($bloodUnit->donation->donor->patient->name.' '.($bloodUnit->donation->donor->patient->last_name ?? '')),
                     'urls' => [
-                        'show' => route('react.patients.show', $bloodUnit->donation->donor->patient),
+                        'show' => route('patients.show', $bloodUnit->donation->donor->patient),
                     ],
                 ] : null,
                 'phlebotomy_at' => $formatDt($bloodUnit->donation->phlebotomy_at),

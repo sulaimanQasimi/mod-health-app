@@ -127,7 +127,7 @@ class ICUController extends Controller
                 'date_to',
             ]),
             'urls' => [
-                'current' => route('react.icus.report'),
+                'current' => route('icus.report'),
                 'export' => route('icus.export-report'),
                 ...$this->icuListUrls(),
             ],
@@ -174,15 +174,15 @@ class ICUController extends Controller
                 'daily_progress' => $user->can('show-icu-menu') && $icu->status === 'approved',
             ],
             'urls' => [
-                'update' => route('react.icus.update', $icu),
-                'destroy' => route('react.icus.destroy', $icu),
+                'update' => route('icus.update', $icu),
+                'destroy' => route('icus.destroy', $icu),
                 'back' => $this->backUrlForStatus($icu->status),
                 'appointment' => $icu->appointment_id
-                    ? route('react.appointments.show', $icu->appointment_id)
+                    ? route('appointments.show', $icu->appointment_id)
                     : null,
                 'print_death_card' => route('icus.print-death-card', $icu),
                 'print_move_card' => route('icus.print-move-card', $icu),
-                'discharge_meta' => route('react.icus.discharge.meta', $icu),
+                'discharge_meta' => route('icus.discharge.meta', $icu),
                 ...$this->icuListUrls(),
             ],
         ]);
@@ -266,7 +266,7 @@ class ICUController extends Controller
         $icu->delete();
 
         return redirect()
-            ->route('react.icus.new')
+            ->route('icus.new')
             ->with('success', localize('global.icu_deleted_successfully.'));
     }
 
@@ -417,9 +417,9 @@ class ICUController extends Controller
     private function backUrlForStatus(string $status): string
     {
         return match ($status) {
-            'approved' => route('react.icus.approved'),
-            'rejected' => route('react.icus.rejected'),
-            default => route('react.icus.new'),
+            'approved' => route('icus.approved'),
+            'rejected' => route('icus.rejected'),
+            default => route('icus.new'),
         };
     }
 

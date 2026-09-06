@@ -29,8 +29,8 @@ class ProfileController extends Controller
             'profile' => $this->transformProfile($user),
             'defaultAvatar' => asset('assets/img/avatars/1.png'),
             'urls' => [
-                'update' => route('react.profile.update'),
-                'updatePassword' => route('react.profile.update-password'),
+                'update' => route('profile.update'),
+                'updatePassword' => route('profile.update-password'),
             ],
             'flash' => [
                 'success' => session('success'),
@@ -55,7 +55,7 @@ class ProfileController extends Controller
         $user->update($data);
 
         return redirect()
-            ->route('react.profile.show')
+            ->route('profile.show')
             ->with('success', localize('global.user_update_success'));
     }
 
@@ -79,7 +79,7 @@ class ProfileController extends Controller
         ]);
 
         return redirect()
-            ->route('react.profile.show')
+            ->route('profile.show')
             ->with('success', localize('global.password_updated_success'));
     }
 

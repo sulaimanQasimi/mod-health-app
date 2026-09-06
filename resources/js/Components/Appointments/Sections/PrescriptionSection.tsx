@@ -115,7 +115,7 @@ export default function PrescriptionSection({
 }: PrescriptionSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/prescription`;
+    const baseUrl = `/appointments/${appointmentId}/prescription`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

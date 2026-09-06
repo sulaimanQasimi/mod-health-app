@@ -121,11 +121,11 @@ class PatientController extends Controller
             ],
             'permissions' => $this->patientPermissions($user),
             'urls' => [
-                'index' => route('react.patients.index'),
-                'create' => route('react.patients.create'),
-                'show' => url('/react/patients'),
-                'edit' => url('/react/patients'),
-                'destroy' => url('/react/patients'),
+                'index' => route('patients.index'),
+                'create' => route('patients.create'),
+                'show' => url('/patients'),
+                'edit' => url('/patients'),
+                'destroy' => url('/patients'),
             ],
         ]);
     }
@@ -185,7 +185,7 @@ class PatientController extends Controller
                         : null,
                     'duration_minutes' => $session->duration_minutes,
                     'status' => $session->status,
-                    'show_url' => route('react.hemodialysis-sessions.show', $session),
+                    'show_url' => route('hemodialysis-sessions.show', $session),
                 ])
                 ->values()
                 ->all();
@@ -240,15 +240,15 @@ class PatientController extends Controller
                 'foreignCountryReferral' => $user->can('viewAny', \App\Models\ForeignCountryReferral::class),
             ],
             'urls' => [
-                'index' => route('react.patients.index'),
-                'edit' => route('react.patients.edit', $patient),
-                'destroy' => route('react.patients.destroy', $patient),
+                'index' => route('patients.index'),
+                'edit' => route('patients.edit', $patient),
+                'destroy' => route('patients.destroy', $patient),
                 'printCard' => route('patients.print-card', $patient),
                 'webcam' => route('patients.webcam', $patient),
                 'appointmentStore' => route('appointments.store'),
-                'doctorsByDepartment' => url('/react/patients/doctors-by-department'),
-                'hemodialysisCreate' => route('react.hemodialysis-sessions.create', ['patient_id' => $patient->id]),
-                'hemodialysisIndex' => route('react.hemodialysis-sessions.index', ['patient_id' => $patient->id]),
+                'doctorsByDepartment' => url('/patients/doctors-by-department'),
+                'hemodialysisCreate' => route('hemodialysis-sessions.create', ['patient_id' => $patient->id]),
+                'hemodialysisIndex' => route('hemodialysis-sessions.index', ['patient_id' => $patient->id]),
             ],
         ]);
     }
@@ -296,7 +296,7 @@ class PatientController extends Controller
         }
 
         return redirect()
-            ->route('react.patients.index')
+            ->route('patients.index')
             ->with('success', localize('global.patient_deleted_successfully.'));
     }
 
@@ -435,8 +435,8 @@ class PatientController extends Controller
                 'recipients' => Recipient::query()->orderBy('name')->get(['id', 'name']),
             ],
             'urls' => [
-                'current' => route('react.patients.report'),
-                'index' => route('react.patients.index'),
+                'current' => route('patients.report'),
+                'index' => route('patients.index'),
                 'export' => route('patients.export-report'),
             ],
         ]);
@@ -511,18 +511,18 @@ class PatientController extends Controller
     private function buildFormUrls(?Patient $patient = null): array
     {
         $urls = [
-            'districts' => url('/react/patients/districts'),
-            'recipientParts' => url('/react/patients/recipient-parts'),
-            'doctorsByDepartment' => url('/react/patients/doctors-by-department'),
-            'back' => route('react.patients.index'),
+            'districts' => url('/patients/districts'),
+            'recipientParts' => url('/patients/recipient-parts'),
+            'doctorsByDepartment' => url('/patients/doctors-by-department'),
+            'back' => route('patients.index'),
         ];
 
         if ($patient) {
-            $urls['update'] = route('react.patients.update', $patient);
-            $urls['show'] = route('react.patients.show', $patient);
-            $urls['destroy'] = route('react.patients.destroy', $patient);
+            $urls['update'] = route('patients.update', $patient);
+            $urls['show'] = route('patients.show', $patient);
+            $urls['destroy'] = route('patients.destroy', $patient);
         } else {
-            $urls['store'] = route('react.patients.store');
+            $urls['store'] = route('patients.store');
         }
 
         return $urls;

@@ -46,7 +46,7 @@ class BloodBankController extends Controller
             ])->values()->all(),
             'status' => $item->status,
             'created_at' => $item->created_at ? verta($item->created_at)->format('Y-m-d H:i') : null,
-            'urls' => ['show' => route('react.blood-banks.show', $item)],
+            'urls' => ['show' => route('blood-banks.show', $item)],
         ])->values()->all();
 
         return $this->sectionIndexResponse($items, $appointment, [

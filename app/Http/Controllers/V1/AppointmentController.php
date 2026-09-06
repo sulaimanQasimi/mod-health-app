@@ -6,18 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\V1\Concerns\ManagesAppointmentReport;
 use App\Http\Controllers\V1\Concerns\PaginatesInertiaIndex;
 use App\Http\Controllers\V1\Concerns\RendersInertiaPage;
+use App\Jobs\SendNewAppointmentNotification;
 use App\Models\Appointment;
 use App\Models\Department;
 use App\Models\District;
 use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\PrintedNumber;
 use App\Models\Province;
 use App\Models\Relation;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class AppointmentController extends Controller
 {
@@ -146,15 +152,144 @@ class AppointmentController extends Controller
             ],
             'permissions' => $this->appointmentPermissions($user),
             'urls' => [
-                'index' => route('react.appointments.index'),
-                'trashed' => route('react.appointments.trashed'),
-                'show' => url('/react/appointments'),
-                'edit' => url('/react/appointments'),
-                'destroy' => url('/react/appointments'),
+                'index' => route('appointments.index'),
+                'trashed' => route('appointments.trashed'),
+                'show' => url('/appointments'),
+                'edit' => url('/appointments'),
+                'destroy' => url('/appointments'),
                 'patientHistory' => url('/patients/history'),
-                'patientsIndex' => route('react.patients.index'),
-                'patientsCreate' => route('react.patients.create'),
+                'patientsIndex' => route('patients.index'),
+                'patientsCreate' => route('patients.create'),
             ],
+        ]);
+    }
+
+    public function store(Request $request): JsonResponse|RedirectResponse
+    {
+        $this->authorize('create', Appointment::class);
+
+        $user = $request->user();
+
+        $rules = [
+            'patient_id' => 'required|exists:patients,id',
+            'doctor_id' => 'nullable|exists:doctors,id',
+            'branch_id' => 'required|exists:branches,id',
+            'department_id' => 'required|exists:departments,id',
+            'is_completed' => 'nullable',
+            'status_remark' => 'nullable|string|max:191',
+            'refferal_remarks' => 'nullable|string|max:191',
+        ];
+
+        if ($user->clinic_type === 'both') {
+            $rules['clinic_type'] = 'required|in:hospital,clinic';
+        }
+
+        $validatedData = $request->validate($rules);
+
+        $patient = Patient::query()->findOrFail($validatedData['patient_id']);
+
+        if (! $user->hasRole(['super_admin', 'admin']) && (int) $patient->branch_id !== (int) $user->branch_id) {
+            abort(403);
+        }
+
+        if (! $user->hasRole(['super_admin', 'admin']) && (int) $validatedData['branch_id'] !== (int) $user->branch_id) {
+            abort(403);
+        }
+
+        $now = now();
+        $validatedData['date'] = $now->format('Y-m-d');
+        $validatedData['time'] = $now->format('H:i:s');
+        $validatedData['is_completed'] = $validatedData['is_completed'] ?? 0;
+
+        if ($user->clinic_type && $user->clinic_type !== 'both') {
+            $validatedData['clinic_type'] = $user->clinic_type;
+        }
+
+        if ($request->filled('current_appointment_id')) {
+            $currentAppointment = Appointment::query()->findOrFail($request->input('current_appointment_id'));
+            $this->authorize('update', $currentAppointment);
+
+            $currentAppointment->update([
+                'is_completed' => 1,
+                'refferal_remarks' => $request->input('refferal_remarks'),
+            ]);
+        }
+
+        $appointment = Appointment::create($validatedData);
+        $appointment->load(['department:id,name', 'doctor:id,name', 'patient:id,name,last_name']);
+
+        SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
+
+        if ($request->ajax() || $request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.appointment_created_successfully'),
+                'patient' => [
+                    'id' => $appointment->patient->id,
+                    'name' => $appointment->patient->name,
+                    'last_name' => $appointment->patient->last_name,
+                ],
+                'appointment' => [
+                    'id' => $appointment->id,
+                    'department' => $appointment->department->name ?? '',
+                    'doctor' => $appointment->doctor->name ?? '',
+                    'date' => $now->format('Y-m-d'),
+                    'time' => $now->format('H:i:s'),
+                    'token_url' => route('appointments.printToken', $appointment),
+                ],
+            ]);
+        }
+
+        return redirect()
+            ->route('appointments.index')
+            ->with('success', localize('global.appointment_created_successfully'));
+    }
+
+    public function printToken(Appointment $appointment): SymfonyResponse|RedirectResponse
+    {
+        $this->authorize('view', $appointment);
+
+        $patient = $appointment->patient;
+        $today = Carbon::today();
+
+        if (! $appointment->department_id) {
+            return redirect()->back()->with('error', localize('global.doctor_department_not_found'));
+        }
+
+        $departmentId = $appointment->department_id;
+
+        $existingToken = PrintedNumber::query()
+            ->where('patient_id', $patient->id)
+            ->where('date', $today)
+            ->where('department_id', $departmentId)
+            ->first();
+
+        if ($existingToken) {
+            return response()->view('pages.patients.token', [
+                'patient' => $patient,
+                'printedNumber' => $existingToken,
+                'name' => $appointment->doctor?->name,
+                'appointment' => $appointment,
+            ]);
+        }
+
+        $maxNumber = PrintedNumber::query()
+            ->where('date', $today)
+            ->where('department_id', $departmentId)
+            ->max('number');
+
+        $printedNumber = PrintedNumber::create([
+            'patient_id' => $patient->id,
+            'number' => ($maxNumber ? $maxNumber : 0) + 1,
+            'date' => $today,
+            'department_id' => $departmentId,
+        ]);
+
+        return response()->view('pages.patients.token', [
+            'patient' => $patient,
+            'printedNumber' => $printedNumber,
+            'name' => $appointment->doctor?->name,
+            'appointment' => $appointment,
         ]);
     }
 
@@ -224,14 +359,14 @@ class AppointmentController extends Controller
                 'operations' => $request->user()->can('show-operations-menu'),
             ],
             'formData' => [
-                'doctorsByDepartment' => url('/react/patients/doctors-by-department'),
+                'doctorsByDepartment' => url('/patients/doctors-by-department'),
             ],
             'urls' => [
-                'index' => route('react.appointments.index'),
-                'edit' => route('react.appointments.edit', $appointment),
+                'index' => route('appointments.index'),
+                'edit' => route('appointments.edit', $appointment),
                 'printToken' => url("/appointments/{$appointment->id}/printToken"),
-                'complete' => route('react.appointments.complete', $appointment),
-                'assignDoctor' => route('react.appointments.assign-doctor', $appointment),
+                'complete' => route('appointments.complete', $appointment),
+                'assignDoctor' => route('appointments.assign-doctor', $appointment),
                 'legacyShow' => url("/appointments/show/{$appointment->id}"),
             ],
         ]);
@@ -295,7 +430,7 @@ class AppointmentController extends Controller
         ]);
 
         return redirect()
-            ->route('react.appointments.completed')
+            ->route('appointments.completed')
             ->with('success', localize('global.appointment_updated_successfully.'));
     }
 
@@ -315,16 +450,16 @@ class AppointmentController extends Controller
             'appointment' => $this->transformAppointmentForForm($appointment),
             'formData' => [
                 'clinicType' => $user->clinic_type,
-                'doctorsByDepartment' => url('/react/patients/doctors-by-department'),
+                'doctorsByDepartment' => url('/patients/doctors-by-department'),
             ],
             'permissions' => [
                 'delete' => $user->can('delete', $appointment),
             ],
             'urls' => [
-                'index' => route('react.appointments.index'),
-                'update' => route('react.appointments.update', $appointment),
-                'destroy' => route('react.appointments.destroy', $appointment),
-                'show' => route('react.appointments.show', $appointment),
+                'index' => route('appointments.index'),
+                'update' => route('appointments.update', $appointment),
+                'destroy' => route('appointments.destroy', $appointment),
+                'show' => route('appointments.show', $appointment),
             ],
         ]);
     }
@@ -376,7 +511,7 @@ class AppointmentController extends Controller
         $appointment->update($validatedData);
 
         return redirect()
-            ->route('react.appointments.index')
+            ->route('appointments.index')
             ->with('success', localize('global.appointment_updated_successfully'));
     }
 
@@ -387,7 +522,7 @@ class AppointmentController extends Controller
         $appointment->delete();
 
         return redirect()
-            ->route('react.appointments.index')
+            ->route('appointments.index')
             ->with('success', localize('global.appointment_deleted_successfully'));
     }
 
@@ -450,9 +585,9 @@ class AppointmentController extends Controller
             ],
             'permissions' => $this->appointmentPermissions($user),
             'urls' => [
-                'index' => route('react.appointments.index'),
-                'trashed' => route('react.appointments.trashed'),
-                'restore' => url('/react/appointments'),
+                'index' => route('appointments.index'),
+                'trashed' => route('appointments.trashed'),
+                'restore' => url('/appointments'),
             ],
         ]);
     }
@@ -466,7 +601,7 @@ class AppointmentController extends Controller
         $appointment->restore();
 
         return redirect()
-            ->route('react.appointments.trashed')
+            ->route('appointments.trashed')
             ->with('success', localize('global.appointment_restored_successfully'));
     }
 
@@ -596,8 +731,8 @@ class AppointmentController extends Controller
                 'departments' => $this->departmentsForUser($user),
             ],
             'urls' => [
-                'current' => route('react.appointments.department-report'),
-                'index' => route('react.appointments.index'),
+                'current' => route('appointments.department-report'),
+                'index' => route('appointments.index'),
             ],
         ]);
     }
@@ -823,8 +958,8 @@ class AppointmentController extends Controller
                     ->get(['id', 'name']),
             ],
             'urls' => [
-                'current' => route('react.appointments.report'),
-                'index' => route('react.appointments.index'),
+                'current' => route('appointments.report'),
+                'index' => route('appointments.index'),
                 'export' => route('appointments.export-report'),
             ],
         ]);
@@ -1003,13 +1138,13 @@ class AppointmentController extends Controller
     private function myVisitUrls(): array
     {
         return [
-            'department' => route('react.appointments.department'),
-            'doctor' => route('react.appointments.doctor'),
-            'completed' => route('react.appointments.completed'),
-            'show' => url('/react/appointments'),
+            'department' => route('appointments.department'),
+            'doctor' => route('appointments.doctor'),
+            'completed' => route('appointments.completed'),
+            'show' => url('/appointments'),
             'patientHistory' => url('/patients/history'),
-            'accept' => url('/react/appointments'),
-            'changeDepartment' => url('/react/appointments'),
+            'accept' => url('/appointments'),
+            'changeDepartment' => url('/appointments'),
         ];
     }
 

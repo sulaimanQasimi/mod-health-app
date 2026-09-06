@@ -9,7 +9,7 @@ interface Props {
 
 const NumberOfOperationsBaseOnDepartment: React.FC<Props> = (props) => (
     <DepartmentPatientBreakdownReport
-        endpoint="/react/api/reports/general/operations"
+        endpoint="/api/reports/general/operations"
         exportFileName="operations-by-department"
         {...props}
     />

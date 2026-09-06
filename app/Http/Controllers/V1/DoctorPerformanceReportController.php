@@ -97,7 +97,7 @@ class DoctorPerformanceReportController extends Controller
                 'doctors' => $doctors,
             ],
             'urls' => [
-                'current' => route('react.doctor-performance-report'),
+                'current' => route('doctor-performance-report'),
             ],
         ]);
     }

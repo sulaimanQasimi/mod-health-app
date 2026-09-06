@@ -151,7 +151,7 @@ export default function HospitalizationNurseNoteSection({
 }: HospitalizationNurseNoteSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = baseUrlProp ?? `/react/hospitalizations/${hospitalizationId}/nurse-notes`;
+    const baseUrl = baseUrlProp ?? `/hospitalizations/${hospitalizationId}/nurse-notes`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

@@ -88,7 +88,7 @@ const NumberOfPatientsBaseOnPatientMiliteryTypes: React.FC<NumberOfPatientsBaseO
             date_to: date_to ?? '',
         });
 
-        get(`/react/api/reports/general/number-of-patients-base-on-patient-militery-types?${params.toString()}`)
+        get(`/api/reports/general/number-of-patients-base-on-patient-militery-types?${params.toString()}`)
             .then((response) => {
                 const payload = response as { data?: DepartmentMiliteryReport[] };
                 const data = payload?.data ?? [];

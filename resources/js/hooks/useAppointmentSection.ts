@@ -23,7 +23,7 @@ export function useAppointmentSection<TItem = Record<string, unknown>>(
     sectionPath: string,
 ) {
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/${sectionPath}`;
+    const baseUrl = `/appointments/${appointmentId}/${sectionPath}`;
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<AppointmentSectionPayload<TItem> | null>(null);
 

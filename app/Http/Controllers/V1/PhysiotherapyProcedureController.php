@@ -65,15 +65,15 @@ class PhysiotherapyProcedureController extends Controller
             'formOptions' => $formOptions,
             'permissions' => $this->showPermissions($user, $physiotherapyProcedure),
             'urls' => [
-                'index' => route('react.physiotherapy-procedures.index'),
-                'myProcedures' => route('react.physiotherapy-procedures.my-procedures'),
-                'show' => route('react.physiotherapy-procedures.show', $physiotherapyProcedure),
-                'update' => route('react.physiotherapy-procedures.update', $physiotherapyProcedure),
-                'destroy' => route('react.physiotherapy-procedures.destroy', $physiotherapyProcedure),
-                'updateCounter' => route('react.physiotherapy-procedures.update-counter', $physiotherapyProcedure),
-                'reviews' => route('react.physiotherapy-procedures.reviews.store', $physiotherapyProcedure),
+                'index' => route('physiotherapy-procedures.index'),
+                'myProcedures' => route('physiotherapy-procedures.my-procedures'),
+                'show' => route('physiotherapy-procedures.show', $physiotherapyProcedure),
+                'update' => route('physiotherapy-procedures.update', $physiotherapyProcedure),
+                'destroy' => route('physiotherapy-procedures.destroy', $physiotherapyProcedure),
+                'updateCounter' => route('physiotherapy-procedures.update-counter', $physiotherapyProcedure),
+                'reviews' => route('physiotherapy-procedures.reviews.store', $physiotherapyProcedure),
                 'appointment' => $physiotherapyProcedure->appointment_id
-                    ? route('react.appointments.show', $physiotherapyProcedure->appointment_id)
+                    ? route('appointments.show', $physiotherapyProcedure->appointment_id)
                     : null,
             ],
         ]);
@@ -117,7 +117,7 @@ class PhysiotherapyProcedureController extends Controller
         ]);
 
         return redirect()
-            ->route('react.physiotherapy-procedures.show', $physiotherapyProcedure)
+            ->route('physiotherapy-procedures.show', $physiotherapyProcedure)
             ->with('success', localize('global.physiotherapy_procedure_updated_successfully'));
     }
 
@@ -128,7 +128,7 @@ class PhysiotherapyProcedureController extends Controller
         $physiotherapyProcedure->delete();
 
         return redirect()
-            ->route('react.physiotherapy-procedures.index')
+            ->route('physiotherapy-procedures.index')
             ->with('success', localize('global.physiotherapy_procedure_deleted_successfully'));
     }
 
@@ -247,12 +247,12 @@ class PhysiotherapyProcedureController extends Controller
             'permissions' => $this->listPermissions($user, $mode),
             'urls' => [
                 'current' => $isOwn
-                    ? route('react.physiotherapy-procedures.my-procedures')
-                    : route('react.physiotherapy-procedures.index'),
-                'index' => route('react.physiotherapy-procedures.index'),
-                'myProcedures' => route('react.physiotherapy-procedures.my-procedures'),
-                'reports' => route('react.physiotherapy-reports.index'),
-                'show' => url('/react/physiotherapy-procedures'),
+                    ? route('physiotherapy-procedures.my-procedures')
+                    : route('physiotherapy-procedures.index'),
+                'index' => route('physiotherapy-procedures.index'),
+                'myProcedures' => route('physiotherapy-procedures.my-procedures'),
+                'reports' => route('physiotherapy-reports.index'),
+                'show' => url('/physiotherapy-procedures'),
             ],
         ]);
     }

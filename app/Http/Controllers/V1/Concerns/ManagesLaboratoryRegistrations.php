@@ -264,11 +264,11 @@ trait ManagesLaboratoryRegistrations
                 'print' => $registration->status === 'completed',
             ],
             'urls' => [
-                'accept' => route('react.laboratory.results.accept', $registration),
-                'enterResults' => route('react.laboratory.results.show', $registration),
-                'print' => route('react.laboratory.reports.print', $registration->ref_no),
-                'markCompleted' => route('react.laboratory.registrations.mark-completed', $registration),
-                'cancel' => route('react.laboratory.registrations.cancel', $registration),
+                'accept' => route('laboratory.results.accept', $registration),
+                'enterResults' => route('laboratory.results.show', $registration),
+                'print' => route('laboratory.reports.print', $registration->ref_no),
+                'markCompleted' => route('laboratory.registrations.mark-completed', $registration),
+                'cancel' => route('laboratory.registrations.cancel', $registration),
             ],
         ];
     }

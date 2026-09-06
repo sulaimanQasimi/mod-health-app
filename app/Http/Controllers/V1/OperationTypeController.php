@@ -59,10 +59,10 @@ class OperationTypeController extends Controller
                 'delete-operation-types',
             ),
             'urls' => [
-                'index' => route('react.operation-types.index'),
-                'create' => route('react.operation-types.create'),
-                'edit' => url('/react/operation-types'),
-                'destroy' => url('/react/operation-types'),
+                'index' => route('operation-types.index'),
+                'create' => route('operation-types.create'),
+                'edit' => url('/operation-types'),
+                'destroy' => url('/operation-types'),
             ],
         ]);
     }
@@ -90,7 +90,7 @@ class OperationTypeController extends Controller
         OperationType::create($data);
 
         return redirect()
-            ->route('react.operation-types.index')
+            ->route('operation-types.index')
             ->with('success', localize('global.operation_type_created_successfully.'));
     }
 
@@ -123,7 +123,7 @@ class OperationTypeController extends Controller
         $operationType->update($data);
 
         return redirect()
-            ->route('react.operation-types.index')
+            ->route('operation-types.index')
             ->with('success', localize('global.operation_type_updated_successfully.'));
     }
 
@@ -134,7 +134,7 @@ class OperationTypeController extends Controller
         $operationType->delete();
 
         return redirect()
-            ->route('react.operation-types.index')
+            ->route('operation-types.index')
             ->with('success', localize('global.operation_type_deleted_successfully.'));
     }
 
@@ -155,10 +155,10 @@ class OperationTypeController extends Controller
     private function formUrls(?OperationType $operationType = null): array
     {
         return [
-            'index' => route('react.operation-types.index'),
-            'store' => route('react.operation-types.store'),
-            'update' => $operationType ? route('react.operation-types.update', $operationType) : '',
-            'back' => route('react.operation-types.index'),
+            'index' => route('operation-types.index'),
+            'store' => route('operation-types.store'),
+            'update' => $operationType ? route('operation-types.update', $operationType) : '',
+            'back' => route('operation-types.index'),
         ];
     }
 }

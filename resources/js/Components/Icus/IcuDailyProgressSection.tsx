@@ -211,7 +211,7 @@ export default function IcuDailyProgressSection({
 }: IcuDailyProgressSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/icus/${icuId}/daily-progress`;
+    const baseUrl = `/icus/${icuId}/daily-progress`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

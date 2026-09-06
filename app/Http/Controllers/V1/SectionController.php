@@ -50,10 +50,10 @@ class SectionController extends Controller
                 'delete-sections',
             ),
             'urls' => [
-                'index' => route('react.sections.index'),
-                'create' => route('react.sections.create'),
-                'edit' => url('/react/sections'),
-                'destroy' => url('/react/sections'),
+                'index' => route('sections.index'),
+                'create' => route('sections.create'),
+                'edit' => url('/sections'),
+                'destroy' => url('/sections'),
             ],
         ]);
     }
@@ -75,7 +75,7 @@ class SectionController extends Controller
         Section::create($this->validateSection($request));
 
         return redirect()
-            ->route('react.sections.index')
+            ->route('sections.index')
             ->with('success', localize('global.section_created_successfully.'));
     }
 
@@ -101,7 +101,7 @@ class SectionController extends Controller
         $section->update($this->validateSection($request, $section));
 
         return redirect()
-            ->route('react.sections.index')
+            ->route('sections.index')
             ->with('success', localize('global.section_updated_successfully.'));
     }
 
@@ -112,7 +112,7 @@ class SectionController extends Controller
         $section->delete();
 
         return redirect()
-            ->route('react.sections.index')
+            ->route('sections.index')
             ->with('success', localize('global.section_deleted_successfully.'));
     }
 
@@ -132,10 +132,10 @@ class SectionController extends Controller
     private function formUrls(?Section $section = null): array
     {
         return [
-            'index' => route('react.sections.index'),
-            'store' => route('react.sections.store'),
-            'update' => $section ? route('react.sections.update', $section) : '',
-            'back' => route('react.sections.index'),
+            'index' => route('sections.index'),
+            'store' => route('sections.store'),
+            'update' => $section ? route('sections.update', $section) : '',
+            'back' => route('sections.index'),
         ];
     }
 

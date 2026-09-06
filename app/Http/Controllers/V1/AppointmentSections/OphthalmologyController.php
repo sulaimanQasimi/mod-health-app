@@ -59,7 +59,7 @@ class OphthalmologyController extends Controller
                 'status' => $item->status,
                 'diagnosis' => $item->diagnosis,
                 'urls' => [
-                    'show' => route('react.ophthalmology-registrations.show', $item),
+                    'show' => route('ophthalmology-registrations.show', $item),
                 ],
             ])->values()->all();
 
@@ -98,7 +98,7 @@ class OphthalmologyController extends Controller
             'message' => localize('global.ophthalmology_registration_created_successfully'),
             'data' => [
                 'id' => $registration->id,
-                'url' => route('react.ophthalmology-registrations.show', $registration),
+                'url' => route('ophthalmology-registrations.show', $registration),
             ],
         ], 201);
     }

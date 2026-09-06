@@ -79,7 +79,7 @@ export default function HospitalizationIcuSection({
 }: HospitalizationIcuSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/hospitalizations/${hospitalizationId}/icu`;
+    const baseUrl = `/hospitalizations/${hospitalizationId}/icu`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

@@ -31,7 +31,7 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
 
         try {
             const params = chartBranchId ? `?chart_branch_id=${chartBranchId}` : '';
-            const response = await fetch(`/react/dashboard/data${params}`, {
+            const response = await fetch(`/dashboard/data${params}`, {
                 headers: {
                     Accept: 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',

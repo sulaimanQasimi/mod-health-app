@@ -55,10 +55,10 @@ class ToolController extends Controller
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
             'urls' => [
-                'index' => route('react.tools.index'),
-                'create' => route('react.tools.create'),
-                'edit' => url('/react/tools'),
-                'destroy' => url('/react/tools'),
+                'index' => route('tools.index'),
+                'create' => route('tools.create'),
+                'edit' => url('/tools'),
+                'destroy' => url('/tools'),
             ],
         ]);
     }
@@ -82,7 +82,7 @@ class ToolController extends Controller
         Tool::create($this->validateTool($request));
 
         return redirect()
-            ->route('react.tools.index')
+            ->route('tools.index')
             ->with('success', localize('global.depot.tool_created_successfully.'));
     }
 
@@ -113,7 +113,7 @@ class ToolController extends Controller
         $tool->update($this->validateTool($request, $tool));
 
         return redirect()
-            ->route('react.tools.index')
+            ->route('tools.index')
             ->with('success', localize('global.depot.tool_updated_successfully.'));
     }
 
@@ -124,7 +124,7 @@ class ToolController extends Controller
         $tool->delete();
 
         return redirect()
-            ->route('react.tools.index')
+            ->route('tools.index')
             ->with('success', localize('global.depot.tool_deleted_successfully.'));
     }
 
@@ -151,10 +151,10 @@ class ToolController extends Controller
     private function formUrls(?Tool $tool = null): array
     {
         return [
-            'index' => route('react.tools.index'),
-            'store' => route('react.tools.store'),
-            'update' => $tool ? route('react.tools.update', $tool) : '',
-            'back' => route('react.tools.index'),
+            'index' => route('tools.index'),
+            'store' => route('tools.store'),
+            'update' => $tool ? route('tools.update', $tool) : '',
+            'back' => route('tools.index'),
         ];
     }
 

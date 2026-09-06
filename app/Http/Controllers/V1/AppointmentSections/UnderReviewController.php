@@ -66,8 +66,8 @@ class UnderReviewController extends Controller
                 'bed_number' => $item->bed?->number,
                 'is_active' => ! (bool) $item->is_discharged,
                 'urls' => [
-                    'show' => route('react.under-reviews.show', $item->id),
-                    'edit' => route('react.under-reviews.edit', $item->id),
+                    'show' => route('under-reviews.show', $item->id),
+                    'edit' => route('under-reviews.edit', $item->id),
                 ],
             ])
             ->values()

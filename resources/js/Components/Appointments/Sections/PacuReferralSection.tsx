@@ -68,7 +68,7 @@ const STATUS_COLORS: Record<string, 'info' | 'success'> = {
 export default function PacuReferralSection({ appointmentId }: PacuReferralSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const baseUrl = `/react/appointments/${appointmentId}/pacus`;
+    const baseUrl = `/appointments/${appointmentId}/pacus`;
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

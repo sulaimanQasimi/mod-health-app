@@ -84,10 +84,10 @@ class UserController extends Controller
             'permissions' => $this->userPermissions($user),
             'currentUserId' => $user->id,
             'urls' => [
-                'index' => route('react.users.index'),
-                'create' => route('react.users.create'),
-                'edit' => url('/react/users'),
-                'updateStatus' => url('/react/users'),
+                'index' => route('users.index'),
+                'create' => route('users.create'),
+                'edit' => url('/users'),
+                'updateStatus' => url('/users'),
             ],
         ]);
     }
@@ -129,7 +129,7 @@ class UserController extends Controller
         $this->syncRolesAndPermissions($user, $request->input('roles', []), $request->input('permissions', []));
 
         return redirect()
-            ->route('react.users.index')
+            ->route('users.index')
             ->with('success', localize('global.user_create_success'));
     }
 
@@ -180,7 +180,7 @@ class UserController extends Controller
         $this->syncRolesAndPermissions($user, $request->input('roles', []), $request->input('permissions', []));
 
         return redirect()
-            ->route('react.users.index')
+            ->route('users.index')
             ->with('success', localize('global.user_update_success'));
     }
 
@@ -314,10 +314,10 @@ class UserController extends Controller
     private function buildFormUrls(?User $user = null): array
     {
         return [
-            'index' => route('react.users.index'),
-            'store' => route('react.users.store'),
-            'update' => $user ? route('react.users.update', $user) : '',
-            'back' => route('react.users.index'),
+            'index' => route('users.index'),
+            'store' => route('users.store'),
+            'update' => $user ? route('users.update', $user) : '',
+            'back' => route('users.index'),
         ];
     }
 

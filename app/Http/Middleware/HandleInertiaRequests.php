@@ -60,8 +60,11 @@ class HandleInertiaRequests extends Middleware
             // Named appUrls so page-level `urls` props do not overwrite navbar links.
             'appUrls' => [
                 'changeLanguage' => url('change_language'),
-                'profile' => route('react.profile.show'),
+                'profile' => \Illuminate\Support\Facades\Route::has('profile.show')
+                    ? route('profile.show')
+                    : url('/profile'),
                 'logout' => url('/logout'),
+                'login' => route('login'),
                 'chats' => url('/chats'),
             ],
         ];

@@ -148,9 +148,9 @@ class ProstheticsReportController extends Controller
             ], $request->only(['status', 'from', 'to'])),
             'statusOptions' => ProstheticCase::statusList(),
             'urls' => [
-                'current' => route('react.prosthetics.reports.index'),
-                'dashboard' => route('react.prosthetics.dashboard'),
-                'caseShow' => url('/react/prosthetics/cases'),
+                'current' => route('prosthetics.reports.index'),
+                'dashboard' => route('prosthetics.dashboard'),
+                'caseShow' => url('/prosthetics/cases'),
             ],
         ]);
     }

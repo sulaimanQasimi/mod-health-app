@@ -41,10 +41,10 @@ class MedicineTypeController extends Controller
                 'delete-medicine-types',
             ),
             'urls' => [
-                'index' => route('react.medicine-types.index'),
-                'create' => route('react.medicine-types.create'),
-                'edit' => url('/react/medicine-types'),
-                'destroy' => url('/react/medicine-types'),
+                'index' => route('medicine-types.index'),
+                'create' => route('medicine-types.create'),
+                'edit' => url('/medicine-types'),
+                'destroy' => url('/medicine-types'),
             ],
         ]);
     }
@@ -69,7 +69,7 @@ class MedicineTypeController extends Controller
         MedicineType::create($data);
 
         return redirect()
-            ->route('react.medicine-types.index')
+            ->route('medicine-types.index')
             ->with('success', localize('global.medicine_type_created_successfully.'));
     }
 
@@ -97,7 +97,7 @@ class MedicineTypeController extends Controller
         $medicineType->update($data);
 
         return redirect()
-            ->route('react.medicine-types.index')
+            ->route('medicine-types.index')
             ->with('success', localize('global.medicine_type_updated_successfully.'));
     }
 
@@ -108,7 +108,7 @@ class MedicineTypeController extends Controller
         $medicineType->delete();
 
         return redirect()
-            ->route('react.medicine-types.index')
+            ->route('medicine-types.index')
             ->with('success', localize('global.medicine_type_deleted_successfully.'));
     }
 
@@ -118,10 +118,10 @@ class MedicineTypeController extends Controller
     private function formUrls(?MedicineType $medicineType = null): array
     {
         return [
-            'index' => route('react.medicine-types.index'),
-            'store' => route('react.medicine-types.store'),
-            'update' => $medicineType ? route('react.medicine-types.update', $medicineType) : '',
-            'back' => route('react.medicine-types.index'),
+            'index' => route('medicine-types.index'),
+            'store' => route('medicine-types.store'),
+            'update' => $medicineType ? route('medicine-types.update', $medicineType) : '',
+            'back' => route('medicine-types.index'),
         ];
     }
 }

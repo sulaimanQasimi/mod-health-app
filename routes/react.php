@@ -119,6 +119,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/data', [DashboardController::class, 'data'])->name('dashboard.data');
 
     Route::get('/scan-code', [ScanCodeController::class, 'index'])->name('scan-code');
+    Route::post('/scan-code', [ScanCodeController::class, 'search'])->name('scan-code.search');
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'show'])->name('show');

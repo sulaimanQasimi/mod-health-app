@@ -3821,6 +3821,8 @@ return [
 'failed_to_bulk_delete' => 'ډله‌ییز حذف ناکام شو',
 'failed_to_export_prescriptions' => 'نسخې صادرول ناکام شول',
 'user_performance_report' => 'د ډاکټرانو د فعالیت راپور',
+'avg_per_doctor' => 'اوسط په هر ډاکټر',
+'invalid_date_format' => 'د نېټې بڼه ناسمه ده',
 'general_report' => 'عمومي راپور',
 'comprehensive_analytics_and_performance_metrics' => 'مفصل تحلیلونه او د فعالیت معیارونه',
 'filter_options' => 'د فلټر اختیارونه',

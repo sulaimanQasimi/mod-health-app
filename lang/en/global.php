@@ -1068,6 +1068,8 @@ return [
     'auto_filled' => 'Auto-filled',
     'select_medicine_to_auto_fill' => 'Select a medicine to auto-fill the form fields',
     'user_performance_report' => 'User Performance Report',
+    'avg_per_doctor' => 'Avg per doctor',
+    'invalid_date_format' => 'Invalid date format',
     'general_report' => 'General Report',
     'comprehensive_analytics_and_performance_metrics' => 'Comprehensive analytics and performance metrics',
     'filter_options' => 'Filter Options',

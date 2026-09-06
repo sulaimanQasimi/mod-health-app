@@ -3699,6 +3699,8 @@ return [
     'user_not_belong_to_pharmacy.' => 'کاربر مربوط به هیچ دواخانه ای نیست',
     'user_password_required' => 'پاسورد نباید خالی باشد',
     'user_performance_report' => 'راپور عملکرد داکتران',
+    'avg_per_doctor' => 'اوسط فی داکتر',
+    'invalid_date_format' => 'فارمت تاریخ نادرست است',
     'general_report' => 'گزارش عمومی',
     'user_recipients' => 'مراجع مربوطه',
     'user_role' => 'نقش کاربر',

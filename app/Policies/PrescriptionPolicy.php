@@ -22,8 +22,12 @@ class PrescriptionPolicy
 
     public function update(User $user, Prescription $prescription): bool
     {
-        return ($user->hasRole(['super_admin', 'admin']) || $user->can('edit-prescriptions'))
-            && $this->canAccess($user, $prescription);
+        return (
+            $user->hasRole(['super_admin', 'admin'])
+            || $user->can('edit-prescriptions')
+            || $user->hasRole('prescription_issue')
+            || $user->hasActivePharmacyRole(['manager', 'staff'])
+        ) && $this->canAccess($user, $prescription);
     }
 
     public function delete(User $user, Prescription $prescription): bool

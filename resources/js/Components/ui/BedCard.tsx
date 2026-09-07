@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 
 export interface BedCardProps {
     title: string;
-    value: number | string;
+    value: number | string | ReactNode;
     iconClass?: string;
     iconBgClass?: string;
     borderClass?: string;

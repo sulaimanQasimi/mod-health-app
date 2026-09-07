@@ -62,14 +62,14 @@ class AppointmentController extends Controller
 
         if ($request->filled('patient_name')) {
             $query->whereHas('patient', function ($patientQuery) use ($request) {
-                $patientQuery->where('name', 'like', '%'.$request->patient_name.'%')
-                    ->orWhere('last_name', 'like', '%'.$request->patient_name.'%');
+                $patientQuery->where('name', 'like', '%' . $request->patient_name . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
             });
         }
 
         if ($request->filled('id_card')) {
             $query->whereHas('patient', function ($patientQuery) use ($request) {
-                $patientQuery->where('id_card', 'like', '%'.$request->id_card.'%');
+                $patientQuery->where('id_card', 'like', '%' . $request->id_card . '%');
             });
         }
 
@@ -79,13 +79,13 @@ class AppointmentController extends Controller
 
         if ($request->filled('father_name')) {
             $query->whereHas('patient', function ($patientQuery) use ($request) {
-                $patientQuery->where('father_name', 'like', '%'.$request->father_name.'%');
+                $patientQuery->where('father_name', 'like', '%' . $request->father_name . '%');
             });
         }
 
         if ($request->filled('phone')) {
             $query->whereHas('patient', function ($patientQuery) use ($request) {
-                $patientQuery->where('phone', 'like', '%'.$request->phone.'%');
+                $patientQuery->where('phone', 'like', '%' . $request->phone . '%');
             });
         }
 
@@ -121,7 +121,7 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Index', [
             'appointments' => [
                 'data' => collect($paginator->items())
-                    ->map(fn (Appointment $appointment) => $this->transformAppointmentForIndex(
+                    ->map(fn(Appointment $appointment) => $this->transformAppointmentForIndex(
                         $appointment,
                         $canViewListedAppointments,
                         $canViewListedAppointments && (bool) $appointment->patient_id,
@@ -188,11 +188,11 @@ class AppointmentController extends Controller
 
         $patient = Patient::query()->findOrFail($validatedData['patient_id']);
 
-        if (! $user->hasRole(['super_admin', 'admin']) && (int) $patient->branch_id !== (int) $user->branch_id) {
+        if (!$user->hasRole(['super_admin', 'admin']) && (int) $patient->branch_id !== (int) $user->branch_id) {
             abort(403);
         }
 
-        if (! $user->hasRole(['super_admin', 'admin']) && (int) $validatedData['branch_id'] !== (int) $user->branch_id) {
+        if (!$user->hasRole(['super_admin', 'admin']) && (int) $validatedData['branch_id'] !== (int) $user->branch_id) {
             abort(403);
         }
 
@@ -252,7 +252,7 @@ class AppointmentController extends Controller
         $patient = $appointment->patient;
         $today = Carbon::today();
 
-        if (! $appointment->department_id) {
+        if (!$appointment->department_id) {
             return redirect()->back()->with('error', localize('global.doctor_department_not_found'));
         }
 
@@ -327,11 +327,11 @@ class AppointmentController extends Controller
                 'processed_by_id' => $appointment->processed_by,
             ],
             'patientHistory' => [
-                'primary' => $previousDiagnoses->where('type', 0)->values()->map(fn ($d) => [
+                'primary' => $previousDiagnoses->where('type', 0)->values()->map(fn($d) => [
                     'description' => $d->description,
                     'date' => $d->created_at ? verta($d->created_at)->format('Y-m-d') : null,
                 ])->all(),
-                'final' => $previousDiagnoses->where('type', 1)->values()->map(fn ($d) => [
+                'final' => $previousDiagnoses->where('type', 1)->values()->map(fn($d) => [
                     'description' => $d->description,
                     'date' => $d->created_at ? verta($d->created_at)->format('Y-m-d') : null,
                 ])->all(),
@@ -340,7 +340,7 @@ class AppointmentController extends Controller
                 'updateStatus' => $request->user()->can('updateStatus', $appointment),
                 'complete' => $request->user()->can('complete', $appointment),
                 'edit' => $request->user()->can('update', $appointment),
-                'printToken' => ! $appointment->is_completed,
+                'printToken' => !$appointment->is_completed,
             ],
             'sectionPermissions' => [
                 'underReview' => $request->user()->can('patient-under-review')
@@ -471,7 +471,7 @@ class AppointmentController extends Controller
         if (
             $appointment->doctor_id
             && $request->doctor_id != $appointment->doctor_id
-            && ! $appointment->canChangeDoctor()
+            && !$appointment->canChangeDoctor()
         ) {
             throw ValidationException::withMessages([
                 'doctor_id' => [localize('global.doctor_can_only_be_changed_once')],
@@ -532,8 +532,10 @@ class AppointmentController extends Controller
 
         $this->authorize('viewAny', Appointment::class);
 
-        if (! $user->hasRole(['super_admin', 'admin'])
-            && ! $user->hasPermissionTo('restore-appointments')) {
+        if (
+            !$user->hasRole(['super_admin', 'admin'])
+            && !$user->hasPermissionTo('restore-appointments')
+        ) {
             abort(403);
         }
 
@@ -547,14 +549,14 @@ class AppointmentController extends Controller
 
         if ($request->filled('patient_name')) {
             $query->whereHas('patient', function ($patientQuery) use ($request) {
-                $patientQuery->where('name', 'like', '%'.$request->patient_name.'%')
-                    ->orWhere('last_name', 'like', '%'.$request->patient_name.'%');
+                $patientQuery->where('name', 'like', '%' . $request->patient_name . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
             });
         }
 
         if ($request->filled('id_card')) {
             $query->whereHas('patient', function ($patientQuery) use ($request) {
-                $patientQuery->where('id_card', 'like', '%'.$request->id_card.'%');
+                $patientQuery->where('id_card', 'like', '%' . $request->id_card . '%');
             });
         }
 
@@ -563,7 +565,7 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Trashed', [
             'appointments' => [
                 'data' => collect($paginator->items())
-                    ->map(fn (Appointment $appointment) => $this->transformTrashedAppointment(
+                    ->map(fn(Appointment $appointment) => $this->transformTrashedAppointment(
                         $appointment,
                         $user->can('restore', $appointment),
                     ))
@@ -702,7 +704,7 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Department', [
             'appointments' => $this->paginatedResponse(
                 $paginator,
-                fn (Appointment $appointment) => $this->transformDepartmentAppointment($appointment, $user),
+                fn(Appointment $appointment) => $this->transformDepartmentAppointment($appointment, $user),
             ),
             'filters' => [
                 'search' => (string) $request->input('search', ''),
@@ -738,7 +740,7 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Doctor', [
             'appointments' => $this->paginatedResponse(
                 $paginator,
-                fn (Appointment $appointment) => $this->transformDoctorAppointment($appointment, $user),
+                fn(Appointment $appointment) => $this->transformDoctorAppointment($appointment, $user),
             ),
             'filters' => $this->myVisitFiltersFromRequest($request),
             'permissions' => $this->myVisitPermissions($user),
@@ -767,7 +769,7 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Completed', [
             'appointments' => $this->paginatedResponse(
                 $paginator,
-                fn (Appointment $appointment) => $this->transformDoctorAppointment($appointment, $user),
+                fn(Appointment $appointment) => $this->transformDoctorAppointment($appointment, $user),
             ),
             'filters' => $this->myVisitFiltersFromRequest($request, includePatientName: true),
             'permissions' => $this->myVisitPermissions($user),
@@ -861,7 +863,7 @@ class AppointmentController extends Controller
             if ($perPage === 'all') {
                 $items = $query->get();
                 $appointments = [
-                    'data' => $items->map(fn (Appointment $item) => $this->transformAppointmentReportItem($item))->values()->all(),
+                    'data' => $items->map(fn(Appointment $item) => $this->transformAppointmentReportItem($item))->values()->all(),
                     'links' => [],
                     'meta' => [
                         'current_page' => 1,
@@ -881,7 +883,7 @@ class AppointmentController extends Controller
                 );
                 $appointments = $this->paginationPayload(
                     $paginator,
-                    fn (Appointment $item) => $this->transformAppointmentReportItem($item),
+                    fn(Appointment $item) => $this->transformAppointmentReportItem($item),
                 );
             }
         }
@@ -945,15 +947,19 @@ class AppointmentController extends Controller
             $query->whereNull('processed_by')
                 ->when(
                     $user->doctor,
-                    fn ($q) => $q->where('department_id', $user->doctor->department_id),
+                    fn($q) => $q->where('department_id', $user->doctor->department_id),
                 );
         }
 
-        $query->when($scopeClinic, fn ($q) => $q->where('clinic_type', $clinicType))
-            ->when($patientId !== null, fn ($q) => $q->where('patient_id', $patientId));
+        $query->when(
+            $scopeClinic,
+            fn($q) =>
+            $q->where('clinic_type', $clinicType)
+        )
+            ->when($patientId !== null, fn($q) => $q->where('patient_id', $patientId));
 
         if ($request->filled('search')) {
-            $term = '%'.$request->input('search').'%';
+            $term = '%' . $request->input('search') . '%';
             $query->whereHas('patient', function ($patientQuery) use ($term) {
                 $patientQuery->where(function ($q) use ($term) {
                     foreach (['name', 'last_name', 'father_name', 'id_card', 'phone', 'nid'] as $column) {
@@ -983,7 +989,7 @@ class AppointmentController extends Controller
         }
 
         if ($includePatientName && $request->filled('patient_name')) {
-            $term = '%'.$request->patient_name.'%';
+            $term = '%' . $request->patient_name . '%';
             $query->whereHas('patient', function ($patientQuery) use ($term) {
                 $patientQuery->where('name', 'like', $term)
                     ->orWhere('last_name', 'like', $term)

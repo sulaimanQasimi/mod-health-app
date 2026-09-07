@@ -148,8 +148,6 @@ class PatientController extends Controller
             'recipientPart:id,name,code,recipient_id',
             'referralRecipientPart:id,name,code,recipient_id',
             'creator:id,name,last_name',
-            'appointments.doctor:id,name',
-            'diagnoses' => fn ($query) => $query->orderByDesc('created_at'),
         ]);
 
         $canAccessNephrology = $user->hasPermissionTo('access-nephrology-registrations');
@@ -194,7 +192,10 @@ class PatientController extends Controller
                 ->all();
         }
 
-        $diagnoses = $patient->diagnoses;
+        $diagnoses = $patient->diagnoses()
+            ->orderByDesc('created_at')
+            ->limit(40)
+            ->get();
         $primaryDiagnoses = $diagnoses->where('type', 0)->values()->map(fn ($diagnose) => [
             'id' => $diagnose->id,
             'description' => $diagnose->description,
@@ -206,8 +207,11 @@ class PatientController extends Controller
             'date' => verta($diagnose->created_at)->format('Y-m-d'),
         ])->all();
 
-        $appointments = $patient->appointments
-            ->sortByDesc('created_at')
+        $appointments = $patient->appointments()
+            ->with('doctor:id,name')
+            ->latest()
+            ->limit(30)
+            ->get()
             ->values()
             ->map(fn ($appointment, $index) => [
                 'id' => $appointment->id,
@@ -471,7 +475,12 @@ class PatientController extends Controller
             'filters' => $this->collectFilters($request, $this->patientReportFilterKeys()),
             'filterOptions' => [
                 'provinces' => Province::query()->orderBy('name_dr')->get(['id', 'name_dr']),
-                'districts' => District::query()->orderBy('name_dr')->get(['id', 'name_dr', 'province_id']),
+                'districts' => $request->filled('province_id')
+                    ? District::query()
+                        ->where('province_id', $request->province_id)
+                        ->orderBy('name_dr')
+                        ->get(['id', 'name_dr', 'province_id'])
+                    : [],
                 'recipients' => Recipient::query()->orderBy('name')->get(['id', 'name']),
             ],
         ];

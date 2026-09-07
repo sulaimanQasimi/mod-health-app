@@ -46,7 +46,7 @@ class AppointmentController extends Controller
 
     public function index(Request $request): Response
     {
-        $this->authorize('viewAny', Appointment::class);
+        $this->authorize('viewReceptionList', Appointment::class);
 
         $user = $request->user();
 
@@ -61,15 +61,18 @@ class AppointmentController extends Controller
             ]);
 
         if ($request->filled('patient_name')) {
-            $query->whereHas('patient', function ($patientQuery) use ($request) {
-                $patientQuery->where('name', 'like', '%' . $request->patient_name . '%')
-                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+            $term = '%'.$request->patient_name.'%';
+            $query->whereHas('patient', function ($patientQuery) use ($term) {
+                $patientQuery->where(function ($q) use ($term) {
+                    $q->where('name', 'like', $term)
+                        ->orWhere('last_name', 'like', $term);
+                });
             });
         }
 
         if ($request->filled('id_card')) {
             $query->whereHas('patient', function ($patientQuery) use ($request) {
-                $patientQuery->where('id_card', 'like', '%' . $request->id_card . '%');
+                $patientQuery->where('id_card', 'like', '%'.$request->id_card.'%');
             });
         }
 
@@ -79,13 +82,13 @@ class AppointmentController extends Controller
 
         if ($request->filled('father_name')) {
             $query->whereHas('patient', function ($patientQuery) use ($request) {
-                $patientQuery->where('father_name', 'like', '%' . $request->father_name . '%');
+                $patientQuery->where('father_name', 'like', '%'.$request->father_name.'%');
             });
         }
 
         if ($request->filled('phone')) {
             $query->whereHas('patient', function ($patientQuery) use ($request) {
-                $patientQuery->where('phone', 'like', '%' . $request->phone . '%');
+                $patientQuery->where('phone', 'like', '%'.$request->phone.'%');
             });
         }
 
@@ -116,17 +119,20 @@ class AppointmentController extends Controller
             $filters[$key] = (string) $request->input($key, '');
         }
 
-        $canViewListedAppointments = $user->can('viewAny', Appointment::class);
+        $canUpdate = $user->hasRole(['super_admin', 'admin'])
+            || $user->hasPermissionTo('edit-appointments');
+        $canDelete = $user->hasRole(['super_admin', 'admin'])
+            || $user->hasPermissionTo('delete-appointments');
 
         return Inertia::render('Appointments/Index', [
             'appointments' => [
                 'data' => collect($paginator->items())
-                    ->map(fn(Appointment $appointment) => $this->transformAppointmentForIndex(
+                    ->map(fn (Appointment $appointment) => $this->transformAppointmentForIndex(
                         $appointment,
-                        $canViewListedAppointments,
-                        $canViewListedAppointments && (bool) $appointment->patient_id,
-                        $user->can('update', $appointment),
-                        $user->can('delete', $appointment),
+                        true,
+                        (bool) $appointment->patient_id,
+                        $canUpdate,
+                        $canDelete,
                     ))
                     ->values()
                     ->all(),
@@ -144,6 +150,7 @@ class AppointmentController extends Controller
             'filterOptions' => [
                 'doctors' => Doctor::query()
                     ->where('branch_id', $user->branch_id)
+                    ->where('active_status', true)
                     ->orderBy('name')
                     ->get(['id', 'name']),
                 'departments' => $user->category_id
@@ -157,7 +164,7 @@ class AppointmentController extends Controller
                 'show' => url('/appointments'),
                 'edit' => url('/appointments'),
                 'destroy' => url('/appointments'),
-                'patientHistory' => url('/patients/history'),
+                'patientHistory' => url('/patients'),
                 'patientsIndex' => route('patients.index'),
                 'patientsCreate' => route('patients.create'),
             ],
@@ -776,7 +783,13 @@ class AppointmentController extends Controller
             'urls' => $this->myVisitUrls(),
         ]);
     }
-
+    /**
+     * Accept an appointment
+     * the logic is:
+     * 1. get the doctor id from the user
+     * 2. update the appointment with the doctor id
+     * 3. return a success message
+     */
     public function accept(Request $request, Appointment $appointment): RedirectResponse
     {
         $this->authorize('accept', $appointment);

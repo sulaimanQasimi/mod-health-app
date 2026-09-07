@@ -98,17 +98,44 @@ export default function PatientsReportPanel({
 }: PatientsReportPanelProps) {
     const { t } = useTranslation();
     const [filters, setFilters] = useState(data.filters);
+    const [districts, setDistricts] = useState(data.filterOptions.districts);
 
     useEffect(() => setFilters(data.filters), [data.filters]);
+    useEffect(() => setDistricts(data.filterOptions.districts), [data.filterOptions.districts]);
 
-    const filteredDistricts = useMemo(() => {
+    useEffect(() => {
         if (!filters.province_id) {
-            return data.filterOptions.districts;
+            setDistricts([]);
+            return;
         }
-        return data.filterOptions.districts.filter(
-            (district) => String(district.province_id) === filters.province_id,
-        );
-    }, [data.filterOptions.districts, filters.province_id]);
+
+        let cancelled = false;
+        fetch(`/patients/districts/${filters.province_id}`, {
+            headers: { Accept: 'application/json' },
+        })
+            .then((response) => response.json())
+            .then((payload) => {
+                if (cancelled) {
+                    return;
+                }
+                setDistricts(
+                    (payload.districts ?? []).map((district: { id: number; name_dr: string }) => ({
+                        id: district.id,
+                        name_dr: district.name_dr,
+                        province_id: Number(filters.province_id),
+                    })),
+                );
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setDistricts([]);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [filters.province_id]);
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -123,6 +150,7 @@ export default function PatientsReportPanel({
 
     const handleReset = () => {
         setFilters(EMPTY_FILTERS);
+        setDistricts([]);
         onVisit({ tab: 'patients' }, { replace: true });
     };
     const exportFields = useMemo(() => {
@@ -380,7 +408,7 @@ export default function PatientsReportPanel({
                             onChange={(value) => setFilters((prev) => ({ ...prev, district_id: value }))}
                             options={[
                                 { value: '', label: t('global.all') },
-                                ...filteredDistricts.map((district) => ({
+                                ...districts.map((district) => ({
                                     value: String(district.id),
                                     label: district.name_dr,
                                 })),

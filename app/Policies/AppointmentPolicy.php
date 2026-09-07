@@ -14,6 +14,15 @@ class AppointmentPolicy
             || $user->hasPermissionTo('show-my-visits-menu');
     }
 
+    /**
+     * Reception "all appointments" list — not for my-visits-only users.
+     */
+    public function viewReceptionList(User $user): bool
+    {
+        return $user->hasRole(['super_admin', 'admin'])
+            || $user->hasPermissionTo('show-information-menu');
+    }
+
     public function viewMyVisits(User $user): bool
     {
         return $user->hasRole(['super_admin', 'admin'])

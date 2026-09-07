@@ -138,15 +138,19 @@ class DoctorPerformanceReportController extends Controller
             ->when($branchId > 0, fn ($q) => $q->where('branch_id', $branchId))
             ->groupBy('doctor_id');
 
-        $labTests = DB::table('patient_test_registrations')
-            ->select('doctor_id', DB::raw('COUNT(*) as aggregate_count'))
-            ->whereNotNull('doctor_id')
-            ->whereBetween('registration_date', [$startDate, $endDateTime])
-            ->groupBy('doctor_id');
+        $labTests = DB::table('patient_test_registrations as ptr')
+            ->join('doctors', 'doctors.id', '=', 'ptr.doctor_id')
+            ->select('ptr.doctor_id', DB::raw('COUNT(*) as aggregate_count'))
+            ->whereNotNull('ptr.doctor_id')
+            ->whereNull('doctors.deleted_at')
+            ->whereBetween('ptr.registration_date', [$startDate, $endDateTime])
+            ->when($branchId > 0, fn ($q) => $q->where('doctors.branch_id', $branchId))
+            ->groupBy('ptr.doctor_id');
 
         $anesthesias = DB::table('anesthesias')
             ->select('doctor_id', DB::raw('COUNT(*) as aggregate_count'))
             ->whereBetween('created_at', [$startDate, $endDateTime])
+            ->when($branchId > 0, fn ($q) => $q->where('branch_id', $branchId))
             ->groupBy('doctor_id');
 
         $rows = Doctor::query()

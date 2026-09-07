@@ -12,6 +12,8 @@ class ScanCodeController extends Controller
 {
     public function index(Request $request): Response
     {
+        $this->authorize('viewAny', Patient::class);
+
         return Inertia::render('ScanCode', [
             'error' => $request->session()->get('error'),
             'urls' => [
@@ -23,6 +25,8 @@ class ScanCodeController extends Controller
 
     public function search(Request $request)
     {
+        $this->authorize('viewAny', Patient::class);
+
         $validated = $request->validate([
             'patient_id' => ['required', 'string', 'max:50'],
         ]);
@@ -35,6 +39,8 @@ class ScanCodeController extends Controller
             ->first();
 
         if ($patient) {
+            $this->authorize('view', $patient);
+
             return redirect()->route('patients.show', $patient);
         }
 

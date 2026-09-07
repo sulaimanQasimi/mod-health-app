@@ -60,15 +60,17 @@ export default function ScanCode({ urls, error: serverError }: ScanCodeProps) {
         }
 
         const trimmed = patientId.trim();
-        if (!trimmed) {
+        if (!trimmed || trimmed.length < 3) {
             setLocalError(null);
-            lastSearchedRef.current = '';
+            if (!trimmed) {
+                lastSearchedRef.current = '';
+            }
             return;
         }
 
         debounceRef.current = setTimeout(() => {
             runSearch(trimmed);
-        }, 450);
+        }, 650);
 
         return () => {
             if (debounceRef.current) {

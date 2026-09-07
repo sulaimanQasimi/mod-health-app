@@ -8,6 +8,9 @@ use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Consultation;
 use App\Models\Department;
+use App\Models\Depot;
+use App\Models\DepotRequest;
+use App\Models\DepotTransaction;
 use App\Models\Diagnose;
 use App\Models\DiabetesChart;
 use App\Models\Hospitalization;
@@ -29,6 +32,7 @@ use App\Models\User;
 use App\Models\Doctor;
 use App\Models\VitalSignSchedule;
 use App\Services\DashboardVisibilityService;
+use App\Services\DepotStockService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -87,6 +91,12 @@ class HomeController extends Controller
                         'totalPhysiotherapyProcedures' => 0,
                         'todayPatients' => 0,
                         'totalEmergencyPatients' => 0,
+                        'totalDepots' => 0,
+                        'totalDepotTransactions' => 0,
+                        'pendingDepotRequests' => 0,
+                        'depotStockItems' => 0,
+                        'depotStockQuantity' => 0,
+                        'depotLowStock' => 0,
                         'occupied_beds' => 0,
                         'free_beds' => 0,
                         'all_beds' => 0,
@@ -111,6 +121,16 @@ class HomeController extends Controller
                     $bedStats = $visible['beds']
                         ? $this->getBedStatistics($branchId)
                         : ['all' => 0, 'occupied' => 0, 'free' => 0];
+                    $depotStats = $visible['depot']
+                        ? $this->getDepotDashboardStats($user, $branchId)
+                        : [
+                            'totalDepots' => 0,
+                            'totalDepotTransactions' => 0,
+                            'pendingDepotRequests' => 0,
+                            'depotStockItems' => 0,
+                            'depotStockQuantity' => 0,
+                            'depotLowStock' => 0,
+                        ];
 
                     $totalEmergencyPatients = 0;
                     if ($visible['emergency_today_patients']) {
@@ -134,6 +154,12 @@ class HomeController extends Controller
                         'totalPhysiotherapyProcedures' => $counts['totalPhysiotherapyProcedures'],
                         'todayPatients' => $counts['todayPatients'],
                         'totalEmergencyPatients' => $totalEmergencyPatients,
+                        'totalDepots' => $depotStats['totalDepots'],
+                        'totalDepotTransactions' => $depotStats['totalDepotTransactions'],
+                        'pendingDepotRequests' => $depotStats['pendingDepotRequests'],
+                        'depotStockItems' => $depotStats['depotStockItems'],
+                        'depotStockQuantity' => $depotStats['depotStockQuantity'],
+                        'depotLowStock' => $depotStats['depotLowStock'],
                         'occupied_beds' => $bedStats['occupied'],
                         'free_beds' => $bedStats['free'],
                         'all_beds' => $bedStats['all'],
@@ -452,6 +478,79 @@ class HomeController extends Controller
             'all' => $bedStats->all_beds ?? 0,
             'occupied' => $bedStats->occupied_beds ?? 0,
             'free' => $bedStats->free_beds ?? 0,
+        ];
+    }
+
+    /**
+     * Depot KPI counts for the main dashboard (branch-scoped, access-aware).
+     *
+     * @return array{
+     *     totalDepots: int,
+     *     totalDepotTransactions: int,
+     *     pendingDepotRequests: int,
+     *     depotStockItems: int,
+     *     depotStockQuantity: int,
+     *     depotLowStock: int,
+     * }
+     */
+    private function getDepotDashboardStats(User $user, $branchId): array
+    {
+        $empty = [
+            'totalDepots' => 0,
+            'totalDepotTransactions' => 0,
+            'pendingDepotRequests' => 0,
+            'depotStockItems' => 0,
+            'depotStockQuantity' => 0,
+            'depotLowStock' => 0,
+        ];
+
+        $depotQuery = Depot::query()
+            ->where('branch_id', $branchId)
+            ->where('is_active', true);
+
+        if (! $user->hasRole(['admin', 'super_admin']) && ! $user->hasAnySpatieDepotPermission()) {
+            $allowedIds = $user->activeDepots()->pluck('depots.id');
+            $depotQuery->whereIn('id', $allowedIds);
+        }
+
+        $depotIds = $depotQuery->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
+
+        if ($depotIds === []) {
+            return $empty;
+        }
+
+        $transactions = DepotTransaction::query()
+            ->where(function ($query) use ($depotIds) {
+                $query->whereIn('depot_id', $depotIds)
+                    ->orWhereIn('from_depot_id', $depotIds)
+                    ->orWhereIn('to_depot_id', $depotIds);
+            })
+            ->count();
+
+        $pendingRequests = DepotRequest::query()
+            ->where('status', DepotRequest::STATUS_PENDING)
+            ->where(function ($query) use ($depotIds) {
+                $query->whereIn('requesting_depot_id', $depotIds)
+                    ->orWhereIn('source_depot_id', $depotIds);
+            })
+            ->count();
+
+        $stockService = app(DepotStockService::class);
+        $stockItems = collect();
+
+        foreach ($depotIds as $depotId) {
+            $stockItems = $stockItems->merge($stockService->stockItemsForDepot($depotId));
+        }
+
+        return [
+            'totalDepots' => count($depotIds),
+            'totalDepotTransactions' => $transactions,
+            'pendingDepotRequests' => $pendingRequests,
+            'depotStockItems' => $stockItems->count(),
+            'depotStockQuantity' => (int) $stockItems->sum('available'),
+            'depotLowStock' => $stockItems
+                ->filter(fn ($item) => $item['available'] > 0 && $item['available'] <= DepotStockService::LOW_STOCK_THRESHOLD)
+                ->count(),
         ];
     }
 

@@ -32,6 +32,7 @@ const ALL_VISIBLE: DashboardVisibility = {
     prescriptions: true,
     operations: true,
     physiotherapy: true,
+    depot: true,
     beds: true,
     patients_trend: true,
     appointments_trend: true,
@@ -315,6 +316,72 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
                     borderClass: 'border-teal-500',
                     valueClass: 'text-teal-600',
                 },
+                {
+                    key: 'depot' as const,
+                    id: 'depot_active',
+                    title: t('global.all_depots'),
+                    value: displayValue(dashboard.totalDepots),
+                    subtitle: t('global.all_registered_depots'),
+                    iconClass: 'bx bx-store',
+                    iconBgClass: 'bg-indigo-600',
+                    borderClass: 'border-indigo-500',
+                    valueClass: 'text-indigo-600',
+                },
+                {
+                    key: 'depot' as const,
+                    id: 'depot_transactions',
+                    title: t('global.all_depot_transactions'),
+                    value: displayValue(dashboard.totalDepotTransactions),
+                    subtitle: t('global.all_registered_depot_transactions'),
+                    iconClass: 'bx bx-transfer',
+                    iconBgClass: 'bg-violet-600',
+                    borderClass: 'border-violet-500',
+                    valueClass: 'text-violet-600',
+                },
+                {
+                    key: 'depot' as const,
+                    id: 'depot_pending_requests',
+                    title: t('global.pending_depot_requests'),
+                    value: displayValue(dashboard.pendingDepotRequests),
+                    subtitle: t('global.all_pending_depot_requests'),
+                    iconClass: 'bx bx-time-five',
+                    iconBgClass: 'bg-amber-500',
+                    borderClass: 'border-amber-500',
+                    valueClass: 'text-amber-600',
+                },
+                {
+                    key: 'depot' as const,
+                    id: 'depot_stock_items',
+                    title: t('global.depot_stock_items'),
+                    value: displayValue(dashboard.depotStockItems),
+                    subtitle: t('global.all_depot_stock_items'),
+                    iconClass: 'bx bx-package',
+                    iconBgClass: 'bg-sky-600',
+                    borderClass: 'border-sky-500',
+                    valueClass: 'text-sky-600',
+                },
+                {
+                    key: 'depot' as const,
+                    id: 'depot_stock_quantity',
+                    title: t('global.total_stock'),
+                    value: displayValue(dashboard.depotStockQuantity),
+                    subtitle: t('global.all_depot_stock_quantity'),
+                    iconClass: 'bx bx-box',
+                    iconBgClass: 'bg-emerald-600',
+                    borderClass: 'border-emerald-500',
+                    valueClass: 'text-emerald-600',
+                },
+                {
+                    key: 'depot' as const,
+                    id: 'depot_low_stock',
+                    title: t('global.depot_low_stock'),
+                    value: displayValue(dashboard.depotLowStock),
+                    subtitle: t('global.all_depot_low_stock'),
+                    iconClass: 'bx bx-error',
+                    iconBgClass: 'bg-orange-500',
+                    borderClass: 'border-orange-500',
+                    valueClass: 'text-orange-600',
+                },
             ].filter((card) => visible[card.key]),
         [dashboard, displayValue, t, visible],
     );
@@ -389,8 +456,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
 
             {statCards.length > 0 && (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    {statCards.map(({ key, ...card }) => (
-                        <StatCard key={key} {...card} />
+                    {statCards.map(({ key, id, ...card }) => (
+                        <StatCard key={id ?? key} {...card} />
                     ))}
                 </div>
             )}

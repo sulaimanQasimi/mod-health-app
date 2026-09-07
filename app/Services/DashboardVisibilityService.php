@@ -25,6 +25,9 @@ class DashboardVisibilityService
         $operations = $isAdmin || $user->can('show-operations-menu');
         $physiotherapy = $isAdmin || $user->can('show-physiotherapy-menu');
         $reports = $isAdmin || $user->can('show-reports-menu');
+        $depot = $isAdmin
+            || $user->activeDepots()->exists()
+            || $user->hasAnySpatieDepotPermission();
 
         return [
             'today_patients' => $information,
@@ -39,6 +42,7 @@ class DashboardVisibilityService
             'prescriptions' => $prescriptions,
             'operations' => $operations,
             'physiotherapy' => $physiotherapy,
+            'depot' => $depot,
             'beds' => $hospitalizations,
             'patients_trend' => $information,
             'appointments_trend' => $information || $myVisits,

@@ -26,6 +26,7 @@ export interface DashboardVisibility {
     prescriptions: boolean;
     operations: boolean;
     physiotherapy: boolean;
+    depot: boolean;
     beds: boolean;
     patients_trend: boolean;
     appointments_trend: boolean;
@@ -50,6 +51,12 @@ export interface DashboardData {
     totalPhysiotherapyProcedures: number;
     todayPatients: number;
     totalEmergencyPatients: number;
+    totalDepots: number;
+    totalDepotTransactions: number;
+    pendingDepotRequests: number;
+    depotStockItems: number;
+    depotStockQuantity: number;
+    depotLowStock: number;
     occupied_beds: number;
     free_beds: number;
     all_beds: number;

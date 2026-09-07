@@ -166,10 +166,17 @@ trait ManagesAppointmentReport
      */
     protected function appointmentReportSummary(Builder $query): array
     {
-        $row = (clone $query)
-            ->reorder()
+        $aggregate = clone $query;
+        $aggregate->getQuery()->columns = null;
+        $aggregate->getQuery()->orders = null;
+        $aggregate->setEagerLoads([]);
+
+        $row = $aggregate
             ->toBase()
-            ->selectRaw('COUNT(*) as total, SUM(CASE WHEN appointments.is_completed = ? THEN 1 ELSE 0 END) as completed', ['1'])
+            ->selectRaw(
+                'COUNT(*) as total, SUM(CASE WHEN appointments.is_completed = ? THEN 1 ELSE 0 END) as completed',
+                ['1'],
+            )
             ->first();
 
         $total = (int) ($row->total ?? 0);
@@ -194,7 +201,7 @@ trait ManagesAppointmentReport
      */
     protected function appointmentReportAnalytics(Request $request, int $branchId): array
     {
-        $query = Appointment::query()->where('branch_id', $branchId);
+        $query = Appointment::query()->where('appointments.branch_id', $branchId);
         $this->applyAppointmentReportFilters($query, $request);
 
         $completed = (clone $query)->where('appointments.is_completed', '1')->count();

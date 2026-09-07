@@ -335,7 +335,12 @@ class PatientController extends Controller
 
     public function districts(int $provinceId): JsonResponse
     {
-        $this->authorize('viewAny', Patient::class);
+        $user = request()->user();
+        abort_unless(
+            $user->can('viewAny', Patient::class)
+                || $user->can('viewMyVisits', Appointment::class),
+            403
+        );
 
         $districts = District::query()
             ->where('province_id', $provinceId)

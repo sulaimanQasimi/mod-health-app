@@ -61,6 +61,16 @@ const EMPTY_FILTERS: AppointmentReportFilters = {
     per_page: '25',
 };
 
+const PARTIAL_KEYS = [
+    'appointments',
+    'summary',
+    'analytics',
+    'hasSearch',
+    'filters',
+    'filterOptions',
+    'urls',
+] as const;
+
 function buildSearchParams(filters: AppointmentReportFilters): Record<string, string> {
     const params: Record<string, string> = { search: '1' };
     Object.entries(filters).forEach(([key, value]) => {
@@ -90,35 +100,71 @@ export default function AppointmentsReport({
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
     const [filters, setFilters] = useState(serverFilters);
+    const [districts, setDistricts] = useState(filterOptions.districts);
     const [processing, setProcessing] = useState(false);
 
     useEffect(() => {
         setFilters(serverFilters);
     }, [serverFilters]);
 
-    const filteredDistricts = useMemo(() => {
+    useEffect(() => {
+        setDistricts(filterOptions.districts);
+    }, [filterOptions.districts]);
+
+    useEffect(() => {
         if (!filters.province_id) {
-            return filterOptions.districts;
+            setDistricts([]);
+            return;
         }
-        return filterOptions.districts.filter(
-            (district) => String(district.province_id) === filters.province_id
-        );
-    }, [filterOptions.districts, filters.province_id]);
+
+        let cancelled = false;
+        fetch(`/patients/districts/${filters.province_id}`, {
+            headers: { Accept: 'application/json' },
+        })
+            .then((response) => response.json())
+            .then((payload) => {
+                if (cancelled) {
+                    return;
+                }
+                setDistricts(
+                    (payload.districts ?? []).map((district: { id: number; name_dr: string }) => ({
+                        id: district.id,
+                        name_dr: district.name_dr,
+                        province_id: Number(filters.province_id),
+                    })),
+                );
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setDistricts([]);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [filters.province_id]);
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
         setProcessing(true);
         router.get(urls.current, buildSearchParams(filters), {
+            only: [...PARTIAL_KEYS],
             preserveScroll: true,
+            preserveState: true,
             onFinish: () => setProcessing(false),
         });
     };
 
     const handleReset = () => {
         setFilters(EMPTY_FILTERS);
+        setDistricts([]);
         setProcessing(true);
         router.get(urls.current, {}, {
+            only: [...PARTIAL_KEYS],
             preserveScroll: true,
+            preserveState: true,
+            replace: true,
             onFinish: () => setProcessing(false),
         });
     };
@@ -128,7 +174,9 @@ export default function AppointmentsReport({
         setFilters(next);
         setProcessing(true);
         router.get(urls.current, buildSearchParams(next), {
+            only: [...PARTIAL_KEYS],
             preserveScroll: true,
+            preserveState: true,
             onFinish: () => setProcessing(false),
         });
     };
@@ -497,7 +545,7 @@ export default function AppointmentsReport({
                             onChange={(value) => setFilters((prev) => ({ ...prev, district_id: value }))}
                             options={[
                                 { value: '', label: t('global.all') },
-                                ...filteredDistricts.map((district) => ({
+                                ...districts.map((district) => ({
                                     value: String(district.id),
                                     label: district.name_dr ?? `#${district.id}`,
                                 })),
@@ -649,7 +697,12 @@ export default function AppointmentsReport({
                 </div>
 
                 {appointments.links.length > 3 && (
-                    <AppointmentPagination links={appointments.links} meta={appointments.meta} t={t} />
+                    <AppointmentPagination
+                        links={appointments.links}
+                        meta={appointments.meta}
+                        t={t}
+                        only={[...PARTIAL_KEYS]}
+                    />
                 )}
             </ReportResultsCard>
         </ReportPageShell>

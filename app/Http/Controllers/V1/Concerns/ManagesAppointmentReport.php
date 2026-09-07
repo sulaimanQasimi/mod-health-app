@@ -166,8 +166,14 @@ trait ManagesAppointmentReport
      */
     protected function appointmentReportSummary(Builder $query): array
     {
-        $total = (clone $query)->count();
-        $completed = (clone $query)->where('appointments.is_completed', '1')->count();
+        $row = (clone $query)
+            ->reorder()
+            ->toBase()
+            ->selectRaw('COUNT(*) as total, SUM(CASE WHEN appointments.is_completed = ? THEN 1 ELSE 0 END) as completed', ['1'])
+            ->first();
+
+        $total = (int) ($row->total ?? 0);
+        $completed = (int) ($row->completed ?? 0);
         $ongoing = max(0, $total - $completed);
 
         return [

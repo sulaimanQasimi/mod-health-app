@@ -703,6 +703,7 @@ class AppointmentController extends Controller
         $this->authorize('viewMyVisits', Appointment::class);
 
         $user = $request->user();
+        $flags = $this->myVisitActionFlags($user);
         $paginator = $this->buildDepartmentAppointmentsQuery($request, $user)
             ->latest()
             ->paginate(25)
@@ -711,7 +712,7 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Department', [
             'appointments' => $this->paginatedResponse(
                 $paginator,
-                fn(Appointment $appointment) => $this->transformDepartmentAppointment($appointment, $user),
+                fn(Appointment $appointment) => $this->transformDepartmentAppointment($appointment, $flags),
             ),
             'filters' => [
                 'search' => (string) $request->input('search', ''),
@@ -721,7 +722,7 @@ class AppointmentController extends Controller
             'filterOptions' => [
                 'departments' => $this->departmentsForUser($user),
             ],
-            'permissions' => $this->myVisitPermissions($user),
+            'permissions' => $this->myVisitPermissions($user, $flags),
             'urls' => $this->myVisitUrls(),
         ]);
     }
@@ -731,9 +732,14 @@ class AppointmentController extends Controller
         $this->authorize('viewMyVisits', Appointment::class);
 
         $user = $request->user();
+        $flags = $this->myVisitActionFlags($user);
         $query = Appointment::query()
             ->where('processed_by', $user->id)
             ->where('is_completed', '0')
+            ->when(
+                ! $flags['isAdmin'],
+                fn ($q) => $q->where('branch_id', $user->branch_id),
+            )
             ->with([
                 'patient:id,name,last_name,father_name,id_card',
                 'doctor:id,name',
@@ -747,10 +753,10 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Doctor', [
             'appointments' => $this->paginatedResponse(
                 $paginator,
-                fn(Appointment $appointment) => $this->transformDoctorAppointment($appointment, $user),
+                fn(Appointment $appointment) => $this->transformDoctorAppointment($appointment, $flags),
             ),
             'filters' => $this->myVisitFiltersFromRequest($request),
-            'permissions' => $this->myVisitPermissions($user),
+            'permissions' => $this->myVisitPermissions($user, $flags),
             'urls' => $this->myVisitUrls(),
         ]);
     }
@@ -760,9 +766,14 @@ class AppointmentController extends Controller
         $this->authorize('viewMyVisits', Appointment::class);
 
         $user = $request->user();
+        $flags = $this->myVisitActionFlags($user);
         $query = Appointment::query()
             ->where('processed_by', $user->id)
             ->where('is_completed', '1')
+            ->when(
+                ! $flags['isAdmin'],
+                fn ($q) => $q->where('branch_id', $user->branch_id),
+            )
             ->with([
                 'patient:id,name,last_name,father_name,id_card',
                 'doctor:id,name',
@@ -776,10 +787,10 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Completed', [
             'appointments' => $this->paginatedResponse(
                 $paginator,
-                fn(Appointment $appointment) => $this->transformDoctorAppointment($appointment, $user),
+                fn(Appointment $appointment) => $this->transformDoctorAppointment($appointment, $flags),
             ),
             'filters' => $this->myVisitFiltersFromRequest($request, includePatientName: true),
-            'permissions' => $this->myVisitPermissions($user),
+            'permissions' => $this->myVisitPermissions($user, $flags),
             'urls' => $this->myVisitUrls(),
         ]);
     }
@@ -835,11 +846,12 @@ class AppointmentController extends Controller
 
     public function report(Request $request): Response
     {
-        $this->authorize('viewAny', Appointment::class);
+        $this->authorize('viewMyVisits', Appointment::class);
 
         $user = $request->user();
         $branchId = (int) $user->branch_id;
         $hasSearch = $this->appointmentReportHasSearch($request);
+        $provinceId = $request->filled('province_id') ? (int) $request->input('province_id') : null;
 
         $appointments = [
             'data' => [],
@@ -874,10 +886,9 @@ class AppointmentController extends Controller
 
             $perPage = $request->input('per_page', '25');
             if ($perPage === 'all') {
-                $items = $query->get();
+                $items = $query->limit(2000)->get();
                 $appointments = [
-                    'data' => $items->map(fn(Appointment $item) => $this->transformAppointmentReportItem($item))->values()->all(),
-                    'links' => [],
+                    'data' => $items->map(fn(Appointment $item) => $this->transformAppointmentReportItem($item))->values()->all(),                    'links' => [],
                     'meta' => [
                         'current_page' => 1,
                         'last_page' => 1,
@@ -910,25 +921,30 @@ class AppointmentController extends Controller
             'filterOptions' => [
                 'doctors' => Doctor::query()
                     ->where('active_status', true)
+                    ->when($branchId > 0, fn ($q) => $q->where('branch_id', $branchId))
                     ->orderBy('name')
                     ->get(['id', 'name']),
                 'users' => User::query()
                     ->where('status', 1)
+                    ->when($branchId > 0, fn ($q) => $q->where('branch_id', $branchId))
                     ->orderBy('name')
                     ->get(['id', 'name', 'last_name']),
                 'provinces' => Province::query()
                     ->orderBy('name_dr')
                     ->get(['id', 'name_dr']),
-                'districts' => District::query()
-                    ->orderBy('name_dr')
-                    ->get(['id', 'name_dr', 'province_id']),
+                'districts' => $provinceId
+                    ? District::query()
+                        ->where('province_id', $provinceId)
+                        ->orderBy('name_dr')
+                        ->get(['id', 'name_dr', 'province_id'])
+                    : [],
                 'relations' => Relation::query()
                     ->orderBy('name')
                     ->get(['id', 'name']),
             ],
             'urls' => [
                 'current' => route('appointments.report'),
-                'index' => route('appointments.index'),
+                'index' => route('appointments.doctor'),
                 'export' => route('appointments.export-report'),
             ],
         ]);
@@ -946,6 +962,9 @@ class AppointmentController extends Controller
         $patientId = $this->parseNumericFilter($request->input('patient_id'));
         $clinicType = $user->clinic_type;
         $scopeClinic = filled($clinicType) && $clinicType !== 'both';
+        $isAdmin = $user->hasRole(['super_admin', 'admin']);
+        $departmentId = $user->doctor()->value('department_id')
+            ?? $user->department_id;
 
         $query = Appointment::query()->with([
             'patient:id,name,last_name,father_name,id_card',
@@ -954,22 +973,26 @@ class AppointmentController extends Controller
             'processedBy:id,name,last_name',
         ]);
 
+        if (! $isAdmin && $user->branch_id) {
+            $query->where('branch_id', $user->branch_id);
+        }
+
         if ($tokenId !== null) {
             $query->whereKey($tokenId);
         } else {
-            $query->whereNull('processed_by')
-                ->when(
-                    $user->doctor,
-                    fn($q) => $q->where('department_id', $user->doctor->department_id),
-                );
+            $query->whereNull('processed_by');
+
+            if ($departmentId) {
+                $query->where('department_id', $departmentId);
+            } elseif (! $isAdmin) {
+                $query->whereRaw('0 = 1');
+            }
         }
 
         $query->when(
             $scopeClinic,
-            fn($q) =>
-            $q->where('clinic_type', $clinicType)
-        )
-            ->when($patientId !== null, fn($q) => $q->where('patient_id', $patientId));
+            fn ($q) => $q->where('clinic_type', $clinicType),
+        )->when($patientId !== null, fn ($q) => $q->where('patient_id', $patientId));
 
         if ($request->filled('search')) {
             $term = '%' . $request->input('search') . '%';
@@ -1004,9 +1027,11 @@ class AppointmentController extends Controller
         if ($includePatientName && $request->filled('patient_name')) {
             $term = '%' . $request->patient_name . '%';
             $query->whereHas('patient', function ($patientQuery) use ($term) {
-                $patientQuery->where('name', 'like', $term)
-                    ->orWhere('last_name', 'like', $term)
-                    ->orWhere('father_name', 'like', $term);
+                $patientQuery->where(function ($q) use ($term) {
+                    $q->where('name', 'like', $term)
+                        ->orWhere('last_name', 'like', $term)
+                        ->orWhere('father_name', 'like', $term);
+                });
             });
         }
     }
@@ -1077,13 +1102,32 @@ class AppointmentController extends Controller
     }
 
     /**
+     * @return array{isAdmin: bool, canAccept: bool, canChangeDepartment: bool, canView: bool, canViewHistory: bool}
+     */
+    private function myVisitActionFlags($user): array
+    {
+        $isAdmin = $user->hasRole(['super_admin', 'admin']);
+        $canMyVisits = $isAdmin || $user->can('show-my-visits-menu');
+
+        return [
+            'isAdmin' => $isAdmin,
+            'canAccept' => $canMyVisits,
+            'canChangeDepartment' => $canMyVisits,
+            'canView' => $canMyVisits || $user->can('show-information-menu'),
+            'canViewHistory' => $user->can('viewAny', Patient::class),
+        ];
+    }
+
+    /**
      * @return array<string, bool>
      */
-    private function myVisitPermissions($user): array
+    private function myVisitPermissions($user, ?array $flags = null): array
     {
+        $flags ??= $this->myVisitActionFlags($user);
+
         return [
-            'view' => $user->can('viewAny', Appointment::class),
-            'history' => $user->can('viewAny', Appointment::class),
+            'view' => $flags['canView'],
+            'history' => $flags['canViewHistory'],
         ];
     }
 
@@ -1097,18 +1141,20 @@ class AppointmentController extends Controller
             'doctor' => route('appointments.doctor'),
             'completed' => route('appointments.completed'),
             'show' => url('/appointments'),
-            'patientHistory' => url('/patients/history'),
+            'patientHistory' => url('/patients'),
             'accept' => url('/appointments'),
             'changeDepartment' => url('/appointments'),
         ];
     }
 
     /**
+     * @param  array{isAdmin: bool, canAccept: bool, canChangeDepartment: bool, canView: bool, canViewHistory: bool}  $flags
      * @return array<string, mixed>
      */
-    private function transformDepartmentAppointment(Appointment $appointment, $user): array
+    private function transformDepartmentAppointment(Appointment $appointment, array $flags): array
     {
         $patient = $appointment->patient;
+        $isAccepted = (bool) $appointment->processed_by;
 
         return [
             'id' => $appointment->id,
@@ -1120,26 +1166,23 @@ class AppointmentController extends Controller
             'department_name' => $appointment->department?->name,
             'date' => $appointment->date ? verta($appointment->date)->format('Y-m-d') : null,
             'time' => $appointment->time,
-            'is_accepted' => (bool) $appointment->processed_by,
+            'is_accepted' => $isAccepted,
             'refferal_remarks' => $appointment->refferal_remarks,
             'referring_doctor_name' => $appointment->referringDoctor?->name,
             'permissions' => [
-                'accept' => $user->can('accept', $appointment),
-                'changeDepartment' => $user->can('changeDepartment', $appointment),
-                'view' => $user->can('view', $appointment)
-                    && (
-                        $appointment->processed_by
-                        || $user->hasRole(['super_admin', 'admin'])
-                    ),
-                'history' => $patient && $user->can('view', $patient),
+                'accept' => $flags['canAccept'] && ! $isAccepted,
+                'changeDepartment' => $flags['canChangeDepartment'],
+                'view' => $flags['canView'] && ($isAccepted || $flags['isAdmin']),
+                'history' => $flags['canViewHistory'] && (bool) $patient,
             ],
         ];
     }
 
     /**
+     * @param  array{isAdmin: bool, canAccept: bool, canChangeDepartment: bool, canView: bool, canViewHistory: bool}  $flags
      * @return array<string, mixed>
      */
-    private function transformDoctorAppointment(Appointment $appointment, $user): array
+    private function transformDoctorAppointment(Appointment $appointment, array $flags): array
     {
         $patient = $appointment->patient;
 
@@ -1154,8 +1197,8 @@ class AppointmentController extends Controller
             'date' => $appointment->date ? verta($appointment->date)->format('Y-m-d') : null,
             'time' => $appointment->time,
             'permissions' => [
-                'view' => $user->can('view', $appointment),
-                'history' => $patient && $user->can('view', $patient),
+                'view' => $flags['canView'],
+                'history' => $flags['canViewHistory'] && (bool) $patient,
             ],
         ];
     }

@@ -69,6 +69,7 @@ export default function Department({
         (nextFilters: MyVisitFilterValues) => {
             setProcessing(true);
             router.get(urls.department, cleanFilters(nextFilters), {
+                only: ['appointments', 'filters', 'permissions', 'urls'],
                 preserveScroll: true,
                 preserveState: true,
                 replace: true,
@@ -237,6 +238,7 @@ export default function Department({
                         links={appointments.links}
                         meta={appointments.meta}
                         t={t}
+                        only={['appointments', 'filters', 'permissions', 'urls']}
                     />
                 </Card>
             </div>

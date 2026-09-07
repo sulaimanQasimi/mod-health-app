@@ -59,6 +59,7 @@ export default function Doctor({
         (nextFilters: MyVisitFilterValues) => {
             setProcessing(true);
             router.get(urls.doctor, cleanFilters(nextFilters), {
+                only: ['appointments', 'filters', 'permissions', 'urls'],
                 preserveScroll: true,
                 preserveState: true,
                 replace: true,
@@ -188,6 +189,7 @@ export default function Doctor({
                         links={appointments.links}
                         meta={appointments.meta}
                         t={t}
+                        only={['appointments', 'filters', 'permissions', 'urls']}
                     />
                 </Card>
             </div>

@@ -10,9 +10,10 @@ interface AppointmentPaginationProps {
         total: number;
     };
     t: (key: string) => string;
+    only?: string[];
 }
 
-export default function AppointmentPagination({ links, meta, t }: AppointmentPaginationProps) {
+export default function AppointmentPagination({ links, meta, t, only }: AppointmentPaginationProps) {
     if (links.length <= 3) {
         return null;
     }
@@ -23,7 +24,7 @@ export default function AppointmentPagination({ links, meta, t }: AppointmentPag
                 {buildPaginationSummary(meta, t)} {t('global.results')}
             </p>
             <nav aria-label="Pagination">
-                <SettingsPagination links={links} />
+                <SettingsPagination links={links} only={only} />
             </nav>
         </div>
     );

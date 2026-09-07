@@ -142,7 +142,7 @@ export default function ShowPrescription({
                                         <i className="bx bx-printer me-2" />
                                         {t('global.thermal_print')}
                                     </Button>
-                                    {!readonly && permissions.edit && (
+                                    {!readonly && permissions.manageItems && (
                                         <>
                                             <Button
                                                 size="sm"

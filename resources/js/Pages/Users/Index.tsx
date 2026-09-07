@@ -69,6 +69,7 @@ export default function IndexUsers({
     const [filters, setFilters] = useState<UserIndexFilters>(serverFilters);
     const [processing, setProcessing] = useState(false);
     const [statusUpdatingId, setStatusUpdatingId] = useState<number | null>(null);
+    const [passwordResettingId, setPasswordResettingId] = useState<number | null>(null);
 
     useEffect(() => {
         setFilters(serverFilters);
@@ -111,6 +112,22 @@ export default function IndexUsers({
             {
                 preserveScroll: true,
                 onFinish: () => setStatusUpdatingId(null),
+            },
+        );
+    };
+
+    const handleResetPassword = (userId: number) => {
+        if (!window.confirm(t('global.are_you_sure_reset_password'))) {
+            return;
+        }
+
+        setPasswordResettingId(userId);
+        router.post(
+            `${urls.resetPassword}/${userId}/reset-password`,
+            {},
+            {
+                preserveScroll: true,
+                onFinish: () => setPasswordResettingId(null),
             },
         );
     };
@@ -438,15 +455,32 @@ export default function IndexUsers({
                                             </div>
                                         </TableCell>
                                         <TableCell align="center">
-                                            {permissions.edit && (
-                                                <Link
-                                                    href={`${urls.edit}/${user.id}/edit`}
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30"
-                                                    title={t('global.edit')}
-                                                >
-                                                    <i className="bx bx-edit text-lg" />
-                                                </Link>
-                                            )}
+                                            <div className="inline-flex items-center gap-1">
+                                                {permissions.resetPassword && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleResetPassword(user.id)}
+                                                        disabled={passwordResettingId === user.id}
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-rose-600 hover:bg-rose-50 disabled:opacity-50 dark:text-rose-400 dark:hover:bg-rose-900/30"
+                                                        title={t('global.reset_password')}
+                                                    >
+                                                        {passwordResettingId === user.id ? (
+                                                            <Spinner size="sm" />
+                                                        ) : (
+                                                            <i className="bx bx-key text-lg" />
+                                                        )}
+                                                    </button>
+                                                )}
+                                                {permissions.edit && (
+                                                    <Link
+                                                        href={`${urls.edit}/${user.id}/edit`}
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30"
+                                                        title={t('global.edit')}
+                                                    >
+                                                        <i className="bx bx-edit text-lg" />
+                                                    </Link>
+                                                )}
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 ))}

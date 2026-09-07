@@ -58,6 +58,7 @@ export interface UserIndexPermissions {
     create: boolean;
     edit: boolean;
     toggleStatus: boolean;
+    resetPassword: boolean;
 }
 
 export interface UserIndexUrls {
@@ -65,6 +66,7 @@ export interface UserIndexUrls {
     create: string;
     edit: string;
     updateStatus: string;
+    resetPassword: string;
 }
 
 export interface UserFormOption {

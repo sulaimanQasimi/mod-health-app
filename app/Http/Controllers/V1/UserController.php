@@ -90,6 +90,7 @@ class UserController extends Controller
                 'create' => route('users.create'),
                 'edit' => url('/users'),
                 'updateStatus' => url('/users'),
+                'resetPassword' => url('/users'),
             ],
         ]);
     }
@@ -201,6 +202,17 @@ class UserController extends Controller
             : localize('global.user_status_deactivated');
 
         return back()->with('success', $message);
+    }
+
+    public function resetPassword(Request $request, User $user): RedirectResponse
+    {
+        $this->authorize('resetPassword', $user);
+
+        $user->update([
+            'password' => Hash::make('123456'),
+        ]);
+
+        return back()->with('success', localize('global.password_reset_success'));
     }
 
     /**
@@ -357,6 +369,8 @@ class UserController extends Controller
                 || $user->hasPermissionTo('edit-users'),
             'toggleStatus' => $user->hasRole(['super_admin', 'admin'])
                 || $user->hasPermissionTo('deactivate-users'),
+            'resetPassword' => $user->hasRole(['super_admin', 'admin'])
+                || $user->hasPermissionTo('edit-users'),
         ];
     }
 }

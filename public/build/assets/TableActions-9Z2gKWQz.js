@@ -1,0 +1,1 @@
+import{j as t}from"./app-D_l0FyFH.js";import{e as r}from"./Table-DXfpu-gQ.js";function s({children:e,className:n}){return t.jsx("div",{className:n??"inline-flex flex-nowrap items-center justify-center gap-0.5",children:e})}function l({children:e,className:n}){return t.jsx(r,{align:"center",className:n,children:t.jsx(s,{children:e})})}export{l as T,s as a};

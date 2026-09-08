@@ -1,1 +1,0 @@
-import{j as r}from"./app-BLnV2Adn.js";import{B as s}from"./Badge-DeKkEcTk.js";function o({className:e="",...a}){return r.jsx(s,{size:"xs",className:`inline-flex w-fit font-normal whitespace-nowrap ${e}`.trim(),...a})}export{o as T};

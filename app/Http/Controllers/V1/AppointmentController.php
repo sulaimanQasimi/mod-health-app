@@ -828,15 +828,21 @@ class AppointmentController extends Controller
             'department_id' => 'required|exists:departments,id',
         ]);
 
-        $appointment->update([
-            'department_id' => $validated['department_id'],
-        ]);
-
         if ($appointment->doctor_id) {
-            $doctor = Doctor::find($appointment->doctor_id);
-            if ($doctor && (int) $doctor->department_id !== (int) $validated['department_id']) {
-                $appointment->update(['doctor_id' => null]);
-            }
+            $doctorDepartmentId = Doctor::query()
+                ->whereKey($appointment->doctor_id)
+                ->value('department_id');
+
+            $appointment->update([
+                'department_id' => $validated['department_id'],
+                'doctor_id' => (int) $doctorDepartmentId === (int) $validated['department_id']
+                    ? $appointment->doctor_id
+                    : null,
+            ]);
+        } else {
+            $appointment->update([
+                'department_id' => $validated['department_id'],
+            ]);
         }
 
         return redirect()
@@ -880,13 +886,21 @@ class AppointmentController extends Controller
         ];
 
         if ($hasSearch) {
-            $query = $this->appointmentReportBaseQuery($request, $branchId);
+            $isAdmin = $user->hasRole(['super_admin', 'admin']);
+            $processedByUserId = $isAdmin ? null : (int) $user->id;
+
+            $query = $this->appointmentReportBaseQuery($request, $branchId, $processedByUserId);
             $summary = $this->appointmentReportSummary($query);
-            $analytics = $this->appointmentReportAnalytics($request, $branchId);
+            $analytics = $this->appointmentReportAnalytics(
+                $request,
+                $branchId,
+                $summary,
+                $processedByUserId,
+            );
 
             $perPage = $request->input('per_page', '25');
             if ($perPage === 'all') {
-                $items = $query->limit(2000)->get();
+                $items = $query->limit(500)->get();
                 $appointments = [
                     'data' => $items->map(fn(Appointment $item) => $this->transformAppointmentReportItem($item))->values()->all(),                    'links' => [],
                     'meta' => [
@@ -970,11 +984,10 @@ class AppointmentController extends Controller
             'patient:id,name,last_name,father_name,id_card',
             'department:id,name',
             'referringDoctor:id,name',
-            'processedBy:id,name,last_name',
         ]);
 
         if (! $isAdmin && $user->branch_id) {
-            $query->where('branch_id', $user->branch_id);
+            $query->where('appointments.branch_id', $user->branch_id);
         }
 
         if ($tokenId !== null) {

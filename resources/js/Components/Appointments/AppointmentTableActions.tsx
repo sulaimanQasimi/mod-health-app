@@ -65,8 +65,9 @@ export function AppointmentIconLink({
             href={href}
             className={`${iconButtonBase} ${iconVariantClasses[variant]}`}
             title={title}
+            aria-label={title}
         >
-            <i className={`bx ${icon} text-lg`} />
+            <i className={`bx ${icon} text-lg`} aria-hidden="true" />
         </Link>
     );
 }
@@ -78,6 +79,7 @@ interface AppointmentIconAnchorProps {
     variant?: AppointmentActionVariant;
 }
 
+/** Prefer Inertia Link for in-app navigation (history / patient show). */
 export function AppointmentIconAnchor({
     href,
     icon,
@@ -85,13 +87,14 @@ export function AppointmentIconAnchor({
     variant = 'history',
 }: AppointmentIconAnchorProps) {
     return (
-        <a
+        <Link
             href={href}
             className={`${iconButtonBase} ${iconVariantClasses[variant]}`}
             title={title}
+            aria-label={title}
         >
-            <i className={`bx ${icon} text-lg`} />
-        </a>
+            <i className={`bx ${icon} text-lg`} aria-hidden="true" />
+        </Link>
     );
 }
 
@@ -146,9 +149,10 @@ export function AppointmentPillButton({
             onClick={onClick}
             disabled={disabled}
             title={title ?? label}
+            aria-label={title ?? label}
             className={`${pillButtonBase} ${iconVariantClasses[variant]}`}
         >
-            <i className={`bx ${icon} text-base`} />
+            <i className={`bx ${icon} text-base`} aria-hidden="true" />
             <span>{label}</span>
         </button>
     );

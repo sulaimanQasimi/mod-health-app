@@ -17,57 +17,80 @@ export default function ReportTrendChart({
     height = 280,
 }: ReportTrendChartProps) {
     const chartRef = useRef<HTMLDivElement | null>(null);
+    const chartInstance = useRef<echarts.ECharts | null>(null);
 
     useEffect(() => {
-        if (!chartRef.current || !labels.length) {
+        if (!chartRef.current) {
             return;
         }
 
-        const chart = echarts.init(chartRef.current);
+        if (!labels.length) {
+            chartInstance.current?.clear();
+            return;
+        }
+
+        if (!chartInstance.current) {
+            chartInstance.current = echarts.init(chartRef.current);
+        }
+
+        const chart = chartInstance.current;
         const isDark = document.documentElement.classList.contains('dark');
         const textColor = isDark ? '#9ca3af' : '#6b7280';
 
-        chart.setOption({
-            tooltip: { trigger: 'axis' },
-            grid: { left: 40, right: 16, top: 24, bottom: 40 },
-            xAxis: {
-                type: 'category',
-                data: labels,
-                boundaryGap: false,
-                axisLabel: { color: textColor, rotate: labels.length > 10 ? 30 : 0 },
-            },
-            yAxis: {
-                type: 'value',
-                minInterval: 1,
-                axisLabel: { color: textColor },
-                splitLine: { lineStyle: { color: isDark ? '#374151' : '#e5e7eb' } },
-            },
-            series: [
-                {
-                    type: 'line',
-                    smooth: true,
-                    data: values,
-                    areaStyle: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            { offset: 0, color: `${color}55` },
-                            { offset: 1, color: `${color}08` },
-                        ]),
-                    },
-                    lineStyle: { color, width: 3 },
-                    itemStyle: { color },
-                    showSymbol: labels.length <= 20,
+        chart.setOption(
+            {
+                tooltip: { trigger: 'axis' },
+                grid: { left: 40, right: 16, top: 24, bottom: 40 },
+                xAxis: {
+                    type: 'category',
+                    data: labels,
+                    boundaryGap: false,
+                    axisLabel: { color: textColor, rotate: labels.length > 10 ? 30 : 0 },
                 },
-            ],
-        });
+                yAxis: {
+                    type: 'value',
+                    minInterval: 1,
+                    axisLabel: { color: textColor },
+                    splitLine: { lineStyle: { color: isDark ? '#374151' : '#e5e7eb' } },
+                },
+                series: [
+                    {
+                        type: 'line',
+                        smooth: true,
+                        data: values,
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: `${color}55` },
+                                { offset: 1, color: `${color}08` },
+                            ]),
+                        },
+                        lineStyle: { color, width: 3 },
+                        itemStyle: { color },
+                        showSymbol: labels.length <= 20,
+                    },
+                ],
+            },
+            true,
+        );
 
         const handleResize = () => chart.resize();
         window.addEventListener('resize', handleResize);
 
         return () => {
             window.removeEventListener('resize', handleResize);
-            chart.dispose();
         };
-    }, [color, height, labels, values]);
+    }, [color, labels, values]);
+
+    useEffect(() => {
+        return () => {
+            chartInstance.current?.dispose();
+            chartInstance.current = null;
+        };
+    }, []);
+
+    useEffect(() => {
+        chartInstance.current?.resize();
+    }, [height]);
 
     if (!labels.length) {
         return (

@@ -55,6 +55,7 @@ export default function MyVisitFilters({
                             id="filter-token-id"
                             value={filters.token_id}
                             placeholder={t('global.search_by_token_id')}
+                            inputMode="numeric"
                             onChange={(event) => onFilterChange('token_id', event.target.value)}
                         />
                     </div>
@@ -64,6 +65,7 @@ export default function MyVisitFilters({
                             id="filter-patient-id"
                             value={filters.patient_id}
                             placeholder={t('global.search_by_patient_id')}
+                            inputMode="numeric"
                             onChange={(event) => onFilterChange('patient_id', event.target.value)}
                         />
                     </div>

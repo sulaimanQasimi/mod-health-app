@@ -11,6 +11,7 @@ interface ChangeDepartmentModalProps {
     currentDepartmentId: number | null;
     departments: NamedOption[];
     changeDepartmentUrl: string;
+    only?: string[];
     onClose: () => void;
 }
 
@@ -20,6 +21,7 @@ export default function ChangeDepartmentModal({
     currentDepartmentId,
     departments,
     changeDepartmentUrl,
+    only,
     onClose,
 }: ChangeDepartmentModalProps) {
     const { t } = useTranslation();
@@ -29,6 +31,7 @@ export default function ChangeDepartmentModal({
     useEffect(() => {
         if (show) {
             setDepartmentId(currentDepartmentId ? String(currentDepartmentId) : '');
+            setProcessing(false);
         }
     }, [show, currentDepartmentId]);
 
@@ -44,17 +47,21 @@ export default function ChangeDepartmentModal({
             `${changeDepartmentUrl}/${appointmentId}/change-department`,
             { department_id: departmentId },
             {
+                only,
                 preserveScroll: true,
-                onFinish: () => {
+                preserveState: true,
+                onSuccess: () => {
                     setProcessing(false);
                     onClose();
                 },
+                onError: () => setProcessing(false),
+                onFinish: () => setProcessing(false),
             },
         );
     };
 
     return (
-        <Modal show={show} onClose={onClose}>
+        <Modal show={show} onClose={processing ? () => undefined : onClose}>
             <form onSubmit={handleSubmit}>
                 <ModalHeader>{t('global.change_department')}</ModalHeader>
                 <ModalBody>
@@ -65,15 +72,15 @@ export default function ChangeDepartmentModal({
                             value={departmentId}
                             onChange={setDepartmentId}
                             placeholder={t('global.select_department')}
+                            options={[
+                                { value: '', label: t('global.select_department') },
+                                ...departments.map((department) => ({
+                                    value: String(department.id),
+                                    label: department.name,
+                                })),
+                            ]}
                             required
-                        >
-                            <option value="">{t('global.select_department')}</option>
-                            {departments.map((department) => (
-                                <option key={department.id} value={department.id}>
-                                    {department.name}
-                                </option>
-                            ))}
-                        </SearchableSelect>
+                        />
                     </div>
                 </ModalBody>
                 <ModalFooter>

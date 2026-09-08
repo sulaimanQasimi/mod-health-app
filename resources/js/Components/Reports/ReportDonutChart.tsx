@@ -17,62 +17,85 @@ export default function ReportDonutChart({
     height = 280,
 }: ReportDonutChartProps) {
     const chartRef = useRef<HTMLDivElement | null>(null);
+    const chartInstance = useRef<echarts.ECharts | null>(null);
 
     useEffect(() => {
-        if (!chartRef.current || !labels.length) {
+        if (!chartRef.current) {
             return;
         }
 
-        const chart = echarts.init(chartRef.current);
+        if (!labels.length) {
+            chartInstance.current?.clear();
+            return;
+        }
+
+        if (!chartInstance.current) {
+            chartInstance.current = echarts.init(chartRef.current);
+        }
+
+        const chart = chartInstance.current;
         const isDark = document.documentElement.classList.contains('dark');
         const textColor = isDark ? '#d1d5db' : '#374151';
 
-        chart.setOption({
-            tooltip: {
-                trigger: 'item',
-                formatter: '{b}: {c} ({d}%)',
-            },
-            legend: {
-                bottom: 0,
-                textStyle: { color: textColor },
-            },
-            series: [
-                {
-                    type: 'pie',
-                    radius: ['48%', '72%'],
-                    center: ['50%', '44%'],
-                    avoidLabelOverlap: true,
-                    itemStyle: {
-                        borderRadius: 6,
-                        borderColor: isDark ? '#1f2937' : '#fff',
-                        borderWidth: 2,
-                    },
-                    label: { show: false },
-                    emphasis: {
-                        label: {
-                            show: true,
-                            fontSize: 13,
-                            fontWeight: 600,
-                            color: textColor,
-                        },
-                    },
-                    data: labels.map((name, index) => ({
-                        name,
-                        value: values[index] ?? 0,
-                        itemStyle: { color: colors[index % colors.length] },
-                    })),
+        chart.setOption(
+            {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}: {c} ({d}%)',
                 },
-            ],
-        });
+                legend: {
+                    bottom: 0,
+                    textStyle: { color: textColor },
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        radius: ['48%', '72%'],
+                        center: ['50%', '44%'],
+                        avoidLabelOverlap: true,
+                        itemStyle: {
+                            borderRadius: 6,
+                            borderColor: isDark ? '#1f2937' : '#fff',
+                            borderWidth: 2,
+                        },
+                        label: { show: false },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 13,
+                                fontWeight: 600,
+                                color: textColor,
+                            },
+                        },
+                        data: labels.map((name, index) => ({
+                            name,
+                            value: values[index] ?? 0,
+                            itemStyle: { color: colors[index % colors.length] },
+                        })),
+                    },
+                ],
+            },
+            true,
+        );
 
         const handleResize = () => chart.resize();
         window.addEventListener('resize', handleResize);
 
         return () => {
             window.removeEventListener('resize', handleResize);
-            chart.dispose();
         };
-    }, [colors, height, labels, values]);
+    }, [colors, labels, values]);
+
+    useEffect(() => {
+        return () => {
+            chartInstance.current?.dispose();
+            chartInstance.current = null;
+        };
+    }, []);
+
+    useEffect(() => {
+        chartInstance.current?.resize();
+    }, [height]);
 
     if (!labels.length) {
         return (

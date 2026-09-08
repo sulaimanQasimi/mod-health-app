@@ -113,7 +113,19 @@ export default function AppointmentsReport({
 
     useEffect(() => {
         if (!filters.province_id) {
-            setDistricts([]);
+            if (filterOptions.districts.length === 0) {
+                setDistricts([]);
+            }
+            return;
+        }
+
+        // Server already sent districts for this province (search / partial reload).
+        if (
+            filterOptions.districts.length > 0
+            && filterOptions.districts.every(
+                (district) => String(district.province_id) === filters.province_id,
+            )
+        ) {
             return;
         }
 
@@ -143,7 +155,7 @@ export default function AppointmentsReport({
         return () => {
             cancelled = true;
         };
-    }, [filters.province_id]);
+    }, [filters.province_id, filterOptions.districts]);
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -152,6 +164,7 @@ export default function AppointmentsReport({
             only: [...PARTIAL_KEYS],
             preserveScroll: true,
             preserveState: true,
+            replace: true,
             onFinish: () => setProcessing(false),
         });
     };
@@ -177,6 +190,7 @@ export default function AppointmentsReport({
             only: [...PARTIAL_KEYS],
             preserveScroll: true,
             preserveState: true,
+            replace: true,
             onFinish: () => setProcessing(false),
         });
     };
@@ -220,88 +234,97 @@ export default function AppointmentsReport({
         return String(value) === '1' ? t('global.female') : t('global.male');
     };
 
-    const statusLabel = (name: string) => {
-        if (name === 'completed') {
-            return t('global.completed_appointments');
-        }
-        if (name === 'ongoing') {
-            return t('global.ongoing_appointments');
-        }
-        if (name === 'male') {
-            return t('global.male');
-        }
-        if (name === 'female') {
-            return t('global.female');
-        }
-        return name;
-    };
-
     const canExport = hasSearch && appointments.data.length > 0;
     const completionRate = summary.completion_rate ?? 0;
 
-    const kpiStats = hasSearch
-        ? [
-              {
-                  key: 'total',
-                  label: t('global.total'),
-                  value: summary.total,
-                  icon: 'bx-calendar',
-                  accent: 'from-cyan-500 to-blue-600',
-              },
-              {
-                  key: 'completed',
-                  label: t('global.completed_appointments'),
-                  value: summary.completed,
-                  icon: 'bx-check-circle',
-                  accent: 'from-emerald-500 to-teal-600',
-              },
-              {
-                  key: 'ongoing',
-                  label: t('global.ongoing_appointments'),
-                  value: summary.ongoing,
-                  icon: 'bx-time-five',
-                  accent: 'from-amber-500 to-orange-600',
-              },
-              {
-                  key: 'rate',
-                  label: t('global.completion_rate') !== 'global.completion_rate'
-                      ? t('global.completion_rate')
-                      : `${t('global.completed_appointments')} %`,
-                  value: `${completionRate}%`,
-                  icon: 'bx-pie-chart-alt-2',
-                  accent: 'from-violet-500 to-purple-600',
-              },
-          ]
-        : [];
+    const kpiStats = useMemo(
+        () =>
+            hasSearch
+                ? [
+                      {
+                          key: 'total',
+                          label: t('global.total'),
+                          value: summary.total,
+                          icon: 'bx-calendar',
+                          accent: 'from-cyan-500 to-blue-600',
+                      },
+                      {
+                          key: 'completed',
+                          label: t('global.completed_appointments'),
+                          value: summary.completed,
+                          icon: 'bx-check-circle',
+                          accent: 'from-emerald-500 to-teal-600',
+                      },
+                      {
+                          key: 'ongoing',
+                          label: t('global.ongoing_appointments'),
+                          value: summary.ongoing,
+                          icon: 'bx-time-five',
+                          accent: 'from-amber-500 to-orange-600',
+                      },
+                      {
+                          key: 'rate',
+                          label:
+                              t('global.completion_rate') !== 'global.completion_rate'
+                                  ? t('global.completion_rate')
+                                  : `${t('global.completed_appointments')} %`,
+                          value: `${completionRate}%`,
+                          icon: 'bx-pie-chart-alt-2',
+                          accent: 'from-violet-500 to-purple-600',
+                      },
+                  ]
+                : [],
+        [completionRate, hasSearch, summary.completed, summary.ongoing, summary.total, t],
+    );
 
-    const charts = hasSearch
-        ? [
-              {
-                  key: 'status',
-                  title: t('global.status'),
-                  type: 'donut' as const,
-                  labels: (analytics.by_status ?? []).map((item) => statusLabel(item.name)),
-                  values: (analytics.by_status ?? []).map((item) => item.count),
-                  colors: ['#10b981', '#f59e0b'],
-              },
-              {
-                  key: 'doctors',
-                  title: t('global.doctor'),
-                  type: 'bar' as const,
-                  labels: (analytics.by_doctor ?? []).map((item) => item.name),
-                  values: (analytics.by_doctor ?? []).map((item) => item.count),
-                  color: '#06b6d4',
-              },
-              {
-                  key: 'trend',
-                  title: t('global.date'),
-                  type: 'trend' as const,
-                  labels: (analytics.by_date ?? []).map((item) => item.date),
-                  values: (analytics.by_date ?? []).map((item) => item.count),
-                  color: '#6366f1',
-              },
-          ]
-        : [];
+    const charts = useMemo(() => {
+        if (!hasSearch) {
+            return [];
+        }
+
+        const labelFor = (name: string) => {
+            if (name === 'completed') {
+                return t('global.completed_appointments');
+            }
+            if (name === 'ongoing') {
+                return t('global.ongoing_appointments');
+            }
+            if (name === 'male') {
+                return t('global.male');
+            }
+            if (name === 'female') {
+                return t('global.female');
+            }
+            return name;
+        };
+
+        return [
+            {
+                key: 'status',
+                title: t('global.status'),
+                type: 'donut' as const,
+                labels: (analytics.by_status ?? []).map((item) => labelFor(item.name)),
+                values: (analytics.by_status ?? []).map((item) => item.count),
+                colors: ['#10b981', '#f59e0b'],
+            },
+            {
+                key: 'doctors',
+                title: t('global.doctor'),
+                type: 'bar' as const,
+                labels: (analytics.by_doctor ?? []).map((item) => item.name),
+                values: (analytics.by_doctor ?? []).map((item) => item.count),
+                color: '#06b6d4',
+            },
+            {
+                key: 'trend',
+                title: t('global.date'),
+                type: 'trend' as const,
+                labels: (analytics.by_date ?? []).map((item) => item.date),
+                values: (analytics.by_date ?? []).map((item) => item.count),
+                color: '#6366f1',
+            },
+        ];
+    }, [analytics.by_date, analytics.by_doctor, analytics.by_status, hasSearch, t]);
 
     return (
         <ReportPageShell
@@ -321,6 +344,10 @@ export default function AppointmentsReport({
                 ) : undefined
             }
         >
+            <div
+                className={processing ? 'pointer-events-none opacity-60 transition-opacity' : 'transition-opacity'}
+                aria-busy={processing}
+            >
             {hasSearch ? <ReportKpiGrid stats={kpiStats} /> : null}
             {hasSearch ? (
                 <ReportAnalyticsSection title={t('global.reports')} charts={charts} />
@@ -565,7 +592,6 @@ export default function AppointmentsReport({
                                 { value: '25', label: '25' },
                                 { value: '50', label: '50' },
                                 { value: '100', label: '100' },
-                                { value: 'all', label: t('global.all') },
                             ]}
                         />
                     </div>
@@ -705,6 +731,7 @@ export default function AppointmentsReport({
                     />
                 )}
             </ReportResultsCard>
+            </div>
         </ReportPageShell>
     );
 }

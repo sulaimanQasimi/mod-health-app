@@ -50,11 +50,12 @@ trait ManagesAppointmentReport
     /**
      * @return Builder<Appointment>
      */
-    protected function appointmentReportBaseQuery(Request $request, int $branchId): Builder
+    protected function appointmentReportBaseQuery(Request $request, int $branchId, ?int $processedByUserId = null): Builder
     {
         $query = Appointment::query()
-            ->where('branch_id', $branchId)
+            ->where('appointments.branch_id', $branchId)
             ->with([
+                'patient:id,name,last_name,job,job_type,gender,rank,relation_id,province_id,district_id',
                 'patient.relation:id,name',
                 'patient.province:id,name_dr',
                 'patient.district:id,name_dr',
@@ -75,6 +76,10 @@ trait ManagesAppointmentReport
                 'appointments.processed_by',
                 'appointments.created_by',
             ]);
+
+        if ($processedByUserId) {
+            $query->where('appointments.processed_by', $processedByUserId);
+        }
 
         $this->applyAppointmentReportFilters($query, $request);
 
@@ -192,6 +197,7 @@ trait ManagesAppointmentReport
     }
 
     /**
+     * @param  array{total: int, completed: int, ongoing: int, completion_rate: float}|null  $summary
      * @return array{
      *     by_status: list<array{name: string, count: int}>,
      *     by_doctor: list<array{name: string, count: int}>,
@@ -199,16 +205,45 @@ trait ManagesAppointmentReport
      *     by_gender: list<array{name: string, count: int}>
      * }
      */
-    protected function appointmentReportAnalytics(Request $request, int $branchId): array
-    {
+    protected function appointmentReportAnalytics(
+        Request $request,
+        int $branchId,
+        ?array $summary = null,
+        ?int $processedByUserId = null,
+    ): array {
         $query = Appointment::query()->where('appointments.branch_id', $branchId);
+
+        if ($processedByUserId) {
+            $query->where('appointments.processed_by', $processedByUserId);
+        }
+
         $this->applyAppointmentReportFilters($query, $request);
 
-        $completed = (clone $query)->where('appointments.is_completed', '1')->count();
-        $total = (clone $query)->count();
-        $ongoing = max(0, $total - $completed);
+        if ($summary !== null) {
+            $completed = $summary['completed'];
+            $ongoing = $summary['ongoing'];
+        } else {
+            $aggregate = clone $query;
+            $aggregate->getQuery()->columns = null;
+            $aggregate->getQuery()->orders = null;
+            $row = $aggregate
+                ->toBase()
+                ->selectRaw(
+                    'COUNT(*) as total, SUM(CASE WHEN appointments.is_completed = ? THEN 1 ELSE 0 END) as completed',
+                    ['1'],
+                )
+                ->first();
+            $total = (int) ($row->total ?? 0);
+            $completed = (int) ($row->completed ?? 0);
+            $ongoing = max(0, $total - $completed);
+        }
 
-        $byDoctor = (clone $query)
+        $byDoctorQuery = clone $query;
+        $byDoctorQuery->getQuery()->columns = null;
+        $byDoctorQuery->getQuery()->orders = null;
+        $byDoctorQuery->setEagerLoads([]);
+
+        $byDoctor = $byDoctorQuery
             ->leftJoin('doctors', 'doctors.id', '=', 'appointments.doctor_id')
             ->selectRaw('COALESCE(doctors.name, ?) as name, COUNT(*) as aggregate_count', ['—'])
             ->groupBy('doctors.name')
@@ -219,7 +254,11 @@ trait ManagesAppointmentReport
             ->values()
             ->all();
 
-        $dateQuery = (clone $query);
+        $dateQuery = clone $query;
+        $dateQuery->getQuery()->columns = null;
+        $dateQuery->getQuery()->orders = null;
+        $dateQuery->setEagerLoads([]);
+
         if (! $request->filled('start') || ! $request->filled('end')) {
             $dateQuery->whereDate('appointments.date', '>=', now()->subDays(29)->toDateString());
         }
@@ -242,7 +281,12 @@ trait ManagesAppointmentReport
             ->values()
             ->all();
 
-        $byGender = (clone $query)
+        $byGenderQuery = clone $query;
+        $byGenderQuery->getQuery()->columns = null;
+        $byGenderQuery->getQuery()->orders = null;
+        $byGenderQuery->setEagerLoads([]);
+
+        $byGender = $byGenderQuery
             ->leftJoin('patients', 'patients.id', '=', 'appointments.patient_id')
             ->selectRaw('patients.gender as gender, COUNT(*) as aggregate_count')
             ->groupBy('patients.gender')

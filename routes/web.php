@@ -1,21 +1,21 @@
 <?php
 
-use App\Http\Controllers\AnesthesiaController;
-use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Legacy\AnesthesiaController;
+use App\Http\Controllers\Legacy\AppointmentController;
 use App\Http\Controllers\DiabetesChartController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\HospitalizationController;
-use App\Http\Controllers\ICUController;
+use App\Http\Controllers\Legacy\HospitalizationController;
+use App\Http\Controllers\Legacy\ICUController;
 use App\Http\Controllers\NurseNoteController;
 use App\Http\Controllers\NutritionCareController;
-use App\Http\Controllers\OperationController;
-use App\Http\Controllers\OutcomeController;
-use App\Http\Controllers\PACUController;
-use App\Http\Controllers\PatientController;
+use App\Http\Controllers\Legacy\OperationController;
+use App\Http\Controllers\Legacy\OutcomeController;
+use App\Http\Controllers\Legacy\PACUController;
+use App\Http\Controllers\Legacy\PatientController;
 use App\Http\Controllers\PatientTestRegistrationController;
-use App\Http\Controllers\PhysiotherapyReportController;
+use App\Http\Controllers\Legacy\PhysiotherapyReportController;
 use App\Http\Controllers\TestResultController;
-use App\Http\Controllers\VitalSignController;
+use App\Http\Controllers\Legacy\VitalSignController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 

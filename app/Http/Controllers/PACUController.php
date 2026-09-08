@@ -2,228 +2,302 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendNewPACUNotification;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\ManagesPacuListing;
+use App\Http\Controllers\Concerns\PaginatesInertiaIndex;
 use App\Models\PACU;
+use App\Models\Visit;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Excel;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Mpdf\Mpdf;
+use Inertia\Inertia;
+use Inertia\Response;
+
 class PACUController extends Controller
 {
-    public function index(Request $request)
-    {
-        if ($request->ajax()) {
-            $pacus = PACU::where('branch_id',auth()->user()->branch_id)->with('patient')->where('status', 'new')->get();
+    use ManagesPacuListing;
+    use PaginatesInertiaIndex;
 
-                if ($pacus) {
-                    return response()->json([
-                        'data' => $pacus,
-                    ]);
-                } else {
-                    return response()->json([
-                        'message' => 'Internal Server Error',
-                        'code' => 500,
-                        'data' => [],
-                    ]);
-                }
+    public function index(Request $request): Response
+    {
+        $this->authorizePacuMenu();
+
+        $query = PACU::query()
+            ->where('status', 'new')
+            ->when($this->pacuBranchId(), fn ($q, $branchId) => $q->where('branch_id', $branchId))
+            ->with(['patient:id,name,father_name,id_card'])
+            ->orderByDesc('created_at');
+
+        $this->applyPacuPatientFilters($query, $request);
+
+        $paginator = $this->paginateQuery($query, $request);
+        $items = $this->paginatedPacuItems($paginator);
+
+        return Inertia::render('Pacus/Index', $this->listPagePayload($request, $items));
+    }
+
+    public function completed(Request $request): Response
+    {
+        $this->authorizePacuMenu();
+
+        $query = PACU::query()
+            ->where('status', 'completed')
+            ->when($this->pacuBranchId(), fn ($q, $branchId) => $q->where('branch_id', $branchId))
+            ->with(['patient:id,name,father_name,id_card'])
+            ->orderByDesc('created_at');
+
+        $this->applyPacuPatientFilters($query, $request);
+
+        $paginator = $this->paginateQuery($query, $request);
+        $items = $this->paginatedPacuItems($paginator);
+
+        return Inertia::render('Pacus/Completed', $this->listPagePayload($request, $items));
+    }
+
+    public function report(Request $request): Response
+    {
+        $this->authorizePacuMenu();
+
+        $items = [];
+        if ($request->boolean('search')) {
+            $items = $this->reportItems($request);
         }
+        $summary = [
+            'total' => count($items),
+            'new' => count(array_filter($items, fn ($item) => $item['status'] === 'new')),
+            'completed' => count(array_filter($items, fn ($item) => $item['status'] === 'completed')),
+        ];
 
-        $pacus = PACU::where('branch_id',auth()->user()->branch_id)->with(['patient'])->where('status', 'new')->get();
-        return view('pages.pacus.index', compact('pacus'));
+        return Inertia::render('Pacus/Report', [
+            'items' => $items,
+            'hasSearch' => $request->boolean('search'),
+            'summary' => $summary,
+            'analytics' => [
+                'by_status' => [
+                    ['name' => 'new', 'count' => $summary['new']],
+                    ['name' => 'completed', 'count' => $summary['completed']],
+                ],
+                'by_department' => collect($items)
+                    ->groupBy(fn ($item) => $item['department_name'] ?? '—')
+                    ->map(fn ($items, $name) => ['name' => $name, 'count' => $items->count()])
+                    ->sortByDesc('count')->values()->all(),
+            ],
+            'filters' => $this->collectFilters($request, [
+                'patient_name',
+                'status',
+                'date_from',
+                'date_to',
+            ]),
+            'urls' => [
+                'current' => route('pacus.report'),
+                'export' => route('pacus.export-report'),
+                ...$this->pacuListUrls(),
+            ],
+        ]);
     }
 
-    public function completed()
+    public function show(Request $request, PACU $pacu): Response
     {
-        $pacus = PACU::where('status', 'completed')->latest()->paginate(10);
+        $this->authorizePacuMenu();
 
-        return view('pages.pacus.completed', compact('pacus'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        // Validate the input
-        $validatedData = $request->validate([
-            'patient_id' => 'required',
-            'department_id' => 'required',
-            'branch_id' => 'required',
-            'appointment_id' => 'nullable',
-            'hospitalization_id' => 'nullable',
-            'description' => 'required',
-            'operation_id' => 'nullable',
+        $pacu->load([
+            'patient:id,name,last_name,father_name,id_card,phone,nid,image,province_id,district_id,referred_by,created_at',
+            'patient.province:id,name_dr',
+            'patient.district:id,name_dr',
+            'patient.recipient:id,name',
+            'department:id,name',
+            'branch:id,name',
+            'visits' => fn ($q) => $q->with(['doctor:id,name,department_id', 'doctor.department:id,name']),
         ]);
 
-        // Create a new appointment
-        $pacu = PACU::create($validatedData);
+        $user = $request->user();
 
-        SendNewPACUNotification::dispatch($pacu->created_by, $pacu->id);
-        // Redirect to the appointments index page with a success message
-        return redirect()->back()->with('success', localize('global.pacu_created_successfully.'));
+        return Inertia::render('Pacus/Show', [
+            'pacu' => $this->transformDetail($pacu),
+            'permissions' => [
+                'complete' => $pacu->status === 'new' && $user->can('show-pacu-menu'),
+                'add_visit' => $pacu->status === 'new' && $user->can('show-pacu-menu'),
+            ],
+            'urls' => [
+                'complete' => route('pacus.complete', $pacu),
+                'store_visit' => route('pacus.visits.store', $pacu),
+                'back' => $this->backUrlForPacuStatus($pacu->status),
+                ...$this->pacuListUrls(),
+            ],
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(PACU $pacu)
+    public function complete(PACU $pacu): RedirectResponse
     {
-        return view('pages.pacus.show',compact('pacu'));
+        $this->authorizePacuMenu();
+        abort_unless($pacu->status === 'new', 403);
+
+        $pacu->complete();
+
+        return redirect()
+            ->route('pacus.completed')
+            ->with('success', localize('global.pacu_completed_successfully.'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PACU $pacu)
+    public function storeVisit(Request $request, PACU $pacu): RedirectResponse
     {
-        //
-    }
+        $this->authorizePacuMenu();
+        abort_unless($pacu->status === 'new', 403);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, PACU $pacu)
-    {
         $data = $request->validate([
             'description' => 'required|string',
-            'status' => 'required|in:new,completed',
         ]);
 
-        $pacu->update($data);
+        Visit::create([
+            'patient_id' => $pacu->patient_id,
+            'p_a_c_u_id' => $pacu->id,
+            'doctor_id' => $request->user()->id,
+            'description' => $data['description'],
+        ]);
 
-        return redirect()->back()->with('success', localize('global.pacu_updated_successfully.'));
+        return redirect()
+            ->back()
+            ->with('success', localize('global.visit_created_successfully.'));
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @return array{data: array<int, mixed>, links: array<int, mixed>, meta: array<string, int|null>}
      */
-    public function destroy(PACU $pacu)
+    private function paginatedPacuItems(\Illuminate\Contracts\Pagination\LengthAwarePaginator $paginator): array
     {
-        $pacu->delete();
-        return redirect()->back()->with('success', localize('global.pacu_deleted_successfully.'));
+        $from = $paginator->firstItem();
+
+        return [
+            'data' => collect($paginator->items())
+                ->map(function (PACU $pacu, int $index) use ($from) {
+                    return $this->transformPacuListItem($pacu, $from ? $from + $index : null);
+                })
+                ->values()
+                ->all(),
+            'links' => $paginator->linkCollection()->toArray(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem(),
+            ],
+        ];
     }
 
-    public function complete($pacuId)
+    /**
+     * @param  array{data: array<int, mixed>, links: array<int, mixed>, meta: array<string, int|null>}  $items
+     * @return array<string, mixed>
+     */
+    private function listPagePayload(Request $request, array $items): array
     {
-        $pacu = PACU::findOrFail($pacuId);
-        $pacu->complete();
-        return redirect()->route('pacus.index')->with('success', localize('global.pacu_completed_successfully.'));
-
+        return [
+            'pacus' => $items,
+            'filters' => $this->collectFilters($request, $this->pacuListFilterKeys()),
+            'urls' => [
+                'current' => $request->url(),
+                ...$this->pacuListUrls(),
+            ],
+        ];
     }
 
-    public function report()
-    {
-
-        return view('pages.pacus.reports.index');
-    }
-    public function reportSearch(Request $request)
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function reportItems(Request $request): array
     {
         $query = DB::table('p_a_c_u_s as pa')
-        ->leftJoin('patients as p', 'pa.patient_id' , '=', 'p.id')
-        ->leftJoin('branches as b', 'pa.branch_id' , '=', 'b.id')
-        ->select('pa.id','p.name as patient_name','b.name as branch_name', 'pa.status');
+            ->leftJoin('patients as p', 'pa.patient_id', '=', 'p.id')
+            ->leftJoin('branches as b', 'pa.branch_id', '=', 'b.id')
+            ->leftJoin('departments as dep', 'pa.department_id', '=', 'dep.id')
+            ->select(
+                'pa.id',
+                'p.name as patient_name',
+                'b.name as branch_name',
+                'pa.status',
+                'pa.created_at',
+                'dep.name as department_name',
+            )
+            ->when($this->pacuBranchId(), fn ($q, $branchId) => $q->where('pa.branch_id', $branchId));
 
         if ($request->filled('patient_name')) {
-            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+            $query->where('p.name', 'like', '%'.$request->patient_name.'%');
         }
 
         if ($request->filled('status')) {
             $query->where('pa.status', $request->status);
         }
 
-        if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('pa.created_at', [$request->from, $request->to]);
+        $this->applyPacuReportDateRange($query, $request);
+
+        return $query
+            ->orderByDesc('pa.created_at')
+            ->get()
+            ->map(fn ($row) => [
+                'id' => $row->id,
+                'patient_name' => $row->patient_name,
+                'branch_name' => $row->branch_name,
+                'status' => $row->status,
+                'created_at' => $this->formatPacuDate($row->created_at),
+                'department_name' => $row->department_name,
+            ])
+            ->all();
+    }
+
+    /**
+     * @param  \Illuminate\Database\Query\Builder  $query
+     */
+    private function applyPacuReportDateRange($query, Request $request): void
+    {
+        if ($request->filled('date_from')) {
+            try {
+                $query->whereDate('pa.created_at', '>=', \Hekmatinasser\Verta\Verta::parse($request->date_from)->datetime());
+            } catch (\Throwable) {
+            }
         }
 
-        $items = $query->get();
-    return view('pages.pacus.reports.report', ['items' => $items]);
-
+        if ($request->filled('date_to')) {
+            try {
+                $query->whereDate('pa.created_at', '<=', \Hekmatinasser\Verta\Verta::parse($request->date_to)->datetime());
+            } catch (\Throwable) {
+            }
+        }
     }
 
-
-    public function exportReport(Request $request)
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformDetail(PACU $pacu): array
     {
-
-        $data = json_decode($request->data, true);
-
-        $items = DB::table('p_a_c_u_s as pa')
-        ->leftJoin('patients as p', 'pa.patient_id' , '=', 'p.id')
-        ->leftJoin('branches as b', 'pa.branch_id' , '=', 'b.id')
-        ->select('pa.id','p.name as patient_name','b.name as branch_name', 'pa.status')
-        ->whereIn('pa.id', $data)->get();
-        $reader = new Xlsx();
-        $spreadsheet = $reader->load("report_templates/pacus_report.xlsx");
-        $sheet = $spreadsheet->getActiveSheet();
-        $html = view('pages.pacus.reports.pdf_report',  ['items' => $items])->render();
-        if ($request->type == 'pdf') {
-            $mpdf = new Mpdf(['format' => 'A4-L']);
-            $mpdf->WriteHTML($html);
-            $mpdf->Output('pdf_report.pdf', 'D');
-        }else {
-            $spreadsheet = $reader->load("report_templates/pacus_report.xlsx");
-            $sheet = $spreadsheet->getActiveSheet();
-            $row = 3;
-
-            foreach ($items as $index => $item) {
-
-
-                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
-                $sheet->getColumnDimension('A')->setWidth(5);
-                $sheet->getColumnDimension('B')->setWidth(40);
-                $sheet->getColumnDimension('C')->setWidth(20);
-                $sheet->getColumnDimension('D')->setWidth(20);
-                $sheet->getColumnDimension('E')->setWidth(20);
-                $styleArray = array(
-                    'font' => array(
-                        'name' => 'B Nazanin',
-                        'color' => 15,
-                        'bold' => true
-
-                    ),
-                );
-
-                $status = '';
-                if ($item->status == 'new') {
-                    $status = 'PACU های جدید';
-                } else {
-                    $status = 'PACU های تکمیل شده';
-                }
-                    $sheet->setCellValue('A' . $row . '', ++$index);
-                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                    $sheet->setCellValue('C' . $row . '', $status);
-                    $sheet->setCellValue('D' . $row . '', $item->doctor_name);
-                    $sheet->setCellValue('E' . $row . '', $item->branch_name);
-
-                $row++;
-            }
-
-return $this->exportResponse($spreadsheet);
-}
-    }
-
-
-    public function exportResponse($spreadsheet){
-        $writer = new WriterXlsx($spreadsheet);
-        $response =  new StreamedResponse(
-            function () use ($writer) {
-                $writer->save('php://output');
-            }
-        );
-        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
-        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-        return $response;
-
+        return [
+            'id' => $pacu->id,
+            'description' => $pacu->description,
+            'status' => $pacu->status,
+            'created_at' => $this->formatPacuDate($pacu->created_at),
+            'appointment_id' => $pacu->appointment_id,
+            'department_name' => $pacu->department?->name,
+            'branch_name' => $pacu->branch?->name,
+            'patient' => $pacu->patient ? [
+                'id' => $pacu->patient->id,
+                'name' => $pacu->patient->name,
+                'last_name' => $pacu->patient->last_name,
+                'father_name' => $pacu->patient->father_name,
+                'id_card' => $pacu->patient->id_card,
+                'phone' => $pacu->patient->phone,
+                'nid' => $pacu->patient->nid,
+                'province_name' => $pacu->patient->province?->name_dr,
+                'district_name' => $pacu->patient->district?->name_dr,
+                'recipient_name' => $pacu->patient->recipient?->name,
+                'patient_created_at' => $this->formatPacuDate($pacu->patient->created_at),
+                'image' => $pacu->patient->image,
+            ] : null,
+            'visits' => $pacu->visits->map(fn (Visit $visit) => [
+                'id' => $visit->id,
+                'description' => $visit->description,
+                'department_name' => $visit->doctor?->department?->name,
+                'doctor_name' => $visit->doctor?->name,
+            ])->values()->all(),
+        ];
     }
 }

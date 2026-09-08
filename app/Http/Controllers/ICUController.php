@@ -2,322 +2,226 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendNewICUNotification;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\ManagesIcuListing;
+use App\Http\Controllers\Concerns\PaginatesInertiaIndex;
 use App\Models\Bed;
-use App\Models\Branch;
 use App\Models\Department;
-use App\Models\FoodType;
 use App\Models\Hospitalization;
 use App\Models\ICU;
-use App\Models\ICUProcedureType;
-use App\Models\LabType;
-use App\Models\Medicine;
-use App\Models\MedicineType;
-use App\Models\MedicineUsageType;
-use App\Models\Relation;
 use App\Models\Room;
-use App\Models\User;
+use App\Services\IcuReferralService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Excel;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Mpdf\Mpdf;
+use Inertia\Inertia;
+use Inertia\Response;
+
 class ICUController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+    use ManagesIcuListing;
+    use PaginatesInertiaIndex;
+
+    public function __construct(
+        private readonly IcuReferralService $icuReferralService,
+    ) {}
+
+    public function new(Request $request): Response
     {
-        if ($request->ajax()) {
-            $query = ICU::where('branch_id', auth()->user()->branch_id)->with(['patient', 'hospitalization.room', 'hospitalization.bed']);
+        $this->authorizeIcuMenu();
 
-            if ($request->filled('search')) {
-                $term = $request->search;
-                $query->whereHas('patient', function ($q) use ($term) {
-                    $q->where('name', 'like', '%' . $term . '%')
-                        ->orWhere('father_name', 'like', '%' . $term . '%')
-                        ->orWhere('id_card', 'like', '%' . $term . '%')
-                        ->orWhere('last_name', 'like', '%' . $term . '%')
-                        ->orWhere('phone', 'like', '%' . $term . '%');
-                });
-            }
-            if ($request->filled('patient_name')) {
-                $query->whereHas('patient', function ($q) use ($request) {
-                    $q->where('name', 'like', '%' . $request->patient_name . '%')
-                        ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
-                });
-            }
-            if ($request->filled('card_number')) {
-                $query->whereHas('patient', function ($q) use ($request) {
-                    $q->where('id_card', 'like', '%' . $request->card_number . '%');
-                });
-            }
-            if ($request->filled('father_name')) {
-                $query->whereHas('patient', function ($q) use ($request) {
-                    $q->where('father_name', 'like', '%' . $request->father_name . '%');
-                });
-            }
+        $query = ICU::query()
+            ->where('status', 'new')
+            ->when($this->icuBranchId(), fn ($q, $branchId) => $q->where('branch_id', $branchId))
+            ->with([
+                'patient:id,name,father_name,id_card',
+                'placementHospitalization.room:id,name',
+                'placementHospitalization.bed:id,number',
+            ])
+            ->orderByDesc('created_at');
 
-            $icus = $query->get();
+        $this->applyIcuPatientFilters($query, $request);
 
-            return response()->json(['data' => $icus]);
-        }
+        $paginator = $this->paginateQuery($query, $request);
+        $items = $this->paginatedIcuItems($paginator);
 
-        return view('pages.icus.index');
+        return Inertia::render('Icus/New', $this->listPagePayload($request, $items, false));
     }
 
-    public function new(Request $request)
+    public function approved(Request $request): Response
     {
-        $query = ICU::where('status', 'new')
-            ->when(auth()->user()->branch_id, fn ($q) => $q->where('branch_id', auth()->user()->branch_id))
-            ->with(['patient', 'hospitalization.room', 'hospitalization.bed']);
+        $this->authorizeIcuMenu();
 
-        if ($request->filled('search')) {
-            $term = $request->search;
-            $query->whereHas('patient', function ($q) use ($term) {
-                $q->where('name', 'like', '%' . $term . '%')
-                    ->orWhere('father_name', 'like', '%' . $term . '%')
-                    ->orWhere('id_card', 'like', '%' . $term . '%')
-                    ->orWhere('last_name', 'like', '%' . $term . '%')
-                    ->orWhere('phone', 'like', '%' . $term . '%');
-            });
-        }
-        if ($request->filled('patient_name')) {
-            $query->whereHas('patient', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->patient_name . '%')
-                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
-            });
-        }
-        if ($request->filled('card_number')) {
-            $query->whereHas('patient', function ($q) use ($request) {
-                $q->where('id_card', 'like', '%' . $request->card_number . '%');
-            });
-        }
-        if ($request->filled('father_name')) {
-            $query->whereHas('patient', function ($q) use ($request) {
-                $q->where('father_name', 'like', '%' . $request->father_name . '%');
-            });
-        }
+        $query = ICU::query()
+            ->where('status', 'approved')
+            ->with([
+                'patient:id,name,father_name,id_card',
+                'placementHospitalization.room:id,name',
+                'placementHospitalization.bed:id,number',
+            ])
+            ->orderByDesc('created_at');
 
-        $icus = $query->latest()->paginate($request->get('per_page', 15))->withQueryString();
+        $this->applyIcuDischargeFilter($query, $request);
+        $this->applyIcuPatientFilters($query, $request);
 
-        return view('pages.icus.new', compact('icus'));
+        $paginator = $this->paginateQuery($query, $request);
+        $items = $this->paginatedIcuItems($paginator);
+
+        return Inertia::render('Icus/Approved', $this->listPagePayload($request, $items, true));
     }
 
-    public function approved(Request $request)
+    public function rejected(Request $request): Response
     {
-        $query = ICU::where('status', 'approved')
-            ->with(['patient', 'hospitalization.room', 'hospitalization.bed']);
+        $this->authorizeIcuMenu();
 
-        // Filter by discharge status: all | in_icu | discharged | recovered | died | moved (default: in_icu)
-        $dischargeFilter = $request->get('discharge_filter', 'in_icu');
-        if ($dischargeFilter === 'in_icu') {
-            $query->where(function ($q) {
-                $q->where('is_discharged', 0)->orWhereNull('is_discharged');
-            });
-        } elseif ($dischargeFilter === 'discharged') {
-            $query->where('is_discharged', 1);
-        } elseif ($dischargeFilter === 'recovered') {
-            $query->where('is_discharged', 1)->where('discharge_status', 'recovered');
-        } elseif ($dischargeFilter === 'died') {
-            $query->where('is_discharged', 1)->where('discharge_status', 'died');
-        } elseif ($dischargeFilter === 'moved') {
-            $query->where('is_discharged', 1)->where('discharge_status', 'moved');
-        }
+        $query = ICU::query()
+            ->where('status', 'rejected')
+            ->when($this->icuBranchId(), fn ($q, $branchId) => $q->where('branch_id', $branchId))
+            ->with([
+                'patient:id,name,father_name,id_card',
+                'placementHospitalization.room:id,name',
+                'placementHospitalization.bed:id,number',
+            ])
+            ->orderByDesc('created_at');
 
-        // Search by patient name, father name, or card number (id_card)
-        if ($request->filled('search')) {
-            $term = $request->search;
-            $query->whereHas('patient', function ($q) use ($term) {
-                $q->where('name', 'like', '%' . $term . '%')
-                    ->orWhere('father_name', 'like', '%' . $term . '%')
-                    ->orWhere('id_card', 'like', '%' . $term . '%')
-                    ->orWhere('last_name', 'like', '%' . $term . '%')
-                    ->orWhere('phone', 'like', '%' . $term . '%');
-            });
-        }
-        if ($request->filled('patient_name')) {
-            $query->whereHas('patient', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->patient_name . '%')
-                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
-            });
-        }
-        if ($request->filled('card_number')) {
-            $query->whereHas('patient', function ($q) use ($request) {
-                $q->where('id_card', 'like', '%' . $request->card_number . '%');
-            });
-        }
-        if ($request->filled('father_name')) {
-            $query->whereHas('patient', function ($q) use ($request) {
-                $q->where('father_name', 'like', '%' . $request->father_name . '%');
-            });
-        }
+        $this->applyIcuPatientFilters($query, $request);
 
-        $icus = $query->latest()->paginate($request->get('per_page', 15))->withQueryString();
+        $paginator = $this->paginateQuery($query, $request);
+        $items = $this->paginatedIcuItems($paginator);
 
-        return view('pages.icus.approved', compact('icus'));
+        return Inertia::render('Icus/Rejected', $this->listPagePayload($request, $items, false));
     }
 
-    public function rejected(Request $request)
+    public function report(Request $request): Response
     {
-        $query = ICU::where('status', 'rejected')
-            ->when(auth()->user()->branch_id, fn ($q) => $q->where('branch_id', auth()->user()->branch_id))
-            ->with(['patient', 'hospitalization.room', 'hospitalization.bed']);
+        $this->authorizeIcuMenu();
 
-        if ($request->filled('search')) {
-            $term = $request->search;
-            $query->whereHas('patient', function ($q) use ($term) {
-                $q->where('name', 'like', '%' . $term . '%')
-                    ->orWhere('father_name', 'like', '%' . $term . '%')
-                    ->orWhere('id_card', 'like', '%' . $term . '%')
-                    ->orWhere('last_name', 'like', '%' . $term . '%')
-                    ->orWhere('phone', 'like', '%' . $term . '%');
-            });
+        $items = [];
+        if ($request->boolean('search')) {
+            $items = $this->reportItems($request);
         }
-        if ($request->filled('patient_name')) {
-            $query->whereHas('patient', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->patient_name . '%')
-                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
-            });
-        }
-        if ($request->filled('card_number')) {
-            $query->whereHas('patient', function ($q) use ($request) {
-                $q->where('id_card', 'like', '%' . $request->card_number . '%');
-            });
-        }
-        if ($request->filled('father_name')) {
-            $query->whereHas('patient', function ($q) use ($request) {
-                $q->where('father_name', 'like', '%' . $request->father_name . '%');
-            });
-        }
+        $summary = [
+            'total' => count($items),
+            'new' => count(array_filter($items, fn ($item) => $item['status'] === 'new')),
+            'approved' => count(array_filter($items, fn ($item) => $item['status'] === 'approved')),
+            'rejected' => count(array_filter($items, fn ($item) => $item['status'] === 'rejected')),
+        ];
 
-        $icus = $query->latest()->paginate($request->get('per_page', 15))->withQueryString();
-
-        return view('pages.icus.rejected', compact('icus'));
+        return Inertia::render('Icus/Report', [
+            'items' => $items,
+            'hasSearch' => $request->boolean('search'),
+            'summary' => $summary,
+            'analytics' => [
+                'by_status' => collect($items)->countBy('status')
+                    ->map(fn ($count, $name) => ['name' => $name, 'count' => $count])->values()->all(),
+                'by_department' => collect($items)
+                    ->groupBy(fn ($item) => $item['department_name'] ?? '—')
+                    ->map(fn ($items, $name) => ['name' => $name, 'count' => $items->count()])
+                    ->sortByDesc('count')->values()->all(),
+            ],
+            'filters' => $this->collectFilters($request, [
+                'patient_name',
+                'status',
+                'date_from',
+                'date_to',
+            ]),
+            'urls' => [
+                'current' => route('icus.report'),
+                'export' => route('icus.export-report'),
+                ...$this->icuListUrls(),
+            ],
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show(Request $request, ICU $icu): Response
     {
-        //
-    }
+        $this->authorizeIcuMenu();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-
-
-        // Validate the input
-        $validatedData = $request->validate([
-            'patient_id' => 'required',
-            'doctor_id' => 'required|exists:doctors,id',
-            'branch_id' => 'required',
-            'appointment_id' => 'nullable',
-            'hospitalization_id' => 'nullable',
-            'description' => 'required',
-            'operation_id' => 'nullable',
-            'icu_enterance_note' => 'nullable',
-            'icu_reject_reason' => 'nullable',
-            'room_id' => 'nullable|exists:rooms,id',
-            'bed_id' => 'nullable|exists:beds,id',
+        $icu->load([
+            'patient:id,name,father_name,id_card,phone,last_name',
+            'doctor:id,name',
+            'branch:id,name',
+            'appointment:id,patient_id,doctor_id,department_id,is_completed',
+            'appointment.department:id,name',
+            'appointment.doctor:id,name',
         ]);
 
-        // Create the ICU (exclude room_id/bed_id; they are for hospitalization)
-        $icuData = collect($validatedData)->except(['room_id', 'bed_id'])->all();
-        $icu = ICU::create($icuData);
-
-        if ($request->filled('room_id') && $request->filled('bed_id')) {
-            if ($icu->hospitalization_id) {
-                // Update existing hospitalization room/bed (free old bed, occupy new)
-                $hospitalization = Hospitalization::find($icu->hospitalization_id);
-                if ($hospitalization) {
-                    if ($hospitalization->bed_id) {
-                        Bed::where('id', $hospitalization->bed_id)->update(['is_occupied' => 0]);
-                    }
-                    $hospitalization->update(['room_id' => $request->room_id, 'bed_id' => $request->bed_id]);
-                    Bed::where('id', $request->bed_id)->update(['is_occupied' => 1]);
-                }
-            } else {
-                // No hospitalization yet (e.g. creating ICU from appointment): create hospitalization and link to ICU
-                $appointment = $request->filled('appointment_id')
-                    ? \App\Models\Appointment::find($request->appointment_id)
-                    : null;
-                $doctorId = null;
-                if ($appointment && $appointment->doctor_id && \App\Models\Doctor::where('id', $appointment->doctor_id)->exists()) {
-                    $doctorId = $appointment->doctor_id;
-                }
-                if (!$doctorId && auth()->user() && auth()->user()->doctor) {
-                    $doctorId = auth()->user()->doctor->id;
-                }
-                $hospitalization = Hospitalization::create([
-                    'reason' => localize('global.refere_to_icu') ?: 'Referral to ICU',
-                    'remarks' => $request->filled('description') ? $request->description : (localize('global.refere_to_icu') ?: 'ICU referral'),
-                    'appointment_id' => $request->appointment_id,
-                    'patient_id' => $request->patient_id,
-                    'doctor_id' => $doctorId,
-                    'branch_id' => $request->branch_id,
-                    'room_id' => $request->room_id,
-                    'bed_id' => $request->bed_id,
-                    'is_discharged' => 0,
-                ]);
-                Bed::where('id', $request->bed_id)->update(['is_occupied' => 1]);
-                $icu->update(['hospitalization_id' => $hospitalization->id]);
-            }
+        $placement = \App\Services\IcuReferralService::placementHospitalization($icu);
+        if ($placement) {
+            $placement->loadMissing(['room:id,name', 'bed:id,number']);
         }
 
-        SendNewICUNotification::dispatch($icu->created_by, $icu->id);
-        return redirect()->back()->with('success', localize('global.icu_created_successfully.'));
+        $user = $request->user();
+
+        return Inertia::render('Icus/Show', [
+            'icu' => $this->transformDetail($icu, $placement),
+            'permissions' => [
+                'edit' => $user->can('edit-icus'),
+                'delete' => $user->can('delete-icus'),
+                'approve' => $icu->status === 'new' && $user->can('edit-icus'),
+                'reject' => $icu->status === 'new' && $user->can('edit-icus'),
+                'discharge' => $icu->status === 'approved'
+                    && ! (bool) $icu->is_discharged
+                    && $user->can('edit-icus'),
+            ],
+            'sectionPermissions' => [
+                'prescription' => $user->can('show-prescriptions-menu') && (bool) $icu->appointment_id,
+                'lab' => $user->can('show-labs-menu') && (bool) $icu->appointment_id,
+                'blood' => $user->can('show-blood-request-menu') && (bool) $icu->appointment_id,
+                'visits' => $user->can('show-icu-menu') && $icu->status === 'approved',
+                'procedures' => $user->can('show-icu-menu') && $icu->status === 'approved',
+                'daily_progress' => $user->can('show-icu-menu') && $icu->status === 'approved',
+            ],
+            'urls' => [
+                'update' => route('icus.update', $icu),
+                'destroy' => route('icus.destroy', $icu),
+                'back' => $this->backUrlForStatus($icu->status),
+                'appointment' => $icu->appointment_id
+                    ? route('appointments.show', $icu->appointment_id)
+                    : null,
+                'print_death_card' => route('icus.print-death-card', $icu),
+                'print_move_card' => route('icus.print-move-card', $icu),
+                'discharge_meta' => route('icus.discharge.meta', $icu),
+                ...$this->icuListUrls(),
+            ],
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(ICU $icu)
+    public function dischargeMeta(ICU $icu): JsonResponse
     {
-        $labTypes = LabType::all();
-        $previousDiagnoses = $icu->patient->diagnoses;
-        $previousLabs = $icu->patient->labs;
-        $branches = Branch::all();
-        $departments = Department::all();
-        $doctors = User::all();
-        $foodTypes = FoodType::all();
-        $medicineTypes = MedicineType::all();
-        $medicines = Medicine::all();
-        $procedure_types = ICUProcedureType::all();
-        // Only rooms that have at least one unoccupied bed (Room::beds() = unoccupied only)
-        $rooms = Room::where('branch_id', $icu->branch_id)->whereHas('beds')->orderBy('name')->get();
-        $beds = collect(); // Beds loaded via AJAX when room is selected (only unoccupied)
-        $relations = Relation::all();
-        $medicineUsageTypes = MedicineUsageType::all();
+        $this->authorizeIcuMenu();
+        abort_unless(request()->user()->can('edit-icus'), 403);
+        abort_unless($icu->status === 'approved' && ! (bool) $icu->is_discharged, 403);
 
-        $icu->load(['doctor', 'patient', 'appointment', 'appointment.doctor']);
+        $icu->loadMissing('appointment:id,department_id');
+        $branchId = $icu->branch_id ?? request()->user()->branch_id;
+        $placement = IcuReferralService::placementHospitalization($icu);
+        if ($placement) {
+            $placement->loadMissing(['room:id,name', 'bed:id,number']);
+        }
 
-        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types','rooms','beds','relations','medicineUsageTypes'));
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'current_room_name' => $placement?->room?->name,
+                'current_bed_number' => $placement?->bed?->number,
+                'default_department_id' => $icu->appointment?->department_id,
+                'departments' => $this->dischargeDepartments($branchId),
+                'rooms' => $this->dischargeRooms($branchId),
+                'beds' => $this->dischargeBeds($branchId),
+            ],
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ICU $icu)
+    public function update(Request $request, ICU $icu): RedirectResponse
     {
-        return view('pages.icus.edit',compact('icu'));
-    }
+        $this->authorizeIcuMenu();
+        abort_unless($request->user()->can('edit-icus'), 403);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, ICU $icu)
-    {
         $data = $request->validate([
             'icu_enterance_note' => 'nullable',
-            'status' => 'nullable',
+            'status' => 'nullable|in:new,approved,rejected',
             'icu_reject_reason' => 'nullable',
             'discharge_status' => 'nullable',
             'discharge_remark' => 'nullable',
@@ -333,199 +237,241 @@ class ICUController extends Controller
             'transfer_bed_id' => 'nullable|exists:beds,id',
             'recovered_room_id' => 'nullable|exists:rooms,id',
             'recovered_bed_id' => 'nullable|exists:beds,id',
-
+            'description' => 'nullable',
         ]);
+
+        if ($request->filled('discharge_status')) {
+            $data['is_discharged'] = 1;
+            $data['discharged_at'] = now();
+            if ($request->discharge_status === 'moved' && empty($data['transfer_date'])) {
+                $data['transfer_date'] = now()->toDateString();
+            }
+        }
 
         $icu->update($data);
 
-        $isAnyDischarge = $icu->is_discharged || in_array($icu->discharge_status, ['recovered', 'died', 'moved'], true);
-        if (!$isAnyDischarge) {
-            return redirect()->back()->with('success', localize('global.icu_updated_successfully.'));
-        }
-
-        $hospitalization = $icu->hospitalization_id && $icu->hospitalization
-            ? $icu->hospitalization
-            : Hospitalization::where('i_c_u_id', $icu->id)->where('is_discharged', 0)->latest()->first();
-
-        if (!$hospitalization) {
-            return redirect()->back()->with('success', localize('global.icu_updated_successfully.'));
-        }
-
-        // If moved: also update the linked hospitalization appointment department
-        // (Hospitalizations table has no department_id column; department is on appointment.)
-        if ($icu->discharge_status === 'moved' && $request->filled('move_department_id')) {
-            $hospitalization->loadMissing('appointment');
-            if ($hospitalization->appointment) {
-                $hospitalization->appointment->update([
-                    'department_id' => $request->move_department_id,
-                ]);
-            }
-        }
-
-        if ($icu->discharge_status === 'died') {
-            // If died: discharge the hospitalization and free the bed
-            if ($hospitalization->bed_id) {
-                Bed::where('id', $hospitalization->bed_id)->update(['is_occupied' => 0]);
-            }
-            $hospitalization->update(['is_discharged' => 1]);
-        } else {
-            // Recovered or moved: update hospitalization to new room/bed (free old bed, occupy new)
-            $newRoomId = $icu->discharge_status === 'recovered'
-                ? $request->recovered_room_id
-                : $request->transfer_room_id;
-            $newBedId = $icu->discharge_status === 'recovered'
-                ? $request->recovered_bed_id
-                : $request->transfer_bed_id;
-
-            if ($hospitalization->bed_id) {
-                Bed::where('id', $hospitalization->bed_id)->update(['is_occupied' => 0]);
-            }
-            if ($newRoomId && $newBedId) {
-                $hospitalization->update(['room_id' => $newRoomId, 'bed_id' => $newBedId]);
-                Bed::where('id', $newBedId)->update(['is_occupied' => 1]);
-            }
+        if ($request->filled('discharge_status')
+            && in_array($request->discharge_status, ['recovered', 'died', 'moved'], true)) {
+            $this->icuReferralService->applyDischarge($icu->fresh(), $data);
         }
 
         return redirect()->back()->with('success', localize('global.icu_updated_successfully.'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ICU $icu)
+    public function destroy(ICU $icu): RedirectResponse
     {
+        $this->authorizeIcuMenu();
+        abort_unless(request()->user()->can('delete-icus'), 403);
+
         $icu->delete();
-        return redirect()->route('appointments.doctorAppointments')->with('success', localize('global.icu_deleted_successfully.'));
 
+        return redirect()
+            ->route('icus.new')
+            ->with('success', localize('global.icu_deleted_successfully.'));
     }
 
-    public function updateICU(Request $request, ICU $icu)
+    /**
+     * @return array{data: array<int, mixed>, links: array<int, mixed>, meta: array<string, int|null>}
+     */
+    private function paginatedIcuItems(\Illuminate\Contracts\Pagination\LengthAwarePaginator $paginator): array
     {
-        $data = $request->validate([
-            'description' => 'required',
-        ]);
+        $from = $paginator->firstItem();
 
-        $icu->update($data);
-
-        return redirect()->route('appointments.doctorAppointments')->with('success', localize('global.icu_updated_successfully.'));
+        return [
+            'data' => collect($paginator->items())
+                ->map(function (ICU $icu, int $index) use ($from) {
+                    return $this->transformIcuListItem($icu, $from ? $from + $index : null);
+                })
+                ->values()
+                ->all(),
+            'links' => $paginator->linkCollection()->toArray(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem(),
+            ],
+        ];
     }
 
-    public function report()
+    /**
+     * @param  array{data: array<int, mixed>, links: array<int, mixed>, meta: array<string, int|null>}  $items
+     * @return array<string, mixed>
+     */
+    private function listPagePayload(Request $request, array $items, bool $includeDischarge): array
     {
+        $filterKeys = $this->icuListFilterKeys($includeDischarge);
+        $filters = $this->collectFilters($request, $filterKeys);
 
-        return view('pages.icus.reports.index');
+        if ($includeDischarge && $filters['discharge_filter'] === '') {
+            $filters['discharge_filter'] = 'in_icu';
+        }
+
+        return [
+            'icus' => $items,
+            'filters' => $filters,
+            'urls' => [
+                'current' => $request->url(),
+                ...$this->icuListUrls(),
+            ],
+        ];
     }
-    public function reportSearch(Request $request)
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function reportItems(Request $request): array
     {
         $query = DB::table('i_c_u_s as i')
-        ->leftJoin('patients as p', 'i.patient_id' , '=', 'p.id')
-        ->leftJoin('doctors as d', 'i.doctor_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'i.branch_id' , '=', 'b.id')
-        ->select('i.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name', 'i.status');
+            ->leftJoin('patients as p', 'i.patient_id', '=', 'p.id')
+            ->leftJoin('doctors as d', 'i.doctor_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'i.branch_id', '=', 'b.id')
+            ->leftJoin('appointments as app', 'i.appointment_id', '=', 'app.id')
+            ->leftJoin('departments as dep', 'app.department_id', '=', 'dep.id')
+            ->select(
+                'i.id',
+                'p.name as patient_name',
+                'd.name as doctor_name',
+                'b.name as branch_name',
+                'i.status',
+                'i.created_at',
+                'dep.name as department_name',
+            )
+            ->orderByDesc('i.created_at');
 
         if ($request->filled('patient_name')) {
-            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+            $query->where('p.name', 'like', '%'.$request->patient_name.'%');
         }
 
         if ($request->filled('status')) {
             $query->where('i.status', $request->status);
         }
 
-        if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('i.created_at', [$request->from, $request->to]);
+        if ($request->filled('date_from')) {
+            try {
+                $query->whereDate('i.created_at', '>=', \Hekmatinasser\Verta\Verta::parse($request->date_from)->datetime());
+            } catch (\Throwable) {
+            }
         }
 
-        $items = $query->get();
-    return view('pages.icus.reports.report', ['items' => $items]);
-
-    }
-
-
-    public function exportReport(Request $request)
-    {
-
-        $data = json_decode($request->data, true);
-
-        $items = DB::table('i_c_u_s as i')
-        ->leftJoin('patients as p', 'i.patient_id' , '=', 'p.id')
-        ->leftJoin('doctors as d', 'i.doctor_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'i.branch_id' , '=', 'b.id')
-        ->select('i.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name', 'i.status')
-        ->whereIn('i.id', $data)->get();
-        $reader = new Xlsx();
-        $spreadsheet = $reader->load("report_templates/icus_report.xlsx");
-        $sheet = $spreadsheet->getActiveSheet();
-        $html = view('pages.icus.reports.pdf_report',  ['items' => $items])->render();
-        if ($request->type == 'pdf') {
-            $mpdf = new Mpdf(['format' => 'A4-L']);
-            $mpdf->WriteHTML($html);
-            $mpdf->Output('pdf_report.pdf', 'D');
-        }else {
-            $spreadsheet = $reader->load("report_templates/icus_report.xlsx");
-            $sheet = $spreadsheet->getActiveSheet();
-            $row = 3;
-
-            foreach ($items as $index => $item) {
-
-
-                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
-                $sheet->getColumnDimension('A')->setWidth(5);
-                $sheet->getColumnDimension('B')->setWidth(40);
-                $sheet->getColumnDimension('C')->setWidth(20);
-                $sheet->getColumnDimension('D')->setWidth(20);
-                $sheet->getColumnDimension('E')->setWidth(20);
-                $styleArray = array(
-                    'font' => array(
-                        'name' => 'B Nazanin',
-                        'color' => 15,
-                        'bold' => true
-
-                    ),
-                );
-
-                $status = '';
-                if ($item->status == 'new') {
-                    $status = 'ICU های جدید';
-                } elseif ($item->status == 'approved') {
-                    $status = 'ICU های تائید شده';
-                }else{
-                    $status = 'ICU های مسترد شده';
-                }
-                    $sheet->setCellValue('A' . $row . '', ++$index);
-                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                    $sheet->setCellValue('C' . $row . '', $status);
-                    $sheet->setCellValue('D' . $row . '', $item->doctor_name);
-                    $sheet->setCellValue('E' . $row . '', $item->branch_name);
-
-                $row++;
+        if ($request->filled('date_to')) {
+            try {
+                $query->whereDate('i.created_at', '<=', \Hekmatinasser\Verta\Verta::parse($request->date_to)->datetime());
+            } catch (\Throwable) {
             }
+        }
 
-return $this->exportResponse($spreadsheet);
-}
+        return $query->limit(200)->get()->map(fn ($item) => [
+            'id' => $item->id,
+            'patient_name' => $item->patient_name,
+            'doctor_name' => $item->doctor_name,
+            'branch_name' => $item->branch_name,
+            'status' => $item->status,
+            'created_at' => $item->created_at
+                ? $this->formatIcuDate(\Illuminate\Support\Carbon::parse($item->created_at))
+                : null,
+            'department_name' => $item->department_name,
+        ])->values()->all();
     }
 
-
-    public function exportResponse($spreadsheet){
-        $writer = new WriterXlsx($spreadsheet);
-        $response =  new StreamedResponse(
-            function () use ($writer) {
-                $writer->save('php://output');
-            }
-        );
-        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
-        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-        return $response;
-
-    }
-
-    public function printDeathCard(ICU $icu)
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformDetail(ICU $icu, ?Hospitalization $placement): array
     {
-        return view('pages.icus.print_death_card', compact('icu'));
+        return [
+            'id' => $icu->id,
+            'description' => $icu->description,
+            'status' => $icu->status,
+            'icu_enterance_note' => $icu->icu_enterance_note,
+            'icu_reject_reason' => $icu->icu_reject_reason,
+            'discharge_status' => $icu->discharge_status,
+            'discharge_remark' => $icu->discharge_remark,
+            'is_discharged' => (bool) $icu->is_discharged,
+            'discharged_at' => $this->formatIcuDate($icu->discharged_at),
+            'cause_of_death' => $icu->cause_of_death,
+            'death_date' => $icu->death_date,
+            'death_time' => $icu->death_time,
+            'brief_history' => $icu->brief_history,
+            'transfer_date' => $icu->transfer_date,
+            'created_at' => $this->formatIcuDate($icu->created_at),
+            'appointment_id' => $icu->appointment_id,
+            'patient' => $icu->patient ? [
+                'id' => $icu->patient->id,
+                'name' => $icu->patient->name,
+                'last_name' => $icu->patient->last_name,
+                'father_name' => $icu->patient->father_name,
+                'id_card' => $icu->patient->id_card,
+                'phone' => $icu->patient->phone,
+            ] : null,
+            'doctor_name' => $icu->doctor?->name,
+            'branch_name' => $icu->branch?->name,
+            'department_name' => $icu->appointment?->department?->name,
+            'room_name' => $placement?->room?->name,
+            'bed_number' => $placement?->bed?->number,
+        ];
     }
 
-    public function printMoveCard(ICU $icu)
+    private function backUrlForStatus(string $status): string
     {
-        return view('pages.icus.print_move_card', compact('icu'));
+        return match ($status) {
+            'approved' => route('icus.approved'),
+            'rejected' => route('icus.rejected'),
+            default => route('icus.new'),
+        };
+    }
+
+    /**
+     * @return list<array{id: int, name: string}>
+     */
+    private function dischargeDepartments(?int $branchId): array
+    {
+        return Department::query()
+            ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Department $department) => ['id' => $department->id, 'name' => $department->name])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<array{id: int, name: string, department_id: int|null}>
+     */
+    private function dischargeRooms(?int $branchId): array
+    {
+        return Room::query()
+            ->when($branchId, fn ($query) => $query->where('branch_id', $branchId))
+            ->whereHas('beds', fn ($query) => $query->where('is_occupied', false))
+            ->orderBy('name')
+            ->get(['id', 'name', 'department_id'])
+            ->map(fn (Room $room) => [
+                'id' => $room->id,
+                'name' => $room->name,
+                'department_id' => $room->department_id,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<array{id: int, number: string|int, room_id: int}>
+     */
+    private function dischargeBeds(?int $branchId): array
+    {
+        return Bed::query()
+            ->where('is_occupied', false)
+            ->when($branchId, fn ($query) => $query->whereHas('room', fn ($room) => $room->where('branch_id', $branchId)))
+            ->orderBy('number')
+            ->get(['id', 'number', 'room_id'])
+            ->map(fn (Bed $bed) => [
+                'id' => $bed->id,
+                'number' => $bed->number,
+                'room_id' => $bed->room_id,
+            ])
+            ->values()
+            ->all();
     }
 }

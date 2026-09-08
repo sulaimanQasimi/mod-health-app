@@ -2,963 +2,802 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\PatientController as LegacyPatientController;
+use App\Http\Controllers\Concerns\ManagesAppointmentReport;
+use App\Http\Controllers\Concerns\ManagesPatientReport;
+use App\Http\Controllers\Concerns\PaginatesInertiaIndex;
 use App\Models\Appointment;
-use App\Models\Branch;
 use App\Models\Department;
 use App\Models\District;
-use App\Models\Doctor;
+use App\Models\MiliteryType;
 use App\Models\Patient;
-use App\Models\PrintedNumber;
 use App\Models\Province;
 use App\Models\Recipient;
+use App\Models\RecipientPart;
 use App\Models\Relation;
-use App\Models\MiliteryType;
-use App\Models\User;
-use Carbon\Carbon;
-use HanifHefaz\Dcter\Dcter;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Storage;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Illuminate\Support\Facades\DB;
-use Excel;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use App\Jobs\SendNewAppointmentNotification;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class PatientController extends Controller
 {
-    /** Query keys used for patient report search and export (server-side filtering only). */
-    private const REPORT_FILTER_KEYS = [
-        'patient_name',
-        'nid',
-        'id_card',
-        'referral_name',
-        'age',
+    use ManagesAppointmentReport;
+    use ManagesPatientReport;
+    use PaginatesInertiaIndex;
+    private const INDEX_FILTER_KEYS = [
+        'patient_id',
+        'name',
+        'father_name',
+        'last_name',
+        'phone',
+        'card_search',
+        'militery_type_id',
+        'province_id',
         'gender',
         'job_category',
-        'type',
-        'referred_by',
-        'province_id',
-        'district_id',
-        'from',
-        'to',
     ];
 
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
-        // get all patients with militery type, province, district
-        $query = Patient::where('branch_id', auth()->user()->branch_id)
-            ->with(['militeryType', 'province', 'district', 'creator']);
+        $this->authorize('viewAny', Patient::class);
 
+        $user = $request->user();
 
-        // Filter by name
+        $query = Patient::query()
+            ->where('branch_id', $user->branch_id)
+            ->with([
+                'militeryType:id,name',
+                'province:id,name_dr',
+                'district:id,name_dr',
+                'creator:id,name,last_name',
+            ]);
+
+        if ($request->filled('patient_id')) {
+            $query->where('id', $request->patient_id);
+        }
+
         if ($request->filled('name')) {
-            $query->where('name', 'like', '%' . $request->name . '%');
+            $query->where('name', 'like', '%'.$request->name.'%');
         }
 
-        // Filter by father name
         if ($request->filled('father_name')) {
-            $query->where('father_name', 'like', '%' . $request->father_name . '%');
+            $query->where('father_name', 'like', '%'.$request->father_name.'%');
         }
 
-        // Filter by last name
         if ($request->filled('last_name')) {
-            $query->where('last_name', 'like', '%' . $request->last_name . '%');
+            $query->where('last_name', 'like', '%'.$request->last_name.'%');
         }
 
-        // Filter by phone number
         if ($request->filled('phone')) {
-            $query->where('phone', 'like', '%' . $request->phone . '%');
+            $query->where('phone', 'like', '%'.$request->phone.'%');
         }
 
-        // Search by card (id_card)
         if ($request->filled('card_search')) {
-            $cardSearch = $request->card_search;
-            $query->where('id_card', 'like', '%' . $cardSearch . '%');
+            $query->where('id_card', 'like', '%'.$request->card_search.'%');
         }
 
-        // Filter by militery type
         if ($request->filled('militery_type_id')) {
             $query->where('militery_type_id', $request->militery_type_id);
         }
 
-        // Filter by province
         if ($request->filled('province_id')) {
             $query->where('province_id', $request->province_id);
         }
 
-        // Filter by gender 0 for male and 1 for female
         if ($request->filled('gender')) {
             $query->where('gender', $request->gender);
         }
 
-        // Filter by job category 0 for civilian and 1 for military
         if ($request->filled('job_category')) {
             $query->where('job_category', $request->job_category);
         }
 
-        $patients = $query->latest()->paginate(15);
-        if ($request->hasAny(['name', 'father_name', 'last_name', 'nid', 'job_category'])) {
-            $patients->appends($request->query());
+        $paginator = $query->latest()->paginate(15)->withQueryString();
+
+        $filters = [];
+        foreach (self::INDEX_FILTER_KEYS as $key) {
+            $filters[$key] = (string) $request->input($key, '');
         }
-        // Get data for filters militery type, province
-        $militeryTypes = MiliteryType::all();
-        $provinces = Province::all();
 
-        return view('pages.patients.index', compact('patients', 'militeryTypes', 'provinces'));
+        return Inertia::render('Patients/Index', [
+            'patients' => [
+                'data' => collect($paginator->items())
+                    ->map(fn (Patient $patient) => $this->transformPatientForIndex($patient))
+                    ->values()
+                    ->all(),
+                'links' => $paginator->linkCollection()->toArray(),
+                'meta' => [
+                    'current_page' => $paginator->currentPage(),
+                    'last_page' => $paginator->lastPage(),
+                    'per_page' => $paginator->perPage(),
+                    'total' => $paginator->total(),
+                    'from' => $paginator->firstItem(),
+                    'to' => $paginator->lastItem(),
+                ],
+            ],
+            'filters' => $filters,
+            'filterOptions' => [
+                'militeryTypes' => MiliteryType::query()->orderBy('name')->get(['id', 'name']),
+                'provinces' => Province::query()->orderBy('name_dr')->get(['id', 'name_dr']),
+            ],
+            'permissions' => $this->patientPermissions($user),
+            'urls' => [
+                'index' => route('patients.index'),
+                'create' => route('patients.create'),
+                'show' => url('/patients'),
+                'edit' => url('/patients'),
+                'destroy' => url('/patients'),
+            ],
+        ]);
     }
 
-    public function create()
+    public function show(Request $request, Patient $patient): Response
     {
-        $relations = Relation::all();;
-        return view('pages.patients.create', compact('relations'));
-    }
+        $this->authorize('view', $patient);
 
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'militery_type_id' => 'nullable|exists:militery_types,id',
-            'name' => 'required',
-            'last_name' => 'nullable',
-            'father_name' => 'nullable',
-            'phone' => 'nullable',
-            'age' => 'nullable',
-            'age_day' => 'nullable|integer|min:0|max:31',
-            'age_month' => 'nullable|integer|min:0|max:11',
-            'age_year' => 'nullable|integer|min:0|max:150',
-            'nid' => ['required', $this->nidUniqueRule(branchId: (int) $request->branch_id)],
-            'province_id' => 'required',
-            'district_id' => 'required',
-            'relation_id' => 'nullable',
-            'branch_id' => 'required',
-            'job' => 'nullable',
-            'rank' => 'nullable',
-            'job_type' => 'nullable',
-            'gender' => 'required',
-            'referral_name' => 'nullable',
-            'referral_last_name' => 'nullable',
-            'referral_father_name' => 'nullable',
-            'referral_nid' => 'nullable',
-            'referral_by' => 'nullable',
-            'referral_id_card' => 'nullable',
-            'referral_phone' => 'nullable',
-            'referral_recipient' => 'nullable',
-            'referral_recipient_part_id' => 'nullable|exists:recipient_parts,id',
-            'type' => 'nullable',
-            'is_vip' => 'nullable|boolean',
-            'id_card' => 'nullable|string',
-            'job_category' => 'nullable',
-            'referred_by' => 'nullable',
-            'commanded_by' => 'nullable|string|max:255',
-            'recipient_part_id' => 'nullable|exists:recipient_parts,id',
-            // Appointment validation
-            'appointment_doctor_id' => 'nullable|exists:doctors,id',
-            'appointment_department_id' => 'required_with:appointment_doctor_id|exists:departments,id'
+        $user = $request->user();
+
+        $patient->load([
+            'province:id,name_dr',
+            'district:id,name_dr',
+            'militeryType:id,name',
+            'relation:id,name',
+            'recipient:id,name',
+            'recipientPart:id,name,code,recipient_id',
+            'referralRecipientPart:id,name,code,recipient_id',
+            'creator:id,name,last_name',
         ]);
 
-        $wantsVip = $request->boolean('is_vip') || (string) ($data['type'] ?? '') === '4';
-        if ($wantsVip && ! auth()->user()->can('access-to-vip') && ! auth()->user()->hasRole(['super_admin', 'admin'])) {
-            if ($request->ajax() || $request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => localize('global.access_to_vip'),
-                    'errors' => ['is_vip' => [localize('global.access_to_vip')]],
-                ], 403);
-            }
+        $canAccessNephrology = $user->hasPermissionTo('access-nephrology-registrations');
 
-            abort(403);
+        $nephrologyRegistrations = [];
+        $hemodialysisSessions = [];
+
+        if ($canAccessNephrology) {
+            $nephrologyRegistrations = $patient->nephrologyRegistrations()
+                ->with(['doctor:id,name', 'disease:id,name'])
+                ->latest('visit_date')
+                ->limit(10)
+                ->get()
+                ->map(fn ($registration) => [
+                    'id' => $registration->id,
+                    'ref_no' => $registration->ref_no,
+                    'visit_date' => $registration->visit_date
+                        ? verta($registration->visit_date)->format('Y-m-d')
+                        : null,
+                    'doctor_name' => $registration->doctor?->name,
+                    'diagnosis' => $registration->displayDiagnosis(),
+                    'show_url' => route('nephrology-registrations.show', $registration),
+                ])
+                ->values()
+                ->all();
+
+            $hemodialysisSessions = $patient->hemodialysisSessions()
+                ->latest('session_date')
+                ->limit(10)
+                ->get()
+                ->map(fn ($session) => [
+                    'id' => $session->id,
+                    'ref_no' => $session->ref_no,
+                    'session_date' => $session->session_date
+                        ? verta($session->session_date)->format('Y-m-d')
+                        : null,
+                    'duration_minutes' => $session->duration_minutes,
+                    'status' => $session->status,
+                    'show_url' => route('hemodialysis-sessions.show', $session),
+                ])
+                ->values()
+                ->all();
         }
 
-        $data['is_vip'] = $wantsVip;
+        $diagnoses = $patient->diagnoses()
+            ->orderByDesc('created_at')
+            ->limit(40)
+            ->get();
+        $primaryDiagnoses = $diagnoses->where('type', 0)->values()->map(fn ($diagnose) => [
+            'id' => $diagnose->id,
+            'description' => $diagnose->description,
+            'date' => verta($diagnose->created_at)->format('Y-m-d'),
+        ])->all();
+        $finalDiagnoses = $diagnoses->where('type', 1)->values()->map(fn ($diagnose) => [
+            'id' => $diagnose->id,
+            'description' => $diagnose->description,
+            'date' => verta($diagnose->created_at)->format('Y-m-d'),
+        ])->all();
 
-        // Format age from dropdowns if provided (priority: year > month > day)
-        if (!$data['age'] || empty($data['age'])) {
-            if ($request->filled('age_year') && $request->age_year !== '') {
-                $data['age'] = $request->age_year . ' ساله';
-            } elseif ($request->filled('age_month') && $request->age_month !== '') {
-                $data['age'] = $request->age_month . ' ماه';
-            } elseif ($request->filled('age_day') && $request->age_day !== '') {
-                $data['age'] = $request->age_day . ' روز';
-            }
-        }
+        $appointments = $patient->appointments()
+            ->with('doctor:id,name')
+            ->latest()
+            ->limit(30)
+            ->get()
+            ->values()
+            ->map(fn ($appointment, $index) => [
+                'id' => $appointment->id,
+                'number' => $index + 1,
+                'doctor_name' => $appointment->doctor?->name,
+                'date' => verta($appointment->created_at)->format('Y-m-d H:i'),
+            ])
+            ->all();
 
-        // Ensure age is required
-        if (empty($data['age'])) {
-            if ($request->ajax() || $request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => localize('global.validation_error'),
-                    'errors' => ['age' => ['The age field is required.']]
-                ], 422);
-            }
-            return redirect()->back()->withErrors(['age' => 'The age field is required.'])->withInput();
-        }
-
-        // Remove age_day, age_month, age_year from data as they're not in the model
-        unset($data['age_day'], $data['age_month'], $data['age_year']);
-
-        $patient = Patient::create($data);
-        $appointment = null;
-
-        // Create appointment if doctor and department are selected
-        if (
-            $request->filled('appointment_doctor_id')
-            ||
-            $request->filled('appointment_department_id')
-        ) {
-            $userClinicType = auth()->user()->clinic_type;
-            if ($userClinicType === 'both') {
-                $request->validate(['appointment_clinic_type' => 'required|in:hospital,clinic']);
-            }
-            $now = now();
-            $appointmentData = [
-                'patient_id' => $patient->id,
-                'doctor_id' => $request->appointment_doctor_id,
-                'department_id' => $request->appointment_department_id,
-                'branch_id' => $patient->branch_id,
-                'date' => $now->format('Y-m-d'),
-                'time' => $now->format('H:i:s'),
-                'is_completed' => 0
-            ];
-            if ($userClinicType === 'both' && $request->filled('appointment_clinic_type')) {
-                $appointmentData['clinic_type'] = $request->appointment_clinic_type;
-            } elseif ($userClinicType && $userClinicType !== 'both') {
-                $appointmentData['clinic_type'] = $userClinicType;
-            }
-
-            $appointment = Appointment::create($appointmentData);
-
-            // Send notification for new appointment
-            SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
-        }
-
-        // Handle AJAX requests
-        if ($request->ajax() || $request->expectsJson()) {
-            $response = [
-                'success' => true,
-                'message' => localize('global.patient_created_successfully.'),
-                'patient' => [
-                    'id' => $patient->id,
-                    'name' => $patient->name,
-                    'last_name' => $patient->last_name,
-                ]
-            ];
-
-            if ($appointment) {
-                $response['appointment'] = [
-                    'id' => $appointment->id,
-                    'department' => $appointment->department->name ?? '',
-                    'doctor' => $appointment->doctor->name ?? '',
-                    'date' => $appointment->date,
-                    'time' => $appointment->time,
-                    'token_url' => route('appointments.printToken', $appointment->id)
-                ];
-            }
-
-            return response()->json($response);
-        }
-
-        // Handle non-AJAX requests (backward compatibility)
-        if ($appointment) {
-            return redirect()->route('appointments.show', $appointment->id)->with('success', localize('global.patient_created_successfully.'));
-        }
-
-        return redirect()->route('patients.show', $patient->id)->with('success', localize('global.patient_created_successfully.'));
+        return Inertia::render('Patients/Show', [
+            'patient' => $this->transformPatientForShow($patient),
+            'appointments' => $appointments,
+            'diagnoses' => [
+                'primary' => $primaryDiagnoses,
+                'final' => $finalDiagnoses,
+            ],
+            'nephrologyRegistrations' => $nephrologyRegistrations,
+            'hemodialysisSessions' => $hemodialysisSessions,
+            'appointmentForm' => [
+                'branchId' => $patient->branch_id,
+                'clinicType' => $user->clinic_type,
+                'departments' => $user->category_id
+                    ? Department::query()->where('category_id', $user->category_id)->orderBy('name')->get(['id', 'name'])
+                    : Department::query()->orderBy('name')->get(['id', 'name']),
+            ],
+            'permissions' => [
+                'edit' => $user->can('update', $patient),
+                'delete' => $user->can('delete', $patient),
+                'printCard' => $user->can('printCard', $patient),
+                'createAppointment' => $user->hasPermissionTo('create-appointment'),
+                'uploadImage' => $user->can('uploadImage', $patient),
+                'nephrology' => $canAccessNephrology,
+                'foreignCountryReferral' => $user->can('viewAny', \App\Models\ForeignCountryReferral::class),
+            ],
+            'urls' => [
+                'index' => route('patients.index'),
+                'edit' => route('patients.edit', $patient),
+                'destroy' => route('patients.destroy', $patient),
+                'printCard' => route('patients.print-card', $patient),
+                'webcam' => route('patients.webcam', $patient),
+                'appointmentStore' => route('appointments.store'),
+                'doctorsByDepartment' => url('/patients/doctors-by-department'),
+                'hemodialysisCreate' => route('hemodialysis-sessions.create', ['patient_id' => $patient->id]),
+                'hemodialysisIndex' => route('hemodialysis-sessions.index', ['patient_id' => $patient->id]),
+            ],
+        ]);
     }
 
-    public function show(Patient $patient)
+    public function edit(Request $request, Patient $patient): Response
     {
-        $departments = auth()->user()->category_id
-            ? Department::where('category_id', auth()->user()->category_id)->get()
-            : Department::all();
-        $doctors = Doctor::all();
-        $previousDiagnoses = $patient->diagnoses;
-        $nephrologyRegistrations = $patient->nephrologyRegistrations()
-            ->with(['doctor', 'disease'])
-            ->latest('visit_date')
-            ->limit(10)
-            ->get();
-        $hemodialysisSessions = $patient->hemodialysisSessions()
-            ->with('doctor')
-            ->latest('session_date')
-            ->limit(10)
-            ->get();
+        $this->authorize('update', $patient);
 
-        return view('pages.patients.show', compact(
-            'patient',
-            'departments',
-            'doctors',
-            'previousDiagnoses',
-            'nephrologyRegistrations',
-            'hemodialysisSessions'
-        ));
-    }
+        $user = $request->user();
 
-    public function edit(Patient $patient)
-    {
-        $this->authorize('edit-patients');
+        $patient->load(['province:id,name_dr', 'district:id,name_dr']);
 
-        $relations = Relation::query()->orderBy('name', 'asc')->get();
-        $provinces = Province::query()->orderBy('name_dr', 'asc')->get();
-        $districts = District::query()->orderBy('name_dr', 'asc')->get();
-        $recipients = Recipient::query()->orderBy('name', 'asc')->get();
-        $militeryTypes = MiliteryType::query()->orderBy('name', 'asc')->get();
-        $doctors = Doctor::query()->orderBy('name', 'asc')->get();
-        $departments = auth()->user()->category_id
-            ? Department::where('category_id', auth()->user()->category_id)->get()
-            : Department::all();
-
-        // Parse age to extract year, month, or day if applicable
-        $ageYear = null;
-        $ageMonth = null;
-        $ageDay = null;
-
-        if ($patient->age) {
-            if (preg_match('/(\d+)\s*ساله/', $patient->age, $matches)) {
-                $ageYear = $matches[1];
-            } elseif (preg_match('/(\d+)\s*ماه/', $patient->age, $matches)) {
-                $ageMonth = $matches[1];
-            } elseif (preg_match('/(\d+)\s*روز/', $patient->age, $matches)) {
-                $ageDay = $matches[1];
-            }
-        }
-
-        return view('pages.patients.edit', compact(
-            'patient',
-            'relations',
-            'provinces',
-            'districts',
-            'recipients',
-            'militeryTypes',
-            'doctors',
-            'departments',
-            'ageYear',
-            'ageMonth',
-            'ageDay'
-        ));
+        return Inertia::render('Patients/Edit', [
+            'mode' => 'edit',
+            'patient' => $this->transformPatientForForm($patient),
+            'formData' => $this->buildFormData($user, $patient),
+            'permissions' => [
+                'delete' => $user->can('delete', $patient),
+            ],
+            'urls' => $this->buildFormUrls($patient),
+        ]);
     }
 
     public function update(Request $request, Patient $patient)
     {
-        $this->authorize('edit-patients');
+        $this->authorize('update', $patient);
 
-        $data = $request->validate([
-            'militery_type_id' => 'nullable|exists:militery_types,id',
-            'name' => 'required',
-            'last_name' => 'nullable',
-            'father_name' => 'nullable',
-            'phone' => 'nullable',
-            'age' => 'nullable',
-            'age_day' => 'nullable|integer|min:0|max:31',
-            'age_month' => 'nullable|integer|min:0|max:11',
-            'age_year' => 'nullable|integer|min:0|max:150',
-            'nid' => ['required', $this->nidUniqueRule($patient)],
-            'province_id' => 'required',
-            'district_id' => 'required',
-            'relation_id' => 'nullable',
-            'branch_id' => 'required',
-            'job' => 'nullable',
-            'rank' => 'nullable',
-            'job_type' => 'nullable',
-            'gender' => 'required',
-            'referral_name' => 'nullable',
-            'referral_last_name' => 'nullable',
-            'referral_father_name' => 'nullable',
-            'referral_nid' => 'nullable',
-            'referral_by' => 'nullable',
-            'referral_id_card' => 'nullable',
-            'referral_phone' => 'nullable',
-            'referral_recipient' => 'nullable',
-            'referral_recipient_part_id' => 'nullable|exists:recipient_parts,id',
-            'type' => 'nullable',
-            'is_vip' => 'nullable|boolean',
-            'id_card' => 'nullable|string',
-            'job_category' => 'nullable',
-            'referred_by' => 'nullable',
-            'commanded_by' => 'nullable|string|max:255',
-            'recipient_part_id' => 'nullable|exists:recipient_parts,id',
-        ]);
+        $request->headers->set('X-Requested-With', 'XMLHttpRequest');
+        $request->headers->set('Accept', 'application/json');
 
-        if ($patient->isVipRecord() && ! auth()->user()->can('access-to-vip') && ! auth()->user()->hasRole(['super_admin', 'admin'])) {
-            if ($request->ajax() || $request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => localize('global.access_to_vip'),
-                ], 403);
-            }
-
-            abort(403);
-        }
-
-        $wantsVip = $request->boolean('is_vip') || (string) ($data['type'] ?? '') === '4';
-        if ($wantsVip && ! auth()->user()->can('access-to-vip') && ! auth()->user()->hasRole(['super_admin', 'admin'])) {
-            if ($request->ajax() || $request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => localize('global.access_to_vip'),
-                    'errors' => ['is_vip' => [localize('global.access_to_vip')]],
-                ], 403);
-            }
-
-            abort(403);
-        }
-
-        if ($request->has('is_vip') || (string) ($data['type'] ?? '') === '4') {
-            $data['is_vip'] = $wantsVip;
-        }
-
-        // Format age from dropdowns if provided (priority: year > month > day)
-        if (!$data['age'] || empty($data['age'])) {
-            if ($request->filled('age_year') && $request->age_year !== '') {
-                $data['age'] = $request->age_year . ' ساله';
-            } elseif ($request->filled('age_month') && $request->age_month !== '') {
-                $data['age'] = $request->age_month . ' ماه';
-            } elseif ($request->filled('age_day') && $request->age_day !== '') {
-                $data['age'] = $request->age_day . ' روز';
-            }
-        }
-
-        // Ensure age is required
-        if (empty($data['age'])) {
-            if ($request->ajax() || $request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => localize('global.validation_error'),
-                    'errors' => ['age' => ['The age field is required.']]
-                ], 422);
-            }
-            return redirect()->back()->withErrors(['age' => 'The age field is required.'])->withInput();
-        }
-
-        // Remove age_day, age_month, age_year from data as they're not in the model
-        unset($data['age_day'], $data['age_month'], $data['age_year']);
-
-        // Update patient
-        $patient->update($data);
-
-        // Handle AJAX requests
-        if ($request->ajax() || $request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => localize('global.patient_updated_successfully.'),
-                'patient' => [
-                    'id' => $patient->id,
-                    'name' => $patient->name,
-                    'last_name' => $patient->last_name,
-                ]
-            ]);
-        }
-
-        return redirect()->route('patients.show', $patient->id)->with('success', localize('global.patient_updated_successfully.'));
+        return app(LegacyPatientController::class)->update($request, $patient);
     }
 
-    public function destroy(Patient $patient)
+    public function destroy(Request $request, Patient $patient)
     {
+        $this->authorize('delete', $patient);
+
         $patient->delete();
 
-        return redirect()->route('patients.index')->with('success', localize('global.patient_deleted_successfully.'));
-    }
-
-    public function printCard(Patient $patient)
-    {
-        return view('pages.patients.print_card', compact('patient'));
-    }
-
-    public function webcam(Patient $patient)
-    {
-        return view('pages.patients.webcam', compact('patient'));
-    }
-
-
-
-    public function addImage(Request $request, $id)
-    {
-        $patient = Patient::findOrFail($id);
-        $img = $request->image;
-
-        $folderPath = "images/patients/";
-
-        $image_parts = explode(";base64,", $img);
-        $image_type_aux = explode("image/", $image_parts[0]);
-        $image_type = $image_type_aux[1];
-
-        $image_base64 = base64_decode($image_parts[1]);
-
-        $fileName = uniqid() . '.png';
-
-        $file = $folderPath . $fileName;
-
-        // Save the image to the public folder
-        $publicPath = public_path($file);
-        File::put($publicPath, $image_base64);
-
-        // Update the patient's image column with the image path
-        $patient->image = $file;
-        $patient->save();
-
-        return redirect()->route('patients.show', $patient)->with('success', localize('global.patient_image_created_successfully.'));
-    }
-
-
-    public function scanQrCode(Request $request)
-    {
-        // Get the scanned QR code data
-        $qrCodeData = $request->input('qrCodeData');
-
-        // Find the patient based on the QR code data
-        $patient = Patient::where('id', $qrCodeData)->where('branch_id', auth()->user()->branch_id)->first();
-
-        if ($patient) {
-            // Redirect to the patient's show page
-            return redirect()->route('patients.show', $patient->id);
-        } else {
-            // Handle the case when the patient is not found
-            return redirect()->back()->with('error', localize('global.patient_not_found'));
-        }
-    }
-
-    public function scanCode()
-    {
-        return view('pages.patients.scan');
-    }
-
-    public function history(Patient $patient)
-    {
-        try {
-            // Eager load appointments with their labs and related data
-            $appointments = $patient->appointments()->with([
-                'labs.labType',
-                'labs.results.parameter',
-                'doctor'
-            ])->get();
-
-            // Load all related data with proper error handling
-            $previousDiagnoses = $patient->diagnoses()->get();
-            $previousConsultations = $patient->consultations()->with('associated_departments')->get();
-            $previousAnesthesias = $patient->anesthesias()->with(['operationType', 'surgion'])->get();
-            $previousHospitalizations = $patient->hospitalizations()->with(['room', 'bed'])->get();
-            $previousLabs = $patient->labs; // This is an accessor, returns collection
-            $previousPrescriptions = $patient->prescriptions()->with(['doctor', 'prescriptionItems.medicineType', 'prescriptionItems.medicine'])->get();
-            $previousIcus = $patient->icus()->get();
-
-            return view('pages.patients.history', compact(
-                'patient',
-                'previousDiagnoses',
-                'previousConsultations',
-                'previousAnesthesias',
-                'previousHospitalizations',
-                'previousLabs',
-                'previousPrescriptions',
-                'previousIcus',
-                'appointments'
-            ));
-        } catch (\Exception $e) {
-            // Log the error and return with empty data
-            \Log::error('Error loading patient history: ' . $e->getMessage());
-
-            return view('pages.patients.history', [
-                'patient' => $patient,
-                'previousDiagnoses' => collect(),
-                'previousConsultations' => collect(),
-                'previousAnesthesias' => collect(),
-                'previousHospitalizations' => collect(),
-                'previousLabs' => collect(),
-                'previousPrescriptions' => collect(),
-                'previousIcus' => collect(),
-                'appointments' => collect(),
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.patient_deleted_successfully.'),
             ]);
         }
+
+        return redirect()
+            ->route('patients.index')
+            ->with('success', localize('global.patient_deleted_successfully.'));
     }
 
-    public function getTab(Request $request)
+    public function create(Request $request): Response
     {
-        $recipients = Recipient::all();
-        $provinces = Province::all();
-        $districts = District::all();
-        $relations = Relation::all();
-        $doctors = Doctor::all();
-        $departments = Department::where('category_id', auth()->user()->category_id)->get();
+        $this->authorize('create', Patient::class);
 
-        $tab_type = $request->tab_type;
-        $patient_id = $request->patient_id;
+        $user = $request->user();
 
-        // Parse age variables for edit mode
-        $ageYear = null;
-        $ageMonth = null;
-        $ageDay = null;
-
-        if ($patient_id != '') {
-            $patient = Patient::find($patient_id);
-
-            // Parse age to extract year, month, or day if applicable
-            if ($patient && $patient->age) {
-                if (preg_match('/(\d+)\s*ساله/', $patient->age, $matches)) {
-                    $ageYear = $matches[1];
-                } elseif (preg_match('/(\d+)\s*ماه/', $patient->age, $matches)) {
-                    $ageMonth = $matches[1];
-                } elseif (preg_match('/(\d+)\s*روز/', $patient->age, $matches)) {
-                    $ageDay = $matches[1];
-                }
-            }
-
-            if ($tab_type == 'first') {
-                return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
-            } elseif ($tab_type == 'second') {
-                return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
-            } elseif ($tab_type == 'third') {
-                return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
-            }
-        }
-
-        if ($tab_type == 'first') {
-            return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
-        } elseif ($tab_type == 'second') {
-            return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
-        } elseif ($tab_type == 'third') {
-            return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
-        }
+        return Inertia::render('Patients/Create', [
+            'mode' => 'create',
+            'formData' => $this->buildFormData($user),
+            'urls' => $this->buildFormUrls(),
+            'canAccessVip' => $user->hasRole(['super_admin', 'admin'])
+                || $user->can('access-to-vip'),
+        ]);
     }
 
-    public function getDoctorsByDepartment($departmentId, Request $request)
+    public function store(Request $request)
     {
-        $query = Doctor::where('department_id', $departmentId)
-            ->where('active_status', true);
+        $this->authorize('create', Patient::class);
 
-        $userClinicType = auth()->user()->clinic_type;
-        if ($userClinicType === 'both') {
-            $clinicType = $request->query('clinic_type');
-            if (in_array($clinicType, ['hospital', 'clinic'], true)) {
-                $query->where('clinic_type', $clinicType);
-            }
-        } elseif ($userClinicType) {
-            $query->where('clinic_type', $userClinicType);
-        }
+        $proxy = $request->duplicate();
+        $proxy->headers->set('X-Requested-With', 'XMLHttpRequest');
+        $proxy->headers->set('Accept', 'application/json');
 
-        $doctors = $query->get();
+        return app(LegacyPatientController::class)->store($proxy);
+    }
+
+    public function districts(int $provinceId): JsonResponse
+    {
+        $user = request()->user();
+        abort_unless(
+            $user->can('viewAny', Patient::class)
+                || $user->can('viewMyVisits', Appointment::class),
+            403
+        );
+
+        $districts = District::query()
+            ->where('province_id', $provinceId)
+            ->orderBy('name_dr')
+            ->get(['id', 'name_dr']);
 
         return response()->json([
             'success' => true,
-            'doctors' => $doctors
+            'districts' => $districts,
         ]);
     }
 
-    public function report()
+    public function recipientParts(int $recipientId): JsonResponse
     {
-        $provinces = Province::with('districts')->get();
-        $recipients = Recipient::all();
-        $filters = [];
-        $reportExportParams = [];
-        return view('pages.patients.reports.index', compact('provinces', 'recipients', 'filters', 'reportExportParams'));
+        $this->authorize('viewAny', Patient::class);
+
+        $parts = RecipientPart::query()
+            ->where('recipient_id', $recipientId)
+            ->orderBy('name')
+            ->get(['id', 'name', 'code']);
+
+        return response()->json([
+            'success' => true,
+            'recipientParts' => $parts,
+        ]);
+    }
+
+    public function doctorsByDepartment(int $departmentId, Request $request): JsonResponse
+    {
+        $this->authorize('viewAny', Patient::class);
+
+        return app(LegacyPatientController::class)->getDoctorsByDepartment($departmentId, $request);
+    }
+
+    public function report(Request $request): Response
+    {
+        $this->authorize('viewAny', Patient::class);
+
+        $user = $request->user();
+        $branchId = (int) $user->branch_id;
+        $canAccessDepartment = $user->can('viewAny', Appointment::class);
+
+        $tab = $request->input('tab', 'patients') === 'department' && $canAccessDepartment
+            ? 'department'
+            : 'patients';
+
+        $patientsTab = null;
+        $departmentTab = null;
+
+        if ($tab === 'patients') {
+            $patientsTab = $this->buildPatientsReportTab($request, $branchId);
+        } else {
+            $departmentTab = $this->buildDepartmentReportTab($request, $user, $branchId);
+        }
+
+        return Inertia::render('Patients/Report', [
+            'tab' => $tab,
+            'permissions' => [
+                'department' => $canAccessDepartment,
+            ],
+            'patientsTab' => $patientsTab,
+            'departmentTab' => $departmentTab,
+            'urls' => [
+                'current' => route('patients.report'),
+                'index' => route('patients.index'),
+                'export' => route('patients.export-report'),
+            ],
+        ]);
     }
 
     /**
-     * Collect active report filters from the request (including 0 for gender, job_category, type).
+     * @return array<string, mixed>
      */
-    private function reportFilterParams(Request $request): array
+    private function buildPatientsReportTab(Request $request, int $branchId): array
     {
-        return collect(self::REPORT_FILTER_KEYS)
-            ->mapWithKeys(fn (string $key) => [$key => $request->input($key)])
-            ->reject(fn ($value) => $value === null || $value === '')
-            ->all();
-    }
+        $hasSearch = $this->patientReportHasSearch($request);
 
-    private function hasReportFilter(Request $request, string $key): bool
-    {
-        if (!$request->has($key)) {
-            return false;
-        }
+        $patients = [
+            'data' => [],
+            'links' => [],
+            'meta' => [
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => 15,
+                'total' => 0,
+                'from' => null,
+                'to' => null,
+            ],
+        ];
+        $summary = [
+            'total' => 0,
+            'male' => 0,
+            'female' => 0,
+            'military' => 0,
+            'civilian' => 0,
+        ];
+        $analytics = [
+            'by_gender' => [],
+            'by_type' => [],
+            'by_date' => [],
+        ];
 
-        $value = $request->input($key);
+        if ($hasSearch) {
+            $query = $this->patientReportBaseQuery($request, $branchId);
+            $summary = $this->patientReportSummary($query);
+            $analytics = $this->patientReportAnalytics($query);
 
-        return $value !== null && $value !== '';
-    }
-
-    /**
-     * Build the filtered report query (shared by report view and PDF/Excel export).
-     *
-     * @param Request $request
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    private function buildReportQuery(Request $request)
-    {
-        $query = Patient::with(['province', 'district', 'recipient'])
-            ->select([
-                'patients.id',
-                'patients.name',
-                'patients.nid',
-                'patients.id_card',
-                'patients.referral_name',
-                'patients.age',
-                'patients.gender',
-                'patients.job_category',
-                'patients.type',
-                'patients.referred_by',
-                'patients.province_id',
-                'patients.district_id',
-                'patients.registration_date'
-            ]);
-        $this->applyReportFilters($query, $request);
-        return $query;
-    }
-
-    /**
-     * Search and filter patients for reports. Full page (no AJAX). Pagination via GET.
-     *
-     * @param Request $request
-     * @return \Illuminate\View\View
-     */
-    public function reportSearch(Request $request)
-    {
-        $reportExportParams = $this->reportFilterParams($request);
-
-        // Export: same GET filters as search; server builds query — no record payload in request
-        if ($request->filled('export') && in_array($request->export, ['excel', 'print'], true)) {
-            $query = $this->buildReportQuery($request);
-
-            return $this->downloadPatientReport($query, $request->export);
-        }
-
-        $query = $this->buildReportQuery($request);
-        $perPage = $request->get('per_page', 15);
-        if ($perPage === 'all') {
-            $perPage = max(1, $query->count());
-        }
-        $items = $query->paginate($perPage);
-
-        $filters = array_merge($reportExportParams, array_filter(
-            ['per_page' => $request->input('per_page')],
-            fn ($value) => $value !== null && $value !== ''
-        ));
-        $items->appends($filters);
-
-        $provinces = Province::with('districts')->get();
-        $recipients = Recipient::all();
-
-        return view('pages.patients.reports.index', compact('items', 'filters', 'reportExportParams', 'provinces', 'recipients'));
-    }
-
-    /**
-     * Apply filters to the patient query
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param Request $request
-     * @return void
-     */
-    private function applyReportFilters($query, Request $request)
-    {
-        if ($this->hasReportFilter($request, 'patient_name')) {
-            $query->where('patients.name', 'like', '%' . $request->patient_name . '%');
-        }
-
-        if ($this->hasReportFilter($request, 'nid')) {
-            $query->where('patients.nid', 'like', '%' . $request->nid . '%');
-        }
-
-        if ($this->hasReportFilter($request, 'id_card')) {
-            $query->where('patients.id_card', $request->id_card);
-        }
-
-        if ($this->hasReportFilter($request, 'referral_name')) {
-            $query->where('patients.referral_name', 'like', '%' . $request->referral_name . '%');
-        }
-
-        if ($this->hasReportFilter($request, 'job_category')) {
-            $query->where('patients.job_category', $request->job_category);
-        }
-
-        if ($this->hasReportFilter($request, 'type')) {
-            $query->where('patients.type', $request->type);
-        }
-
-        if ($this->hasReportFilter($request, 'referred_by')) {
-            $query->where('patients.referred_by', $request->referred_by);
-        }
-
-        if ($this->hasReportFilter($request, 'age')) {
-            $query->where('patients.age', $request->age);
-        }
-
-        if ($this->hasReportFilter($request, 'gender')) {
-            $query->where('patients.gender', $request->gender);
-        }
-
-        if ($this->hasReportFilter($request, 'province_id')) {
-            $query->where('patients.province_id', $request->province_id);
-        }
-
-        if ($this->hasReportFilter($request, 'district_id')) {
-            $query->where('patients.district_id', $request->district_id);
-        }
-
-        if ($this->hasReportFilter($request, 'from') && $this->hasReportFilter($request, 'to')) {
-            try {
-                $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->from)->datetime();
-                $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->to)->datetime();
-
-                $query->whereDate('patients.registration_date', '>=', $fromDate)
-                    ->whereDate('patients.registration_date', '<=', $toDate);
-                $query->whereHas('appointments', function ($q) use ($fromDate, $toDate) {
-                    $q->whereDate('date', '>=', $fromDate)
-                        ->whereDate('date', '<=', $toDate);
-                });
-            } catch (\Exception $e) {
-                // Invalid date format, skip date filter
-            }
-        }
-
-        // Order by registration date descending
-        $query->orderBy('patients.registration_date', 'desc');
-    }
-
-
-    /**
-     * Export report via GET query filters (same as report-search).
-     */
-    public function exportReport(Request $request)
-    {
-        if (!$request->filled('export') || !in_array($request->export, ['excel', 'print'], true)) {
-            abort(422, 'Invalid export format');
-        }
-
-        $query = $this->buildReportQuery($request);
-
-        return $this->downloadPatientReport($query, $request->export);
-    }
-
-    private function downloadPatientReport($query, string $type)
-    {
-        $patients = $query->with(['province', 'district', 'recipient'])
-            ->orderBy('patients.registration_date', 'desc')
-            ->get();
-
-        $items = $patients->map(function (Patient $p) {
-            return (object) [
-                'id' => $p->id,
-                'patient_name' => $p->name,
-                'nid' => $p->nid,
-                'id_card' => $p->id_card,
-                'referral_name' => $p->referral_name,
-                'age' => $p->age,
-                'gender' => $p->gender,
-                'job_category' => $p->job_category,
-                'type' => $p->type,
-                'gender_label' => $p->gender == '0' ? localize('global.male') : localize('global.female'),
-                'job_category_label' => $p->job_category == '0' ? localize('global.military') : localize('global.civilian'),
-                'type_label' => match ((string) $p->type) {
-                    '0' => localize('global.mod'),
-                    '1' => localize('global.recipient'),
-                    default => localize('global.family'),
-                },
-                'referred_by' => $p->recipient->name ?? null,
-                'province_name' => $p->province->name_dr ?? null,
-                'district_name' => $p->district->name_dr ?? null,
-            ];
-        });
-
-        if ($type === 'print') {
-            return view('pages.patients.reports.print', compact('items'));
-        }
-
-        $reader = new Xlsx();
-        $spreadsheet = $reader->load('report_templates/reception_report.xlsx');
-        $sheet = $spreadsheet->getActiveSheet();
-        $row = 3;
-
-            foreach ($items as $index => $item) {
-                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
-                $sheet->getColumnDimension('A')->setWidth(5);
-                $sheet->getColumnDimension('B')->setWidth(40);
-                $sheet->getColumnDimension('C')->setWidth(20);
-                $sheet->getColumnDimension('D')->setWidth(20);
-                $sheet->getColumnDimension('E')->setWidth(20);
-                $sheet->getColumnDimension('F')->setWidth(20);
-                $sheet->getColumnDimension('G')->setWidth(20);
-                $sheet->getColumnDimension('H')->setWidth(20);
-                $sheet->getColumnDimension('I')->setWidth(20);
-                $sheet->getColumnDimension('J')->setWidth(20);
-                $sheet->getColumnDimension('K')->setWidth(20);
-                $sheet->getColumnDimension('L')->setWidth(20);
-                $styleArray = array(
-                    'font' => array(
-                        'name' => 'B Nazanin',
-                        'color' => 15,
-                        'bold' => true
-
-                    ),
+            $perPage = $request->input('per_page', '15');
+            if ($perPage === 'all') {
+                $items = $query->get();
+                $patients = [
+                    'data' => $items->map(fn (Patient $item) => $this->transformPatientReportItem($item))->values()->all(),
+                    'links' => [],
+                    'meta' => [
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'per_page' => $items->count(),
+                        'total' => $items->count(),
+                        'from' => $items->count() > 0 ? 1 : null,
+                        'to' => $items->count() > 0 ? $items->count() : null,
+                    ],
+                ];
+            } else {
+                $paginator = $this->paginateQuery($query, $request, 15, [10, 15, 25, 50, 100]);
+                $patients = $this->paginationPayload(
+                    $paginator,
+                    fn (Patient $item) => $this->transformPatientReportItem($item),
                 );
-
-                $gender = '';
-                if ($item->gender == '0') {
-                    $gender = 'مرد';
-                } else {
-                    $gender = 'زن';
-                }
-
-                $job_category = '';
-                if ($item->job_category == '0') {
-                    $job_category = 'نظامی';
-                } else {
-                    $job_category = 'ملکی';
-                }
-
-                $type = '';
-                if ($item->type == '0') {
-                    $type = 'وزارت دفاع ملی';
-                } elseif ($item->type == '1') {
-                    $type = 'سایر دارات';
-                } else {
-                    $type = 'اعضای فامیل و سایرین';
-                }
-                $sheet->setCellValue('A' . $row . '', ++$index);
-                $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                $sheet->setCellValue('C' . $row . '', $item->nid);
-                $sheet->setCellValue('D' . $row . '', $item->id_card);
-                $sheet->setCellValue('E' . $row . '', $item->referral_name);
-                $sheet->setCellValue('F' . $row . '', $item->age);
-                $sheet->setCellValue('G' . $row . '', $gender);
-                $sheet->setCellValue('H' . $row . '', $job_category);
-                $sheet->setCellValue('I' . $row . '', $type);
-                $sheet->setCellValue('J' . $row . '', $item->referred_by);
-                $sheet->setCellValue('K' . $row . '', $item->province_name);
-                $sheet->setCellValue('L' . $row . '', $item->district_name);
-
-                $row++;
             }
+        }
 
-        return $this->exportResponse($spreadsheet);
+        return [
+            'patients' => $patients,
+            'summary' => $summary,
+            'analytics' => $analytics,
+            'hasSearch' => $hasSearch,
+            'filters' => $this->collectFilters($request, $this->patientReportFilterKeys()),
+            'filterOptions' => [
+                'provinces' => Province::query()->orderBy('name_dr')->get(['id', 'name_dr']),
+                'districts' => $request->filled('province_id')
+                    ? District::query()
+                        ->where('province_id', $request->province_id)
+                        ->orderBy('name_dr')
+                        ->get(['id', 'name_dr', 'province_id'])
+                    : [],
+                'recipients' => Recipient::query()->orderBy('name')->get(['id', 'name']),
+            ],
+        ];
     }
 
-
-    public function exportResponse($spreadsheet)
+    /**
+     * @param  \App\Models\User  $user
+     * @return array<string, mixed>
+     */
+    private function buildDepartmentReportTab(Request $request, $user, int $branchId): array
     {
-        $writer = new WriterXlsx($spreadsheet);
-        $response = new StreamedResponse(
-            function () use ($writer) {
-                $writer->save('php://output');
-            }
-        );
-        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
-        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-        return $response;
+        $hasSearch = $this->departmentReportHasSearch($request);
+
+        $appointments = [
+            'data' => [],
+            'links' => [],
+            'meta' => [
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => 25,
+                'total' => 0,
+                'from' => null,
+                'to' => null,
+            ],
+        ];
+        $summary = [
+            'total' => 0,
+            'male' => 0,
+            'female' => 0,
+        ];
+        $analytics = [
+            'by_gender' => [],
+        ];
+
+        if ($hasSearch) {
+            $query = $this->departmentReportBaseQuery($request, $branchId);
+            $analytics = $this->departmentReportAnalytics($query);
+            $summary = [
+                'total' => $analytics['total'],
+                'male' => $analytics['male'],
+                'female' => $analytics['female'],
+            ];
+
+            $paginator = $this->paginateQuery($query, $request, 25, [10, 25, 50, 100]);
+            $appointments = $this->paginationPayload(
+                $paginator,
+                fn (Appointment $item) => $this->transformDepartmentReportItem($item),
+            );
+        }
+
+        return [
+            'appointments' => $appointments,
+            'summary' => $summary,
+            'analytics' => $analytics,
+            'hasSearch' => $hasSearch,
+            'filters' => $this->collectFilters($request, $this->departmentReportFilterKeys()),
+            'filterOptions' => [
+                'departments' => $this->departmentsForReportUser($user),
+            ],
+        ];
     }
 
-    private function nidUniqueRule(?Patient $patient = null, ?int $branchId = null): \Illuminate\Validation\Rules\Unique
+    /**
+     * @return array<string, bool>
+     */
+    private function patientPermissions($user): array
     {
-        $rule = Rule::unique(Patient::class, 'nid');
+        return [
+            'create' => $user->can('create', Patient::class),
+            'edit' => $user->hasRole(['super_admin', 'admin'])
+                || $user->hasPermissionTo('edit-patients'),
+            'delete' => $user->hasRole(['super_admin', 'admin'])
+                || $user->hasPermissionTo('delete-patients'),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildFormData($user, ?Patient $patient = null): array
+    {
+        $departments = $user->category_id
+            ? Department::query()->where('category_id', $user->category_id)->orderBy('name')->get(['id', 'name'])
+            : Department::query()->orderBy('name')->get(['id', 'name']);
+
+        $registrationDate = $patient?->registration_date
+            ? verta($patient->registration_date)->format('Y-m-d')
+            : verta()->format('Y-m-d');
+
+        $districts = $patient?->province_id
+            ? District::query()
+                ->where('province_id', $patient->province_id)
+                ->orderBy('name_dr')
+                ->get(['id', 'name_dr'])
+            : [];
+
+        $recipientParts = $patient?->referred_by
+            ? RecipientPart::query()
+                ->where('recipient_id', $patient->referred_by)
+                ->orderBy('name')
+                ->get(['id', 'name', 'code'])
+            : [];
+
+        $referralRecipientParts = $patient?->referral_recipient
+            ? RecipientPart::query()
+                ->where('recipient_id', $patient->referral_recipient)
+                ->orderBy('name')
+                ->get(['id', 'name', 'code'])
+            : [];
+
+        return [
+            'branchId' => $patient?->branch_id ?? $user->branch_id,
+            'clinicType' => $user->clinic_type,
+            'registrationDate' => $registrationDate,
+            'provinces' => Province::query()->orderBy('name_dr')->get(['id', 'name_dr']),
+            'recipients' => Recipient::query()->orderBy('name')->get(['id', 'name']),
+            'relations' => Relation::query()->orderBy('name')->get(['id', 'name']),
+            'militeryTypes' => MiliteryType::query()->orderBy('name')->get(['id', 'name']),
+            'departments' => $departments,
+            'districts' => $districts,
+            'recipientParts' => $recipientParts,
+            'referralRecipientParts' => $referralRecipientParts,
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function buildFormUrls(?Patient $patient = null): array
+    {
+        $urls = [
+            'districts' => url('/patients/districts'),
+            'recipientParts' => url('/patients/recipient-parts'),
+            'doctorsByDepartment' => url('/patients/doctors-by-department'),
+            'back' => route('patients.index'),
+        ];
 
         if ($patient) {
-            $rule->ignore($patient);
-            $branchId = (int) $patient->branch_id;
+            $urls['update'] = route('patients.update', $patient);
+            $urls['show'] = route('patients.show', $patient);
+            $urls['destroy'] = route('patients.destroy', $patient);
+        } else {
+            $urls['store'] = route('patients.store');
         }
 
-        if ($branchId) {
-            $rule->where('branch_id', $branchId);
+        return $urls;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformPatientForForm(Patient $patient): array
+    {
+        $ageParts = $this->parseAge($patient->age);
+
+        $type = (string) ($patient->type ?? '0');
+        if ($patient->isVipRecord()) {
+            $type = '4';
         }
 
-        return $rule;
+        return [
+            'id' => $patient->id,
+            'type' => $type,
+            'is_vip' => $patient->isVipRecord(),
+            'id_card' => $patient->id_card ?? '',
+            'name' => $patient->name ?? '',
+            'last_name' => $patient->last_name ?? '',
+            'father_name' => $patient->father_name ?? '',
+            'nid' => $patient->nid ?? '',
+            'job' => $patient->job ?? '',
+            'job_category' => (string) ($patient->job_category ?? '0'),
+            'militery_type_id' => $patient->militery_type_id ? (string) $patient->militery_type_id : '',
+            'rank' => $patient->rank ?? '',
+            'phone' => $patient->phone ?? '',
+            'age_year' => $ageParts['year'],
+            'age_month' => $ageParts['month'],
+            'age_day' => $ageParts['day'],
+            'gender' => $patient->gender !== null ? (string) $patient->gender : '',
+            'referred_by' => $patient->referred_by ? (string) $patient->referred_by : '',
+            'commanded_by' => $patient->commanded_by ?? '',
+            'recipient_part_id' => $patient->recipient_part_id ? (string) $patient->recipient_part_id : '',
+            'province_id' => $patient->province_id ? (string) $patient->province_id : '',
+            'district_id' => $patient->district_id ? (string) $patient->district_id : '',
+            'referral_name' => $patient->referral_name ?? '',
+            'referral_last_name' => $patient->referral_last_name ?? '',
+            'referral_father_name' => $patient->referral_father_name ?? '',
+            'referral_nid' => $patient->referral_nid ?? '',
+            'referral_id_card' => $patient->referral_id_card ?? '',
+            'referral_phone' => $patient->referral_phone ?? '',
+            'referral_recipient' => $patient->referral_recipient ? (string) $patient->referral_recipient : '',
+            'referral_recipient_part_id' => $patient->referral_recipient_part_id ? (string) $patient->referral_recipient_part_id : '',
+            'relation_id' => $patient->relation_id ? (string) $patient->relation_id : '',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformPatientForShow(Patient $patient): array
+    {
+        $creator = $patient->creator;
+        $createdBy = $creator
+            ? trim("{$creator->name} {$creator->last_name}")
+            : null;
+
+        return [
+            'id' => $patient->id,
+            'id_card' => $patient->id_card,
+            'name' => $patient->name,
+            'last_name' => $patient->last_name,
+            'father_name' => $patient->father_name,
+            'nid' => $patient->nid,
+            'phone' => $patient->phone,
+            'age' => $patient->age,
+            'gender' => $patient->gender,
+            'job' => $patient->job,
+            'rank' => $patient->rank,
+            'job_category' => $patient->job_category,
+            'type' => $patient->type,
+            'is_vip' => $patient->isVipRecord(),
+            'province' => $patient->province?->name_dr,
+            'district' => $patient->district?->name_dr,
+            'militery_type' => $patient->militeryType?->name,
+            'relation' => $patient->relation?->name,
+            'referred_by' => $this->formatRecipientDisplay($patient),
+            'commanded_by' => $patient->commanded_by,
+            'recipient_part' => $patient->recipientPart?->displayName(),
+            'referral_name' => $patient->referral_name,
+            'referral_last_name' => $patient->referral_last_name,
+            'referral_father_name' => $patient->referral_father_name,
+            'referral_nid' => $patient->referral_nid,
+            'referral_id_card' => $patient->referral_id_card,
+            'referral_phone' => $patient->referral_phone,
+            'registration_date' => $patient->registration_date
+                ? verta($patient->registration_date)->format('Y-m-d')
+                : null,
+            'created_at' => verta($patient->created_at)->format('Y-m-d'),
+            'created_by' => $createdBy,
+            'image' => $patient->image ? asset($patient->image) : null,
+        ];
+    }
+
+    private function formatRecipientDisplay(Patient $patient): ?string
+    {
+        if ($patient->recipientPart) {
+            $recipientName = $patient->recipient?->name;
+
+            return $recipientName
+                ? "{$recipientName} / {$patient->recipientPart->displayName()}"
+                : $patient->recipientPart->displayName();
+        }
+
+        return $patient->recipient?->name ?? $patient->referral_name;
+    }
+
+    /**
+     * @return array{year: string, month: string, day: string}
+     */
+    private function parseAge(?string $age): array
+    {
+        $parts = ['year' => '', 'month' => '', 'day' => ''];
+
+        if (! $age) {
+            return $parts;
+        }
+
+        if (preg_match('/(\d+)\s*ساله/u', $age, $matches)) {
+            $parts['year'] = $matches[1];
+        } elseif (preg_match('/(\d+)\s*ماه/u', $age, $matches)) {
+            $parts['month'] = $matches[1];
+        } elseif (preg_match('/(\d+)\s*روز/u', $age, $matches)) {
+            $parts['day'] = $matches[1];
+        }
+
+        return $parts;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformPatientForIndex(Patient $patient): array
+    {
+        $provinceName = $patient->province?->name_dr;
+        $districtName = $patient->district?->name_dr;
+
+        if ($provinceName && $districtName) {
+            $location = "{$provinceName} / {$districtName}";
+        } elseif ($provinceName) {
+            $location = $provinceName;
+        } elseif ($districtName) {
+            $location = $districtName;
+        } else {
+            $location = '-';
+        }
+
+        $creator = $patient->creator;
+        $createdBy = $creator
+            ? trim("{$creator->name} {$creator->last_name}")
+            : null;
+
+        return [
+            'id' => $patient->id,
+            'id_card' => $patient->id_card,
+            'name' => $patient->name,
+            'last_name' => $patient->last_name,
+            'father_name' => $patient->father_name,
+            'is_vip' => $patient->isVipRecord(),
+            'location' => $location,
+            'age' => $patient->age,
+            'militery_type' => $patient->militeryType?->name,
+            'phone' => $patient->phone,
+            'created_by' => $createdBy,
+        ];
     }
 }

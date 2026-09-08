@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 $root = dirname(__DIR__);
-$dir = $root.'/app/Http/Controllers/V1/AppointmentSections';
+$dir = $root.'/app/Http/Controllers/AppointmentSections';
 
 $controllers = <<<'PHP'
 <?php
 
-namespace App\Http\Controllers\V1\AppointmentSections;
+namespace App\Http\Controllers\AppointmentSections;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\V1\AppointmentSections\Concerns\AuthorizesAppointmentAccess;
+use App\Http\Controllers\AppointmentSections\Concerns\AuthorizesAppointmentAccess;
 use App\Models\Appointment;
 use App\Models\BloodBank;
 use Illuminate\Http\JsonResponse;

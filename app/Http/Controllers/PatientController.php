@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\PatientController as LegacyPatientController;
+use App\Http\Controllers\Legacy\PatientController as LegacyPatientController;
 use App\Http\Controllers\Concerns\ManagesAppointmentReport;
 use App\Http\Controllers\Concerns\ManagesPatientReport;
 use App\Http\Controllers\Concerns\PaginatesInertiaIndex;
@@ -21,11 +21,30 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
+/**
+ * Reception patient management for the React / Inertia UI.
+ *
+ * Owns the patients index, show, create/edit shells, cascading form JSON
+ * helpers, and the combined patients + department report page.
+ *
+ * Persistence for store / update (and doctors-by-department) is still
+ * delegated to {@see LegacyPatientController} until that logic is migrated.
+ *
+ * Traits:
+ * - {@see ManagesPatientReport} — patient report query, summary, analytics
+ * - {@see ManagesAppointmentReport} — department-report tab helpers
+ * - {@see PaginatesInertiaIndex} — shared pagination payload helpers
+ *
+ * Authorization uses PatientPolicy (and AppointmentPolicy for my-visits
+ * districts). All list queries are scoped to the authenticated user's branch.
+ */
 class PatientController extends Controller
 {
     use ManagesAppointmentReport;
     use ManagesPatientReport;
     use PaginatesInertiaIndex;
+
+    /** @var list<string> Query-string keys accepted on patients.index */
     private const INDEX_FILTER_KEYS = [
         'patient_id',
         'name',
@@ -39,6 +58,9 @@ class PatientController extends Controller
         'job_category',
     ];
 
+    /**
+     * Paginated patient list with filters for the reception patients index.
+     */
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', Patient::class);
@@ -133,6 +155,9 @@ class PatientController extends Controller
         ]);
     }
 
+    /**
+     * Patient profile / history page (appointments, diagnoses, nephrology, etc.).
+     */
     public function show(Request $request, Patient $patient): Response
     {
         $this->authorize('view', $patient);
@@ -260,6 +285,9 @@ class PatientController extends Controller
         ]);
     }
 
+    /**
+     * Edit-patient Inertia form shell (payload + select options).
+     */
     public function edit(Request $request, Patient $patient): Response
     {
         $this->authorize('update', $patient);
@@ -279,6 +307,9 @@ class PatientController extends Controller
         ]);
     }
 
+    /**
+     * Persist patient updates via the legacy Blade/JSON controller.
+     */
     public function update(Request $request, Patient $patient)
     {
         $this->authorize('update', $patient);
@@ -289,6 +320,9 @@ class PatientController extends Controller
         return app(LegacyPatientController::class)->update($request, $patient);
     }
 
+    /**
+     * Soft-delete a patient (JSON for Inertia, redirect otherwise).
+     */
     public function destroy(Request $request, Patient $patient)
     {
         $this->authorize('delete', $patient);
@@ -307,6 +341,9 @@ class PatientController extends Controller
             ->with('success', localize('global.patient_deleted_successfully.'));
     }
 
+    /**
+     * Create-patient Inertia form shell.
+     */
     public function create(Request $request): Response
     {
         $this->authorize('create', Patient::class);
@@ -322,6 +359,9 @@ class PatientController extends Controller
         ]);
     }
 
+    /**
+     * Create a patient via the legacy Blade/JSON controller.
+     */
     public function store(Request $request)
     {
         $this->authorize('create', Patient::class);
@@ -333,6 +373,9 @@ class PatientController extends Controller
         return app(LegacyPatientController::class)->store($proxy);
     }
 
+    /**
+     * Districts for a province (patient forms + my-visits report filters).
+     */
     public function districts(int $provinceId): JsonResponse
     {
         $user = request()->user();
@@ -353,6 +396,9 @@ class PatientController extends Controller
         ]);
     }
 
+    /**
+     * Recipient parts cascade for the create/edit patient form.
+     */
     public function recipientParts(int $recipientId): JsonResponse
     {
         $this->authorize('viewAny', Patient::class);
@@ -368,6 +414,9 @@ class PatientController extends Controller
         ]);
     }
 
+    /**
+     * Active doctors in a department (appointment assignment on patient forms).
+     */
     public function doctorsByDepartment(int $departmentId, Request $request): JsonResponse
     {
         $this->authorize('viewAny', Patient::class);
@@ -375,6 +424,9 @@ class PatientController extends Controller
         return app(LegacyPatientController::class)->getDoctorsByDepartment($departmentId, $request);
     }
 
+    /**
+     * Combined patients + department report page (lazy tab payloads).
+     */
     public function report(Request $request): Response
     {
         $this->authorize('viewAny', Patient::class);
@@ -412,6 +464,8 @@ class PatientController extends Controller
     }
 
     /**
+     * Build the "patients" report tab: filters, summary, analytics, rows.
+     *
      * @return array<string, mixed>
      */
     private function buildPatientsReportTab(Request $request, int $branchId): array
@@ -492,6 +546,8 @@ class PatientController extends Controller
     }
 
     /**
+     * Build the "department" report tab (appointments by department + dates).
+     *
      * @param  \App\Models\User  $user
      * @return array<string, mixed>
      */
@@ -549,7 +605,10 @@ class PatientController extends Controller
     }
 
     /**
-     * @return array<string, bool>
+     * Page-level create/list permissions for the patients index.
+     *
+     * @param  \App\Models\User  $user
+     * @return array{create: bool}
      */
     private function patientPermissions($user): array
     {
@@ -563,6 +622,9 @@ class PatientController extends Controller
     }
 
     /**
+     * Select options and defaults for create/edit patient forms.
+     *
+     * @param  \App\Models\User  $user
      * @return array<string, mixed>
      */
     private function buildFormData($user, ?Patient $patient = null): array
@@ -612,6 +674,8 @@ class PatientController extends Controller
     }
 
     /**
+     * Named routes / URL prefixes used by create and edit forms.
+     *
      * @return array<string, string>
      */
     private function buildFormUrls(?Patient $patient = null): array
@@ -635,6 +699,8 @@ class PatientController extends Controller
     }
 
     /**
+     * Flatten a patient model into edit-form field values.
+     *
      * @return array<string, mixed>
      */
     private function transformPatientForForm(Patient $patient): array
@@ -682,6 +748,8 @@ class PatientController extends Controller
     }
 
     /**
+     * Flatten a patient model for the show / profile page header.
+     *
      * @return array<string, mixed>
      */
     private function transformPatientForShow(Patient $patient): array
@@ -728,6 +796,7 @@ class PatientController extends Controller
         ];
     }
 
+    /** Human-readable recipient / unit label for the show page. */
     private function formatRecipientDisplay(Patient $patient): ?string
     {
         if ($patient->recipientPart) {
@@ -742,6 +811,8 @@ class PatientController extends Controller
     }
 
     /**
+     * Parse localized age text (سال / ماه / روز) into form fields.
+     *
      * @return array{year: string, month: string, day: string}
      */
     private function parseAge(?string $age): array
@@ -764,6 +835,8 @@ class PatientController extends Controller
     }
 
     /**
+     * Compact row payload for the patients index table.
+     *
      * @return array<string, mixed>
      */
     private function transformPatientForIndex(Patient $patient): array

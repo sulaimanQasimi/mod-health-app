@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Legacy;
 
+use App\Http\Controllers\Controller;
 use App\Jobs\SendNewPACUNotification;
 use App\Models\PACU;
 use Illuminate\Http\Request;

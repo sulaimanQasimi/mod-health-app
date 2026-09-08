@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Legacy;
 
+use App\Http\Controllers\Controller;
 use App\Services\AnesthesiaReferralService;
 use App\Services\OperationReferralService;
 use App\Models\Anesthesia;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Legacy;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMultipleVitalSignsRequest;
 use App\Http\Requests\StoreVitalSignRequest;
 use App\Models\Nurse;

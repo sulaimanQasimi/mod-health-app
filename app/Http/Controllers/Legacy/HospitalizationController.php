@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Legacy;
 
+use App\Http\Controllers\Controller;
 use App\Jobs\SendNewHospitalizationNotification;
 use App\Models\Appointment;
 use App\Models\Bed;

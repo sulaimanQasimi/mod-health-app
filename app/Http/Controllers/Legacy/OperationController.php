@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Legacy;
 
+use App\Http\Controllers\Controller;
 use App\Models\Anesthesia;
 use App\Models\Bed;
 use App\Models\Branch;

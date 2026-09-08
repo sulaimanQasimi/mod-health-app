@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Legacy;
 
+use App\Http\Controllers\Controller;
 use App\Jobs\SendNewAppointmentNotification;
 use App\Models\{Appointment, Doctor, Patient, PrintedNumber, FoodType, LabType, Medicine, MedicineType, MedicineUsageType, OperationType, Relation, Room, User};
 use App\Models\District;

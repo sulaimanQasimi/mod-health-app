@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Legacy;
 
+use App\Http\Controllers\Controller;
 use App\Models\Doctor;
 use App\Models\PhysiotherapyProcedure;
 use App\Models\PhysiotherapyType;

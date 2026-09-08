@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Legacy;
 
+use App\Http\Controllers\Controller;
 use App\Jobs\SendNewICUNotification;
 use App\Models\Bed;
 use App\Models\Branch;

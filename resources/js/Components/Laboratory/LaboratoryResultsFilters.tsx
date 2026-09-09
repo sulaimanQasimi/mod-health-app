@@ -1,5 +1,6 @@
 import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent } from 'react';
+import PersianDateInput from '../ui/PersianDateInput';
 import SearchableSelect from '../ui/SearchableSelect';
 import { LaboratoryResultsFilters as Filters } from '../../types/laboratory';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -8,6 +9,7 @@ import {
     priorityFilterOptions,
     statusFilterOptions,
 } from '../../utils/laboratoryFilterOptions';
+import { settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface LaboratoryResultsFiltersProps {
     filters: Filters;
@@ -81,20 +83,20 @@ export default function LaboratoryResultsFilters({
                     </div>
                     <div>
                         <Label htmlFor="lab-date-from">{t('global.date_from')}</Label>
-                        <TextInput
+                        <PersianDateInput
                             id="lab-date-from"
                             value={filters.date_from}
-                            onChange={(e) => onChange('date_from', e.target.value)}
-                            placeholder="1403/01/01"
+                            onChange={(value) => onChange('date_from', value)}
+                            placeholder={t('global.date_from')}
                         />
                     </div>
                     <div>
                         <Label htmlFor="lab-date-to">{t('global.date_to')}</Label>
-                        <TextInput
+                        <PersianDateInput
                             id="lab-date-to"
                             value={filters.date_to}
-                            onChange={(e) => onChange('date_to', e.target.value)}
-                            placeholder="1403/12/29"
+                            onChange={(value) => onChange('date_to', value)}
+                            placeholder={t('global.date_to')}
                         />
                     </div>
                     <div>
@@ -109,11 +111,16 @@ export default function LaboratoryResultsFilters({
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                    <Button type="submit" color="blue" disabled={processing}>
+                    <Button type="submit" disabled={processing} className={settingsHeaderButtonClass.success}>
                         <i className="bx bx-search me-1" />
                         {t('global.search')}
                     </Button>
-                    <Button type="button" color="light" onClick={onReset} disabled={processing}>
+                    <Button
+                        type="button"
+                        onClick={onReset}
+                        disabled={processing}
+                        className={settingsHeaderButtonClass.secondary}
+                    >
                         <i className="bx bx-refresh me-1" />
                         {t('global.reset')}
                     </Button>

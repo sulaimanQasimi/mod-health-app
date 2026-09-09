@@ -37,6 +37,8 @@ export interface IcuListFilters {
     patient_name: string;
     card_number: string;
     father_name: string;
+    date_from: string;
+    date_to: string;
     per_page: string;
     discharge_filter?: string;
 }

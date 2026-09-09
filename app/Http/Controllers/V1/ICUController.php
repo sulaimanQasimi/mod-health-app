@@ -42,6 +42,7 @@ class ICUController extends Controller
             ->orderByDesc('created_at');
 
         $this->applyIcuPatientFilters($query, $request);
+        $this->applyIcuDateRangeFilter($query, $request);
 
         $paginator = $this->paginateQuery($query, $request);
         $items = $this->paginatedIcuItems($paginator);
@@ -64,6 +65,7 @@ class ICUController extends Controller
 
         $this->applyIcuDischargeFilter($query, $request);
         $this->applyIcuPatientFilters($query, $request);
+        $this->applyIcuDateRangeFilter($query, $request);
 
         $paginator = $this->paginateQuery($query, $request);
         $items = $this->paginatedIcuItems($paginator);
@@ -86,6 +88,7 @@ class ICUController extends Controller
             ->orderByDesc('created_at');
 
         $this->applyIcuPatientFilters($query, $request);
+        $this->applyIcuDateRangeFilter($query, $request);
 
         $paginator = $this->paginateQuery($query, $request);
         $items = $this->paginatedIcuItems($paginator);

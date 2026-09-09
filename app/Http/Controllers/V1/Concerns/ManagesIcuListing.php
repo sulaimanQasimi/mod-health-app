@@ -160,7 +160,7 @@ trait ManagesIcuListing
      */
     protected function icuListFilterKeys(bool $includeDischarge = false): array
     {
-        $keys = ['search', 'patient_name', 'card_number', 'father_name', 'per_page'];
+        $keys = ['search', 'patient_name', 'card_number', 'father_name', 'date_from', 'date_to', 'per_page'];
 
         if ($includeDischarge) {
             $keys[] = 'discharge_filter';

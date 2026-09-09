@@ -20,11 +20,6 @@ interface IcuTableProps {
 
 const COLUMN_COUNT = 9;
 
-function truncate(text: string | null, max = 48): string {
-    if (!text) return '—';
-    return text.length > max ? `${text.slice(0, max)}…` : text;
-}
-
 function StatusCell({ item, variant }: { item: IcuListItem; variant: IcuListVariant }) {
     const { t } = useTranslation();
 
@@ -101,7 +96,7 @@ export default function IcuTable({ items, variant, embedded = true }: IcuTablePr
                     <TableHeader>{t('global.father_name')}</TableHeader>
                     <TableHeader>{t('global.room')}</TableHeader>
                     <TableHeader>{t('global.bed')}</TableHeader>
-                    <TableHeader className="min-w-[10rem]">{t('global.description')}</TableHeader>
+                    <TableHeader className="min-w-[10rem]">{t('global.date')}</TableHeader>
                     <TableHeader>{t('global.status')}</TableHeader>
                     <TableHeader align="right" className="w-16">
                         {t('global.actions')}
@@ -138,8 +133,8 @@ export default function IcuTable({ items, variant, embedded = true }: IcuTablePr
                             )}
                         </TableCell>
                         <TableCell muted>{item.bed_number ?? '—'}</TableCell>
-                        <TableCell muted className="max-w-xs" title={item.description ?? undefined}>
-                            {truncate(item.description)}
+                        <TableCell muted className="min-w-[10rem] whitespace-nowrap">
+                            {item.created_at ?? '—'}
                         </TableCell>
                         <TableCell>
                             <StatusCell item={item} variant={variant} />

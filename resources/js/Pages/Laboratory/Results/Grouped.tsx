@@ -8,6 +8,7 @@ import LaboratoryStatsCards from '../../../Components/Laboratory/LaboratoryStats
 import LaboratoryStatusBadge from '../../../Components/Laboratory/LaboratoryStatusBadge';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
+import PersianDateInput from '../../../Components/ui/PersianDateInput';
 import { useTranslation } from '../../../hooks/useTranslation';
 import {
     perPageFilterOptions,
@@ -15,6 +16,7 @@ import {
     selectOptionsWithAll,
     statusFilterOptions,
 } from '../../../utils/laboratoryFilterOptions';
+import { settingsHeaderButtonClass } from '../../../utils/settingsUi';
 import {
     LaboratoryGroupedCategory,
     LaboratoryGroupedFilters,
@@ -153,17 +155,21 @@ export default function Grouped({ groups, stats, filters: serverFilters, filterO
                             />
                         </div>
                         <div>
-                            <Label>{t('global.date_from')}</Label>
-                            <TextInput
+                            <Label htmlFor="grouped-date-from">{t('global.date_from')}</Label>
+                            <PersianDateInput
+                                id="grouped-date-from"
                                 value={filters.date_from}
-                                onChange={(e) => updateFilter('date_from', e.target.value)}
+                                onChange={(value) => updateFilter('date_from', value)}
+                                placeholder={t('global.date_from')}
                             />
                         </div>
                         <div>
-                            <Label>{t('global.date_to')}</Label>
-                            <TextInput
+                            <Label htmlFor="grouped-date-to">{t('global.date_to')}</Label>
+                            <PersianDateInput
+                                id="grouped-date-to"
                                 value={filters.date_to}
-                                onChange={(e) => updateFilter('date_to', e.target.value)}
+                                onChange={(value) => updateFilter('date_to', value)}
+                                placeholder={t('global.date_to')}
                             />
                         </div>
                         <div>
@@ -178,10 +184,15 @@ export default function Grouped({ groups, stats, filters: serverFilters, filterO
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                        <Button type="submit" color="blue" disabled={processing}>
+                        <Button type="submit" disabled={processing} className={settingsHeaderButtonClass.success}>
                             {t('global.search')}
                         </Button>
-                        <Button type="button" color="light" onClick={handleReset} disabled={processing}>
+                        <Button
+                            type="button"
+                            onClick={handleReset}
+                            disabled={processing}
+                            className={settingsHeaderButtonClass.secondary}
+                        >
                             {t('global.reset')}
                         </Button>
                     </div>

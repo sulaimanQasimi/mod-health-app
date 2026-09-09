@@ -13,6 +13,7 @@ import {
     ReportResultsCard,
 } from '../../../Components/Reports';
 import SearchableSelect from '../../../Components/ui/SearchableSelect';
+import PersianDateInput from '../../../Components/ui/PersianDateInput';
 import {
     Table,
     TableBody,
@@ -28,6 +29,7 @@ import {
     selectOptionsWithAll,
     statusFilterOptions,
 } from '../../../utils/laboratoryFilterOptions';
+import { settingsHeaderButtonClass } from '../../../utils/settingsUi';
 import { PaginationLink } from '../../../types/appointment';
 import {
     LaboratoryDetailedReportRow,
@@ -131,23 +133,39 @@ export default function ReportDetailed({
                 title={t('global.advanced_filters')}
                 onSubmit={handleSubmit}
                 accentIconClass="text-slate-500"
-                actions={<Button type="submit" color="blue" disabled={processing}>
-                    {processing ? <><Spinner size="sm" className="me-2" />{t('global.loading')}</> : <><i className="bx bx-search me-2" />{t('global.search')}</>}
-                </Button>}
+                actions={
+                    <Button type="submit" disabled={processing} className={settingsHeaderButtonClass.success}>
+                        {processing ? (
+                            <>
+                                <Spinner size="sm" className="me-2" />
+                                {t('global.loading')}
+                            </>
+                        ) : (
+                            <>
+                                <i className="bx bx-search me-2" />
+                                {t('global.search')}
+                            </>
+                        )}
+                    </Button>
+                }
             >
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                         <div>
-                            <Label>{t('global.from')}</Label>
-                            <TextInput
+                            <Label htmlFor="detailed-from">{t('global.from')}</Label>
+                            <PersianDateInput
+                                id="detailed-from"
                                 value={filters.from ?? ''}
-                                onChange={(e) => updateFilter('from', e.target.value)}
+                                onChange={(value) => updateFilter('from', value)}
+                                placeholder={t('global.from')}
                             />
                         </div>
                         <div>
-                            <Label>{t('global.to')}</Label>
-                            <TextInput
+                            <Label htmlFor="detailed-to">{t('global.to')}</Label>
+                            <PersianDateInput
+                                id="detailed-to"
                                 value={filters.to ?? ''}
-                                onChange={(e) => updateFilter('to', e.target.value)}
+                                onChange={(value) => updateFilter('to', value)}
+                                placeholder={t('global.to')}
                             />
                         </div>
                         <div>

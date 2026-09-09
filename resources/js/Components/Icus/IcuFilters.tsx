@@ -1,5 +1,6 @@
 import { Badge, Button, Label, Select, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useMemo, useState } from 'react';
+import PersianDateInput from '../ui/PersianDateInput';
 import { useTranslation } from '../../hooks/useTranslation';
 import { IcuListFilters } from '../../types/icu';
 import IcuDischargeTabs from './IcuDischargeTabs';
@@ -10,6 +11,8 @@ export const EMPTY_ICU_FILTERS: IcuListFilters = {
     patient_name: '',
     card_number: '',
     father_name: '',
+    date_from: '',
+    date_to: '',
     per_page: '15',
     discharge_filter: 'in_icu',
 };
@@ -43,6 +46,8 @@ function countActiveFilters(filters: IcuListFilters, showDischargeTabs: boolean)
     if (filters.patient_name) count++;
     if (filters.card_number) count++;
     if (filters.father_name) count++;
+    if (filters.date_from) count++;
+    if (filters.date_to) count++;
     if (filters.per_page && filters.per_page !== '15') count++;
     if (showDischargeTabs && filters.discharge_filter && filters.discharge_filter !== 'in_icu') count++;
     return count;
@@ -169,6 +174,30 @@ export default function IcuFilters({
                         onChange={(e) => onChange({ ...filters, father_name: e.target.value })}
                     />
                 </div>
+                <div>
+                    <Label htmlFor="icu-date-from" className="mb-1.5 flex items-center gap-1.5">
+                        <i className="bx bx-calendar text-amber-500" />
+                        {t('global.date_from')}
+                    </Label>
+                    <PersianDateInput
+                        id="icu-date-from"
+                        value={filters.date_from}
+                        onChange={(date_from) => onChange({ ...filters, date_from })}
+                        placeholder={t('global.date_from')}
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="icu-date-to" className="mb-1.5 flex items-center gap-1.5">
+                        <i className="bx bx-calendar-check text-rose-500" />
+                        {t('global.date_to')}
+                    </Label>
+                    <PersianDateInput
+                        id="icu-date-to"
+                        value={filters.date_to}
+                        onChange={(date_to) => onChange({ ...filters, date_to })}
+                        placeholder={t('global.date_to')}
+                    />
+                </div>
             </div>
 
             <div className="flex flex-col gap-4 border-t border-gray-100 pt-4 sm:flex-row sm:items-end dark:border-gray-800">
@@ -241,6 +270,22 @@ export default function IcuFilters({
                     value={filters.father_name}
                     onRemove={() => removeFilter('father_name')}
                     colorClass="bg-violet-100 text-violet-800 dark:bg-violet-950/50 dark:text-violet-300"
+                />
+            )}
+            {filters.date_from && (
+                <FilterChip
+                    label={t('global.date_from')}
+                    value={filters.date_from}
+                    onRemove={() => removeFilter('date_from')}
+                    colorClass="bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300"
+                />
+            )}
+            {filters.date_to && (
+                <FilterChip
+                    label={t('global.date_to')}
+                    value={filters.date_to}
+                    onRemove={() => removeFilter('date_to')}
+                    colorClass="bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-300"
                 />
             )}
             {showDischargeTabs && filters.discharge_filter && filters.discharge_filter !== 'in_icu' && (

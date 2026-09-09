@@ -29,6 +29,7 @@ class PACUController extends Controller
             ->orderByDesc('created_at');
 
         $this->applyPacuPatientFilters($query, $request);
+        $this->applyPacuDateRangeFilter($query, $request);
 
         $paginator = $this->paginateQuery($query, $request);
         $items = $this->paginatedPacuItems($paginator);
@@ -47,6 +48,7 @@ class PACUController extends Controller
             ->orderByDesc('created_at');
 
         $this->applyPacuPatientFilters($query, $request);
+        $this->applyPacuDateRangeFilter($query, $request);
 
         $paginator = $this->paginateQuery($query, $request);
         $items = $this->paginatedPacuItems($paginator);

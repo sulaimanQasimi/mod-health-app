@@ -131,7 +131,7 @@ trait ManagesPacuListing
      */
     protected function pacuListFilterKeys(): array
     {
-        return ['search', 'patient_name', 'card_number', 'father_name', 'per_page'];
+        return ['search', 'patient_name', 'card_number', 'father_name', 'date_from', 'date_to', 'per_page'];
     }
 
     /**

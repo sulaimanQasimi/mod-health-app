@@ -38,6 +38,8 @@ const EMPTY_FILTERS: MyVisitFilterValues = {
     patient_id: '',
 };
 
+const LIST_ONLY = ['appointments', 'filters', 'permissions', 'urls'] as const;
+
 function cleanFilters(filters: MyVisitFilterValues): Record<string, string> {
     return Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== ''));
 }
@@ -59,6 +61,7 @@ export default function Doctor({
         (nextFilters: MyVisitFilterValues) => {
             setProcessing(true);
             router.get(urls.doctor, cleanFilters(nextFilters), {
+                only: [...LIST_ONLY],
                 preserveScroll: true,
                 preserveState: true,
                 replace: true,
@@ -103,6 +106,10 @@ export default function Doctor({
                         onReset={handleReset}
                     />
 
+                    <div
+                        className={processing ? 'pointer-events-none opacity-60 transition-opacity' : 'transition-opacity'}
+                        aria-busy={processing}
+                    >
                     <Table id="doctor-appointments-table">
                         <TableHead>
                             <TableRow variant="header">
@@ -130,7 +137,7 @@ export default function Doctor({
                                             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
                                                 <i className="bx bx-calendar-x text-xl text-gray-400" />
                                             </div>
-                                            {t('global.no_records_found')}
+                                            {t('global.no_appointments_found')}
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -188,7 +195,9 @@ export default function Doctor({
                         links={appointments.links}
                         meta={appointments.meta}
                         t={t}
+                        only={[...LIST_ONLY]}
                     />
+                    </div>
                 </Card>
             </div>
         </DashboardLayout>

@@ -2,362 +2,393 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\ManagesOperationListing;
+use App\Http\Controllers\Concerns\PaginatesInertiaIndex;
+use App\Jobs\SendNewHospitalizationNotification;
 use App\Models\Anesthesia;
 use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Doctor;
-use App\Models\FoodType;
+use App\Models\Hospitalization;
 use App\Models\Nurse;
-use App\Models\Operation;
-use App\Models\Prescription;
-use App\Models\Relation;
+use App\Models\OperationType;
 use App\Models\Room;
-use Hekmatinasser\Verta\Facades\Verta;
+use Hekmatinasser\Verta\Verta;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Excel;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Mpdf\Mpdf;
-use App\Models\OperationType;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class OperationController extends Controller
 {
+    use ManagesOperationListing;
+    use PaginatesInertiaIndex;
 
-
-
-    /**
-     * Apply advanced filters to an operations (anesthesias) query.
-     */
-    private function applyOperationsFilters($query, Request $request)
+    public function new(Request $request): Response
     {
-        if ($request->filled('search')) {
-            $term = '%' . $request->search . '%';
-            $query->whereHas('patient', function ($q) use ($term) {
-                $q->where('name', 'like', $term)
-                    ->orWhere('father_name', 'like', $term)
-                    ->orWhere('id_card', 'like', $term);
-            });
+        return $this->renderListPage($request, 'new', 'Operations/New');
+    }
+
+    public function approved(Request $request): Response
+    {
+        return $this->renderListPage($request, 'approved', 'Operations/Approved');
+    }
+
+    public function reserved(Request $request): Response
+    {
+        return $this->renderListPage($request, 'reserved', 'Operations/Reserved');
+    }
+
+    public function completed(Request $request): Response
+    {
+        return $this->renderListPage($request, 'completed', 'Operations/Completed');
+    }
+
+    public function report(Request $request): Response
+    {
+        $this->authorizeOperationsMenu();
+
+        $items = [];
+        if ($request->boolean('search')) {
+            $items = $this->reportItems($request);
         }
+        $summary = [
+            'total' => count($items),
+            'completed' => count(array_filter($items, fn ($item) => $item['is_operation_done'])),
+            'pending' => count(array_filter($items, fn ($item) => ! $item['is_operation_done'])),
+            'approved' => count(array_filter($items, fn ($item) => $item['is_operation_approved'])),
+        ];
 
-        if ($request->filled('branch_id')) {
-            $query->where('branch_id', $request->branch_id);
-        }
-
-        if ($request->filled('department_id')) {
-            $query->whereHas('operationType', function ($q) use ($request) {
-                $q->where('department_id', $request->department_id);
-            });
-        }
-
-        if ($request->filled('operation_type_id')) {
-            $query->where('operation_type_id', $request->operation_type_id);
-        }
-
-        if ($request->filled('surgeon_id')) {
-            $query->where('operation_surgion_id', $request->surgeon_id);
-        }
-
-        // Date filters: Persian (Jalali) from datepicker_dari, convert with Verta
-        if ($request->filled('date_from')) {
-            try {
-                $query->whereDate('date', '>=', Verta::parse($request->date_from)->datetime());
-            } catch (\Exception $e) {
-                // If Verta parse fails, ignore filter
-            }
-        }
-
-        if ($request->filled('date_to')) {
-            try {
-                $query->whereDate('date', '<=', Verta::parse($request->date_to)->datetime());
-            } catch (\Exception $e) {
-                // If Verta parse fails, ignore filter
-            }
-        }
-
-        $sortBy = $request->get('sort_by', 'date');
-        $sortOrder = $request->get('sort_order', 'desc');
-        $allowedSort = ['date', 'created_at', 'time'];
-        if (!in_array($sortBy, $allowedSort)) {
-            $sortBy = 'date';
-        }
-        $query->orderBy($sortBy, $sortOrder === 'asc' ? 'asc' : 'desc');
-
-        return $query;
+        return Inertia::render('Operations/Report', [
+            'items' => $items,
+            'hasSearch' => $request->boolean('search'),
+            'summary' => $summary,
+            'analytics' => [
+                'by_status' => [
+                    ['name' => 'completed', 'count' => $summary['completed']],
+                    ['name' => 'pending', 'count' => $summary['pending']],
+                ],
+                'by_department' => collect($items)
+                    ->groupBy(fn ($item) => $item['department_name'] ?? '—')
+                    ->map(fn ($items, $name) => ['name' => $name, 'count' => $items->count()])
+                    ->sortByDesc('count')->values()->all(),
+            ],
+            'filters' => $this->collectFilters($request, [
+                'patient_name',
+                'surgeon_id',
+                'operation_status',
+                'operation_approval',
+                'reserve_status',
+                'operation_type_id',
+                'date_from',
+                'date_to',
+            ]),
+            'filterOptions' => $this->reportFilterOptions(),
+            'urls' => [
+                'current' => route('operations.report'),
+                'export' => route('operations.export-report'),
+                ...$this->operationListUrls(),
+            ],
+        ]);
     }
 
-    /**
-     * Get filter data (branches, departments, operation types, surgeons) for operations views.
-     */
-    private function getOperationsFilterData()
+    public function show(Request $request, Anesthesia $operation): Response
     {
-        $branches = Branch::orderBy('name')->get(['id', 'name']);
-        $departments = Department::orderBy('name')->get(['id', 'name']);
-        $operationTypes = OperationType::orderBy('name')->get(['id', 'name']);
-        $surgeons = Doctor::where('active_status', true)->orderBy('name')->get(['id', 'name']);
+        $this->authorizeOperationsMenu();
+        $this->ensureBranch($operation);
 
-        return compact('branches', 'departments', 'operationTypes', 'surgeons');
+        $operation->load([
+            'patient:id,name,father_name,id_card,phone',
+            'doctor:id,name',
+            'operationType:id,name',
+            'surgion:id,name',
+            'anesthesist:id,name',
+            'anesthesia_log:id,name',
+            'scrub_nurse:id,first_name,last_name',
+            'circulation_nurse:id,first_name,last_name',
+            'appointment:id,department_id',
+            'appointment.department:id,name',
+        ]);
+
+        $user = $request->user();
+        $linkedHospitalization = $this->resolveOperationHospitalization($operation);
+
+        return Inertia::render('Operations/Show', [
+            'operation' => $this->transformDetail($operation),
+            'hospitalization' => $linkedHospitalization
+                ? $this->transformOperationHospitalization($linkedHospitalization)
+                : null,
+            'nurses' => $this->nurseOptions(),
+            'permissions' => [
+                'prescription' => $user->can('show-prescriptions-menu') && (bool) $operation->appointment_id,
+                'blood' => $user->can('show-blood-request-menu') && (bool) $operation->appointment_id,
+                'hospitalize' => (bool) $operation->appointment_id
+                    && $user->can('show-hospitalizations-menu')
+                    && $user->can('patient-hospitalization'),
+            ],
+            'urls' => [
+                'update' => route('operations.update', $operation),
+                'complete' => route('operations.complete', $operation),
+                'reserve' => route('operations.reserve', $operation),
+                'unreserve' => route('operations.unreserve', $operation),
+                'back' => $this->backUrlForOperation($operation),
+                'appointment' => $operation->appointment_id
+                    ? route('appointments.show', $operation->appointment_id)
+                    : null,
+                'hospitalizationMeta' => $operation->appointment_id
+                    ? route('appointments.sections.hospitalization.meta', $operation->appointment_id)
+                    : null,
+                ...$this->operationListUrls(),
+            ],
+        ]);
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function new(Request $request)
+    public function update(Request $request, Anesthesia $operation): RedirectResponse
     {
-        $perPage = (int) $request->get('per_page', 15);
-        $perPage = in_array($perPage, [10, 15, 25, 50, 100]) ? $perPage : 15;
+        $this->authorizeOperationsMenu();
+        $this->ensureBranch($operation);
 
-        $query = Anesthesia::with(['patient', 'operationType'])
-            ->where('status', 'approved')
-            ->where('is_referred_to_operation', true)
-            ->where('is_operation_approved', '0')
-            ->where('is_reserved', '0');
-
-        $query = $this->applyOperationsFilters($query, $request);
-        $operations = $query->paginate($perPage)->withQueryString();
-
-        $filterData = $this->getOperationsFilterData();
-        return view('pages.operations.new', array_merge(compact('operations'), $filterData));
-    }
-
-    public function reserved(Request $request)
-    {
-        $perPage = (int) $request->get('per_page', 15);
-        $perPage = in_array($perPage, [10, 15, 25, 50, 100]) ? $perPage : 15;
-
-        $query = Anesthesia::with(['patient', 'operationType'])->reserved();
-        $query = $this->applyOperationsFilters($query, $request);
-        $reservedOperations = $query->paginate($perPage)->withQueryString();
-
-        $filterData = $this->getOperationsFilterData();
-        return view('pages.operations.reserved', array_merge(compact('reservedOperations'), $filterData));
-    }
-
-    public function approved(Request $request)
-    {
-        $perPage = (int) $request->get('per_page', 15);
-        $perPage = in_array($perPage, [10, 15, 25, 50, 100]) ? $perPage : 15;
-
-        $query = Anesthesia::with(['patient', 'operationType', 'scrub_nurse', 'circulation_nurse'])
-            ->where('status', 'approved')
-            ->where('is_operation_approved', '1')
-            ->where('is_operation_done', '0')
-            ->where('is_reserved', '0');
-
-        $query = $this->applyOperationsFilters($query, $request);
-        $operations = $query->paginate($perPage)->withQueryString();
-
-        $filterData = $this->getOperationsFilterData();
-        return view('pages.operations.approved', array_merge(compact('operations'), $filterData));
-    }
-
-    public function completed(Request $request)
-    {
-        $perPage = (int) $request->get('per_page', 15);
-        $perPage = in_array($perPage, [10, 15, 25, 50, 100]) ? $perPage : 15;
-
-        $query = Anesthesia::with(['patient', 'operationType', 'scrub_nurse', 'circulation_nurse'])->where('is_operation_done', '1');
-        $query = $this->applyOperationsFilters($query, $request);
-        $operations = $query->paginate($perPage)->withQueryString();
-
-        $filterData = $this->getOperationsFilterData();
-        return view('pages.operations.completed', array_merge(compact('operations'), $filterData));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Anesthesia $operation)
-    {
-        $operation->load(['bloodBanks.patient', 'bloodBanks.department']);
-
-        $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
-            ->where('active_status', true)
-            ->get();
-        $branchId = auth()->user()->branch_id;
-        $operation_nurses = Nurse::where('employment_status', 'active')
-
-            ->orderBy('first_name')
-            ->orderBy('last_name')
-            ->get();
-        $rooms = Room::all();
-        $beds = Bed::all();
-        $foodTypes = FoodType::all();
-        $relations = Relation::all();
-        $operation_prescription_count = Prescription::where(function ($q) use ($operation) {
-            $q->where('appointment_id', $operation->appointment_id);
-            if ($operation->hospitalization_id) {
-                $q->orWhere('hospitalization_id', $operation->hospitalization_id);
-            }
-        })->count();
-        $operation_for_prescription = $operation->only(['id', 'appointment_id', 'hospitalization_id', 'patient_id', 'branch_id']);
-        return view('pages.operations.show', compact('operation', 'operation_doctors', 'operation_nurses', 'rooms', 'beds', 'foodTypes', 'relations', 'operation_prescription_count', 'operation_for_prescription'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Operation $operation)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Anesthesia $operation)
-    {
         $data = $request->validate([
             'is_operation_done' => 'nullable',
             'is_operation_approved' => 'nullable',
-            'operation_remark' => 'nullable',
+            'operation_remark' => 'nullable|string',
             'operation_result' => 'nullable',
-            'operation_scrub_nurse_id' => 'nullable',
-            'operation_circulation_nurse_id' => 'nullable',
-            'date' => 'nullable',
-            'time' => 'nullable',
-            'operation_expense_remarks' => 'nullable',
-            'patient_status' => 'nullable',
-
+            'operation_scrub_nurse_id' => 'nullable|exists:nurses,id',
+            'operation_circulation_nurse_id' => 'nullable|exists:nurses,id',
+            'date' => 'nullable|string',
+            'time' => 'nullable|string',
+            'operation_expense_remarks' => 'nullable|string',
+            'patient_status' => 'nullable|in:discharge,death',
         ]);
 
-        // Room and bed removed from operation approval form; keep DB null
+        if (! empty($data['date'])) {
+            $data['date'] = Verta::parse($data['date'])->datetime()->format('Y-m-d');
+        }
+
+        foreach (['operation_scrub_nurse_id', 'operation_circulation_nurse_id'] as $key) {
+            if (empty($data[$key])) {
+                $data[$key] = null;
+            }
+        }
+
         $data['room_id'] = $request->input('room_id');
         $data['bed_id'] = $request->input('bed_id');
 
-        if (isset($data['date']) && $data['date'] > $operation->date) {
+        $existingDate = $operation->date;
+
+        if (! empty($data['date']) && $data['date'] > $existingDate) {
             $operation->reserve();
             $operation->update($data);
-            return redirect()->route('operations.reserved')->with('success', localize('global.operation_reserved_successfully.'));
-        } elseif (isset($data['date']) && $data['date'] < $operation->date) {
-            $operation->update($data);
-            return redirect()->back()->with('success', localize('global.operation_updated_successfully.'));
-        } else {
-            $operation->update($data);
-            return redirect()->back()->with('success', localize('global.operation_updated_successfully.'));
-        }
-    }
 
-    /**
-     * 
-     * This complete the operation and return the success message 
-     * if the bed is occupied, it releases the bed
-     * 
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Anesthesia $operation
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function complete(Request $request, Anesthesia $operation)
-    {
-        $data = $request->validate([
-            'is_operation_done' => 'nullable',
-            'operation_remark' => 'nullable',
-            'operation_result' => 'nullable',
-            'room_id' => 'nullable',
-            'bed_id' => 'nullable',
-
-        ]);
-
-        $data['room_id'] = $operation->room->id ?? null;
-        $data['bed_id'] = $operation->bed->id ?? null;
-
-        $occupied_bed = Bed::find($data['bed_id']);
-        if ($occupied_bed) {
-            $occupied_bed->update(['is_occupied' => false]);
-            $occupied_bed->save();
+            return redirect()
+                ->route('operations.reserved')
+                ->with('success', localize('global.operation_reserved_successfully.'));
         }
 
         $operation->update($data);
 
-        return redirect()->back()->with('success', localize('global.operation_completed_successfully.'));
+        return redirect()
+            ->back()
+            ->with('success', localize('global.operation_updated_successfully.'));
+    }
+
+    public function complete(Request $request, Anesthesia $operation): RedirectResponse
+    {
+        $this->authorizeOperationsMenu();
+        $this->ensureBranch($operation);
+
+        $data = $request->validate([
+            'operation_remark' => 'nullable|string',
+            'operation_result' => 'required|in:0,1',
+            'hospitalize' => 'nullable|boolean',
+            'reason' => 'required_if:hospitalize,1|string',
+            'remarks' => 'required_if:hospitalize,1|string',
+            'department_id' => 'required_if:hospitalize,1|exists:departments,id',
+            'room_id' => 'required_if:hospitalize,1|exists:rooms,id',
+            'bed_id' => 'required_if:hospitalize,1|exists:beds,id',
+        ]);
+
+        DB::transaction(function () use ($request, $operation, $data) {
+            $operationData = [
+                'operation_remark' => $data['operation_remark'] ?? null,
+                'operation_result' => $data['operation_result'],
+                'is_operation_done' => 1,
+                'room_id' => $operation->room_id,
+                'bed_id' => $operation->bed_id,
+            ];
+
+            if ($operation->bed_id) {
+                Bed::query()
+                    ->whereKey($operation->bed_id)
+                    ->update(['is_occupied' => false]);
+            }
+
+            $operation->update($operationData);
+
+            if ($request->boolean('hospitalize')) {
+                $this->syncOperationHospitalization($operation, $data, $request->user());
+            }
+        });
+
+        return redirect()
+            ->back()
+            ->with('success', localize('global.operation_completed_successfully.'));
+    }
+
+    public function reserve(Request $request, Anesthesia $operation): RedirectResponse
+    {
+        $this->authorizeOperationsMenu();
+        $this->ensureBranch($operation);
+
+        $data = $request->validate([
+            'reserve_reason' => 'required|string',
+        ]);
+
+        $operation->reserve();
+        $operation->update($data);
+
+        return redirect()
+            ->route('operations.reserved')
+            ->with('success', localize('global.operation_reserved_successfully.'));
+    }
+
+    public function unreserve(Anesthesia $operation): RedirectResponse
+    {
+        $this->authorizeOperationsMenu();
+        $this->ensureBranch($operation);
+
+        $operation->unreserve();
+        $operation->update(['is_operation_approved' => 0]);
+
+        return redirect()
+            ->back()
+            ->with('success', localize('global.operation_unreserved_successfully.'));
+    }
+
+    private function renderListPage(Request $request, string $variant, string $page): Response
+    {
+        $this->authorizeOperationsMenu();
+
+        $query = $this->operationListQuery($variant)
+            ->with($this->operationEagerLoads($variant));
+
+        $this->applyOperationListFilters($query, $request);
+
+        $paginator = $this->paginateQuery($query, $request);
+        $from = $paginator->firstItem();
+
+        $items = [
+            'data' => collect($paginator->items())
+                ->map(function (Anesthesia $operation, int $index) use ($variant, $from) {
+                    return $this->transformOperationListItem(
+                        $operation,
+                        $variant,
+                        $from ? $from + $index : null,
+                    );
+                })
+                ->values()
+                ->all(),
+            'links' => $paginator->linkCollection()->toArray(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem(),
+            ],
+        ];
+
+        return Inertia::render($page, [
+            'operations' => $items,
+            'filters' => $this->collectFilters($request, $this->operationListFilterKeys()),
+            'filterOptions' => $this->listFilterOptions(),
+            'urls' => [
+                'current' => $request->url(),
+                ...$this->operationListUrls(),
+            ],
+        ]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @return array{branches: list<array{id: int, name: string}>, departments: list<array{id: int, name: string}>, operationTypes: list<array{id: int, name: string}>, surgeons: list<array{id: int, name: string}>}
      */
-    public function destroy(Operation $operation)
+    private function listFilterOptions(): array
     {
-        //
+        $branchId = $this->operationBranchId();
+
+        return [
+            'branches' => Branch::query()->orderBy('name')->get(['id', 'name'])->all(),
+            'departments' => Department::query()->orderBy('name')->get(['id', 'name'])->all(),
+            'operationTypes' => OperationType::query()
+                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                ->orderBy('name')
+                ->get(['id', 'name'])
+                ->all(),
+            'surgeons' => Doctor::query()
+                ->where('active_status', true)
+                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                ->orderBy('name')
+                ->get(['id', 'name'])
+                ->all(),
+        ];
     }
 
-    public function reserveOperation(Request $request, $operationId)
+    /**
+     * @return array{operationTypes: list<array{id: int, name: string}>, surgeons: list<array{id: int, name: string}>}
+     */
+    private function reportFilterOptions(): array
     {
+        $branchId = $this->operationBranchId();
 
-        $operation = Anesthesia::findOrFail($operationId);
-        $operation->reserve();
-        $operation->update(['reserve_reason' => $request->reserve_reason]);
-        $operation->save();
-
-        // Add any additional logic, such as redirecting or returning a response
-        return redirect()->route('operations.reserved')->with('success', localize('global.operation_reserved_successfully.'));
+        return [
+            'operationTypes' => OperationType::query()
+                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                ->orderBy('name')
+                ->get(['id', 'name'])
+                ->all(),
+            'surgeons' => Doctor::query()
+                ->where('active_status', true)
+                ->orderBy('name')
+                ->get(['id', 'name'])
+                ->all(),
+        ];
     }
 
-    public function unreserveOperation($operationId)
-    {
-
-        $operation = Anesthesia::findOrFail($operationId);
-        $operation->unreserve();
-        $operation->update(['is_operation_approved' => '0']);
-        $operation->save();
-        // Add any additional logic, such as redirecting or returning a response
-        return redirect()->back()->with('success', localize('global.operation_unreserved_successfully.'));
-    }
-
-    public function report()
-    {
-        $operationTypes = OperationType::all();
-        $surgeons = Doctor::where('active_status', true)->orderBy('name')->get(['id', 'name']);
-
-        return view('pages.operations.reports.index', compact('operationTypes', 'surgeons'));
-    }
-    public function reportSearch(Request $request)
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function reportItems(Request $request): array
     {
         $query = DB::table('anesthesias as a')
             ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
-            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
-            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
             ->leftJoin('doctors as u', 'a.operation_surgion_id', '=', 'u.id')
             ->leftJoin('operation_types as ot', 'a.operation_type_id', '=', 'ot.id')
+            ->leftJoin('appointments as app', 'a.appointment_id', '=', 'app.id')
+            ->leftJoin('departments as dep', 'app.department_id', '=', 'dep.id')
             ->select(
                 'a.id',
                 'p.name as patient_name',
-                'd.name as doctor_name',
-                'b.name as branch_name',
-                'a.status',
-                'a.anesthesia_type',
+                'u.name as surgion_name',
+                'ot.name as operation_type_name',
+                'dep.name as department_name',
                 'a.date',
                 'a.time',
-                'u.name as operation_surgion_name',
-                'ot.name as operation_type_name',
                 'a.is_operation_done',
                 'a.is_operation_approved',
-                'a.is_reserved'
-            );
+                'a.is_reserved',
+            )
+            ->when($this->operationBranchId(), fn ($q, $branchId) => $q->where('a.branch_id', $branchId))
+            ->where('a.status', 'approved')
+            ->where('a.is_referred_to_operation', true)
+            ->orderByDesc('a.date')
+            ->orderByDesc('a.time');
 
         if ($request->filled('patient_name')) {
-            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
-        }
-
-        if ($request->filled('operation_surgion_name')) {
-            $query->where('u.name', 'like', '%' . $request->operation_surgion_name . '%');
+            $query->where('p.name', 'like', '%'.$request->patient_name.'%');
         }
 
         if ($request->filled('surgeon_id')) {
@@ -380,126 +411,214 @@ class OperationController extends Controller
             $query->where('a.operation_type_id', $request->operation_type_id);
         }
 
-        if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('a.created_at', [$request->from, $request->to]);
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            try {
+                $fromDate = Verta::parse($request->date_from)->datetime()->format('Y-m-d');
+                $toDate = Verta::parse($request->date_to)->datetime()->format('Y-m-d');
+                $query->whereDate('a.date', '>=', $fromDate)->whereDate('a.date', '<=', $toDate);
+            } catch (\Throwable) {
+            }
         }
 
-        $items = $query->get();
-        return view('pages.operations.reports.report', ['items' => $items]);
+        return $query->limit(200)->get()->map(fn ($item) => [
+            'id' => $item->id,
+            'patient_name' => $item->patient_name,
+            'surgion_name' => $item->surgion_name,
+            'operation_type_name' => $item->operation_type_name,
+            'department_name' => $item->department_name,
+            'date' => $item->date ? $this->formatOperationDate($item->date) : null,
+            'time' => $item->time,
+            'is_operation_done' => (bool) $item->is_operation_done,
+            'is_operation_approved' => (bool) $item->is_operation_approved,
+            'is_reserved' => (bool) $item->is_reserved,
+        ])->values()->all();
     }
 
-
-    public function exportReport(Request $request)
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformDetail(Anesthesia $operation): array
     {
+        $assistantIds = json_decode($operation->operation_assistants_id ?? '[]', true) ?: [];
+        $assistantNames = $assistantIds
+            ? Doctor::query()->whereIn('id', $assistantIds)->orderBy('name')->pluck('name')->all()
+            : [];
 
-        $data = json_decode($request->data, true);
+        return [
+            'id' => $operation->id,
+            'status' => $operation->status,
+            'plan' => $operation->plan,
+            'anesthesia_plan' => $operation->anesthesia_plan,
+            'anesthesia_log_reply' => $operation->anesthesia_log_reply,
+            'position_on_bed' => $operation->position_on_bed,
+            'planned_duration' => $operation->planned_duration,
+            'estimated_blood_waste' => $operation->estimated_blood_waste,
+            'other_problems' => $operation->other_problems,
+            'anesthesia_type' => $operation->anesthesia_type,
+            'operation_remark' => $operation->operation_remark,
+            'operation_expense_remarks' => $operation->operation_expense_remarks,
+            'reserve_reason' => $operation->reserve_reason,
+            'patient_status' => $operation->patient_status,
+            'operation_result' => $operation->operation_result,
+            'date' => $operation->date ? verta($operation->date)->format('Y-m-d') : '',
+            'date_display' => $this->formatOperationDate($operation->date),
+            'time' => $operation->time,
+            'appointment_id' => $operation->appointment_id,
+            'is_operation_approved' => (bool) $operation->is_operation_approved,
+            'is_operation_done' => (bool) $operation->is_operation_done,
+            'is_reserved' => (bool) $operation->is_reserved,
+            'is_referred_to_operation' => (bool) $operation->is_referred_to_operation,
+            'operation_scrub_nurse_id' => $operation->operation_scrub_nurse_id,
+            'operation_circulation_nurse_id' => $operation->operation_circulation_nurse_id,
+            'patient' => $operation->patient ? [
+                'id' => $operation->patient->id,
+                'name' => $operation->patient->name,
+                'father_name' => $operation->patient->father_name,
+                'id_card' => $operation->patient->id_card,
+                'phone' => $operation->patient->phone,
+            ] : null,
+            'operation_type_name' => $operation->operationType?->name,
+            'doctor_name' => $operation->doctor?->name,
+            'surgion_name' => $operation->surgion?->name,
+            'anesthesist_name' => $operation->anesthesist?->name,
+            'anesthesia_log_name' => $operation->anesthesia_log?->name,
+            'scrub_nurse_name' => $operation->scrub_nurse?->full_name,
+            'circulation_nurse_name' => $operation->circulation_nurse?->full_name,
+            'department_name' => $operation->appointment?->department?->name,
+            'operation_assistants_names' => $assistantNames,
+        ];
+    }
 
-        $items = DB::table('anesthesias as a')
-            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
-            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
-            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
-            ->leftJoin('doctors as u', 'a.operation_surgion_id', '=', 'u.id')
-            ->leftJoin('operation_types as ot', 'a.operation_type_id', '=', 'ot.id')
-            ->select(
-                'a.id',
-                'p.name as patient_name',
-                'd.name as doctor_name',
-                'b.name as branch_name',
-                'a.status',
-                'a.anesthesia_type',
-                'a.date',
-                'a.time',
-                'u.name as operation_surgion_name',
-                'ot.name as operation_type_name',
-                'a.is_operation_done',
-                'a.is_operation_approved',
-                'a.is_reserved'
-            )
-            ->whereIn('a.id', $data)->get();
-        $reader = new Xlsx();
-        $spreadsheet = $reader->load("report_templates/operations_report.xlsx");
-        $sheet = $spreadsheet->getActiveSheet();
-        $html = view('pages.operations.reports.pdf_report',  ['items' => $items])->render();
-        if ($request->type == 'pdf') {
-            $mpdf = new Mpdf(['format' => 'A4-L']);
-            $mpdf->WriteHTML($html);
-            $mpdf->Output('pdf_report.pdf', 'D');
-        } else {
-            $spreadsheet = $reader->load("report_templates/operations_report.xlsx");
-            $sheet = $spreadsheet->getActiveSheet();
-            $row = 3;
+    /**
+     * @return list<array{id: int, name: string}>
+     */
+    private function nurseOptions(): array
+    {
+        return Nurse::query()
+            ->where('employment_status', 'active')
+            ->orderBy('first_name')
+            ->get(['id', 'first_name', 'last_name'])
+            ->map(fn (Nurse $nurse) => [
+                'id' => $nurse->id,
+                'name' => $nurse->full_name,
+            ])
+            ->values()
+            ->all();
+    }
 
-            foreach ($items as $index => $item) {
+    private function ensureBranch(Anesthesia $operation): void
+    {
+        $branchId = $this->operationBranchId();
 
-
-                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
-                $sheet->getColumnDimension('A')->setWidth(5);
-                $sheet->getColumnDimension('B')->setWidth(40);
-                $sheet->getColumnDimension('C')->setWidth(20);
-                $sheet->getColumnDimension('D')->setWidth(20);
-                $sheet->getColumnDimension('E')->setWidth(20);
-                $sheet->getColumnDimension('F')->setWidth(20);
-                $sheet->getColumnDimension('G')->setWidth(20);
-                $sheet->getColumnDimension('H')->setWidth(20);
-                $sheet->getColumnDimension('I')->setWidth(20);
-                $styleArray = array(
-                    'font' => array(
-                        'name' => 'B Nazanin',
-                        'color' => 15,
-                        'bold' => true
-
-                    ),
-                );
-
-                $operation_done = '';
-                if ($item->is_operation_done == '0') {
-                    $operation_done = 'نااجراء';
-                } else {
-                    $operation_done = 'تکمیل';
-                }
-
-                $operation_approved = '';
-                if ($item->is_operation_approved == '0') {
-                    $operation_approved = 'تائید ناشده';
-                } else {
-                    $operation_approved = 'تائید شده';
-                }
-
-                $reserved = '';
-                if ($item->is_reserved == '0') {
-                    $reserved = 'ریزرف ناشده';
-                } else {
-                    $reserved = 'ریزرف شده';
-                }
-                $sheet->setCellValue('A' . $row . '', ++$index);
-                $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                $sheet->setCellValue('C' . $row . '', $item->operation_surgion_name);
-                $sheet->setCellValue('D' . $row . '', $operation_done);
-                $sheet->setCellValue('E' . $row . '', $operation_approved);
-                $sheet->setCellValue('F' . $row . '', $reserved);
-                $sheet->setCellValue('G' . $row . '', $item->operation_type_name);
-                $sheet->setCellValue('H' . $row . '', $item->date);
-                $sheet->setCellValue('I' . $row . '', $item->time);
-
-                $row++;
-            }
-
-            return $this->exportResponse($spreadsheet);
+        if ($branchId) {
+            abort_unless((int) $operation->branch_id === $branchId, 404);
         }
     }
 
-
-    public function exportResponse($spreadsheet)
+    private function resolveOperationHospitalization(Anesthesia $operation): ?Hospitalization
     {
-        $writer = new WriterXlsx($spreadsheet);
-        $response =  new StreamedResponse(
-            function () use ($writer) {
-                $writer->save('php://output');
+        if ($operation->hospitalization_id) {
+            $linked = Hospitalization::query()->find($operation->hospitalization_id);
+            if ($linked) {
+                return $linked;
             }
+        }
+
+        if (! $operation->appointment_id) {
+            return null;
+        }
+
+        return Hospitalization::query()
+            ->where('appointment_id', $operation->appointment_id)
+            ->where(function ($query) {
+                $query->where('is_discharged', 0)->orWhereNull('is_discharged');
+            })
+            ->latest('id')
+            ->first();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformOperationHospitalization(Hospitalization $hospitalization): array
+    {
+        return [
+            'id' => $hospitalization->id,
+            'reason' => $hospitalization->reason ?? '',
+            'remarks' => $hospitalization->remarks ?? '',
+            'department_id' => (string) ($hospitalization->department_id ?? ''),
+            'room_id' => (string) ($hospitalization->room_id ?? ''),
+            'bed_id' => (string) ($hospitalization->bed_id ?? ''),
+            'is_active' => ! (bool) $hospitalization->is_discharged,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function syncOperationHospitalization(Anesthesia $operation, array $data, $user): void
+    {
+        abort_unless($operation->appointment_id, 422);
+
+        $room = Room::query()->findOrFail($data['room_id']);
+        abort_unless(
+            $room->department_id === null || (int) $room->department_id === (int) $data['department_id'],
+            422
         );
-        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
-        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-        return $response;
+
+        $bed = Bed::query()->findOrFail($data['bed_id']);
+        abort_unless((int) $bed->room_id === (int) $data['room_id'], 422);
+
+        $existing = $this->resolveOperationHospitalization($operation);
+
+        if ($existing) {
+            if ((int) $bed->id !== (int) $existing->bed_id) {
+                abort_if((bool) $bed->is_occupied, 422);
+                $this->releaseHospitalizationBed($existing->bed_id);
+                $bed->update(['is_occupied' => true]);
+            }
+
+            $existing->update([
+                'reason' => $data['reason'],
+                'remarks' => $data['remarks'],
+                'room_id' => $data['room_id'],
+                'bed_id' => $data['bed_id'],
+                'department_id' => $data['department_id'],
+                'is_discharged' => 0,
+            ]);
+
+            $operation->update(['hospitalization_id' => $existing->id]);
+
+            return;
+        }
+
+        abort_if((bool) $bed->is_occupied, 422);
+        $bed->update(['is_occupied' => true]);
+
+        $hospitalization = Hospitalization::create([
+            'reason' => $data['reason'],
+            'remarks' => $data['remarks'],
+            'room_id' => $data['room_id'],
+            'bed_id' => $data['bed_id'],
+            'patient_id' => $operation->patient_id,
+            'appointment_id' => $operation->appointment_id,
+            'branch_id' => $operation->branch_id ?? $user->branch_id,
+            'department_id' => $data['department_id'],
+            'is_discharged' => 0,
+            'food_type_id' => json_encode([]),
+        ]);
+
+        $operation->update(['hospitalization_id' => $hospitalization->id]);
+
+        SendNewHospitalizationNotification::dispatch($hospitalization->created_by, $hospitalization->id);
+    }
+
+    private function releaseHospitalizationBed(?int $bedId): void
+    {
+        if (! $bedId) {
+            return;
+        }
+
+        Bed::query()->whereKey($bedId)->update(['is_occupied' => false]);
     }
 }

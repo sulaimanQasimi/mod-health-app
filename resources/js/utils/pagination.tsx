@@ -24,7 +24,11 @@ export function decodePaginationLabel(label: string): string {
         .trim();
 }
 
-export function renderPaginationLink(link: PaginationLink, index: number) {
+export function renderPaginationLink(
+    link: PaginationLink,
+    index: number,
+    only?: string[],
+) {
     const label = decodePaginationLabel(link.label);
     const isPrevious = label === '«' || label.toLowerCase().includes('previous');
     const isNext = label === '»' || label.toLowerCase().includes('next');
@@ -68,7 +72,9 @@ export function renderPaginationLink(link: PaginationLink, index: number) {
         <li key={`${label}-${index}`}>
             <Link
                 href={link.url}
+                only={only}
                 preserveScroll
+                preserveState={Boolean(only)}
                 className={`${baseClass} ${link.active ? activeClass : inactiveClass} ${roundedClass}`}
             >
                 {isPrevious ? (

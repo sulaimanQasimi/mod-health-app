@@ -76,6 +76,7 @@ export default function IndexAppointment({
         (nextFilters: AppointmentIndexFilters) => {
             setProcessing(true);
             router.get(urls.index, cleanFilters(nextFilters), {
+                only: ['appointments', 'filters', 'permissions', 'urls'],
                 preserveScroll: true,
                 preserveState: true,
                 replace: true,
@@ -164,7 +165,9 @@ export default function IndexAppointment({
             <li key={`${label}-${index}`}>
                 <Link
                     href={link.url}
+                    only={['appointments', 'filters', 'permissions', 'urls']}
                     preserveScroll
+                    preserveState
                     className={`${baseClass} ${link.active ? activeClass : inactiveClass} ${roundedClass}`}
                 >
                     {isPrevious ? (

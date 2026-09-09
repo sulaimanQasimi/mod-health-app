@@ -66,6 +66,7 @@ export default function IndexPatient({
         (nextFilters: PatientIndexFilters) => {
             setProcessing(true);
             router.get(urls.index, cleanFilters(nextFilters), {
+                only: ['patients', 'filters', 'permissions', 'urls'],
                 preserveScroll: true,
                 preserveState: true,
                 replace: true,
@@ -154,7 +155,9 @@ export default function IndexPatient({
             <li key={`${label}-${index}`}>
                 <Link
                     href={link.url}
+                    only={['patients', 'filters', 'permissions', 'urls']}
                     preserveScroll
+                    preserveState
                     className={`${baseClass} ${link.active ? activeClass : inactiveClass} ${roundedClass}`}
                 >
                     {isPrevious ? (

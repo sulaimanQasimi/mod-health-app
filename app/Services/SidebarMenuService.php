@@ -21,6 +21,19 @@ class SidebarMenuService
         ];
 
         if ($user->can('show-information-menu')) {
+            $receptionChildren = array_values(array_filter([
+                $this->item('scan-code', 'global.scan_qrcode', null, 'scan-code'),
+                $user->can('create', \App\Models\Patient::class)
+                    ? $this->item('patients-create', 'global.create_patient', null, 'patients.create')
+                    : null,
+                $this->item('patients-index', 'global.patients_list', null, 'patients.index'),
+                $user->can('viewReceptionList', \App\Models\Appointment::class)
+                    ? $this->item('appointments-index', 'global.all_appointments', null, 'appointments.index')
+                    : null,
+                $this->item('patients-report', 'global.reports', null, 'patients.report'),
+                $this->item('doctor-performance-report', 'global.user_performance_report', null, 'doctor-performance-report'),
+            ]));
+
             $items[] = $this->group('reception', 'global.reception', 'bx-info-circle', [
                 'scan-code',
                 'patients.*',
@@ -28,14 +41,7 @@ class SidebarMenuService
                 'appointments.department-report',
                 'patients.report',
                 'doctor-performance-report',
-            ], [
-                $this->item('scan-code', 'global.scan_qrcode', null, 'scan-code'),
-                $this->item('patients-create', 'global.create_patient', null, 'patients.create'),
-                $this->item('patients-index', 'global.patients_list', null, 'patients.index'),
-                $this->item('appointments-index', 'global.all_appointments', null, 'appointments.index'),
-                $this->item('patients-report', 'global.reports', null, 'patients.report'),
-                $this->item('doctor-performance-report', 'global.user_performance_report', null, 'doctor-performance-report'),
-            ]);
+            ], $receptionChildren);
         }
 
         if ($user->can('show-my-visits-menu')) {

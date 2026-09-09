@@ -43,6 +43,8 @@ const EMPTY_FILTERS: MyVisitFilterValues = {
     patient_id: '',
 };
 
+const DEPARTMENT_ONLY = ['appointments', 'filters', 'filterOptions', 'permissions', 'urls'] as const;
+
 function cleanFilters(filters: MyVisitFilterValues): Record<string, string> {
     return Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== ''));
 }
@@ -56,6 +58,7 @@ export default function Department({
     const { t } = useTranslation();
     const [filters, setFilters] = useState<MyVisitFilterValues>(serverFilters);
     const [processing, setProcessing] = useState(false);
+    const [acceptingId, setAcceptingId] = useState<number | null>(null);
     const [changeDepartmentTarget, setChangeDepartmentTarget] = useState<{
         id: number;
         departmentId: number | null;
@@ -69,6 +72,7 @@ export default function Department({
         (nextFilters: MyVisitFilterValues) => {
             setProcessing(true);
             router.get(urls.department, cleanFilters(nextFilters), {
+                only: [...DEPARTMENT_ONLY],
                 preserveScroll: true,
                 preserveState: true,
                 replace: true,
@@ -97,11 +101,15 @@ export default function Department({
             return;
         }
 
+        setAcceptingId(appointmentId);
         router.post(
             `${urls.accept}/${appointmentId}/accept`,
             {},
             {
+                only: [...DEPARTMENT_ONLY],
                 preserveScroll: true,
+                preserveState: true,
+                onFinish: () => setAcceptingId(null),
             },
         );
     };
@@ -128,6 +136,14 @@ export default function Department({
                         showSearch
                     />
 
+                    <div
+                        className={
+                            processing || acceptingId !== null
+                                ? 'pointer-events-none opacity-60 transition-opacity'
+                                : 'transition-opacity'
+                        }
+                        aria-busy={processing || acceptingId !== null}
+                    >
                     <Table id="department-appointments-table">
                         <TableHead>
                             <TableRow variant="header">
@@ -187,6 +203,7 @@ export default function Department({
                                                         icon="bx-check"
                                                         label={t('global.accept')}
                                                         variant="accept"
+                                                        disabled={acceptingId === appointment.id}
                                                         onClick={() => handleAccept(appointment.id)}
                                                     />
                                                 )}
@@ -237,7 +254,9 @@ export default function Department({
                         links={appointments.links}
                         meta={appointments.meta}
                         t={t}
+                        only={[...DEPARTMENT_ONLY]}
                     />
+                    </div>
                 </Card>
             </div>
 
@@ -247,6 +266,7 @@ export default function Department({
                 currentDepartmentId={changeDepartmentTarget?.departmentId ?? null}
                 departments={filterOptions.departments}
                 changeDepartmentUrl={urls.changeDepartment}
+                only={[...DEPARTMENT_ONLY]}
                 onClose={() => setChangeDepartmentTarget(null)}
             />
         </DashboardLayout>

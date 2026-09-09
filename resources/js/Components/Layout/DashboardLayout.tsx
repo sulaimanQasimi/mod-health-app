@@ -1,5 +1,6 @@
 import { usePage } from '@inertiajs/react';
 import { ReactNode, useEffect, useState } from 'react';
+import { useDisableBrowserBack } from '../../hooks/useDisableBrowserBack';
 import { SharedPageProps } from '../../types';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -24,6 +25,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         }
     });
     const isRtl = direction === 'rtl';
+
+    useDisableBrowserBack(true);
 
     useEffect(() => {
         document.documentElement.setAttribute('dir', direction);

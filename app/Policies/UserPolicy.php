@@ -38,4 +38,9 @@ class UserPolicy
         return $user->hasRole(['super_admin', 'admin'])
             || $user->hasPermissionTo('deactivate-users');
     }
+
+    public function resetPassword(User $user, User $model): bool
+    {
+        return $this->update($user, $model);
+    }
 }

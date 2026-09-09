@@ -39,6 +39,8 @@ const EMPTY_FILTERS: MyVisitFilterValues = {
     patient_name: '',
 };
 
+const LIST_ONLY = ['appointments', 'filters', 'permissions', 'urls'] as const;
+
 function cleanFilters(filters: MyVisitFilterValues): Record<string, string> {
     return Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== ''));
 }
@@ -60,6 +62,7 @@ export default function Completed({
         (nextFilters: MyVisitFilterValues) => {
             setProcessing(true);
             router.get(urls.completed, cleanFilters(nextFilters), {
+                only: [...LIST_ONLY],
                 preserveScroll: true,
                 preserveState: true,
                 replace: true,
@@ -105,6 +108,10 @@ export default function Completed({
                         showPatientName
                     />
 
+                    <div
+                        className={processing ? 'pointer-events-none opacity-60 transition-opacity' : 'transition-opacity'}
+                        aria-busy={processing}
+                    >
                     <Table id="completed-appointments-table">
                         <TableHead>
                             <TableRow variant="header">
@@ -131,7 +138,7 @@ export default function Completed({
                                             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
                                                 <i className="bx bx-calendar-x text-xl text-gray-400" />
                                             </div>
-                                            {t('global.no_data_found')}
+                                            {t('global.no_appointments_found')}
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -179,7 +186,9 @@ export default function Completed({
                         links={appointments.links}
                         meta={appointments.meta}
                         t={t}
+                        only={[...LIST_ONLY]}
                     />
+                    </div>
                 </Card>
             </div>
         </DashboardLayout>

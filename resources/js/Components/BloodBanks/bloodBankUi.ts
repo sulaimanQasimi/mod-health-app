@@ -86,7 +86,10 @@ export function bloodUnitStatusBadgeColor(
 export const BLOOD_MOVEMENT_TYPES = ['received', 'issued', 'adjusted', 'discarded', 'transferred'] as const;
 
 export const BLOOD_BANK_PRIMARY_BTN_CLASS =
-    'inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500/40 disabled:cursor-not-allowed disabled:opacity-60';
+    'inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-rose-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-rose-600 dark:hover:bg-rose-500 dark:focus:ring-rose-800';
+
+export const BLOOD_BANK_SECONDARY_BTN_CLASS =
+    'inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-700';
 
 export const BLOOD_UNIT_TEST_RESULT_OPTIONS = ['pending', 'negative', 'positive', 'inconclusive'] as const;
 

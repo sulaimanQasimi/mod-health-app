@@ -1,10 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, Label, Textarea, TextInput } from 'flowbite-react';
+import { Button, Label, Textarea } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import IcuPanel from '../../../Components/Icus/IcuPanel';
 import DashboardLayout from '../../../Components/Layout/DashboardLayout';
 import { prostheticReferralStatusLabel } from '../../../Components/ProstheticsReferrals/prostheticsReferralUi';
 import SettingsPageHeader from '../../../Components/Settings/SettingsPageHeader';
+import PersianDateInput from '../../../Components/ui/PersianDateInput';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SETTINGS_WIDE_FORM_WIDTH } from '../../../utils/settingsUi';
 
@@ -75,12 +76,11 @@ export default function ProstheticsReferralsEdit({ referral, statusOptions, urls
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="referral_date" value={`${t('global.date')} *`} />
-                                <TextInput
+                                <PersianDateInput
                                     id="referral_date"
-                                    type="date"
                                     required
                                     value={form.referral_date}
-                                    onChange={(e) => setForm((prev) => ({ ...prev, referral_date: e.target.value }))}
+                                    onChange={(referral_date) => setForm((prev) => ({ ...prev, referral_date }))}
                                 />
                             </div>
                             <div>

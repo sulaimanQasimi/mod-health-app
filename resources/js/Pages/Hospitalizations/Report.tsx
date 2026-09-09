@@ -9,6 +9,7 @@ import {
     ReportPageShell,
     ReportResultsCard,
 } from '../../Components/Reports';
+import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import {
     Table,
@@ -26,7 +27,7 @@ import {
     HospitalizationReportFilters,
     HospitalizationReportItem,
 } from '../../types/hospitalization';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import { settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface ReportProps {
     items: HospitalizationReportItem[];
@@ -82,7 +83,17 @@ export default function HospitalizationsReport({ items, hasSearch, summary, anal
                 <ReportFilterPanel
                     title={t('global.search')}
                     onSubmit={handleSubmit}
-                    actions={<Button type="submit" color="success" size="sm" disabled={processing}><i className="bx bx-search me-2" />{t('global.search')}</Button>}
+                    actions={
+                        <Button
+                            type="submit"
+                            size="sm"
+                            disabled={processing}
+                            className={settingsHeaderButtonClass.success}
+                        >
+                            <i className="bx bx-search me-2" />
+                            {t('global.search')}
+                        </Button>
+                    }
                 >
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         <div>
@@ -142,24 +153,20 @@ export default function HospitalizationsReport({ items, hasSearch, summary, anal
                         </div>
                         <div>
                             <Label htmlFor="date_from">{t('global.date_from')}</Label>
-                            <TextInput
+                            <PersianDateInput
                                 id="date_from"
-                                sizing="sm"
-                                dir="ltr"
-                                placeholder="1403/01/01"
                                 value={form.date_from}
-                                onChange={(e) => setForm((prev) => ({ ...prev, date_from: e.target.value }))}
+                                onChange={(date_from) => setForm((prev) => ({ ...prev, date_from }))}
+                                placeholder={t('global.date_from')}
                             />
                         </div>
                         <div>
                             <Label htmlFor="date_to">{t('global.date_to')}</Label>
-                            <TextInput
+                            <PersianDateInput
                                 id="date_to"
-                                sizing="sm"
-                                dir="ltr"
-                                placeholder="1403/01/01"
                                 value={form.date_to}
-                                onChange={(e) => setForm((prev) => ({ ...prev, date_to: e.target.value }))}
+                                onChange={(date_to) => setForm((prev) => ({ ...prev, date_to }))}
+                                placeholder={t('global.date_to')}
                             />
                         </div>
                     </div>

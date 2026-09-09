@@ -1,5 +1,6 @@
 import { Button, Label, TextInput } from 'flowbite-react';
 import { FormEvent } from 'react';
+import PersianDateInput from '../ui/PersianDateInput';
 import { useTranslation } from '../../hooks/useTranslation';
 import { prostheticReferralStatusLabel } from './prostheticsReferralUi';
 
@@ -56,6 +57,23 @@ export default function ProstheticReferralFilters({
         onChange({ ...filters, [key]: value });
     };
 
+    const textFields: Array<{
+        key: Exclude<keyof ProstheticReferralFilters, 'status' | 'from' | 'to'>;
+        label: string;
+        placeholder: string;
+        type?: string;
+    }> = [
+        { key: 'q', label: t('global.search'), placeholder: t('global.search') },
+        { key: 'referral_number', label: t('global.prosthetics_referral_number'), placeholder: t('global.prosthetics_referral_number') },
+        { key: 'patient_name', label: t('global.patient_name'), placeholder: t('global.search_by_patient_name') },
+        { key: 'patient_id', label: t('global.id'), type: 'number', placeholder: t('global.search_by_patient_id') },
+        { key: 'phone', label: t('global.phone'), placeholder: t('global.phone') },
+        { key: 'nid', label: t('global.nid'), placeholder: t('global.nid') },
+        { key: 'id_card', label: t('global.id_card'), placeholder: t('global.search_by_card_number') },
+        { key: 'urgency', label: t('global.urgency'), placeholder: t('global.urgency') },
+        { key: 'requested_service_type', label: t('global.prosthetics_requested_service_type'), placeholder: t('global.prosthetics_service_type') },
+    ];
+
     return (
         <form
             className="grid gap-3 md:grid-cols-4"
@@ -64,19 +82,7 @@ export default function ProstheticReferralFilters({
                 onApply(filters);
             }}
         >
-            {[
-                { key: 'q' as const, label: t('global.search'), placeholder: t('global.search') },
-                { key: 'referral_number' as const, label: t('global.prosthetics_referral_number'), placeholder: t('global.prosthetics_referral_number') },
-                { key: 'patient_name' as const, label: t('global.patient_name'), placeholder: t('global.search_by_patient_name') },
-                { key: 'patient_id' as const, label: t('global.id'), type: 'number', placeholder: t('global.search_by_patient_id') },
-                { key: 'phone' as const, label: t('global.phone'), placeholder: t('global.phone') },
-                { key: 'nid' as const, label: t('global.nid'), placeholder: t('global.nid') },
-                { key: 'id_card' as const, label: t('global.id_card'), placeholder: t('global.search_by_card_number') },
-                { key: 'urgency' as const, label: t('global.urgency'), placeholder: t('global.urgency') },
-                { key: 'requested_service_type' as const, label: t('global.prosthetics_requested_service_type'), placeholder: t('global.prosthetics_service_type') },
-                { key: 'from' as const, label: t('global.from'), type: 'date', placeholder: t('global.from') },
-                { key: 'to' as const, label: t('global.to'), type: 'date', placeholder: t('global.to') },
-            ].map((field) => (
+            {textFields.map((field) => (
                 <div key={field.key}>
                     <Label htmlFor={field.key} value={field.label} className="mb-1 text-xs" />
                     <TextInput
@@ -90,10 +96,30 @@ export default function ProstheticReferralFilters({
                 </div>
             ))}
             <div>
+                <Label htmlFor="from" value={t('global.from')} className="mb-1 text-xs" />
+                <PersianDateInput
+                    id="from"
+                    value={filters.from}
+                    onChange={(value) => setField('from', value)}
+                    placeholder={t('global.from')}
+                    className="p-2 text-sm"
+                />
+            </div>
+            <div>
+                <Label htmlFor="to" value={t('global.to')} className="mb-1 text-xs" />
+                <PersianDateInput
+                    id="to"
+                    value={filters.to}
+                    onChange={(value) => setField('to', value)}
+                    placeholder={t('global.to')}
+                    className="p-2 text-sm"
+                />
+            </div>
+            <div>
                 <Label htmlFor="status" value={t('global.status')} className="mb-1 text-xs" />
                 <select
                     id="status"
-                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     value={filters.status}
                     onChange={(e) => setField('status', e.target.value)}
                 >

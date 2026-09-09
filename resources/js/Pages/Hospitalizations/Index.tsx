@@ -8,7 +8,7 @@ import HospitalizationFilters, {
 import HospitalizationPanel from '../../Components/Hospitalizations/HospitalizationPanel';
 import HospitalizationStatsCards from '../../Components/Hospitalizations/HospitalizationStatsCards';
 import HospitalizationTable from '../../Components/Hospitalizations/HospitalizationTable';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
@@ -18,7 +18,7 @@ import {
     PaginatedHospitalizations,
 } from '../../types/hospitalization';
 import { buildPaginationSummary } from '../../utils/pagination';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH, settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface IndexProps {
     hospitalizations: PaginatedHospitalizations;
@@ -75,22 +75,37 @@ export default function HospitalizationsIndex({
                     accent="from-emerald-600 to-teal-700"
                     backLabel={t('global.back')}
                     action={
-                        <div className="flex flex-wrap gap-2">
+                        <SettingsPageActions>
                             {urls.room_management && (
-                                <Button as={Link} href={urls.room_management} color="light" size="sm">
+                                <Button
+                                    as={Link}
+                                    href={urls.room_management}
+                                    size="sm"
+                                    className={settingsHeaderButtonClass.secondary}
+                                >
                                     <i className="bx bx-building-house me-2" />
                                     {t('global.room_management')}
                                 </Button>
                             )}
-                            <Button as={Link} href={urls.report} color="light" size="sm">
+                            <Button
+                                as={Link}
+                                href={urls.report}
+                                size="sm"
+                                className={settingsHeaderButtonClass.secondary}
+                            >
                                 <i className="bx bx-bar-chart-alt-2 me-2" />
                                 {t('global.reports')}
                             </Button>
-                            <Button as={Link} href={urls.discharged} color="light" size="sm">
+                            <Button
+                                as={Link}
+                                href={urls.discharged}
+                                size="sm"
+                                className={settingsHeaderButtonClass.secondary}
+                            >
                                 <i className="bx bx-exit me-2" />
                                 {t('global.discharged_hospitalizations')}
                             </Button>
-                        </div>
+                        </SettingsPageActions>
                     }
                 />
 

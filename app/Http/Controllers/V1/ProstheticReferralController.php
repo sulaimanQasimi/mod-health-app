@@ -69,11 +69,11 @@ class ProstheticReferralController extends Controller
         }
 
         if ($request->filled('from')) {
-            $query->whereDate('referral_date', '>=', $request->from);
+            $query->whereDate('referral_date', '>=', $this->parseReferralDate($request->from));
         }
 
         if ($request->filled('to')) {
-            $query->whereDate('referral_date', '<=', $request->to);
+            $query->whereDate('referral_date', '<=', $this->parseReferralDate($request->to));
         }
 
         $paginator = $this->paginateQuery($query, $request, 25, [10, 15, 25, 50]);
@@ -176,7 +176,9 @@ class ProstheticReferralController extends Controller
             'referral' => [
                 'id' => $referral->id,
                 'referral_number' => $referral->referral_number,
-                'referral_date' => $referral->referral_date?->format('Y-m-d'),
+                'referral_date' => $referral->referral_date
+                    ? verta($referral->referral_date)->format('Y/m/d')
+                    : null,
                 'status' => $referral->status,
                 'reason' => $referral->reason,
                 'diagnosis_summary' => $referral->diagnosis_summary,
@@ -194,12 +196,14 @@ class ProstheticReferralController extends Controller
         $this->authorizeReferral($referral);
 
         $data = $request->validate([
-            'referral_date' => 'required|date',
+            'referral_date' => 'required|string',
             'reason' => 'nullable|string',
             'diagnosis_summary' => 'nullable|string',
             'notes' => 'nullable|string',
             'status' => 'nullable|string|max:64',
         ]);
+
+        $data['referral_date'] = $this->parseReferralDate($data['referral_date']);
 
         $referral->fill($data);
         $referral->updated_by = Auth::id();
@@ -290,7 +294,9 @@ class ProstheticReferralController extends Controller
             'id' => $referral->id,
             'referral_number' => $referral->referral_number,
             'status' => $referral->status,
-            'referral_date' => $referral->referral_date?->format('Y-m-d'),
+            'referral_date' => $referral->referral_date
+                ? verta($referral->referral_date)->format('Y/m/d')
+                : null,
             'urgency' => $referral->urgency,
             'requested_service_type' => $referral->requested_service_type,
             'patient_name' => $referral->patient
@@ -314,7 +320,9 @@ class ProstheticReferralController extends Controller
             'id' => $referral->id,
             'referral_number' => $referral->referral_number,
             'status' => $referral->status,
-            'referral_date' => $referral->referral_date?->format('Y-m-d'),
+            'referral_date' => $referral->referral_date
+                ? verta($referral->referral_date)->format('Y/m/d')
+                : null,
             'referring_facility' => $referral->referring_facility,
             'referring_doctor' => $referral->referring_doctor,
             'reason' => $referral->reason,

@@ -11,6 +11,7 @@ import {
     ReportResultsCard,
 } from '../../Components/Reports';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
+import PersianDateInput from '../../Components/ui/PersianDateInput';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
@@ -209,18 +210,20 @@ export default function ReportOutcomes({
                             </div>
                         )}
                         <div>
-                            <Label>{t('global.date_from')}</Label>
-                            <TextInput
+                            <Label htmlFor="filter-date-from">{t('global.date_from')}</Label>
+                            <PersianDateInput
+                                id="filter-date-from"
                                 value={filters.date_from}
-                                onChange={(event) => setFilters({ ...filters, date_from: event.target.value })}
+                                onChange={(value) => setFilters((current) => ({ ...current, date_from: value }))}
                                 placeholder={t('global.date_from')}
                             />
                         </div>
                         <div>
-                            <Label>{t('global.date_to')}</Label>
-                            <TextInput
+                            <Label htmlFor="filter-date-to">{t('global.date_to')}</Label>
+                            <PersianDateInput
+                                id="filter-date-to"
                                 value={filters.date_to}
-                                onChange={(event) => setFilters({ ...filters, date_to: event.target.value })}
+                                onChange={(value) => setFilters((current) => ({ ...current, date_to: value }))}
                                 placeholder={t('global.date_to')}
                             />
                         </div>

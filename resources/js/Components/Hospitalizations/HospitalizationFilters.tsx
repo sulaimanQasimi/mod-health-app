@@ -4,6 +4,7 @@ import SearchableSelect from '../ui/SearchableSelect';
 import PersianDateInput from '../ui/PersianDateInput';
 import { useTranslation } from '../../hooks/useTranslation';
 import { HospitalizationActiveFilters, HospitalizationOption } from '../../types/hospitalization';
+import { settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 export const EMPTY_HOSPITALIZATION_FILTERS: HospitalizationActiveFilters = {
     q: '',
@@ -91,10 +92,16 @@ export default function HospitalizationFilters({
                 </div>
             </div>
             <div className="flex flex-wrap gap-2">
-                <Button type="submit" color="light" size="sm" disabled={processing}>
+                <Button type="submit" size="sm" disabled={processing} className={settingsHeaderButtonClass.success}>
                     {t('global.search')}
                 </Button>
-                <Button type="button" color="light" size="sm" disabled={processing} onClick={onReset}>
+                <Button
+                    type="button"
+                    size="sm"
+                    disabled={processing}
+                    onClick={onReset}
+                    className={settingsHeaderButtonClass.secondary}
+                >
                     {t('global.reset')}
                 </Button>
             </div>

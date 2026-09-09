@@ -8,7 +8,7 @@ import HospitalizationDischargedFilters, {
 import HospitalizationDischargedStats from '../../Components/Hospitalizations/HospitalizationDischargedStats';
 import HospitalizationPanel from '../../Components/Hospitalizations/HospitalizationPanel';
 import HospitalizationTable from '../../Components/Hospitalizations/HospitalizationTable';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPageHeader, { SettingsPageActions } from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
@@ -18,7 +18,7 @@ import {
     PaginatedHospitalizations,
 } from '../../types/hospitalization';
 import { buildPaginationSummary } from '../../utils/pagination';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
+import { SETTINGS_INDEX_WIDTH, settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 interface DischargedProps {
     hospitalizations: PaginatedHospitalizations;
@@ -71,10 +71,17 @@ export default function HospitalizationsDischarged({
                     backHref={urls.index}
                     backLabel={t('global.back')}
                     action={
-                        <Button as={Link} href={urls.index} color="success" size="sm">
-                            <i className="bx bx-bed me-2" />
-                            {t('global.hospitalized_patients')}
-                        </Button>
+                        <SettingsPageActions>
+                            <Button
+                                as={Link}
+                                href={urls.index}
+                                size="sm"
+                                className={settingsHeaderButtonClass.success}
+                            >
+                                <i className="bx bx-bed me-2" />
+                                {t('global.hospitalized_patients')}
+                            </Button>
+                        </SettingsPageActions>
                     }
                 />
 

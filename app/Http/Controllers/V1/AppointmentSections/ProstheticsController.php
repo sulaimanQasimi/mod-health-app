@@ -37,7 +37,9 @@ class ProstheticsController extends Controller
                 'record_type' => 'referral',
                 'number' => $referral->referral_number,
                 'status' => $referral->status,
-                'date' => $referral->referral_date?->format('Y-m-d'),
+                'date' => $referral->referral_date
+                    ? verta($referral->referral_date)->format('Y/m/d')
+                    : null,
                 'urls' => [
                     'show' => route('prosthetics.referrals.show', $referral),
                 ],
@@ -93,7 +95,9 @@ class ProstheticsController extends Controller
                 'record_type' => 'referral',
                 'number' => $referral->referral_number,
                 'status' => $referral->status,
-                'referral_date' => $referral->referral_date?->format('Y-m-d'),
+                'referral_date' => $referral->referral_date
+                    ? verta($referral->referral_date)->format('Y/m/d')
+                    : null,
                 'reason' => $referral->reason,
                 'diagnosis_summary' => $referral->diagnosis_summary,
                 'notes' => $referral->notes,

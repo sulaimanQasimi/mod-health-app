@@ -1,8 +1,8 @@
 import { router, usePage } from '@inertiajs/react';
-import { Badge, Button, Label, Spinner, TextInput } from 'flowbite-react';
+import { Badge, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
-import { BLOOD_BANK_PANEL_ICON_CLASS, bloodGroupLabel, bloodRhLabel, bloodStatusBadgeColor } from '../../Components/BloodBanks/bloodBankUi';
+import { BLOOD_BANK_PANEL_ICON_CLASS, BLOOD_BANK_PRIMARY_BTN_CLASS, BLOOD_BANK_SECONDARY_BTN_CLASS, bloodGroupLabel, bloodRhLabel, bloodStatusBadgeColor } from '../../Components/BloodBanks/bloodBankUi';
 import {
     ReportAnalyticsSection,
     ReportExportButtons,
@@ -119,11 +119,13 @@ export default function BloodBanksReport({ items, summary, hasSearch, filters, f
                     onSubmit={handleSubmit}
                     accentIconClass={BLOOD_BANK_PANEL_ICON_CLASS}
                     actions={<>
-                        <Button type="submit" color="failure" disabled={processing}>
+                        <button type="submit" className={BLOOD_BANK_PRIMARY_BTN_CLASS} disabled={processing}>
                             {processing ? <Spinner size="sm" className="me-2" /> : <i className="bx bx-search me-2" />}
                             {t('global.search')}
-                        </Button>
-                        <Button type="button" color="light" onClick={handleReset} disabled={processing}>{t('global.reset')}</Button>
+                        </button>
+                        <button type="button" className={BLOOD_BANK_SECONDARY_BTN_CLASS} onClick={handleReset} disabled={processing}>
+                            {t('global.reset')}
+                        </button>
                     </>}
                 >
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

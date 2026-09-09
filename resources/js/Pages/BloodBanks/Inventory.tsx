@@ -1,9 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Label, Spinner, TextInput } from 'flowbite-react';
+import { Badge, Label, Spinner, TextInput } from 'flowbite-react';
 import { useCallback, useEffect, useState } from 'react';
 import BloodBankNavTabs from '../../Components/BloodBanks/BloodBankNavTabs';
 import {
     BLOOD_BANK_PANEL_ICON_CLASS,
+    BLOOD_BANK_PRIMARY_BTN_CLASS,
+    BLOOD_BANK_SECONDARY_BTN_CLASS,
     bloodGroupLabel,
     bloodRhLabel,
     bloodUnitStatusBadgeColor,
@@ -220,12 +222,18 @@ export default function BloodBanksInventory({
                         </div>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
-                        <Button color="failure" onClick={() => applyFilters(filters)} disabled={processing}>
+                        <button
+                            type="button"
+                            className={BLOOD_BANK_PRIMARY_BTN_CLASS}
+                            onClick={() => applyFilters(filters)}
+                            disabled={processing}
+                        >
                             {processing ? <Spinner size="sm" className="me-2" /> : <i className="bx bx-search me-2" />}
                             {t('global.search')}
-                        </Button>
-                        <Button
-                            color="light"
+                        </button>
+                        <button
+                            type="button"
+                            className={BLOOD_BANK_SECONDARY_BTN_CLASS}
                             onClick={() => {
                                 setFilters(EMPTY_FILTERS);
                                 applyFilters(EMPTY_FILTERS);
@@ -233,7 +241,7 @@ export default function BloodBanksInventory({
                             disabled={processing}
                         >
                             {t('global.reset')}
-                        </Button>
+                        </button>
                     </div>
                 </IcuPanel>
 

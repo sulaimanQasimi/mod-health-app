@@ -6,6 +6,7 @@ import SettingsFilterActions from '../../Components/Settings/SettingsFilterActio
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import PersianDateInput from '../../Components/ui/PersianDateInput';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -262,6 +263,24 @@ export default function IndexPrescriptions({
                                     label: doctor.name,
                                 }))}
                                 placeholder={t('global.all')}
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="filter-date-from">{t('global.date_from')}</Label>
+                            <PersianDateInput
+                                id="filter-date-from"
+                                value={filters.date_from}
+                                onChange={(value) => setFilters((current) => ({ ...current, date_from: value }))}
+                                placeholder={t('global.date_from')}
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="filter-date-to">{t('global.date_to')}</Label>
+                            <PersianDateInput
+                                id="filter-date-to"
+                                value={filters.date_to}
+                                onChange={(value) => setFilters((current) => ({ ...current, date_to: value }))}
+                                placeholder={t('global.date_to')}
                             />
                         </div>
                         {!isDelivered && (

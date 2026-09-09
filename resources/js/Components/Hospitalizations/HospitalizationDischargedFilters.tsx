@@ -1,11 +1,13 @@
 import { Button, Label, TextInput } from 'flowbite-react';
 import { FormEvent } from 'react';
 import SearchableSelect from '../ui/SearchableSelect';
+import PersianDateInput from '../ui/PersianDateInput';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
     HospitalizationDischargedFilters as Filters,
     HospitalizationOption,
 } from '../../types/hospitalization';
+import { settingsHeaderButtonClass } from '../../utils/settingsUi';
 
 export const EMPTY_DISCHARGED_FILTERS: Filters = {
     q: '',
@@ -44,7 +46,10 @@ export default function HospitalizationDischargedFilters({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:items-end [&_label]:text-xs [&_label]:font-semibold [&_label]:uppercase [&_label]:tracking-wide [&_label]:text-gray-500">
+        <form
+            onSubmit={handleSubmit}
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:items-end [&_label]:text-xs [&_label]:font-semibold [&_label]:uppercase [&_label]:tracking-wide [&_label]:text-gray-500 dark:[&_label]:text-gray-400"
+        >
             <div>
                 <Label htmlFor="discharged-q">{t('global.patient_name')}</Label>
                 <TextInput
@@ -108,31 +113,35 @@ export default function HospitalizationDischargedFilters({
             </div>
             <div>
                 <Label htmlFor="discharged-from">{t('global.discharge_date')}</Label>
-                <TextInput
+                <PersianDateInput
                     id="discharged-from"
-                    sizing="sm"
-                    placeholder="1403/01/01"
-                    dir="ltr"
                     value={filters.discharge_date_from}
-                    onChange={(e) => onChange({ ...filters, discharge_date_from: e.target.value })}
+                    onChange={(discharge_date_from) => onChange({ ...filters, discharge_date_from })}
+                    placeholder={t('global.date_from')}
+                    className="p-2 text-sm"
                 />
             </div>
             <div>
                 <Label htmlFor="discharged-to">{t('global.date_to')}</Label>
-                <TextInput
+                <PersianDateInput
                     id="discharged-to"
-                    sizing="sm"
-                    placeholder="1403/01/01"
-                    dir="ltr"
                     value={filters.discharge_date_to}
-                    onChange={(e) => onChange({ ...filters, discharge_date_to: e.target.value })}
+                    onChange={(discharge_date_to) => onChange({ ...filters, discharge_date_to })}
+                    placeholder={t('global.date_to')}
+                    className="p-2 text-sm"
                 />
             </div>
             <div className="flex flex-wrap gap-2 xl:col-span-6 xl:justify-end">
-                <Button type="submit" color="success" size="sm" disabled={processing}>
+                <Button type="submit" size="sm" disabled={processing} className={settingsHeaderButtonClass.success}>
                     {t('global.search')}
                 </Button>
-                <Button type="button" color="light" size="sm" disabled={processing} onClick={onReset}>
+                <Button
+                    type="button"
+                    size="sm"
+                    disabled={processing}
+                    onClick={onReset}
+                    className={settingsHeaderButtonClass.secondary}
+                >
                     {t('global.reset')}
                 </Button>
             </div>

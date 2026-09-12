@@ -6,6 +6,16 @@ body {
     scroll-behavior: auto;
 }
 
+/* Flowbite Select: keep chevron at the inline-end so it does not overlap text (LTR + RTL). */
+select.appearance-none.bg-arrow-down-icon {
+    padding-inline-end: 2.5rem;
+    background-position: right 0.75rem center;
+}
+
+[dir='rtl'] select.appearance-none.bg-arrow-down-icon {
+    background-position: left 0.75rem center;
+}
+
 .laboratory-ck-editor .ck-editor__editable:not(.ck-editor__nested-editable) {
     min-height: 280px;
 }

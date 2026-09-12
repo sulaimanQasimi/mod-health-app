@@ -32,7 +32,7 @@ interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
 export function Table({ className = '', embedded = false, children, ...props }: TableProps) {
     const table = (
         <table
-            className={mergeClasses('w-full min-w-[960px] border-collapse text-sm', className)}
+            className={mergeClasses('w-full min-w-[960px] border-collapse text-base', className)}
             {...props}
         >
             {children}
@@ -58,7 +58,7 @@ export function TableCaption({
     return (
         <caption
             className={mergeClasses(
-                'border-b border-gray-100 px-4 py-3 text-start text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400',
+                'border-b border-gray-100 px-4 py-3 text-start text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400',
                 className,
             )}
             {...props}
@@ -144,7 +144,7 @@ export function TableHeader({
         <th
             scope="col"
             className={mergeClasses(
-                'whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400',
+                'whitespace-nowrap px-4 py-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400',
                 alignClasses[align],
                 sortable && 'select-none',
                 className,
@@ -247,10 +247,10 @@ export function TableEmpty({
                         <i className={`bx ${icon} text-xl`} />
                     </div>
                     {title && (
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{title}</p>
+                        <p className="text-base font-medium text-gray-700 dark:text-gray-300">{title}</p>
                     )}
                     {description && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+                        <p className="text-base text-gray-500 dark:text-gray-400">{description}</p>
                     )}
                 </div>
             </TableCell>

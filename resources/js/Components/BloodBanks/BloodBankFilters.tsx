@@ -1,8 +1,9 @@
-import { Button, Label } from 'flowbite-react';
+import { Label } from 'flowbite-react';
 import PersianDateInput from '../ui/PersianDateInput';
 import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
 import { BloodRequestFilterOptions, BloodRequestListFilters } from '../../types/bloodBank';
+import { BLOOD_BANK_PRIMARY_BTN_CLASS, BLOOD_BANK_SECONDARY_BTN_CLASS } from './bloodBankUi';
 
 export const EMPTY_BLOOD_REQUEST_FILTERS: BloodRequestListFilters = {
     q: '',
@@ -116,14 +117,14 @@ export default function BloodBankFilters({
                 <PersianDateInput value={filters.to} onChange={(date) => onChange({ ...filters, to: date })} />
             </div>
             <div className="flex items-end gap-2 xl:col-span-4">
-                <Button type="submit" color="failure" disabled={processing}>
-                    <i className="bx bx-search me-2" />
+                <button type="submit" className={BLOOD_BANK_PRIMARY_BTN_CLASS} disabled={processing}>
+                    <i className="bx bx-search text-lg" />
                     {t('global.filter')}
-                </Button>
-                <Button type="button" color="light" onClick={onReset} disabled={processing}>
-                    <i className="bx bx-reset me-2" />
+                </button>
+                <button type="button" className={BLOOD_BANK_SECONDARY_BTN_CLASS} onClick={onReset} disabled={processing}>
+                    <i className="bx bx-reset text-lg" />
                     {t('global.reset')}
-                </Button>
+                </button>
             </div>
         </form>
     );

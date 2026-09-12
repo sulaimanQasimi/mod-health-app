@@ -84,7 +84,7 @@ export default function ProstheticReferralFilters({
         >
             {textFields.map((field) => (
                 <div key={field.key}>
-                    <Label htmlFor={field.key} value={field.label} className="mb-1 text-xs" />
+                    <Label htmlFor={field.key} value={field.label} className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300" />
                     <TextInput
                         id={field.key}
                         type={field.type ?? 'text'}
@@ -96,7 +96,7 @@ export default function ProstheticReferralFilters({
                 </div>
             ))}
             <div>
-                <Label htmlFor="from" value={t('global.from')} className="mb-1 text-xs" />
+                <Label htmlFor="from" value={t('global.from')} className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300" />
                 <PersianDateInput
                     id="from"
                     value={filters.from}
@@ -106,7 +106,7 @@ export default function ProstheticReferralFilters({
                 />
             </div>
             <div>
-                <Label htmlFor="to" value={t('global.to')} className="mb-1 text-xs" />
+                <Label htmlFor="to" value={t('global.to')} className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300" />
                 <PersianDateInput
                     id="to"
                     value={filters.to}
@@ -116,7 +116,7 @@ export default function ProstheticReferralFilters({
                 />
             </div>
             <div>
-                <Label htmlFor="status" value={t('global.status')} className="mb-1 text-xs" />
+                <Label htmlFor="status" value={t('global.status')} className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300" />
                 <select
                     id="status"
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"

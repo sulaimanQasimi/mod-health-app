@@ -190,7 +190,10 @@ export default function Department({
                                         <TableCell muted>{appointment.date ?? '—'}</TableCell>
                                         <TableCell muted>{appointment.time ?? '—'}</TableCell>
                                         <TableCell>
-                                            <Badge color={appointment.is_accepted ? 'success' : 'warning'}>
+                                            <Badge
+                                                color={appointment.is_accepted ? 'success' : 'warning'}
+                                                className="whitespace-nowrap"
+                                            >
                                                 {appointment.is_accepted
                                                     ? t('global.accepted')
                                                     : t('global.pending')}

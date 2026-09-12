@@ -153,7 +153,7 @@ export default function ProstheticsReferralsShow({ referral, urls }: ShowProps) 
                                 {t('global.yes')}
                             </Button>
                             <div className="min-w-[220px] flex-1">
-                                <Label htmlFor="reject-notes" className="mb-1 text-xs">
+                                <Label htmlFor="reject-notes" className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                                     {t('global.reject_reason')}
                                 </Label>
                                 <TextInput

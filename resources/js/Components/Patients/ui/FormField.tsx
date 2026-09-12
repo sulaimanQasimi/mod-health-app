@@ -24,7 +24,7 @@ export function FormField({
 }: FormFieldProps) {
     return (
         <div className={`${compact ? 'space-y-1' : 'space-y-1.5'} ${className}`}>
-            <Label className="block text-sm font-large text-gray-700 dark:text-gray-300">
+            <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {label}
                 {required && <span className="ms-0.5 text-red-500">*</span>}
             </Label>

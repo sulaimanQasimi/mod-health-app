@@ -40,7 +40,7 @@ export default function HospitalizationFilters({
     return (
         <form
             onSubmit={handleSubmit}
-            className="space-y-4 [&_label]:text-xs [&_label]:font-semibold [&_label]:uppercase [&_label]:tracking-wide [&_label]:text-gray-500 dark:[&_label]:text-gray-400"
+            className="space-y-4 [&_label]:text-sm [&_label]:font-medium [&_label]:text-gray-700 dark:[&_label]:text-gray-300"
         >
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6 xl:items-end">
                 <div className="min-w-0 md:col-span-2 xl:col-span-2">

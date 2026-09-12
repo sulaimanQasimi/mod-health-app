@@ -143,7 +143,7 @@ export default function AppointmentEditForm({
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-4 dark:border-gray-700/60 dark:bg-gray-800/40">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {t('global.patient_name')}
                     </Label>
                     <p className="mt-1.5 text-sm font-medium text-gray-900 dark:text-white">
@@ -157,7 +157,7 @@ export default function AppointmentEditForm({
                 </div>
 
                 <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-4 dark:border-gray-700/60 dark:bg-gray-800/40">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {t('global.department')}
                     </Label>
                     <p className="mt-1.5 text-sm font-medium text-gray-900 dark:text-white">
@@ -166,7 +166,7 @@ export default function AppointmentEditForm({
                 </div>
 
                 <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-4 dark:border-gray-700/60 dark:bg-gray-800/40">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {t('global.status')}
                     </Label>
                     <p className="mt-1.5 text-sm font-medium text-gray-900 dark:text-white">

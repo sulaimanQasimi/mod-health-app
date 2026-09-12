@@ -68,7 +68,7 @@ export default function ProstheticsCasesIndex({ cases, filters: serverFilters, s
                         }}
                     >
                         <div className="min-w-[220px] flex-1">
-                            <Label htmlFor="q" className="mb-1 text-xs text-gray-700 dark:text-gray-300">
+                            <Label htmlFor="q" className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {t('global.search')}
                             </Label>
                             <TextInput
@@ -79,7 +79,7 @@ export default function ProstheticsCasesIndex({ cases, filters: serverFilters, s
                             />
                         </div>
                         <div className="min-w-[180px]">
-                            <Label htmlFor="status" className="mb-1 text-xs text-gray-700 dark:text-gray-300">
+                            <Label htmlFor="status" className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {t('global.status')}
                             </Label>
                             <select

@@ -165,7 +165,7 @@ export default function ProstheticsStockIndex({
                         }}
                     >
                         <div className="min-w-[240px] flex-1">
-                            <Label htmlFor="q" className="mb-1 text-xs text-gray-700 dark:text-gray-300">
+                            <Label htmlFor="q" className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {t('global.search')}
                             </Label>
                             <TextInput

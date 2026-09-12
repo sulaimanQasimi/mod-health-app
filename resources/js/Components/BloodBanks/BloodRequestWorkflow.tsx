@@ -66,7 +66,7 @@ function WorkflowFormField({
 }) {
     return (
         <div className={`min-w-0 ${className}`}>
-            <Label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <Label className="mb-2 flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
                 {icon && <i className={`bx ${icon} text-base text-rose-500`} />}
                 {label}
             </Label>
@@ -713,7 +713,7 @@ export default function BloodRequestWorkflow({
 
                         <div className="mt-4 grid gap-4 sm:grid-cols-2">
                             <div>
-                                <Label className="mb-2 block text-xs">{t('global.blood_bank_receiver_department')}</Label>
+                                <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('global.blood_bank_receiver_department')}</Label>
                                 <SearchableSelect
                                     value={receiverDepartmentId}
                                     onChange={setReceiverDepartmentId}
@@ -723,7 +723,7 @@ export default function BloodRequestWorkflow({
                                 />
                             </div>
                             <div>
-                                <Label className="mb-2 block text-xs">{t('global.blood_bank_receiver_nurse')}</Label>
+                                <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('global.blood_bank_receiver_nurse')}</Label>
                                 <SearchableSelect
                                     value={receiverNurseId}
                                     onChange={setReceiverNurseId}
@@ -847,7 +847,7 @@ export default function BloodRequestWorkflow({
                         <p className="text-sm text-gray-500">{t('global.blood_check_modal_intro')}</p>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             <div>
-                                <Label className="mb-2 block text-xs">{t('global.blood_group')}</Label>
+                                <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('global.blood_group')}</Label>
                                 <BloodFormSegmented
                                     value={bloodCheckForm.abo_group}
                                     onChange={(v) => setBloodCheckForm((f) => ({ ...f, abo_group: v }))}
@@ -857,7 +857,7 @@ export default function BloodRequestWorkflow({
                                 />
                             </div>
                             <div>
-                                <Label className="mb-2 block text-xs">{t('global.blood_rh')}</Label>
+                                <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('global.blood_rh')}</Label>
                                 <BloodFormSegmented
                                     value={bloodCheckForm.rh}
                                     onChange={(v) => setBloodCheckForm((f) => ({ ...f, rh: v }))}
@@ -870,7 +870,7 @@ export default function BloodRequestWorkflow({
                                 />
                             </div>
                             <div>
-                                <Label className="mb-2 block text-xs">{t('global.blood_type')}</Label>
+                                <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('global.blood_type')}</Label>
                                 <SearchableSelect
                                     value={bloodCheckForm.component_type}
                                     onChange={(v) => setBloodCheckForm((f) => ({ ...f, component_type: v }))}
@@ -879,7 +879,7 @@ export default function BloodRequestWorkflow({
                                 />
                             </div>
                             <div>
-                                <Label className="mb-2 block text-xs">{t('global.quantity')}</Label>
+                                <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('global.quantity')}</Label>
                                 <TextInput
                                     type="number"
                                     min={0}
@@ -894,7 +894,7 @@ export default function BloodRequestWorkflow({
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div>
-                                <Label className="mb-2 block text-xs">
+                                <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     {t('global.patient_typed_group')} ({t('global.optional')})
                                 </Label>
                                 <BloodFormSegmented
@@ -907,7 +907,7 @@ export default function BloodRequestWorkflow({
                                 />
                             </div>
                             <div>
-                                <Label className="mb-2 block text-xs">
+                                <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     {t('global.patient_typed_rh')} ({t('global.optional')})
                                 </Label>
                                 <BloodFormSegmented
@@ -924,7 +924,7 @@ export default function BloodRequestWorkflow({
                             </div>
                         </div>
                         <div>
-                            <Label className="mb-2 block text-xs">{t('global.notes')}</Label>
+                            <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('global.notes')}</Label>
                             <Textarea
                                 rows={2}
                                 value={bloodCheckForm.notes}

@@ -407,7 +407,10 @@ export default function IndexAppointment({
                                         <TableCell muted>{appointment.time ?? '—'}</TableCell>
                                         <TableCell muted>{appointment.phone ?? '—'}</TableCell>
                                         <TableCell>
-                                            <Badge color={appointment.is_completed ? 'success' : 'warning'}>
+                                            <Badge
+                                                color={appointment.is_completed ? 'success' : 'warning'}
+                                                className="whitespace-nowrap"
+                                            >
                                                 {appointment.is_completed
                                                     ? t('global.completed')
                                                     : t('global.pending')}

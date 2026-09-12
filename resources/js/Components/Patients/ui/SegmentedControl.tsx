@@ -27,7 +27,7 @@ export default function SegmentedControl({ value, options, onChange, compact = f
                         type="button"
                         onClick={() => onChange(option.value)}
                         className={`flex flex-1 items-center justify-center gap-1 rounded-md font-medium transition-all ${
-                            compact ? 'px-2 py-1.5 text-xs' : 'px-3 py-2.5 text-sm'
+                            compact ? 'px-2 py-1.5 text-sm' : 'px-3 py-2.5 text-sm'
                         } ${
                             selected
                                 ? 'bg-white text-blue-700 shadow-sm dark:bg-gray-800 dark:text-blue-300'

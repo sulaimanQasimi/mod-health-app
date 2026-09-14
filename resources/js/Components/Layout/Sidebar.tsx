@@ -340,7 +340,7 @@ export default function Sidebar({
                 <button
                     type="button"
                     className={mergeClasses(
-                        'layout-menu-toggle menu-link absolute top-1/2 z-50 inline-flex size-[2.375rem] -translate-y-1/2 items-center justify-center rounded-full border-[7px] border-white bg-[#696cff] text-white shadow-sm transition-all duration-300 lg:border-[#f5f5f9] dark:border-[#191924] dark:lg:border-[#191924]',
+                        'layout-menu-toggle menu-link absolute top-1/2 z-50 inline-flex size-[2.375rem] -translate-y-1/2 items-center justify-center rounded-full border-[7px] border-white bg-white text-blue-600 shadow-sm transition-all duration-300 lg:border-[#f5f5f9] dark:border-[#191924] dark:bg-[#191924] dark:text-blue-400 dark:lg:border-[#191924]',
                         isRtl ? '-left-[1.1875rem]' : '-right-[1.1875rem]',
                         isOpen ? 'max-lg:flex' : 'max-lg:hidden',
                         'lg:flex',
@@ -350,7 +350,7 @@ export default function Sidebar({
                 >
                     <i
                         className={mergeClasses(
-                            'bx bx-chevron-left bx-sm align-middle size-6 transition-transform duration-300',
+                            'bx bx-chevron-left bx-sm align-middle size-6 text-blue-600 transition-transform duration-300 dark:text-blue-400',
                             isRtl && 'scale-x-[-1]',
                             effectiveCollapsed && (isRtl ? '-rotate-180' : 'rotate-180'),
                         )}

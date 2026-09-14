@@ -364,6 +364,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/alternatives/{alternativeItem}', [PrescriptionController::class, 'deleteAlternative'])->name('alternatives.destroy');
         Route::put('/items/{prescriptionItem}/status', [PrescriptionController::class, 'updateItemStatus'])->name('items.status');
         Route::put('/items/{prescriptionItem}/amount', [PrescriptionController::class, 'updateItemAmount'])->name('items.amount');
+        Route::get('/thermal-receipt/{prescription}', [PrescriptionController::class, 'printThermalReceipt'])->name('thermal-receipt');
         Route::get('/{prescription}', [PrescriptionController::class, 'show'])->name('show');
         Route::put('/{prescription}/status', [PrescriptionController::class, 'updateStatus'])->name('update-status');
         Route::post('/{prescription}/mark-all-delivered', [PrescriptionController::class, 'markAllDelivered'])->name('mark-all-delivered');

@@ -171,7 +171,7 @@
     <div class="receipt-container">
         <!-- Header -->
         <div class="header">
-            <div class="pharmacy-name">{{ $pharmacy->name ?? 'دواخانه' }}</div>
+            <div class="pharmacy-name">{{ $pharmacy?->name ?? 'دواخانه' }}</div>
             <div class="pharmacy-info">
                 @if($pharmacy)
                     <div>تلفن: {{ $pharmacy->phone ?? 'نامشخص' }}</div>

@@ -234,6 +234,26 @@ class PrescriptionController extends Controller
         ]);
     }
 
+    public function printThermalReceipt(Prescription $prescription)
+    {
+        $this->authorize('view', $prescription);
+
+        $prescription->load([
+            'patient',
+            'doctor',
+            'pharmacy',
+            'prescriptionItems.medicine',
+            'prescriptionItems.medicineType',
+            'prescriptionItems.usageType',
+            'prescriptionItems.selectedAlternative.medicine',
+        ]);
+
+        $pharmacy = $prescription->pharmacy ?? auth()->user()?->activePharmacies()->first();
+        $user = auth()->user();
+
+        return view('pages.prescriptions.thermal_receipt', compact('prescription', 'pharmacy', 'user'));
+    }
+
     public function updateStatus(Request $request, Prescription $prescription): RedirectResponse
     {
         $this->authorize('update', $prescription);
@@ -712,7 +732,7 @@ class PrescriptionController extends Controller
             'updateStatus' => route('prescriptions.update-status', $prescription),
             'markAllDelivered' => route('prescriptions.mark-all-delivered', $prescription),
             'destroy' => route('prescriptions.destroy', $prescription),
-            'thermalReceipt' => url("/prescriptions/thermal-receipt/{$prescription->id}"),
+            'thermalReceipt' => route('prescriptions.thermal-receipt', $prescription),
             'itemsBase' => url('/prescriptions/items'),
             'alternativesBase' => url('/prescriptions/alternatives'),
             'addAlternative' => route('prescriptions.alternatives.store'),

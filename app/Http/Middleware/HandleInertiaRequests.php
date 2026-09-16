@@ -39,13 +39,17 @@ class HandleInertiaRequests extends Middleware
     {
         $locale = session('language', 'dr');
         $user = $request->user();
+        $isActivityLogPage = $request->routeIs('activity-logs.*');
 
         return [
             ...parent::share($request),
             'locale' => $locale,
             'direction' => $locale === 'en' ? 'ltr' : 'rtl',
             'translations' => Lang::get('global', [], $locale),
-            'activityLogTranslations' => Lang::get('activity_log', [], $locale),
+            // Full activity_log lang only on activity log pages; elsewhere share title for sidebar.
+            'activityLogTranslations' => $isActivityLogPage
+                ? Lang::get('activity_log', [], $locale)
+                : ['title' => Lang::get('activity_log.title', [], $locale)],
             'sidebarMenu' => app(SidebarMenuService::class)->build($request),
             'currentRoute' => $request->route()?->getName(),
             'auth' => [

@@ -18,8 +18,14 @@ class ModelActivityServiceProvider extends ServiceProvider
             return;
         }
 
+        $ignored = array_fill_keys(config('activitylog.ignored_models', []), true);
+
         foreach ($this->discoverApplicationModels() as $modelClass) {
-            foreach (['created', 'updated', 'deleted'] as $event) {
+            if (isset($ignored[$modelClass])) {
+                continue;
+            }
+
+            foreach (['created', 'updated', 'deleted', 'restored'] as $event) {
                 Event::listen("eloquent.{$event}: {$modelClass}", function (Model $model) use ($event) {
                     app(ModelActivityLogger::class)->log($model, $event);
                 });

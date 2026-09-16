@@ -10,7 +10,7 @@ class ActivityLogTranslator
 {
     public static function locale(): string
     {
-        return 'dr';
+        return session('language', app()->getLocale() ?: 'dr');
     }
 
     public static function modelLabel(Model $model): string

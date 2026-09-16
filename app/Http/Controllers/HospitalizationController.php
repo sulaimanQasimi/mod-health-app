@@ -17,8 +17,6 @@ use App\Models\Room;
 use App\Models\User;
 use App\Models\Doctor;
 use App\Models\DiabetesChart;
-use App\Models\Nurse;
-use App\Models\NurseNote;
 use App\Models\MedicationAdministrationRecord;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\Request;

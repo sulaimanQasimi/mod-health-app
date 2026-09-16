@@ -100,16 +100,10 @@ class ActivityLogController extends Controller
         }
 
         $query->where(function ($builder) use ($search) {
-            $driver = DB::connection()->getDriverName();
-
-            if ($driver === 'mysql' && mb_strlen($search) >= 3) {
-                $builder->whereFullText('description', $search);
-            } else {
-                $builder->where('description', 'like', $search.'%')
-                    ->orWhere('description', 'like', '% '.$search.'%');
-            }
-
-            $builder->orWhere('event', $search)
+            // FULLTEXT is unavailable on partitioned MySQL tables; use prefix/contains LIKE.
+            $builder->where('description', 'like', $search.'%')
+                ->orWhere('description', 'like', '% '.$search.'%')
+                ->orWhere('event', $search)
                 ->orWhere('subject_type', 'like', '%'.$search);
         });
     }

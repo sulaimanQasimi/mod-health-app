@@ -54,31 +54,22 @@ class ActivityLogPartitionService
     }
 
     /**
-     * Ensure monthly partitions exist from $from through $aheadMonths ahead of now,
-     * always keeping a catch-all pmax partition.
-     *
      * @return array{added: list<string>, dropped: list<string>}
      */
     public function maintain(int $retentionDays, int $aheadMonths = 3): array
     {
-        if (! $this->supportsPartitioning()) {
+        if (! $this->supportsPartitioning() || ! $this->isPartitioned()) {
             return ['added' => [], 'dropped' => []];
         }
 
-        if (! $this->isPartitioned()) {
-            return ['added' => [], 'dropped' => []];
-        }
-
-        $added = $this->ensureFuturePartitions($aheadMonths);
-        $dropped = $this->dropExpiredPartitions($retentionDays);
-
-        return ['added' => $added, 'dropped' => $dropped];
+        return [
+            'added' => $this->ensureFuturePartitions($aheadMonths),
+            'dropped' => $this->dropExpiredPartitions($retentionDays),
+        ];
     }
 
     /**
-     * Build PARTITION BY RANGE COLUMNS(created_at) clause fragments.
-     *
-     * @return list<string> e.g. ["PARTITION p202601 VALUES LESS THAN ('2026-02-01')", ...]
+     * @return list<string>
      */
     public function buildPartitionDefinitions(CarbonInterface $from, CarbonInterface $untilExclusive): array
     {
@@ -89,14 +80,14 @@ class ActivityLogPartitionService
         while ($cursor->lt($end)) {
             $next = $cursor->copy()->addMonth();
             $definitions[] = sprintf(
-                "PARTITION %s VALUES LESS THAN ('%s')",
+                "PARTITION %s VALUES LESS THAN (TO_DAYS('%s'))",
                 $this->partitionName($cursor),
                 $next->format('Y-m-d')
             );
             $cursor = $next;
         }
 
-        $definitions[] = 'PARTITION pmax VALUES LESS THAN (MAXVALUE)';
+        $definitions[] = 'PARTITION pmax VALUES LESS THAN MAXVALUE';
 
         return $definitions;
     }
@@ -114,11 +105,8 @@ class ActivityLogPartitionService
         $existing = $this->existingPartitionNames();
         $added = [];
 
-        $start = Carbon::now()->startOfMonth();
+        $cursor = Carbon::now()->startOfMonth();
         $end = Carbon::now()->addMonths($aheadMonths)->startOfMonth();
-
-        // Also ensure current month exists if somehow missing (before pmax).
-        $cursor = $start->copy();
 
         while ($cursor->lte($end)) {
             $name = $this->partitionName($cursor);
@@ -127,8 +115,8 @@ class ActivityLogPartitionService
                 $next = $cursor->copy()->addMonth()->format('Y-m-d');
                 DB::statement(sprintf(
                     'ALTER TABLE `%s` REORGANIZE PARTITION `pmax` INTO (
-                        PARTITION `%s` VALUES LESS THAN (\'%s\'),
-                        PARTITION `pmax` VALUES LESS THAN (MAXVALUE)
+                        PARTITION `%s` VALUES LESS THAN (TO_DAYS(\'%s\')),
+                        PARTITION `pmax` VALUES LESS THAN MAXVALUE
                     )',
                     self::TABLE,
                     $name,
@@ -145,8 +133,6 @@ class ActivityLogPartitionService
     }
 
     /**
-     * Drop monthly partitions whose upper bound is on or before the retention cutoff month start.
-     *
      * @return list<string>
      */
     public function dropExpiredPartitions(int $retentionDays): array
@@ -161,8 +147,6 @@ class ActivityLogPartitionService
             }
 
             $month = Carbon::createFromFormat('Ym', $m[1])->startOfMonth();
-            // Partition p202601 holds rows with created_at < 2026-02-01.
-            // Safe to drop when the next month start is <= cutoff.
             $upperBound = $month->copy()->addMonth();
 
             if ($upperBound->lte($cutoff)) {

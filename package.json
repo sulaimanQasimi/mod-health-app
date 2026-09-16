@@ -10,7 +10,7 @@
         "@tailwindcss/vite": "^4.1.18",
         "axios": "^1.6.4",
         "flowbite": "^4.0.1",
-        "flowbite-react": "^0.12.17",
+        "flowbite-react": "^0.10.2",
         "laravel-vite-plugin": "^1.0.0",
         "tailwindcss": "^4.1.18",
         "vite": "^7.1.2"

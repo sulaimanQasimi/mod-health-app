@@ -31,7 +31,6 @@ select.appearance-none.bg-arrow-down-icon {
 @custom-variant dark (&:where(.dark, .dark *));
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";
-@import "flowbite-react/plugin/tailwindcss";
 @import "./fonts.css";
 
 @source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
@@ -40,6 +39,7 @@ select.appearance-none.bg-arrow-down-icon {
 @source "../js/**/*.{js,jsx,ts,tsx,vue}";
 @source "../../public/assets/js/**/*.{js,vue}";
 @source "../../node_modules/flowbite";
+@source "../../node_modules/flowbite-react/dist/esm/**/*.mjs";
 @source "../../.flowbite-react/class-list.json";
 @source "../../vendor/wirechat/wirechat/resources/views/**/*.blade.php";
 @source "../../vendor/wirechat/wirechat/src/Livewire/**/*.php";

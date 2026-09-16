@@ -5,7 +5,6 @@ import laravel from 'laravel-vite-plugin';
 import inertia from '@inertiajs/vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import flowbiteReact from "flowbite-react/plugin/vite";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -28,7 +27,6 @@ export default defineConfig({
             refresh: true,
         }),
         inertia(),
-        flowbiteReact()
     ],
     resolve: {
         alias: {

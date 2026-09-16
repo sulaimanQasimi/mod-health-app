@@ -33,68 +33,104 @@ Route::middleware(['auth'])->group(function () {
     // Thin document endpoints still used by the React/Inertia app (print / PDF / webcam).
     // Registered before react.php so static path segments win over {model} wildcards.
     Route::prefix('patients')->name('patients.')->group(function () {
-        Route::get('/print-card/{patient}', [PatientController::class, 'printCard'])->name('print-card');
+        Route::get('/print-card/{patient}', [PatientController::class, 'printCard'])
+            ->middleware('throttle:exports')
+            ->name('print-card');
         Route::get('webcam/{patient}', [PatientController::class, 'webcam'])->name('webcam');
-        Route::post('capture/{id}', [PatientController::class, 'addImage'])->name('capture');
-        Route::match(['get', 'post'], 'export-report', [PatientController::class, 'exportReport'])->name('export-report');
+        Route::post('capture/{id}', [PatientController::class, 'addImage'])
+            ->middleware('throttle:uploads')
+            ->name('capture');
+        Route::match(['get', 'post'], 'export-report', [PatientController::class, 'exportReport'])
+            ->middleware('throttle:exports')
+            ->name('export-report');
     });
 
     Route::prefix('appointments')->name('appointments.')->group(function () {
-        Route::post('export-report', [AppointmentController::class, 'exportReport'])->name('export-report');
+        Route::post('export-report', [AppointmentController::class, 'exportReport'])
+            ->middleware('throttle:exports')
+            ->name('export-report');
     });
 
     Route::prefix('hospitalizations')->name('hospitalizations.')->group(function () {
-        Route::post('export-report', [HospitalizationController::class, 'exportReport'])->name('export-report');
+        Route::post('export-report', [HospitalizationController::class, 'exportReport'])
+            ->middleware('throttle:exports')
+            ->name('export-report');
     });
 
     Route::prefix('icus')->name('icus.')->group(function () {
-        Route::post('export-report', [ICUController::class, 'exportReport'])->name('export-report');
-        Route::get('/print-death-card/{icu}', [ICUController::class, 'printDeathCard'])->name('print-death-card');
-        Route::get('/print-move-card/{icu}', [ICUController::class, 'printMoveCard'])->name('print-move-card');
+        Route::post('export-report', [ICUController::class, 'exportReport'])
+            ->middleware('throttle:exports')
+            ->name('export-report');
+        Route::get('/print-death-card/{icu}', [ICUController::class, 'printDeathCard'])
+            ->middleware('throttle:exports')
+            ->name('print-death-card');
+        Route::get('/print-move-card/{icu}', [ICUController::class, 'printMoveCard'])
+            ->middleware('throttle:exports')
+            ->name('print-move-card');
     });
 
     Route::prefix('pacus')->name('pacus.')->group(function () {
-        Route::post('export-report', [PACUController::class, 'exportReport'])->name('export-report');
+        Route::post('export-report', [PACUController::class, 'exportReport'])
+            ->middleware('throttle:exports')
+            ->name('export-report');
     });
 
     Route::prefix('anesthesias')->name('anesthesias.')->group(function () {
-        Route::post('export-report', [AnesthesiaController::class, 'exportReport'])->name('export-report');
+        Route::post('export-report', [AnesthesiaController::class, 'exportReport'])
+            ->middleware('throttle:exports')
+            ->name('export-report');
     });
 
     Route::prefix('operations')->name('operations.')->group(function () {
-        Route::post('export-report', [OperationController::class, 'exportReport'])->name('export-report');
+        Route::post('export-report', [OperationController::class, 'exportReport'])
+            ->middleware('throttle:exports')
+            ->name('export-report');
     });
 
     Route::prefix('outcomes')->name('outcomes.')->group(function () {
-        Route::post('export-index-report', [OutcomeController::class, 'exportIndexReport'])->name('export-index-report');
+        Route::post('export-index-report', [OutcomeController::class, 'exportIndexReport'])
+            ->middleware('throttle:exports')
+            ->name('export-index-report');
     });
 
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
         Route::post('registrations/export-report', [PatientTestRegistrationController::class, 'exportReport'])
+            ->middleware('throttle:exports')
             ->name('registrations.export-report');
         Route::post('registrations/export-report-detailed', [PatientTestRegistrationController::class, 'exportReportDetailed'])
+            ->middleware('throttle:exports')
             ->name('registrations.export-report-detailed');
         Route::get('reports/print-group/{category_id}', [TestResultController::class, 'printGroupedTests'])
+            ->middleware('throttle:exports')
             ->name('reports.print-group');
     });
 
     Route::prefix('nurse-notes')->name('nurse-notes.')->group(function () {
-        Route::get('print', [NurseNoteController::class, 'print'])->name('print');
+        Route::get('print', [NurseNoteController::class, 'print'])
+            ->middleware('throttle:exports')
+            ->name('print');
     });
 
     Route::prefix('vital-signs')->name('vital-signs.')->group(function () {
-        Route::get('print/{morphable_type}/{morphable_id}', [VitalSignController::class, 'print'])->name('print');
+        Route::get('print/{morphable_type}/{morphable_id}', [VitalSignController::class, 'print'])
+            ->middleware('throttle:exports')
+            ->name('print');
     });
 
     Route::prefix('diabetes-charts')->name('diabetes-charts.')->group(function () {
-        Route::get('print', [DiabetesChartController::class, 'print'])->name('print');
+        Route::get('print', [DiabetesChartController::class, 'print'])
+            ->middleware('throttle:exports')
+            ->name('print');
     });
 
     Route::get('nutrition-cares/{nutritionCare}/print', [NutritionCareController::class, 'print'])
+        ->middleware('throttle:exports')
         ->name('nutrition-cares.print');
 
     Route::prefix('physiotherapy-reports')->name('physiotherapy-reports.')->group(function () {
-        Route::post('export', [PhysiotherapyReportController::class, 'exportReport'])->name('export');
+        Route::post('export', [PhysiotherapyReportController::class, 'exportReport'])
+            ->middleware('throttle:exports')
+            ->name('export');
     });
 });
 

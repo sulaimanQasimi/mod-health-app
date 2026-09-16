@@ -119,12 +119,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/data', [DashboardController::class, 'data'])->name('dashboard.data');
 
     Route::get('/scan-code', [ScanCodeController::class, 'index'])->name('scan-code');
-    Route::post('/scan-code', [ScanCodeController::class, 'search'])->name('scan-code.search');
+    Route::post('/scan-code', [ScanCodeController::class, 'search'])
+        ->middleware('throttle:scans')
+        ->name('scan-code.search');
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/', [ProfileController::class, 'update'])->name('update');
-        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('update-password');
+        Route::put('/password', [ProfileController::class, 'updatePassword'])
+            ->middleware('throttle:password')
+            ->name('update-password');
     });
 
     Route::prefix('patients')->name('patients.')->group(function () {
@@ -322,7 +326,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{dentistRegistration}/history', [DentalChartController::class, 'history'])->name('history');
         Route::get('/{dentistRegistration}/compare', [DentalChartController::class, 'compare'])->name('compare');
         Route::get('/{dentistRegistration}/print', [DentalChartController::class, 'print'])->name('print');
-        Route::get('/{dentistRegistration}/export', [DentalChartController::class, 'export'])->name('export');
+        Route::get('/{dentistRegistration}/export', [DentalChartController::class, 'export'])
+            ->middleware('throttle:exports')
+            ->name('export');
         Route::get('/entry/{dentalChart}/edit', [DentalChartController::class, 'edit'])->name('edit');
         Route::put('/entry/{dentalChart}', [DentalChartController::class, 'update'])->name('update');
         Route::delete('/entry/{dentalChart}', [DentalChartController::class, 'destroy'])->name('destroy');
@@ -351,7 +357,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
         Route::get('/scan-code', [PrescriptionController::class, 'scanCode'])->name('scan-code');
-        Route::post('/scan', [PrescriptionController::class, 'scan'])->name('scan');
+        Route::post('/scan', [PrescriptionController::class, 'scan'])
+            ->middleware('throttle:scans')
+            ->name('scan');
         Route::get('/', [PrescriptionController::class, 'index'])->name('index');
         Route::get('/delivered', [PrescriptionController::class, 'delivered'])->name('delivered');
         Route::get('/report', [PrescriptionController::class, 'report'])->name('report');
@@ -435,7 +443,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/movements/depot-to-depot', [DepotMovementController::class, 'depotToDepot'])->name('movements.depot-to-depot');
         Route::get('/movements/depot-to-pharmacy', [DepotMovementController::class, 'depotToPharmacy'])->name('movements.depot-to-pharmacy');
         Route::get('/reports', [DepotReportController::class, 'index'])->name('reports.index');
-        Route::get('/reports/export', [DepotReportController::class, 'export'])->name('reports.export');
+        Route::get('/reports/export', [DepotReportController::class, 'export'])
+            ->middleware('throttle:exports')
+            ->name('reports.export');
         Route::get('/{depot}/stock', [DepotController::class, 'stock'])->name('stock');
         Route::get('/{depot}/edit', [DepotController::class, 'edit'])->name('edit');
         Route::get('/{depot}', [DepotController::class, 'show'])->name('show');
@@ -524,7 +534,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/cases/{prosthetic_case}/delivery', [ProstheticCaseController::class, 'storeDelivery'])->name('cases.delivery');
         Route::post('/cases/{prosthetic_case}/follow-up', [ProstheticCaseController::class, 'storeFollowUp'])->name('cases.follow_up');
         Route::post('/cases/{prosthetic_case}/close', [ProstheticCaseController::class, 'closeCase'])->name('cases.close');
-        Route::post('/cases/{prosthetic_case}/attachments/upload', [ProstheticCaseController::class, 'uploadAttachments'])->name('cases.attachments.upload');
+        Route::post('/cases/{prosthetic_case}/attachments/upload', [ProstheticCaseController::class, 'uploadAttachments'])
+            ->middleware('throttle:uploads')
+            ->name('cases.attachments.upload');
         Route::delete('/attachments/{attachment}', [ProstheticCaseController::class, 'deleteAttachment'])->name('attachments.delete');
 
         Route::get('/catalog', [ProstheticCatalogController::class, 'index'])->name('catalog.index');
@@ -634,7 +646,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
         Route::get('/scan', [LaboratoryController::class, 'scan'])->name('scan');
-        Route::post('/scan', [LaboratoryController::class, 'scanSubmit'])->name('scan.submit');
+        Route::post('/scan', [LaboratoryController::class, 'scanSubmit'])
+            ->middleware('throttle:scans')
+            ->name('scan.submit');
         Route::prefix('results')->name('results.')->group(function () {
             Route::get('/pending', [LaboratoryController::class, 'pending'])->name('pending');
             Route::get('/in-progress', [LaboratoryController::class, 'inProgress'])->name('in-progress');
@@ -737,7 +751,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
         Route::match(['put', 'post'], '/{user}', [UserController::class, 'update'])->name('update');
         Route::post('/{user}/status', [UserController::class, 'updateStatus'])->name('update-status');
-        Route::post('/{user}/reset-password', [UserController::class, 'resetPassword'])->name('reset-password');
+        Route::post('/{user}/reset-password', [UserController::class, 'resetPassword'])
+            ->middleware('throttle:password')
+            ->name('reset-password');
     });
     Route::prefix('doctors')->name('doctors.')->group(function () {
         Route::get('/', [DoctorController::class, 'index'])->name('index');

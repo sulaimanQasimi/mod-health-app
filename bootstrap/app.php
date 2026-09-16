@@ -1,12 +1,9 @@
 <?php
 
-use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -16,10 +13,6 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            RateLimiter::for('api', function (Request $request) {
-                return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-            });
-
             Route::model('review', \App\Models\PhysiotherapyProcedureReview::class);
             Route::model('physiotherapyProcedure', \App\Models\PhysiotherapyProcedure::class);
 
@@ -63,9 +56,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
+            'throttle:web',
         ]);
 
-        $middleware->throttleApi();
+        // Apply named "api" limiter to every /api/* route.
+        $middleware->throttleApi('api');
 
         $middleware->alias([
             'auth' => \App\Http\Middleware\Authenticate::class,

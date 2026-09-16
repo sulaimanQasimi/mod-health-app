@@ -100,15 +100,19 @@ class AppointmentController extends Controller
                  });
      
          // Get filter data
-         $doctors = Doctor::where('branch_id', auth()->user()->branch_id)->get();
-         $departments = Department::all();
+         $doctors = Doctor::where('branch_id', auth()->user()->branch_id)->get(['id', 'name']);
+         $departments = Department::query()->orderBy('name')->get(['id', 'name']);
      
          return view('pages.appointments.index', compact('appointments', 'doctors', 'departments'));
      }
 
     public function create()
     {
-        $doctors = Doctor::all();
+        $doctors = Doctor::query()
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('active_status', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
         return view('pages.appointments.create', compact('doctors'));
     }
 
@@ -196,9 +200,9 @@ class AppointmentController extends Controller
     public function edit(Appointment $appointment)
     {
         // Get necessary data for the edit form
-        $doctors = Doctor::where('branch_id', auth()->user()->branch_id)->get();
-        $patients = Patient::all();
-        $branches = Branch::all();
+        $doctors = Doctor::where('branch_id', auth()->user()->branch_id)->get(['id', 'name']);
+        $patients = Patient::query()->orderBy('name')->get(['id', 'name', 'last_name', 'id_card']);
+        $branches = Branch::query()->orderBy('name')->get(['id', 'name']);
         
         return view('pages.appointments.edit', compact('appointment', 'doctors', 'patients', 'branches'));
     }
@@ -273,33 +277,37 @@ class AppointmentController extends Controller
             'icu.hospitalization.bed'
         ]);
         
-        $labTypes = LabType::all();
-        $doctors = Doctor::all();
+        $labTypes = LabType::query()->orderBy('name')->get(['id', 'name']);
+        $doctors = Doctor::query()
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('active_status', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
         // Doctors will be loaded via API, no need to pass them here
         // $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
         //     ->where('active_status', true)
         //     ->get();
-        $rooms = Room::all();
-        $beds = Bed::all();
-        $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
-        $branches = Branch::all();
-        $departments = Department::all();
+        $rooms = Room::query()->orderBy('name')->get(['id', 'name', 'branch_id', 'department_id']);
+        $beds = Bed::query()->get(['id', 'number', 'room_id', 'is_occupied']);
+        $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get(['id', 'name', 'branch_id']);
+        $branches = Branch::query()->orderBy('name')->get(['id', 'name']);
+        $departments = Department::query()->orderBy('name')->get(['id', 'name', 'branch_id']);
         $patient = $appointment->patient;
         $previousDiagnoses = $patient->diagnoses;
-        $medicineTypes = MedicineType::all();
-        $medicines = Medicine::all();
-        $foodTypes = FoodType::all();
-        $relations = Relation::all();
-        $medicineUsageTypes = MedicineUsageType::all();
+        $medicineTypes = MedicineType::query()->orderBy('type')->get(['id', 'type']);
+        $medicines = Medicine::query()->orderBy('name')->get(['id', 'name', 'medicine_type_id']);
+        $foodTypes = FoodType::query()->orderBy('name')->get(['id', 'name']);
+        $relations = Relation::query()->orderBy('name')->get(['id', 'name']);
+        $medicineUsageTypes = MedicineUsageType::query()->orderBy('name')->get(['id', 'name']);
         
         // Add physiotherapy data
-        $physiotherapyTypes = \App\Models\PhysiotherapyType::all();
+        $physiotherapyTypes = \App\Models\PhysiotherapyType::query()->orderBy('name')->get(['id', 'name']);
         $physiotherapists = Doctor::query()
             ->where('active_status', true)
             ->where('branch_id', auth()->user()->branch_id)
          
             ->orderBy('name')
-            ->get();
+            ->get(['id', 'name']);
 
         // Load dentist registrations
         $appointment->load('dentistRegistrations.dentist', 'dentistRegistrations.examinations', 'dentistRegistrations.treatments', 'dentistRegistrations.xrays', 'dentistRegistrations.dentalNotes');

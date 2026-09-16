@@ -7,6 +7,7 @@ use App\Jobs\SendNewICUNotification;
 use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Department;
+use App\Models\Doctor;
 use App\Models\FoodType;
 use App\Models\Hospitalization;
 use App\Models\ICU;
@@ -282,21 +283,24 @@ class ICUController extends Controller
      */
     public function show(ICU $icu)
     {
-        $labTypes = LabType::all();
+        $labTypes = LabType::query()->orderBy('name')->get(['id', 'name']);
         $previousDiagnoses = $icu->patient->diagnoses;
         $previousLabs = $icu->patient->labs;
-        $branches = Branch::all();
-        $departments = Department::all();
-        $doctors = User::all();
-        $foodTypes = FoodType::all();
-        $medicineTypes = MedicineType::all();
-        $medicines = Medicine::all();
-        $procedure_types = ICUProcedureType::all();
+        $branches = Branch::query()->orderBy('name')->get(['id', 'name']);
+        $departments = Department::query()->orderBy('name')->get(['id', 'name', 'branch_id']);
+        $doctors = Doctor::query()
+            ->where('active_status', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+        $foodTypes = FoodType::query()->orderBy('name')->get(['id', 'name']);
+        $medicineTypes = MedicineType::query()->orderBy('type')->get(['id', 'type']);
+        $medicines = Medicine::query()->orderBy('name')->get(['id', 'name']);
+        $procedure_types = ICUProcedureType::query()->orderBy('name')->get(['id', 'name']);
         // Only rooms that have at least one unoccupied bed (Room::beds() = unoccupied only)
-        $rooms = Room::where('branch_id', $icu->branch_id)->whereHas('beds')->orderBy('name')->get();
+        $rooms = Room::where('branch_id', $icu->branch_id)->whereHas('beds')->orderBy('name')->get(['id', 'name', 'branch_id']);
         $beds = collect(); // Beds loaded via AJAX when room is selected (only unoccupied)
-        $relations = Relation::all();
-        $medicineUsageTypes = MedicineUsageType::all();
+        $relations = Relation::query()->orderBy('name')->get(['id', 'name']);
+        $medicineUsageTypes = MedicineUsageType::query()->orderBy('name')->get(['id', 'name']);
 
         $icu->load(['doctor', 'patient', 'appointment', 'appointment.doctor']);
 

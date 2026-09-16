@@ -275,7 +275,11 @@ class PatientController extends Controller
         $departments = auth()->user()->category_id
             ? Department::where('category_id', auth()->user()->category_id)->get()
             : Department::all();
-        $doctors = Doctor::all();
+        $doctors = Doctor::query()
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('active_status', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
         $previousDiagnoses = $patient->diagnoses;
         $nephrologyRegistrations = $patient->nephrologyRegistrations()
             ->with(['doctor', 'disease'])
@@ -580,7 +584,11 @@ class PatientController extends Controller
         $provinces = Province::all();
         $districts = District::all();
         $relations = Relation::all();
-        $doctors = Doctor::all();
+        $doctors = Doctor::query()
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('active_status', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
         $departments = Department::where('category_id', auth()->user()->category_id)->get();
 
         $tab_type = $request->tab_type;

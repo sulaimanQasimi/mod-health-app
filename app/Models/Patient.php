@@ -157,44 +157,75 @@ class Patient extends Model
     /**
      * Get all patient test registrations through polymorphic relationships
      * This includes test registrations from appointments, hospitalizations, under_reviews, ICUs, etc.
+     * Uses a single query with whereExists / patient_id instead of multiple pluck round-trips.
      */
     public function getLabsAttribute()
     {
-        // Get appointment IDs for this patient
-        $appointmentIds = $this->appointments()->pluck('id')->toArray();
-        
-        // Get hospitalization IDs for this patient
-        $hospitalizationIds = $this->hospitalizations()->pluck('id')->toArray();
-        
-        // Get under_review IDs through appointments
-        $underReviewIds = UnderReview::whereIn('appointment_id', $appointmentIds)->pluck('id')->toArray();
-        
-        // Get ICU IDs through appointments and directly through patient_id
-        $icuIdsFromAppointments = ICU::whereIn('appointment_id', $appointmentIds)->pluck('id')->toArray();
-        $icuIdsFromPatient = ICU::where('patient_id', $this->id)->pluck('id')->toArray();
-        $icuIds = array_unique(array_merge($icuIdsFromAppointments, $icuIdsFromPatient));
-        
-        // Return collection of PatientTestRegistration matching any of these testable relationships
-        return PatientTestRegistration::where(function($query) use ($appointmentIds, $hospitalizationIds, $underReviewIds, $icuIds) {
-            $query->where(function($q) use ($appointmentIds) {
-                $q->where('testable_type', Appointment::class)
-                  ->whereIn('testable_id', $appointmentIds);
+        $patientId = $this->id;
+
+        return PatientTestRegistration::query()
+            ->where(function ($query) use ($patientId) {
+                $query->where('patient_id', $patientId)
+                    ->orWhere(function ($q) use ($patientId) {
+                        $q->where('testable_type', Appointment::class)
+                            ->whereExists(function ($sub) use ($patientId) {
+                                $sub->selectRaw('1')
+                                    ->from('appointments')
+                                    ->whereColumn('appointments.id', 'patient_test_registrations.testable_id')
+                                    ->where('appointments.patient_id', $patientId)
+                                    ->whereNull('appointments.deleted_at');
+                            });
+                    })
+                    ->orWhere(function ($q) use ($patientId) {
+                        $q->where('testable_type', Hospitalization::class)
+                            ->whereExists(function ($sub) use ($patientId) {
+                                $sub->selectRaw('1')
+                                    ->from('hospitalizations')
+                                    ->whereColumn('hospitalizations.id', 'patient_test_registrations.testable_id')
+                                    ->where('hospitalizations.patient_id', $patientId)
+                                    ->whereNull('hospitalizations.deleted_at');
+                            });
+                    })
+                    ->orWhere(function ($q) use ($patientId) {
+                        $q->where('testable_type', UnderReview::class)
+                            ->whereExists(function ($sub) use ($patientId) {
+                                $sub->selectRaw('1')
+                                    ->from('under_reviews')
+                                    ->whereColumn('under_reviews.id', 'patient_test_registrations.testable_id')
+                                    ->where(function ($inner) use ($patientId) {
+                                        $inner->where('under_reviews.patient_id', $patientId)
+                                            ->orWhereExists(function ($appt) use ($patientId) {
+                                                $appt->selectRaw('1')
+                                                    ->from('appointments')
+                                                    ->whereColumn('appointments.id', 'under_reviews.appointment_id')
+                                                    ->where('appointments.patient_id', $patientId)
+                                                    ->whereNull('appointments.deleted_at');
+                                            });
+                                    })
+                                    ->whereNull('under_reviews.deleted_at');
+                            });
+                    })
+                    ->orWhere(function ($q) use ($patientId) {
+                        $q->where('testable_type', ICU::class)
+                            ->whereExists(function ($sub) use ($patientId) {
+                                $sub->selectRaw('1')
+                                    ->from('i_c_u_s')
+                                    ->whereColumn('i_c_u_s.id', 'patient_test_registrations.testable_id')
+                                    ->where(function ($inner) use ($patientId) {
+                                        $inner->where('i_c_u_s.patient_id', $patientId)
+                                            ->orWhereExists(function ($appt) use ($patientId) {
+                                                $appt->selectRaw('1')
+                                                    ->from('appointments')
+                                                    ->whereColumn('appointments.id', 'i_c_u_s.appointment_id')
+                                                    ->where('appointments.patient_id', $patientId)
+                                                    ->whereNull('appointments.deleted_at');
+                                            });
+                                    })
+                                    ->whereNull('i_c_u_s.deleted_at');
+                            });
+                    });
             })
-            ->orWhere(function($q) use ($hospitalizationIds) {
-                $q->where('testable_type', Hospitalization::class)
-                  ->whereIn('testable_id', $hospitalizationIds);
-            })
-            ->orWhere(function($q) use ($underReviewIds) {
-                $q->where('testable_type', UnderReview::class)
-                  ->whereIn('testable_id', $underReviewIds);
-            })
-            ->orWhere(function($q) use ($icuIds) {
-                if (!empty($icuIds)) {
-                    $q->where('testable_type', ICU::class)
-                      ->whereIn('testable_id', $icuIds);
-                }
-            });
-        })->get();
+            ->get();
     }
 
     public function prescriptions()

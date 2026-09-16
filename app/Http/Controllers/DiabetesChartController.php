@@ -64,7 +64,7 @@ class DiabetesChartController extends Controller
                                ->paginate(15);
 
         $nurses = Nurse::active()->get();
-        $medicines = Medicine::all();
+        $medicines = Medicine::query()->orderBy('name')->get(['id', 'name']);
 
         return view('pages.diabetes-charts.index', compact('diabetesCharts', 'nurses', 'medicines'));
     }
@@ -85,7 +85,7 @@ class DiabetesChartController extends Controller
         }
 
         $nurses = Nurse::active()->get();
-        $medicines = Medicine::all();
+        $medicines = Medicine::query()->orderBy('name')->get(['id', 'name']);
 
         // Pre-fill chartable data if provided
         $chartableType = $request->get('chartable_type');
@@ -196,7 +196,7 @@ class DiabetesChartController extends Controller
         $this->authorize('update', $diabetesChart);
 
         $nurses = Nurse::active()->get();
-        $medicines = Medicine::all();
+        $medicines = Medicine::query()->orderBy('name')->get(['id', 'name']);
         $diabetesChart->load('diabetesChartable');
 
         return view('pages.diabetes-charts.edit', compact('diabetesChart', 'nurses', 'medicines'));

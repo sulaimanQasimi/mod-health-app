@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 
 trait ManagesNephrologyRegistrationListing
 {
+    use AggregatesStatusCounts;
+
     private const LIST_FILTER_KEYS = [
         'patient_id',
         'patient_name',
@@ -139,15 +141,7 @@ trait ManagesNephrologyRegistrationListing
 
     protected function registrationStats(Builder $query): array
     {
-        $rows = (clone $query)->get(['id', 'status']);
-
-        return [
-            'total' => $rows->count(),
-            'pending' => $rows->where('status', 'pending')->count(),
-            'in_progress' => $rows->where('status', 'in_progress')->count(),
-            'completed' => $rows->where('status', 'completed')->count(),
-            'cancelled' => $rows->where('status', 'cancelled')->count(),
-        ];
+        return $this->statusCounts($query);
     }
 
     protected function filterOptions(Request $request): array

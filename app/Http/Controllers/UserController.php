@@ -39,9 +39,17 @@ class UserController extends Controller
         $user = $request->user();
         $query = $this->buildIndexQuery($request);
 
-        $statsBase = clone $query;
-        $allUsers = $statsBase->get();
-        $currentMonth = now()->format('Y-m');
+        $monthStart = now()->startOfMonth();
+        $statsRow = (clone $query)
+            ->reorder()
+            ->toBase()
+            ->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as active,
+                SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) as inactive,
+                SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as new_this_month
+            ', [$monthStart])
+            ->first();
 
         $perPage = (int) $request->input('per_page', 20);
         $perPage = in_array($perPage, [10, 20, 50, 100], true) ? $perPage : 20;
@@ -70,12 +78,10 @@ class UserController extends Controller
                 ],
             ],
             'stats' => [
-                'active' => $allUsers->where('status', 1)->count(),
-                'inactive' => $allUsers->where('status', 0)->count(),
-                'total' => $allUsers->count(),
-                'new_this_month' => $allUsers->filter(
-                    fn (User $item) => $item->created_at?->format('Y-m') === $currentMonth,
-                )->count(),
+                'active' => (int) ($statsRow->active ?? 0),
+                'inactive' => (int) ($statsRow->inactive ?? 0),
+                'total' => (int) ($statsRow->total ?? 0),
+                'new_this_month' => (int) ($statsRow->new_this_month ?? 0),
             ],
             'filters' => $filters,
             'filterOptions' => [

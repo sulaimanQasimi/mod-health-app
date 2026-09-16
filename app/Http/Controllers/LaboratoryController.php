@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\AggregatesStatusCounts;
 use App\Http\Controllers\Concerns\ManagesLaboratoryRegistrations;
 use App\Models\Branch;
 use App\Models\Department;
@@ -20,6 +21,7 @@ use Inertia\Response;
 
 class LaboratoryController extends Controller
 {
+    use AggregatesStatusCounts;
     use ManagesLaboratoryRegistrations;
 
     private const RESULTS_FILTER_KEYS = [
@@ -490,14 +492,7 @@ class LaboratoryController extends Controller
 
         $query = $this->applyResultsFilters($query, $request);
 
-        $statsBase = clone $query;
-        $stats = [
-            'pending' => (clone $statsBase)->where('status', 'pending')->count(),
-            'in_progress' => (clone $statsBase)->where('status', 'in_progress')->count(),
-            'completed' => (clone $statsBase)->where('status', 'completed')->count(),
-            'cancelled' => (clone $statsBase)->where('status', 'cancelled')->count(),
-            'total' => (clone $statsBase)->count(),
-        ];
+        $stats = $this->statusCounts($query);
 
         $perPage = min(max((int) $request->input('per_page', 15), 10), 100);
         $paginator = $query->latest('registration_date')->paginate($perPage)->withQueryString();
@@ -569,24 +564,24 @@ class LaboratoryController extends Controller
         $hasFilters = $request->hasAny(self::REPORT_FILTER_KEYS);
 
         if ($hasFilters) {
-            $query = $this->scopedRegistrationQuery($user)
-                ->with(['labType'])
-                ->select(['id', 'lab_type_id']);
+            $query = $this->scopedRegistrationQuery($user);
 
             $query = $this->applyReportFilters($query, $request);
 
-            $grouped = $query->get()
+            $grouped = $query
+                ->reorder()
+                ->select('lab_type_id')
+                ->selectRaw('COUNT(*) as total_count')
                 ->groupBy('lab_type_id')
-                ->map(function ($group, $labTypeId) {
-                    $first = $group->first();
-
+                ->with('labType:id,name')
+                ->get()
+                ->map(function (PatientTestRegistration $row) {
                     return [
-                        'lab_type_id' => (int) $labTypeId,
-                        'lab_type_name' => $first->labType?->name ?? 'Unknown',
-                        'total_count' => $group->count(),
+                        'lab_type_id' => (int) $row->lab_type_id,
+                        'lab_type_name' => $row->labType?->name ?? 'Unknown',
+                        'total_count' => (int) $row->total_count,
                     ];
                 })
-                ->values()
                 ->sortBy('lab_type_name')
                 ->values();
 

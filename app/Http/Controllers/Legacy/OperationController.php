@@ -199,8 +199,8 @@ class OperationController extends Controller
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->get();
-        $rooms = Room::all();
-        $beds = Bed::all();
+        $rooms = Room::query()->orderBy('name')->get(['id', 'name', 'branch_id', 'department_id']);
+        $beds = Bed::query()->get(['id', 'number', 'room_id', 'is_occupied']);
         $foodTypes = FoodType::all();
         $relations = Relation::all();
         $operation_prescription_count = Prescription::where(function ($q) use ($operation) {

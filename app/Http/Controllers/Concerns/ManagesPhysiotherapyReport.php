@@ -40,8 +40,12 @@ trait ManagesPhysiotherapyReport
     protected function proceduresInUserBranchQuery(): Builder
     {
         return PhysiotherapyProcedure::query()->when(auth()->user()?->branch_id, function (Builder $query) {
-            $query->whereHas('appointment', function (Builder $appointmentQuery) {
-                $appointmentQuery->where('branch_id', auth()->user()->branch_id);
+            $branchId = auth()->user()->branch_id;
+            $query->whereIn('appointment_id', function ($sub) use ($branchId) {
+                $sub->select('id')
+                    ->from('appointments')
+                    ->where('branch_id', $branchId)
+                    ->whereNull('deleted_at');
             });
         });
     }
@@ -51,23 +55,35 @@ trait ManagesPhysiotherapyReport
      */
     protected function generatePhysiotherapySummaryReport(string $startDate, string $endDate): array
     {
-        $procedures = $this->proceduresInUserBranchQuery()
-            ->whereBetween('start_date', [$startDate, $endDate])
-            ->with(['appointment.patient:id,name,last_name', 'physiotherapyType:id,name', 'doctor:id,name'])
-            ->get();
+        $base = $this->proceduresInUserBranchQuery()
+            ->whereBetween('start_date', [$startDate, $endDate]);
 
-        $totalProcedures = $procedures->count();
-        $completedProcedures = $procedures->where('status', 'completed')->count();
+        $row = (clone $base)
+            ->reorder()
+            ->toBase()
+            ->selectRaw('
+                COUNT(*) as total_procedures,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as completed_procedures,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as in_progress_procedures,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as pending_procedures,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as cancelled_procedures,
+                COALESCE(SUM(duration), 0) as total_duration
+            ', ['completed', 'in_progress', 'pending', 'cancelled'])
+            ->first();
+
+        $totalProcedures = (int) ($row->total_procedures ?? 0);
+        $completedProcedures = (int) ($row->completed_procedures ?? 0);
+        $totalDuration = (float) ($row->total_duration ?? 0);
 
         return [
             'total_procedures' => $totalProcedures,
             'completed_procedures' => $completedProcedures,
-            'in_progress_procedures' => $procedures->where('status', 'in_progress')->count(),
-            'pending_procedures' => $procedures->where('status', 'pending')->count(),
-            'cancelled_procedures' => $procedures->where('status', 'cancelled')->count(),
-            'total_duration' => $procedures->sum('duration'),
+            'in_progress_procedures' => (int) ($row->in_progress_procedures ?? 0),
+            'pending_procedures' => (int) ($row->pending_procedures ?? 0),
+            'cancelled_procedures' => (int) ($row->cancelled_procedures ?? 0),
+            'total_duration' => $totalDuration,
             'average_duration' => $totalProcedures > 0
-                ? round($procedures->sum('duration') / $totalProcedures, 2)
+                ? round($totalDuration / $totalProcedures, 2)
                 : 0,
             'completion_rate' => $totalProcedures > 0
                 ? round(($completedProcedures / $totalProcedures) * 100, 2)

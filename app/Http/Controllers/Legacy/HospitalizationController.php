@@ -298,7 +298,7 @@ class HospitalizationController extends Controller
         //     ->where('active_status', true)
         //     ->get();
         $medicineTypes = MedicineType::all();
-        $medicines = Medicine::all();
+        $medicines = Medicine::query()->orderBy('name')->get(['id', 'name']);
         $foodTypes = FoodType::all();
         $medicineUsageTypes = MedicineUsageType::all();
 
@@ -343,8 +343,8 @@ class HospitalizationController extends Controller
             abort(403);
         }
 
-        $rooms = Room::all();
-        $beds = Bed::all();
+        $rooms = Room::query()->orderBy('name')->get(['id', 'name', 'branch_id', 'department_id']);
+        $beds = Bed::query()->get(['id', 'number', 'room_id', 'is_occupied']);
         $foodTypes = FoodType::all();
         $relations = Relation::all();
         return view('pages.hospitalizations.edit',compact('hospitalization','rooms','beds','foodTypes','relations'));

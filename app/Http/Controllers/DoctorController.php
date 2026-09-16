@@ -34,7 +34,17 @@ class DoctorController extends Controller
         $user = $request->user();
         $query = $this->buildIndexQuery($request);
 
-        $allDoctors = (clone $query)->get();
+        $statsRow = (clone $query)
+            ->reorder()
+            ->toBase()
+            ->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN active_status = 1 THEN 1 ELSE 0 END) as active,
+                SUM(CASE WHEN active_status = 0 THEN 1 ELSE 0 END) as inactive,
+                SUM(CASE WHEN is_dentist = 1 THEN 1 ELSE 0 END) as dentists,
+                SUM(CASE WHEN is_eye_doctor = 1 THEN 1 ELSE 0 END) as eye_doctors
+            ')
+            ->first();
 
         $perPage = (int) $request->input('per_page', 15);
         $perPage = in_array($perPage, [10, 15, 20, 50, 100], true) ? $perPage : 15;
@@ -63,11 +73,11 @@ class DoctorController extends Controller
                 ],
             ],
             'stats' => [
-                'active' => $allDoctors->where('active_status', true)->count(),
-                'inactive' => $allDoctors->where('active_status', false)->count(),
-                'total' => $allDoctors->count(),
-                'dentists' => $allDoctors->where('is_dentist', true)->count(),
-                'eye_doctors' => $allDoctors->where('is_eye_doctor', true)->count(),
+                'active' => (int) ($statsRow->active ?? 0),
+                'inactive' => (int) ($statsRow->inactive ?? 0),
+                'total' => (int) ($statsRow->total ?? 0),
+                'dentists' => (int) ($statsRow->dentists ?? 0),
+                'eye_doctors' => (int) ($statsRow->eye_doctors ?? 0),
             ],
             'filters' => $filters,
             'filterOptions' => [

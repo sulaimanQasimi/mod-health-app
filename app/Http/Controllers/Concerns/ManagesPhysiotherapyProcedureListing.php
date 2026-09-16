@@ -13,6 +13,8 @@ use Illuminate\Support\Collection;
 
 trait ManagesPhysiotherapyProcedureListing
 {
+    use AggregatesStatusCounts;
+
     private const LIST_FILTER_KEYS = [
         'search',
         'status',
@@ -108,16 +110,7 @@ trait ManagesPhysiotherapyProcedureListing
 
     protected function procedureStats(Builder $query): array
     {
-        $statsQuery = clone $query;
-        $rows = $statsQuery->get(['id', 'status']);
-
-        return [
-            'total' => $rows->count(),
-            'pending' => $rows->where('status', 'pending')->count(),
-            'in_progress' => $rows->where('status', 'in_progress')->count(),
-            'completed' => $rows->where('status', 'completed')->count(),
-            'cancelled' => $rows->where('status', 'cancelled')->count(),
-        ];
+        return $this->statusCounts($query);
     }
 
     protected function transformListItem(PhysiotherapyProcedure $procedure): array

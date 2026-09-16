@@ -113,12 +113,8 @@ class PatientTestRegistrationController extends Controller
         if ($request->hasAny(['from', 'to', 'test_type', 'per_page', 'patient_id'])) {
             $perPage = $request->get('per_page', 15);
             
-            // Build base query
-            $query = PatientTestRegistration::with(['labType'])
-                ->select([
-                    'patient_test_registrations.id',
-                    'patient_test_registrations.lab_type_id',
-                ]);
+            // Build base query (columns selected later for SQL GROUP BY)
+            $query = PatientTestRegistration::query();
 
             // Apply patient_id filter
             if ($request->filled('patient_id')) {
@@ -168,18 +164,21 @@ class PatientTestRegistrationController extends Controller
                 }
             }
 
-            // Group by lab_type_id and count (no date breakdown)
-            $groupedByTestType = $query->get()
+            // Group by lab_type_id and count in SQL (no date breakdown)
+            $groupedByTestType = $query
+                ->reorder()
+                ->select('lab_type_id')
+                ->selectRaw('COUNT(*) as total_count')
                 ->groupBy('lab_type_id')
-                ->map(function ($group, $labTypeId) {
-                    $first = $group->first();
+                ->with('labType:id,name')
+                ->get()
+                ->map(function (PatientTestRegistration $row) {
                     return [
-                        'lab_type_id' => $labTypeId,
-                        'lab_type_name' => $first->labType ? $first->labType->name : 'Unknown',
-                        'total_count' => $group->count(),
+                        'lab_type_id' => $row->lab_type_id,
+                        'lab_type_name' => $row->labType?->name ?? 'Unknown',
+                        'total_count' => (int) $row->total_count,
                     ];
                 })
-                ->values()
                 ->sortBy('lab_type_name')
                 ->values();
 
@@ -615,18 +614,21 @@ class PatientTestRegistrationController extends Controller
             }
         }
 
-        // Group by lab_type_id and count (no date breakdown)
-        $groupedByTestType = $query->get()
+        // Group by lab_type_id and count in SQL (no date breakdown)
+        $groupedByTestType = $query
+            ->reorder()
+            ->select('lab_type_id')
+            ->selectRaw('COUNT(*) as total_count')
             ->groupBy('lab_type_id')
-            ->map(function ($group, $labTypeId) {
-                $first = $group->first();
+            ->with('labType:id,name')
+            ->get()
+            ->map(function (PatientTestRegistration $row) {
                 return [
-                    'lab_type_id' => $labTypeId,
-                    'lab_type_name' => $first->labType ? $first->labType->name : 'Unknown',
-                    'total_count' => $group->count(),
+                    'lab_type_id' => $row->lab_type_id,
+                    'lab_type_name' => $row->labType?->name ?? 'Unknown',
+                    'total_count' => (int) $row->total_count,
                 ];
             })
-            ->values()
             ->sortBy('lab_type_name')
             ->values();
 

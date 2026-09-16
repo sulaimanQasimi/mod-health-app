@@ -51,6 +51,11 @@ class HospitalizationController extends Controller
         ])
             ->where('hospitalizations.branch_id', $branchId)
             ->where('hospitalizations.is_discharged', '0')
+            ->when(auth()->user()->department_id, function ($q) {
+                $q->whereHas('appointment', function ($appointmentQuery) {
+                    $appointmentQuery->where('department_id', auth()->user()->department_id);
+                });
+            })
             ->with([
                 'patient:id,name,id_card,father_name',
                 'room:id,name',

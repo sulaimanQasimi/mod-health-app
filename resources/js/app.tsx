@@ -1,12 +1,7 @@
 import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/react';
-import { initThemeMode } from 'flowbite-react';
-import { ThemeInit } from '../../.flowbite-react/init';
+import { ThemeModeScript } from 'flowbite-react';
 import 'flowbite';
-
-if (typeof window !== 'undefined') {
-    initThemeMode({ version: 4 });
-}
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -22,7 +17,7 @@ createInertiaApp({
     withApp(app) {
         return (
             <>
-                <ThemeInit />
+                <ThemeModeScript />
                 {app}
             </>
         );

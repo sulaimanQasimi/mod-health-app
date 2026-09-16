@@ -37,7 +37,8 @@ class ActivityLogController extends Controller
         $query = Activity::query()
             ->select(self::LIST_COLUMNS)
             ->with(['causer:id,name,last_name,email'])
-            ->latest('id');
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
 
         if ($request->filled('search')) {
             $this->applySearch($query, $request->string('search')->toString());

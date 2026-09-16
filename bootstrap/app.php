@@ -79,6 +79,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('blood-bank:archive-expired')->everyFifteenMinutes();
         $schedule->command('activitylog:clean --force')->dailyAt('02:15');
+        $schedule->command('activitylog:maintain-partitions')->dailyAt('02:30');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->dontFlash([

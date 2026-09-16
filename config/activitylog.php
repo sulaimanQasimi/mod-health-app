@@ -14,8 +14,15 @@ return [
     /*
      * When the clean command is executed, all recording activities older than
      * the number of days specified here will be deleted.
+     * Partition maintenance (activitylog:maintain-partitions) also uses this
+     * value to DROP expired monthly partitions on MySQL.
      */
     'clean_after_days' => (int) env('ACTIVITYLOG_CLEAN_AFTER_DAYS', 90),
+
+    /*
+     * Pre-create this many future monthly partitions ahead of the current month.
+     */
+    'partition_ahead_months' => (int) env('ACTIVITYLOG_PARTITION_AHEAD_MONTHS', 3),
 
     /*
      * If no log name is passed to the activity() helper

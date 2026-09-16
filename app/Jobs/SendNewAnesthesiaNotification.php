@@ -16,6 +16,7 @@ use function PHPUnit\Framework\isEmpty;
 
 class SendNewAnesthesiaNotification implements ShouldQueue
 {
+    use Concerns\ChecksNotificationsEnabled;
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $anesthesiaId;
     protected $userId;
@@ -33,6 +34,10 @@ class SendNewAnesthesiaNotification implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->notificationsDisabled()) {
+            return;
+        }
+
         $users = User::role('anesthesia_approve')->get();
             foreach ($users as $user) {
                 $user->notify(new NewAnesthesiaNotification($this->userId, $this->anesthesiaId));

@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 
 class SendNewPrescriptionNotification implements ShouldQueue
 {
+    use Concerns\ChecksNotificationsEnabled;
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $prescriptionId;
     protected $userId;
@@ -30,6 +31,10 @@ class SendNewPrescriptionNotification implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->notificationsDisabled()) {
+            return;
+        }
+
         $users = User::role('prescription_issue')->get();
             foreach ($users as $user) {
                 $user->notify(new NewPrescriptionNotification($this->userId, $this->prescriptionId));

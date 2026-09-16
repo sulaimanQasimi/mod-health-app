@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 class SendNewHospitalizationNotification implements ShouldQueue
 {
+    use Concerns\ChecksNotificationsEnabled;
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $hospitalizationId;
     protected $userId;
@@ -29,6 +30,10 @@ class SendNewHospitalizationNotification implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->notificationsDisabled()) {
+            return;
+        }
+
         $users = User::role('hospitalization_visits')->get();
             foreach ($users as $user) {
                 $user->notify(new NewHospitalizationNotification($this->userId, $this->hospitalizationId));

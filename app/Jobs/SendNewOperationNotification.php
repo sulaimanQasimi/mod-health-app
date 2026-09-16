@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 class SendNewOperationNotification implements ShouldQueue
 {
+    use Concerns\ChecksNotificationsEnabled;
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $operationId;
     protected $userId;
@@ -29,6 +30,10 @@ class SendNewOperationNotification implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->notificationsDisabled()) {
+            return;
+        }
+
         $users = User::role('operations_approve')->get();
             foreach ($users as $user) {
                 $user->notify(new NewOperationNotification($this->userId, $this->operationId));

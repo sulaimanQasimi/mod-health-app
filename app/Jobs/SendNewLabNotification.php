@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 class SendNewLabNotification implements ShouldQueue
 {
+    use Concerns\ChecksNotificationsEnabled;
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $labId;
     protected $userId;
@@ -29,6 +30,10 @@ class SendNewLabNotification implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->notificationsDisabled()) {
+            return;
+        }
+
         $users = User::role('lab_checkups')->get();
             foreach ($users as $user) {
                 $user->notify(new NewLabNotification($this->userId, $this->labId));

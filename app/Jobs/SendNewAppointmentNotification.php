@@ -14,6 +14,7 @@ use Illuminate\Queue\SerializesModels;
 
 class SendNewAppointmentNotification implements ShouldQueue
 {
+    use Concerns\ChecksNotificationsEnabled;
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $appointmentId;
     protected $userId;
@@ -31,6 +32,10 @@ class SendNewAppointmentNotification implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->notificationsDisabled()) {
+            return;
+        }
+
         $appointment = Appointment::where('id', $this->appointmentId)->first();
 
         if ($appointment->doctor_id) {

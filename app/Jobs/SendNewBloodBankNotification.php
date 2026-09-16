@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 
 class SendNewBloodBankNotification implements ShouldQueue
 {
+    use Concerns\ChecksNotificationsEnabled;
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $bloodBankId;
     protected $userId;
@@ -30,6 +31,10 @@ class SendNewBloodBankNotification implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->notificationsDisabled()) {
+            return;
+        }
+
         $bloodBank = BloodBank::where('id', $this->bloodBankId)->first();
 
 

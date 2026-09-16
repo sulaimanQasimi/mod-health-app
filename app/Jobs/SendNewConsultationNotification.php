@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 
 class SendNewConsultationNotification implements ShouldQueue
 {
+    use Concerns\ChecksNotificationsEnabled;
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $consultationId;
     protected $userId;
@@ -30,6 +31,10 @@ class SendNewConsultationNotification implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->notificationsDisabled()) {
+            return;
+        }
+
         $consultation = Consultation::where('id', $this->consultationId)->first();
 
 

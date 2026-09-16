@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -31,9 +32,11 @@ return new class extends Migration
 
         $this->addIndexes('patients', [
             ['columns' => ['name'], 'name' => 'patients_name_index'],
-            ['columns' => ['id_card'], 'name' => 'patients_id_card_index'],
             ['columns' => ['branch_id', 'name'], 'name' => 'patients_branch_name_index'],
         ]);
+
+        // id_card is TEXT — MySQL requires an explicit prefix length.
+        $this->addPrefixIndex('patients', 'id_card', 'patients_id_card_index', 191);
 
         $this->addIndexes('printed_numbers', [
             ['columns' => ['number'], 'name' => 'printed_numbers_number_index'],
@@ -98,6 +101,33 @@ return new class extends Migration
                 $blueprint->index($index['columns'], $index['name']);
             }
         });
+    }
+
+    private function addPrefixIndex(string $table, string $column, string $indexName, int $length): void
+    {
+        if (! Schema::hasTable($table) || ! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        if ($this->indexExists($table, $indexName)) {
+            return;
+        }
+
+        if (Schema::getConnection()->getDriverName() !== 'mysql') {
+            Schema::table($table, function (Blueprint $blueprint) use ($column, $indexName) {
+                $blueprint->index([$column], $indexName);
+            });
+
+            return;
+        }
+
+        DB::statement(sprintf(
+            'ALTER TABLE `%s` ADD INDEX `%s` (`%s`(%d))',
+            $table,
+            $indexName,
+            $column,
+            $length
+        ));
     }
 
     /**

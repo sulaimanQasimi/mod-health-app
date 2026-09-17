@@ -161,6 +161,19 @@ class User extends Authenticatable implements WirechatUser
         return $depot?->pivot?->role;
     }
 
+    /**
+     * Whether the clinical show pages should render the prescription section.
+     * Accepts menu access or any prescription action permission (e.g. اضافه نمودن نسخه).
+     */
+    public function canUsePrescriptionSection(): bool
+    {
+        return $this->can('show-prescriptions-menu')
+            || $this->can('add-prescription')
+            || $this->can('edit-prescription')
+            || $this->can('edit-prescriptions')
+            || $this->can('view-prescriptions');
+    }
+
     public function canPerformDepotAction(int $depotId, string $action): bool
     {
         if ($this->hasSpatieDepotPermission($action)) {

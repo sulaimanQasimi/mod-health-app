@@ -129,7 +129,7 @@ class AnesthesiaController extends Controller
                     && $user->can('edit-anesthesias'),
             ],
             'sectionPermissions' => [
-                'prescription' => $user->can('show-prescriptions-menu') && (bool) $anesthesia->appointment_id,
+                'prescription' => $user->canUsePrescriptionSection() && (bool) $anesthesia->appointment_id,
             ],
             'urls' => [
                 'update' => route('anesthesias.update', $anesthesia),

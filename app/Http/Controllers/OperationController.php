@@ -123,7 +123,7 @@ class OperationController extends Controller
                 : null,
             'nurses' => $this->nurseOptions(),
             'permissions' => [
-                'prescription' => $user->can('show-prescriptions-menu') && (bool) $operation->appointment_id,
+                'prescription' => $user->canUsePrescriptionSection() && (bool) $operation->appointment_id,
                 'blood' => $user->can('show-blood-request-menu') && (bool) $operation->appointment_id,
                 'hospitalize' => (bool) $operation->appointment_id
                     && $user->can('show-hospitalizations-menu')

@@ -201,7 +201,7 @@ class HospitalizationController extends Controller
                 'change_room_bed' => ! (bool) $hospitalization->is_discharged,
             ],
             'sectionPermissions' => [
-                'prescription' => $user->can('show-prescriptions-menu'),
+                'prescription' => $user->canUsePrescriptionSection(),
                 'lab' => $user->can('show-labs-menu'),
                 'blood' => $user->can('show-blood-request-menu'),
                 'physiotherapy' => $user->can('show-physiotherapy-procedures'),

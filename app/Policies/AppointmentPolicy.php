@@ -44,8 +44,25 @@ class AppointmentPolicy
 
     public function view(User $user, Appointment $appointment): bool
     {
-        return $this->belongsToUserBranch($user, $appointment)
-            && $this->viewAny($user);
+        if (! $this->belongsToUserBranch($user, $appointment)) {
+            return false;
+        }
+
+        if ($this->viewAny($user)) {
+            return true;
+        }
+
+        // Clinical staff opening appointment-linked sections from hospitalization / ICU / etc.
+        return $user->canUsePrescriptionSection()
+            || $user->can('show-hospitalizations-menu')
+            || $user->can('show-icu-menu')
+            || $user->can('show-under-review-menu')
+            || $user->can('show-operations-menu')
+            || $user->can('show-anesthesias-menu')
+            || $user->can('show-labs-menu')
+            || $user->can('show-blood-request-menu')
+            || $user->can('register-patient-tests')
+            || $user->can('add-blood-request');
     }
 
     public function create(User $user): bool

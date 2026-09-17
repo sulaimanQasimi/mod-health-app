@@ -19,3 +19,4 @@ yarn-error.log
 /MODHEALTH
 /storage/framework/*
 /storage/logs/*
+public/build/*

@@ -73,8 +73,10 @@ class PrescriptionController extends Controller
 
         return $this->sectionIndexResponse($items, $appointment, [
             'create' => $this->canMutateAppointment($appointment) && $user->can('add-prescription'),
-            'edit' => $this->canMutateAppointment($appointment) && $user->can('edit-prescriptions'),
-            'delete' => $this->canMutateAppointment($appointment) && $user->can('delete-prescriptions'),
+            'edit' => $this->canMutateAppointment($appointment)
+                && ($user->can('edit-prescription') || $user->can('edit-prescriptions')),
+            'delete' => $this->canMutateAppointment($appointment)
+                && ($user->can('delete-prescription') || $user->can('delete-prescriptions')),
         ]);
     }
 
@@ -179,7 +181,10 @@ class PrescriptionController extends Controller
     {
         $this->authorizeAppointmentView($appointment);
         $this->assertAppointmentMutable($appointment);
-        abort_unless($request->user()->can('edit-prescriptions'), 403);
+        abort_unless(
+            $request->user()->can('edit-prescription') || $request->user()->can('edit-prescriptions'),
+            403
+        );
         $prescriptionItem->loadMissing('prescription');
         abort_unless((int) $prescriptionItem->prescription?->appointment_id === (int) $appointment->id, 404);
 
@@ -199,7 +204,10 @@ class PrescriptionController extends Controller
     {
         $this->authorizeAppointmentView($appointment);
         $this->assertAppointmentMutable($appointment);
-        abort_unless(request()->user()->can('edit-prescriptions'), 403);
+        abort_unless(
+            request()->user()->can('edit-prescription') || request()->user()->can('edit-prescriptions'),
+            403
+        );
         $prescriptionItem->loadMissing('prescription');
         abort_unless((int) $prescriptionItem->prescription?->appointment_id === (int) $appointment->id, 404);
         abort_if($prescriptionItem->is_delivered, 403);
@@ -216,7 +224,10 @@ class PrescriptionController extends Controller
     {
         $this->authorizeAppointmentView($appointment);
         $this->assertAppointmentMutable($appointment);
-        abort_unless(request()->user()->can('delete-prescriptions'), 403);
+        abort_unless(
+            request()->user()->can('delete-prescription') || request()->user()->can('delete-prescriptions'),
+            403
+        );
         abort_unless((int) $prescription->appointment_id === (int) $appointment->id, 404);
         $prescription->delete();
 

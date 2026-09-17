@@ -10,6 +10,17 @@ trait AuthorizesAppointmentAccess
 {
     protected function appointmentMutationsLocked(Appointment $appointment): bool
     {
+        // Keep clinical sections writable while the patient has an active inpatient stay,
+        // even if the outpatient appointment was already marked completed.
+        $hasActiveHospitalization = Hospitalization::query()
+            ->where('appointment_id', $appointment->id)
+            ->where('is_discharged', 0)
+            ->exists();
+
+        if ($hasActiveHospitalization) {
+            return false;
+        }
+
         if ((bool) $appointment->is_completed) {
             return true;
         }

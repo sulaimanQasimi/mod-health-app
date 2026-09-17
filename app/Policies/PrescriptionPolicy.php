@@ -12,6 +12,7 @@ class PrescriptionPolicy
         return $user->hasRole(['super_admin', 'admin'])
             || $user->can('view-prescriptions')
             || $user->can('show-prescriptions-menu')
+            || $user->can('add-prescription')
             || $user->hasActivePharmacyRole(['manager', 'staff']);
     }
 

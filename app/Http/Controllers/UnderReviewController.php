@@ -256,7 +256,7 @@ class UnderReviewController extends Controller
                 'delete_visit' => $user->can('delete-under-review-visit'),
             ],
             'sectionPermissions' => [
-                'prescription' => $accepted && $user->can('show-prescriptions-menu') && (bool) $underReview->appointment_id,
+                'prescription' => $accepted && $user->canUsePrescriptionSection() && (bool) $underReview->appointment_id,
                 'lab' => $accepted && $user->can('show-labs-menu') && (bool) $underReview->appointment_id,
                 'blood' => $accepted && $user->can('show-blood-request-menu') && (bool) $underReview->appointment_id,
                 'physiotherapy' => $accepted && $user->can('show-physiotherapy-procedures') && (bool) $underReview->appointment_id,

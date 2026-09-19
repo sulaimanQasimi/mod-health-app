@@ -255,6 +255,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('hospitalizations/{id}', [HospitalizationController::class, 'updateHospitalization'])->name('updateHospitalization');
         Route::post('assign-doctor/{hospitalization}', [HospitalizationController::class, 'assignDoctor'])->name('assign-doctor');
         Route::get('change-room-bed/{hospitalization}', [HospitalizationController::class, 'changeRoomBed'])->name('changeRoomBed');
+        Route::get('rooms-by-department', [HospitalizationController::class, 'roomsByDepartment'])->name('roomsByDepartment');
         Route::put('update-room-bed/{hospitalization}', [HospitalizationController::class, 'updateRoomBed'])->name('updateRoomBed');
         Route::get('room-management', [HospitalizationController::class, 'roomManagement'])->name('roomManagement')->middleware('role:admin|super_admin');
         Route::post('{hospitalization}/unoccupy-bed', [HospitalizationController::class, 'unoccupyBed'])->name('unoccupyBed')->middleware('role:admin|super_admin');

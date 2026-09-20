@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Appointment;
 use App\Models\PhysiotherapyType;
 use App\Models\Room;
 use App\Models\Doctor;
@@ -59,34 +60,58 @@ class SelectController extends Controller
 
     /**
      * Get physiotherapists (doctors) for select2 dropdown.
+     * Prefers doctors whose user has the physiotherapist role; falls back to all active branch doctors.
      * Option ids are doctors.id (stored as physiotherapy_procedures.doctor_id).
      */
     public function getPhysiotherapists(Request $request): JsonResponse
     {
         try {
-            $query = Doctor::query()->where('active_status', true);
+            $branchId = null;
+
+            if ($request->filled('appointment_id')) {
+                $appointment = Appointment::query()->find($request->appointment_id);
+                $branchId = $appointment?->branch_id;
+            }
+
+            if (! $branchId && auth()->check()) {
+                $branchId = auth()->user()->branch_id;
+            }
+
+            $roleQuery = Doctor::query()
+                ->where('active_status', true)
+                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                ->whereHas('user.roles', function ($role) {
+                    $role->where('name', 'physiotherapist');
+                });
 
             if ($request->filled('search')) {
                 $searchTerm = trim($request->search);
-                $query->where('name', 'like', "%{$searchTerm}%");
+                $roleQuery->where('name', 'like', "%{$searchTerm}%");
             }
 
-            if (auth()->check() && auth()->user()->branch_id) {
-                $query->where('branch_id', auth()->user()->branch_id);
+            $doctors = $roleQuery->orderBy('name', 'asc')->limit(50)->get(['id', 'name']);
+
+            if ($doctors->isEmpty()) {
+                $fallback = Doctor::query()
+                    ->where('active_status', true)
+                    ->when($branchId, fn ($q) => $q->where('branch_id', $branchId));
+
+                if ($request->filled('search')) {
+                    $searchTerm = trim($request->search);
+                    $fallback->where('name', 'like', "%{$searchTerm}%");
+                }
+
+                $doctors = $fallback->orderBy('name', 'asc')->limit(50)->get(['id', 'name']);
             }
 
-            $physiotherapists = $query
-                ->orderBy('name', 'asc')
-                ->limit(50)
-                ->get(['id', 'name'])
-                ->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'text' => $item->name,
-                        'key' => $item->id,
-                        'value' => $item->name,
-                    ];
-                });
+            $physiotherapists = $doctors->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'text' => $item->name,
+                    'key' => $item->id,
+                    'value' => $item->name,
+                ];
+            });
 
             return response()->json([
                 'results' => $physiotherapists,

@@ -92,7 +92,7 @@
                             <label for="physiotherapist_id" class="form-label">{{ localize('global.physiotherapist') }}
                                 <span class="text-danger">*</span></label>
                             <select class="form-control select2-ajax physio-custom-select2" id="physiotherapist_id"
-                                name="physiotherapist_id" data-url="/api/select/physiotherapists"
+                                name="physiotherapist_id" data-url="{{ route('api.select.physiotherapists', ['appointment_id' => $appointment->id]) }}"
                                 data-placeholder="{{ localize('global.select_physiotherapist') }}" required>
                                 <option value="">{{ localize('global.select_physiotherapist') }}</option>
                             </select>
@@ -202,7 +202,7 @@
                 physiotherapyTypes: [],
                 loaded: false,
                 endpoints: {
-                    physiotherapists: '{{ route('api.select.physiotherapists') }}',
+                    physiotherapists: '{{ route('api.select.physiotherapists', ['appointment_id' => $appointment->id]) }}',
                     physiotherapyTypes: '{{ route('api.select.physiotherapy-types') }}'
                 }
             };
@@ -889,7 +889,7 @@
                     + '</div>'
                     + '<div class="col-md-6 mb-3">'
                     + '<label class="form-label">{{ localize('global.physiotherapist') }} <span class="text-danger">*</span></label>'
-                    + '<select class="form-control select2-ajax physio-custom-select2" name="physiotherapist_id" data-url="/api/select/physiotherapists" data-placeholder="{{ localize('global.select_physiotherapist') }}" data-current="' + (data.physiotherapist_id || '') + '" required>'
+                    + '<select class="form-control select2-ajax physio-custom-select2" name="physiotherapist_id" data-url="{{ route('api.select.physiotherapists', ['appointment_id' => $appointment->id]) }}" data-placeholder="{{ localize('global.select_physiotherapist') }}" data-current="' + (data.physiotherapist_id || '') + '" required>'
                     + '<option value="">{{ localize('global.select_physiotherapist') }}</option>'
                     + (data.physiotherapist_id && data.physiotherapist_name ? '<option value="' + data.physiotherapist_id + '" selected>' + data.physiotherapist_name + '</option>' : '')
                     + '</select>'

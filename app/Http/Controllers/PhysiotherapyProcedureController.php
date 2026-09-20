@@ -96,7 +96,7 @@ class PhysiotherapyProcedureController extends Controller
         // For non-AJAX requests, get paginated results
         $physiotherapyProcedures = $query->paginate(15);
         $physiotherapyTypes = PhysiotherapyType::all();
-        $physiotherapists = $this->physiotherapistDoctors();
+        $physiotherapists = $this->physiotherapistDoctorsForFilters();
 
         return view('pages.physiotherapy.procedures.index', compact('physiotherapyProcedures', 'physiotherapyTypes', 'physiotherapists'));
     }
@@ -211,7 +211,9 @@ class PhysiotherapyProcedureController extends Controller
             'notes' => $request->notes,
             'status' => 'pending',
             'start_date' => Verta::parse($request->start_date)->datetime(),
-            'end_date' => Verta::parse($request->end_date)->datetime(),
+            'end_date' => filled($request->end_date)
+                ? Verta::parse($request->end_date)->datetime()
+                : null,
         ]);
 
         if ($request->ajax()) {
@@ -253,8 +255,12 @@ class PhysiotherapyProcedureController extends Controller
                     'description' => $physiotherapyProcedure->description,
                     'notes' => $physiotherapyProcedure->notes,
                     'status' => $physiotherapyProcedure->status,
-                    'start_date' => verta($physiotherapyProcedure->start_date)->format('Y-m-d'),
-                    'end_date' => verta($physiotherapyProcedure->end_date)->format('Y-m-d'),
+                    'start_date' => $physiotherapyProcedure->start_date
+                        ? verta($physiotherapyProcedure->start_date)->format('Y-m-d')
+                        : null,
+                    'end_date' => $physiotherapyProcedure->end_date
+                        ? verta($physiotherapyProcedure->end_date)->format('Y-m-d')
+                        : null,
                     'physiotherapy_type_name' => $physiotherapyProcedure->physiotherapyType->name ?? 'N/A',
                     'physiotherapist_name' => $physiotherapyProcedure->doctor->name ?? 'N/A',
                     'created_by_name' => $physiotherapyProcedure->createdBy->name ?? 'N/A',
@@ -275,7 +281,10 @@ class PhysiotherapyProcedureController extends Controller
         $this->authorize('update', $physiotherapyProcedure);
 
         $physiotherapyTypes = PhysiotherapyType::all();
-        $physiotherapists = $this->physiotherapistDoctors();
+        $physiotherapyProcedure->loadMissing('appointment');
+        $physiotherapists = $physiotherapyProcedure->appointment
+            ? $this->physiotherapistDoctors($physiotherapyProcedure->appointment)
+            : $this->physiotherapistDoctorsForFilters();
         $appointments = Appointment::with('patient')->get();
 
         return view('pages.physiotherapy.procedures.edit', compact('physiotherapyProcedure', 'physiotherapyTypes', 'physiotherapists', 'appointments'));
@@ -314,7 +323,9 @@ class PhysiotherapyProcedureController extends Controller
             'notes' => $request->notes,
             'status' => $request->status,
             'start_date' => Verta::parse($request->start_date)->datetime(),
-            'end_date' => Verta::parse($request->end_date)->datetime(),
+            'end_date' => filled($request->end_date)
+                ? Verta::parse($request->end_date)->datetime()
+                : null,
         ]);
 
         if ($request->ajax()) {
@@ -547,13 +558,54 @@ class PhysiotherapyProcedureController extends Controller
     }
 
     /**
-     * Doctors available for physiotherapy assignment / filters.
+     * Doctors available for physiotherapy assignment on an appointment.
+     * Prefers doctors linked to users with the physiotherapist role; falls back to all active branch doctors.
      */
-    private function physiotherapistDoctors()
+    private function physiotherapistDoctors(Appointment $appointment)
     {
-        return Doctor::query()
-            ->when(auth()->user()?->branch_id, fn ($q) => $q->where('branch_id', auth()->user()->branch_id))
+        $roleQuery = Doctor::query()
             ->where('active_status', true)
+            ->where('branch_id', $appointment->branch_id)
+            ->whereHas('user.roles', function ($role) {
+                $role->where('name', 'physiotherapist');
+            });
+
+        $doctors = $roleQuery->orderBy('name')->get();
+
+        if ($doctors->isNotEmpty()) {
+            return $doctors;
+        }
+
+        return Doctor::query()
+            ->where('active_status', true)
+            ->where('branch_id', $appointment->branch_id)
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * Branch-scoped doctor list for filters when no appointment context exists.
+     */
+    private function physiotherapistDoctorsForFilters()
+    {
+        $branchId = auth()->user()?->branch_id;
+
+        $roleQuery = Doctor::query()
+            ->where('active_status', true)
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->whereHas('user.roles', function ($role) {
+                $role->where('name', 'physiotherapist');
+            });
+
+        $doctors = $roleQuery->orderBy('name')->get(['id', 'name']);
+
+        if ($doctors->isNotEmpty()) {
+            return $doctors;
+        }
+
+        return Doctor::query()
+            ->where('active_status', true)
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
             ->orderBy('name')
             ->get(['id', 'name']);
     }

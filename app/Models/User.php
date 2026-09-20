@@ -174,7 +174,14 @@ class User extends Authenticatable
 
     public function physiotherapyProcedures()
     {
-        return $this->hasMany(PhysiotherapyProcedure::class, 'physiotherapist_id');
+        return $this->hasManyThrough(
+            PhysiotherapyProcedure::class,
+            Doctor::class,
+            'user_id',
+            'doctor_id',
+            'id',
+            'id'
+        );
     }
 
     public function nurse()

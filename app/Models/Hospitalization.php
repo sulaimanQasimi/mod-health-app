@@ -96,6 +96,11 @@ class Hospitalization extends Model
         return $this->belongsTo(Appointment::class);
     }
 
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
     public function labs()
     {
         return $this->morphMany(PatientTestRegistration::class, 'testable');

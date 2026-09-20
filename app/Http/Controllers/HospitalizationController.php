@@ -38,8 +38,8 @@ class HospitalizationController extends Controller
      */
     public function index(Request $request)
     {
-        $branchId = auth()->user()->branch_id;
-        
+        $user = auth()->user();
+
         // Base query with eager loading and select optimization
         $query = Hospitalization::select([
             'hospitalizations.id',
@@ -49,20 +49,18 @@ class HospitalizationController extends Controller
             'hospitalizations.doctor_id',
             'hospitalizations.reason',
             'hospitalizations.created_at',
+            'hospitalizations.branch_id',
         ])
-            ->where('hospitalizations.branch_id', $branchId)
             ->where('hospitalizations.is_discharged', '0')
-            ->when(auth()->user()->department_id, function ($q) {
-                $q->whereHas('appointment', function ($appointmentQuery) {
-                    $appointmentQuery->where('department_id', auth()->user()->department_id);
-                });
-            })
             ->with([
                 'patient:id,name,id_card,father_name',
                 'room:id,name',
                 'bed:id,number',
-                'doctor:id,name'
+                'doctor:id,name',
+                'branch:id,name',
             ]);
+
+        $this->applyHospitalizationVisibilityScope($query, $user);
 
         // Optimized search using joins instead of whereHas for better performance
         if ($request->filled('search')) {
@@ -149,10 +147,11 @@ class HospitalizationController extends Controller
      */
     private function buildDischargedHospitalizationsQuery(Request $request)
     {
-        $branchId = auth()->user()->branch_id;
+        $user = auth()->user();
         $query = Hospitalization::query()
-            ->where('hospitalizations.branch_id', $branchId)
             ->where('hospitalizations.is_discharged', '1');
+
+        $this->applyHospitalizationVisibilityScope($query, $user);
 
         $patientId = (int) $request->input('patient_id', 0);
         if ($patientId > 0) {
@@ -983,7 +982,8 @@ $hospitalization->appointment->update([
      */
     public function roomManagement(Request $request)
     {
-        $branchId = auth()->user()->branch_id;
+        $user = auth()->user();
+        $branchId = $user->hasRole('super_admin') ? null : $user->branch_id;
         $rooms = Room::select('id', 'name')
             ->when($branchId, function ($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
@@ -1149,5 +1149,23 @@ $hospitalization->appointment->update([
         $returnRoomId = $request->input('return_to_room_id', $myRoomId);
         return redirect()->route('hospitalizations.roomManagement', ['room_id' => $returnRoomId])
             ->with('success', localize('global.rooms_swapped_successfully') ?: 'Rooms swapped successfully.');
+    }
+
+    /**
+     * Restrict hospitalizations to the user's branch/department unless they are super_admin.
+     */
+    private function applyHospitalizationVisibilityScope($query, $user): void
+    {
+        if ($user->hasRole('super_admin')) {
+            return;
+        }
+
+        $query->where('hospitalizations.branch_id', $user->branch_id);
+
+        if ($user->department_id) {
+            $query->whereHas('appointment', function ($appointmentQuery) use ($user) {
+                $appointmentQuery->where('department_id', $user->department_id);
+            });
+        }
     }
 }

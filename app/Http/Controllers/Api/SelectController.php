@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\PhysiotherapyType;
 use App\Models\Room;
+use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -57,52 +58,46 @@ class SelectController extends Controller
     }
 
     /**
-     * Get physiotherapists (users) for select2 dropdown
+     * Get physiotherapists (doctors) for select2 dropdown.
+     * Option ids are doctors.id (stored as physiotherapy_procedures.doctor_id).
      */
     public function getPhysiotherapists(Request $request): JsonResponse
     {
         try {
-            $query = User::query();
-            
-            // Apply search filter if provided
+            $query = Doctor::query()->where('active_status', true);
+
             if ($request->filled('search')) {
                 $searchTerm = trim($request->search);
-                $query->where(function (Builder $q) use ($searchTerm) {
-                    $q->where('name', 'like', "%{$searchTerm}%")
-                      ->orWhere('email', 'like', "%{$searchTerm}%");
-                });
+                $query->where('name', 'like', "%{$searchTerm}%");
             }
-            
-            // Filter by branch if user has branch_id
+
             if (auth()->check() && auth()->user()->branch_id) {
                 $query->where('branch_id', auth()->user()->branch_id);
             }
-            
-            // Get results
+
             $physiotherapists = $query
                 ->orderBy('name', 'asc')
                 ->limit(50)
-                ->get(['id', 'name', 'email'])
+                ->get(['id', 'name'])
                 ->map(function ($item) {
                     return [
                         'id' => $item->id,
-                        'text' => $item->name . ($item->email ? ' (' . $item->email . ')' : ''),
-                        // Legacy support
+                        'text' => $item->name,
                         'key' => $item->id,
-                        'value' => $item->name
+                        'value' => $item->name,
                     ];
                 });
-            
+
             return response()->json([
                 'results' => $physiotherapists,
-                'pagination' => ['more' => false]
+                'pagination' => ['more' => false],
             ]);
-            
         } catch (\Exception $e) {
-            \Log::error('Error fetching physiotherapists: ' . $e->getMessage());
+            \Log::error('Error fetching physiotherapists: '.$e->getMessage());
+
             return response()->json([
                 'results' => [],
-                'error' => 'Failed to fetch physiotherapists'
+                'error' => 'Failed to fetch physiotherapists',
             ], 500);
         }
     }

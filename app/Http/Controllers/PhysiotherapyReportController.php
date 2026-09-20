@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PhysiotherapyProcedure;
 use App\Models\PhysiotherapyType;
+use App\Models\Doctor;
 use App\Models\User;
 use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
@@ -99,7 +100,7 @@ class PhysiotherapyReportController extends Controller
     public function generateDetailedReport($startDate, $endDate)
     {
         return PhysiotherapyProcedure::whereBetween('start_date', [$startDate, $endDate])
-            ->with(['appointment.patient', 'physiotherapyType', 'physiotherapist'])
+            ->with(['appointment.patient', 'physiotherapyType', 'doctor'])
             ->orderBy('start_date', 'desc')
             ->get();
     }
@@ -128,22 +129,21 @@ class PhysiotherapyReportController extends Controller
 
     private function generateByPhysiotherapistReport($startDate, $endDate)
     {
-        // Get all users who have physiotherapy procedures in the date range
-        $physiotherapists = User::whereHas('physiotherapyProcedures', function($query) use ($startDate, $endDate) {
+        $physiotherapists = Doctor::whereHas('physiotherapyProcedures', function ($query) use ($startDate, $endDate) {
             $query->whereBetween('start_date', [$startDate, $endDate]);
         })
-        ->with(['physiotherapyProcedures' => function($query) use ($startDate, $endDate) {
+        ->with(['physiotherapyProcedures' => function ($query) use ($startDate, $endDate) {
             $query->whereBetween('start_date', [$startDate, $endDate]);
-        }])
+        }, 'user:id,email'])
         ->get()
-        ->map(function($physiotherapist) {
+        ->map(function ($physiotherapist) {
             $procedures = $physiotherapist->physiotherapyProcedures;
             $completedProcedures = $procedures->where('status', 'completed')->count();
             $totalProcedures = $procedures->count();
-            
+
             return [
                 'name' => $physiotherapist->name,
-                'email' => $physiotherapist->email,
+                'email' => $physiotherapist->user->email ?? null,
                 'total_procedures' => $totalProcedures,
                 'completed_procedures' => $completedProcedures,
                 'in_progress_procedures' => $procedures->where('status', 'in_progress')->count(),
@@ -153,12 +153,12 @@ class PhysiotherapyReportController extends Controller
                 'average_duration' => $totalProcedures > 0 ? round($procedures->sum('duration') / $totalProcedures, 2) : 0,
                 'completion_rate' => $totalProcedures > 0 ? round(($completedProcedures / $totalProcedures) * 100, 2) : 0,
                 'performance_score' => $totalProcedures > 0 ? round(($completedProcedures / $totalProcedures) * 100, 1) : 0,
-                'recent_procedures' => $procedures->sortByDesc('start_date')->take(5)
+                'recent_procedures' => $procedures->sortByDesc('start_date')->take(5),
             ];
         });
 
         return [
-            'physiotherapists' => $physiotherapists
+            'physiotherapists' => $physiotherapists,
         ];
     }
 

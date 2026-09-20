@@ -101,6 +101,11 @@ class Doctor extends Model
         return $this->hasMany(Prescription::class, 'doctor_id', 'id');
     }
 
+    public function physiotherapyProcedures()
+    {
+        return $this->hasMany(PhysiotherapyProcedure::class, 'doctor_id');
+    }
+
     public function visits()
     {
         return $this->hasMany(Visit::class, 'doctor_id', 'id');

@@ -15,7 +15,7 @@ class PhysiotherapyProcedure extends Model
     protected $fillable = [
         'appointment_id',
         'physiotherapy_type_id',
-        'physiotherapist_id',
+        'doctor_id',
         'type',
         'duration',
         'counter',
@@ -24,7 +24,7 @@ class PhysiotherapyProcedure extends Model
         'notes',
         'status',
         'start_date',
-        'end_date'
+        'end_date',
     ];
 
     protected $casts = [
@@ -62,9 +62,17 @@ class PhysiotherapyProcedure extends Model
         return $this->belongsTo(PhysiotherapyType::class);
     }
 
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id');
+    }
+
+    /**
+     * Legacy alias used by Blade views (`$procedure->physiotherapist->name`).
+     */
     public function physiotherapist()
     {
-        return $this->belongsTo(User::class, 'physiotherapist_id');
+        return $this->belongsTo(Doctor::class, 'doctor_id');
     }
 
     public function createdBy()
@@ -82,9 +90,6 @@ class PhysiotherapyProcedure extends Model
         return $this->hasOneThrough(Patient::class, Appointment::class, 'id', 'id', 'appointment_id', 'patient_id');
     }
 
-    /**
-     * Get the reviews for the physiotherapy procedure.
-     */
     public function reviews()
     {
         return $this->hasMany(PhysiotherapyProcedureReview::class);

@@ -261,6 +261,10 @@ class PhysiotherapyProcedureController extends Controller
                     'end_date' => $physiotherapyProcedure->end_date
                         ? verta($physiotherapyProcedure->end_date)->format('Y-m-d')
                         : null,
+                    'patient_name' => trim(
+                        ($physiotherapyProcedure->appointment?->patient?->name ?? '').' '.
+                        ($physiotherapyProcedure->appointment?->patient?->last_name ?? '')
+                    ) ?: 'N/A',
                     'physiotherapy_type_name' => $physiotherapyProcedure->physiotherapyType->name ?? 'N/A',
                     'physiotherapist_name' => $physiotherapyProcedure->doctor->name ?? 'N/A',
                     'created_by_name' => $physiotherapyProcedure->createdBy->name ?? 'N/A',

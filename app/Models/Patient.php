@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -70,6 +71,53 @@ class Patient extends Model
 
         return $user->hasRole(['super_admin', 'admin'])
             || $user->can('access-to-vip');
+    }
+
+    protected function shouldMaskVipIdentity(): bool
+    {
+        return $this->isVipRecord() && ! $this->currentUserCanAccessVip();
+    }
+
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
+
+    protected function lastName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
+
+    protected function fatherName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
+
+    protected function referralName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
+
+    protected function referralLastName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
+    }
+
+    protected function referralFatherName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+        );
     }
 
     public static function boot()

@@ -293,6 +293,7 @@ class PatientController extends Controller
     public function edit(Patient $patient)
     {
         $this->authorize('edit-patients');
+        $this->abortIfVipUnauthorized($patient);
 
         $relations = Relation::query()->orderBy('name', 'asc')->get();
         $provinces = Province::query()->orderBy('name_dr', 'asc')->get();
@@ -337,6 +338,10 @@ class PatientController extends Controller
     public function update(Request $request, Patient $patient)
     {
         $this->authorize('edit-patients');
+        $vipBlocked = $this->denyVipRecordAccess($request, $patient);
+        if ($vipBlocked !== null) {
+            return $vipBlocked;
+        }
 
         $data = $request->validate([
             'militery_type_id' => 'nullable|exists:militery_types,id',
@@ -430,6 +435,8 @@ class PatientController extends Controller
 
     public function destroy(Patient $patient)
     {
+        $this->abortIfVipUnauthorized($patient);
+
         $patient->delete();
 
         return redirect()->route('patients.index')->with('success', localize('global.patient_deleted_successfully.'));
@@ -709,6 +716,7 @@ class PatientController extends Controller
                 'patients.gender',
                 'patients.job_category',
                 'patients.type',
+                'patients.is_vip',
                 'patients.referred_by',
                 'patients.province_id',
                 'patients.district_id',
@@ -971,6 +979,29 @@ class PatientController extends Controller
         return $user->hasRole(['super_admin', 'admin']) || $user->can('access-to-vip');
     }
 
+    private function abortIfVipUnauthorized(Patient $patient): void
+    {
+        if ($patient->isVipRecord() && ! $this->currentUserCanAccessVip()) {
+            abort(403, localize('global.access_to_vip'));
+        }
+    }
+
+    private function denyVipRecordAccess(Request $request, Patient $patient)
+    {
+        if (! $patient->isVipRecord() || $this->currentUserCanAccessVip()) {
+            return null;
+        }
+
+        if ($request->ajax() || $request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.access_to_vip'),
+            ], 403);
+        }
+
+        abort(403, localize('global.access_to_vip'));
+    }
+
     private function denyVipIfUnauthorized(Request $request, array $data)
     {
         $wantsVip = $request->boolean('is_vip') || (string) ($data['type'] ?? '') === '4';
@@ -987,7 +1018,7 @@ class PatientController extends Controller
             ], 403);
         }
 
-        abort(403);
+        abort(403, localize('global.access_to_vip'));
     }
 
     private function nidUniqueRule(?Patient $patient = null, ?int $branchId = null): \Illuminate\Validation\Rules\Unique

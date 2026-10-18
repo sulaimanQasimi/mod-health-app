@@ -146,8 +146,10 @@
                                             <a href="{{ route('patients.show', $patient->id) }}"
                                                 class="btn btn-sm btn-icon text-primary" title="{{ localize('global.view') }}"><i class="bx bx-expand"></i></a>
                                             @can('edit-patients')
+                                                @if(! $patient->isVipRecord() || $patient->currentUserCanAccessVip())
                                             <a href="{{ route('patients.edit', $patient->id) }}"
                                                 class="btn btn-sm btn-icon text-warning" title="{{ localize('global.edit') }}"><i class="bx bx-edit"></i></a>
+                                                @endif
                                             @endcan
                                         </div>
                                     </td>

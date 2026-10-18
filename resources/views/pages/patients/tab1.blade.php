@@ -120,10 +120,24 @@
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="referred_by">{{ localize('global.referred_by') }}</label>
-                <select class="form-control select2" name="referred_by">
+                <select class="form-control select2" name="referred_by" id="referred_by" onchange="loadRecipientParts(this.value, 'recipient_part_id')">
+                    <option value="">{{ localize('global.select') }}</option>
                     @foreach ($recipients as $value)
                     <option {{ old('referred_by', $patient->referred_by ?? '') == $value->id ? 'selected' : ''}} value="{{ $value->id }}">
                         {{ $value->name }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                <label for="recipient_part_id">{{ localize('global.recipient_parts') }}</label>
+                <select class="form-control select2" name="recipient_part_id" id="recipient_part_id" {{ empty(old('referred_by', $patient->referred_by ?? '')) ? 'disabled' : '' }}>
+                    <option value="">{{ localize('global.select') }}</option>
+                    @foreach (($recipientParts ?? []) as $part)
+                    <option value="{{ $part->id }}" {{ old('recipient_part_id', $patient->recipient_part_id ?? '') == $part->id ? 'selected' : '' }}>
+                        {{ $part->name }} ({{ $part->code }})
                     </option>
                     @endforeach
                 </select>
@@ -171,6 +185,7 @@
         <input type="hidden" name="branch_id" value="{{ Auth::user()->branch_id }}">
         <input type="hidden" name="type" value="0">
 
+        @unless(isset($patient))
         <!-- Appointment Section -->
         <div class="col-12 mt-4">
             <h5 class="mb-3 bg-label-info p-2">{{ localize('global.create_appointment') }}</h5>
@@ -210,6 +225,7 @@
                 </div>
             </div>
         </div>
+        @endunless
 
     </div>
     <button type="submit" class="btn btn-primary">{{ isset($patient) ? localize('global.update') : localize('global.create') }}</button>

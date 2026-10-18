@@ -1096,6 +1096,15 @@ class PermissionSeeder extends Seeder
         );
 
         Permission::updateOrCreate(
+            ['name' => 'access-to-vip'],
+            [
+                'name_dr' => 'دسترسی به مریضان VIP',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
             ['name' => 'add-patient-labs'],
             [
                 'name_dr' => 'اضافه نمودن معاینات به مریض',

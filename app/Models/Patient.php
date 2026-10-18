@@ -40,10 +40,37 @@ class Patient extends Model
         'id_card',
         'job_category',
         'referred_by',
+        'commanded_by',
+        'recipient_part_id',
+        'referral_recipient_part_id',
+        'is_vip',
         'registration_date',
         'militery_type_id',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_vip' => 'boolean',
+        ];
+    }
+
+    public function isVipRecord(): bool
+    {
+        return (bool) ($this->attributes['is_vip'] ?? false);
+    }
+
+    public function currentUserCanAccessVip(): bool
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->hasRole(['super_admin', 'admin'])
+            || $user->can('access-to-vip');
+    }
 
     public static function boot()
     {
@@ -153,6 +180,16 @@ class Patient extends Model
     public function recipient()
     {
         return $this->belongsTo(Recipient::class, 'referred_by');
+    }
+
+    public function recipientPart()
+    {
+        return $this->belongsTo(RecipientPart::class, 'recipient_part_id');
+    }
+
+    public function referralRecipientPart()
+    {
+        return $this->belongsTo(RecipientPart::class, 'referral_recipient_part_id');
     }
 
     public function consultations()

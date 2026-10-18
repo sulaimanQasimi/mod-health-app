@@ -16,48 +16,67 @@
                     </div>
 
                     <div class="card-body">
+                        @php
+                            $canAccessVip = auth()->user()->hasRole(['super_admin', 'admin']) || auth()->user()->can('access-to-vip');
+                        @endphp
                         <div class="nav-align-top mb-4">
                             <ul class="nav nav-pills mb-3 nav-fill" role="tablist">
                                 <li class="nav-item">
                                     <button type="button"
-                                        class="nav-link active fs-4"
+                                        class="nav-link {{ $patient->type == '0' ? 'active' : '' }} fs-4"
                                         onclick="getTab('first')" role="tab" data-bs-toggle="tab" data-bs-target="#first"
                                         aria-controls="first"
-                                        aria-selected="true">
+                                        aria-selected="{{ $patient->type == '0' ? 'true' : 'false' }}">
                                         {{localize('global.mod')}}
                                     </button>
                                 </li>
                                 <li class="nav-item">
                                     <button type="button"
-                                        class="nav-link fs-4"
+                                        class="nav-link {{ $patient->type == '1' ? 'active' : '' }} fs-4"
                                         role="tab" onclick="getTab('second')" data-bs-toggle="tab" data-bs-target="#second"
                                         aria-controls="second"
-                                        aria-selected="false">
+                                        aria-selected="{{ $patient->type == '1' ? 'true' : 'false' }}">
                                         {{localize('global.recipient')}}
-
                                     </button>
                                 </li>
                                 <li class="nav-item">
                                     <button type="button"
-                                        class="nav-link fs-4"
-                                        role="tab" onclick="getTab('third')" data-bs-toggle="tab" data-bs-target="#third"
-                                        aria-controls="third"
-                                        aria-selected="false">
-                                        {{localize('global.family')}}
-
+                                        class="nav-link {{ $patient->type == '3' ? 'active' : '' }} fs-4"
+                                        role="tab" onclick="getTab('extraordinary')" data-bs-toggle="tab" data-bs-target="#extraordinary"
+                                        aria-controls="extraordinary"
+                                        aria-selected="{{ $patient->type == '3' ? 'true' : 'false' }}">
+                                        {{localize('global.extraordinary')}}
                                     </button>
                                 </li>
+                                <li class="nav-item">
+                                    <button type="button"
+                                        class="nav-link {{ $patient->type == '2' ? 'active' : '' }} fs-4"
+                                        role="tab" onclick="getTab('third')" data-bs-toggle="tab" data-bs-target="#third"
+                                        aria-controls="third"
+                                        aria-selected="{{ $patient->type == '2' ? 'true' : 'false' }}">
+                                        {{localize('global.family')}}
+                                    </button>
+                                </li>
+                                @if($canAccessVip)
+                                <li class="nav-item">
+                                    <button type="button"
+                                        class="nav-link {{ $patient->type == '4' ? 'active' : '' }} fs-4"
+                                        role="tab" onclick="getTab('vip')" data-bs-toggle="tab" data-bs-target="#vip"
+                                        aria-controls="vip"
+                                        aria-selected="{{ $patient->type == '4' ? 'true' : 'false' }}">
+                                        {{localize('global.vip')}}
+                                    </button>
+                                </li>
+                                @endif
                             </ul>
                             <div class="tab-content">
-                                <div class="tab-pane fade show active"
-                                    id="first" role="tabpanel">
-                                </div>
-                                <div class="tab-pane fade"
-                                    id="second" role="tabpanel">
-                                </div>
-                                <div class="tab-pane fade"
-                                    id="third" role="tabpanel">
-                                </div>
+                                <div class="tab-pane fade {{ $patient->type == '0' ? 'show active' : '' }}" id="first" role="tabpanel"></div>
+                                <div class="tab-pane fade {{ $patient->type == '1' ? 'show active' : '' }}" id="second" role="tabpanel"></div>
+                                <div class="tab-pane fade {{ $patient->type == '3' ? 'show active' : '' }}" id="extraordinary" role="tabpanel"></div>
+                                <div class="tab-pane fade {{ $patient->type == '2' ? 'show active' : '' }}" id="third" role="tabpanel"></div>
+                                @if($canAccessVip)
+                                <div class="tab-pane fade {{ $patient->type == '4' ? 'show active' : '' }}" id="vip" role="tabpanel"></div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -67,16 +86,20 @@
     </div>
 @endsection
 @php
-    if (isset($patient) && $patient->type == '0') {
+    $canAccessVipForTab = auth()->user()->hasRole(['super_admin', 'admin']) || auth()->user()->can('access-to-vip');
+    if ($patient->type == '0') {
         $tab_name = 'first';
-    } elseif (isset($patient) && $patient->type == '1') {
+    } elseif ($patient->type == '1') {
         $tab_name = 'second';
-    } elseif (isset($patient) && $patient->type == '2') {
+    } elseif ($patient->type == '3') {
+        $tab_name = 'extraordinary';
+    } elseif ($patient->type == '2') {
         $tab_name = 'third';
+    } elseif ($patient->type == '4' && $canAccessVipForTab) {
+        $tab_name = 'vip';
     } else {
         $tab_name = 'first';
     }
-
 @endphp
 @section('scripts')
     <script>
@@ -165,10 +188,48 @@
             }
         }
 
+        function loadRecipientParts(recipientId, targetSelectId) {
+            const partSelect = document.getElementById(targetSelectId);
+            if (!partSelect) {
+                return;
+            }
+
+            if (!recipientId) {
+                partSelect.innerHTML = '<option value="">{{ localize("global.select") }}</option>';
+                partSelect.disabled = true;
+                $(partSelect).trigger('change');
+                return;
+            }
+
+            partSelect.innerHTML = '<option value="">{{ localize("global.loading") }}...</option>';
+            partSelect.disabled = true;
+
+            $.ajax({
+                url: '/patients/recipient-parts/' + recipientId,
+                type: 'GET',
+                success: function (response) {
+                    partSelect.innerHTML = '<option value="">{{ localize("global.select") }}</option>';
+                    if (response.success && response.recipientParts) {
+                        response.recipientParts.forEach(function (part) {
+                            const option = document.createElement('option');
+                            option.value = part.id;
+                            option.textContent = part.name + ' (' + part.code + ')';
+                            partSelect.appendChild(option);
+                        });
+                    }
+                    partSelect.disabled = false;
+                    $(partSelect).trigger('change');
+                    initializeSelect2WithAutoFocus();
+                },
+                error: function () {
+                    partSelect.innerHTML = '<option value="">{{ localize("global.select") }}</option>';
+                    partSelect.disabled = true;
+                }
+            });
+        }
+
         function getTab(tab_type) {
-            $('#first').html('');
-            $('#second').html('');
-            $('#third').html('');
+            $('#first, #second, #extraordinary, #third, #vip').html('');
             $.ajax({
                 url: " {{url('patients/get-tab')}}",
                 type: 'GET',
@@ -177,22 +238,18 @@
                     patient_id: '{{$patient->id}}',
                 },
                 success: function (data) {
-                    // Update the container with the response
                     var tab_id = '#' + tab_type;
                     $(tab_id).html(data);
-                    
-                    // Initialize select2 with search functionality and auto focus
+
                     initializeSelect2WithAutoFocus();
-                    
-                    // Initialize changeType function for job_category if it exists
+
                     setTimeout(function() {
                         const jobCategorySelect = document.getElementById('job_category');
                         if (jobCategorySelect && jobCategorySelect.value !== '') {
                             changeType(jobCategorySelect.value);
                         }
                     }, 100);
-                    
-                    // Initialize age dropdowns for the loaded tab
+
                     var tabNum = '';
                     if (tab_type === 'first') {
                         tabNum = 'tab1';
@@ -200,22 +257,23 @@
                         tabNum = 'tab2';
                     } else if (tab_type === 'third') {
                         tabNum = 'tab3';
+                    } else if (tab_type === 'extraordinary') {
+                        tabNum = 'tab4';
+                    } else if (tab_type === 'vip') {
+                        tabNum = 'tab5';
                     }
-                    
+
                     if (tabNum) {
-                        // Parse existing age value if present
                         var ageInput = document.getElementById('age_' + tabNum);
                         if (ageInput && ageInput.value) {
                             parseAgeToDropdowns(tabNum, ageInput.value);
                         }
-                        // Update age value from input fields
                         updateAgeValue(tabNum);
-                        
-                        // Add oninput event listeners for real-time updates
+
                         var dayInput = document.getElementById('age_day_' + tabNum);
                         var monthInput = document.getElementById('age_month_' + tabNum);
                         var yearInput = document.getElementById('age_year_' + tabNum);
-                        
+
                         if (dayInput) {
                             dayInput.addEventListener('input', function() { updateAgeValue(tabNum); });
                         }
@@ -427,16 +485,18 @@
         }
 
         // Bind AJAX form submission to all patient forms
-        $(document).on('submit', '#patient-form-tab1, #patient-form-tab2, #patient-form-tab3', function(e) {
+        $(document).on('submit', '#patient-form-tab1, #patient-form-tab2, #patient-form-tab3, #patient-form-tab4, #patient-form-tab5', function(e) {
             e.preventDefault();
             const formId = $(this).attr('id');
-            // Update age value before submission
-            if (formId === 'patient-form-tab1') {
-                updateAgeValue('tab1');
-            } else if (formId === 'patient-form-tab2') {
-                updateAgeValue('tab2');
-            } else if (formId === 'patient-form-tab3') {
-                updateAgeValue('tab3');
+            const tabMap = {
+                'patient-form-tab1': 'tab1',
+                'patient-form-tab2': 'tab2',
+                'patient-form-tab3': 'tab3',
+                'patient-form-tab4': 'tab4',
+                'patient-form-tab5': 'tab5'
+            };
+            if (tabMap[formId]) {
+                updateAgeValue(tabMap[formId]);
             }
             submitPatientForm(formId);
         });

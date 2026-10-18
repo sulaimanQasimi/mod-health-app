@@ -11,11 +11,13 @@ use App\Models\Patient;
 use App\Models\PrintedNumber;
 use App\Models\Province;
 use App\Models\Recipient;
+use App\Models\RecipientPart;
 use App\Models\Relation;
 use App\Models\MiliteryType;
 use App\Models\User;
 use Carbon\Carbon;
 use HanifHefaz\Dcter\Dcter;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
@@ -129,7 +131,7 @@ class PatientController extends Controller
             'age_day' => 'nullable|integer|min:0|max:31',
             'age_month' => 'nullable|integer|min:0|max:11',
             'age_year' => 'nullable|integer|min:0|max:150',
-            'nid' => 'required',
+            'nid' => ['required', $this->nidUniqueRule(branchId: (int) $request->branch_id)],
             'province_id' => 'required',
             'district_id' => 'required',
             'relation_id' => 'nullable',
@@ -146,14 +148,24 @@ class PatientController extends Controller
             'referral_id_card' => 'nullable',
             'referral_phone' => 'nullable',
             'referral_recipient' => 'nullable',
+            'referral_recipient_part_id' => 'nullable|exists:recipient_parts,id',
             'type' => 'nullable',
+            'is_vip' => 'nullable|boolean',
             'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
+            'commanded_by' => 'nullable|string|max:255',
+            'recipient_part_id' => 'nullable|exists:recipient_parts,id',
             // Appointment validation
             'appointment_doctor_id' => 'nullable|exists:doctors,id',
             'appointment_department_id' => 'required_with:appointment_doctor_id|exists:departments,id'
         ]);
+
+        $vipDenied = $this->denyVipIfUnauthorized($request, $data);
+        if ($vipDenied !== null) {
+            return $vipDenied;
+        }
+        $data['is_vip'] = $request->boolean('is_vip') || (string) ($data['type'] ?? '') === '4';
 
         // Format age from dropdowns if provided (priority: year > month > day)
         if (!$data['age'] || empty($data['age'])) {
@@ -336,7 +348,7 @@ class PatientController extends Controller
             'age_day' => 'nullable|integer|min:0|max:31',
             'age_month' => 'nullable|integer|min:0|max:11',
             'age_year' => 'nullable|integer|min:0|max:150',
-            'nid' => ['required', Rule::unique('patients', 'nid')->ignore($patient->id)],
+            'nid' => ['required', $this->nidUniqueRule($patient)],
             'province_id' => 'required',
             'district_id' => 'required',
             'relation_id' => 'nullable',
@@ -353,11 +365,23 @@ class PatientController extends Controller
             'referral_id_card' => 'nullable',
             'referral_phone' => 'nullable',
             'referral_recipient' => 'nullable',
+            'referral_recipient_part_id' => 'nullable|exists:recipient_parts,id',
             'type' => 'nullable',
+            'is_vip' => 'nullable|boolean',
             'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
+            'commanded_by' => 'nullable|string|max:255',
+            'recipient_part_id' => 'nullable|exists:recipient_parts,id',
         ]);
+
+        $vipDenied = $this->denyVipIfUnauthorized($request, $data);
+        if ($vipDenied !== null) {
+            return $vipDenied;
+        }
+        if ($request->has('is_vip') || (string) ($data['type'] ?? '') === '4') {
+            $data['is_vip'] = $request->boolean('is_vip') || (string) ($data['type'] ?? '') === '4';
+        }
 
         // Format age from dropdowns if provided (priority: year > month > day)
         if (!$data['age'] || empty($data['age'])) {
@@ -530,6 +554,8 @@ class PatientController extends Controller
         $relations = Relation::all();
         $doctors = Doctor::all();
         $departments = Department::where('category_id', auth()->user()->category_id)->get();
+        $recipientParts = collect();
+        $referralRecipientParts = collect();
 
         $tab_type = $request->tab_type;
         $patient_id = $request->patient_id;
@@ -538,6 +564,7 @@ class PatientController extends Controller
         $ageYear = null;
         $ageMonth = null;
         $ageDay = null;
+        $patient = null;
 
         if ($patient_id != '') {
             $patient = Patient::find($patient_id);
@@ -553,22 +580,60 @@ class PatientController extends Controller
                 }
             }
 
-            if ($tab_type == 'first') {
-                return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
-            } elseif ($tab_type == 'second') {
-                return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
-            } elseif ($tab_type == 'third') {
-                return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
+            if ($patient && $patient->referred_by) {
+                $recipientParts = RecipientPart::query()
+                    ->where('recipient_id', $patient->referred_by)
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'code']);
+            }
+
+            if ($patient && $patient->referral_recipient) {
+                $referralRecipientParts = RecipientPart::query()
+                    ->where('recipient_id', $patient->referral_recipient)
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'code']);
             }
         }
 
-        if ($tab_type == 'first') {
-            return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
-        } elseif ($tab_type == 'second') {
-            return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
-        } elseif ($tab_type == 'third') {
-            return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
+        $viewData = compact(
+            'recipients',
+            'provinces',
+            'districts',
+            'relations',
+            'doctors',
+            'departments',
+            'ageYear',
+            'ageMonth',
+            'ageDay',
+            'recipientParts',
+            'referralRecipientParts'
+        );
+
+        if ($patient) {
+            $viewData['patient'] = $patient;
         }
+
+        return match ($tab_type) {
+            'first' => view('pages.patients.tab1', $viewData),
+            'second' => view('pages.patients.tab2', $viewData),
+            'third' => view('pages.patients.tab3', $viewData),
+            'extraordinary' => view('pages.patients.tab4', $viewData),
+            'vip' => view('pages.patients.tab5', $viewData),
+            default => response('', 404),
+        };
+    }
+
+    public function recipientParts(int $recipientId): JsonResponse
+    {
+        $parts = RecipientPart::query()
+            ->where('recipient_id', $recipientId)
+            ->orderBy('name')
+            ->get(['id', 'name', 'code']);
+
+        return response()->json([
+            'success' => true,
+            'recipientParts' => $parts,
+        ]);
     }
 
     public function getDoctorsByDepartment($departmentId, Request $request)
@@ -893,5 +958,51 @@ class PatientController extends Controller
         $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
+    }
+
+    private function currentUserCanAccessVip(): bool
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->hasRole(['super_admin', 'admin']) || $user->can('access-to-vip');
+    }
+
+    private function denyVipIfUnauthorized(Request $request, array $data)
+    {
+        $wantsVip = $request->boolean('is_vip') || (string) ($data['type'] ?? '') === '4';
+
+        if (! $wantsVip || $this->currentUserCanAccessVip()) {
+            return null;
+        }
+
+        if ($request->ajax() || $request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.access_to_vip'),
+                'errors' => ['is_vip' => [localize('global.access_to_vip')]],
+            ], 403);
+        }
+
+        abort(403);
+    }
+
+    private function nidUniqueRule(?Patient $patient = null, ?int $branchId = null): \Illuminate\Validation\Rules\Unique
+    {
+        $rule = Rule::unique(Patient::class, 'nid');
+
+        if ($patient) {
+            $rule->ignore($patient);
+            $branchId = (int) $patient->branch_id;
+        }
+
+        if ($branchId) {
+            $rule->where('branch_id', $branchId);
+        }
+
+        return $rule;
     }
 }

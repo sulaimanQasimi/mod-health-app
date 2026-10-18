@@ -14,10 +14,13 @@
                 $wfStep2Done = false;
                 $wfStep3Done = false;
                 if ($bloodBank->status === 'approved') {
-                    $wfStep1Done = true;
+                    $wfStep1Done = $bloodBank->tests->isEmpty()
+                        || $bloodBank->tests->every(fn ($t) => $t->result !== null);
                     $wfStep2Done = $bloodBank->patientSamples->isNotEmpty();
                     $wfStep3Done = $remainingQty < 1 || $reservedCompatibleQty >= $remainingQty;
-                    if (! $wfStep2Done) {
+                    if (! $wfStep1Done) {
+                        $wfCurrentStep = 1;
+                    } elseif (! $wfStep2Done) {
                         $wfCurrentStep = 2;
                     } elseif (! $wfStep3Done) {
                         $wfCurrentStep = 3;
@@ -784,6 +787,13 @@
                                                 {{ localize('global.insufficient_blood_stock') }}
                                             </div>
                                         @endif
+                                        <div class="form-check mt-3 mb-2">
+                                            <input class="form-check-input" type="checkbox" name="mark_complete" value="1"
+                                                id="markComplete{{ $bloodBank->id }}">
+                                            <label class="form-check-label" for="markComplete{{ $bloodBank->id }}">
+                                                {{ localize('global.blood_delivery_mark_complete') }}
+                                            </label>
+                                        </div>
                                         <button type="submit" class="btn btn-success mt-2">
                                             <i class="bx bxs-check-circle"></i> {{ localize('global.complete') }}
                                         </button>

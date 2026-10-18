@@ -276,9 +276,14 @@ class BloodBankController extends Controller
 
         $unitIds = $request->input('unit_ids', []);
         $unitIds = is_array($unitIds) ? array_values(array_filter(array_map('intval', $unitIds))) : [];
+        $markComplete = $request->boolean('mark_complete');
 
         try {
-            app(BloodBankStockService::class)->deliverRequest($bloodBank, count($unitIds) > 0 ? $unitIds : null);
+            app(BloodBankStockService::class)->deliverRequest(
+                $bloodBank,
+                count($unitIds) > 0 ? $unitIds : null,
+                $markComplete
+            );
         } catch (\Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
@@ -631,7 +636,7 @@ class BloodBankController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($bloodBank, $crossmatch) {
+            DB::transaction(function () use ($bloodBank, $crossmatch, $request) {
                 $unit = BloodUnit::where('id', $crossmatch->blood_unit_id)
                     ->where('branch_id', $bloodBank->branch_id)
                     ->lockForUpdate()
@@ -639,6 +644,13 @@ class BloodBankController extends Controller
 
                 if (! $unit || ! in_array($unit->status, ['available', 'reserved'], true) || $unit->expires_at <= now()) {
                     throw new \RuntimeException(localize('global.crossmatch_unit_not_reservable'));
+                }
+
+                $bloodBank->loadMissing(['bloodUnits', 'crossmatches']);
+                $unitMl = $bloodBank->effectiveUnitVolumeMl($unit);
+                $alreadyReservedMl = $bloodBank->reservedCompatibleVolumeMl();
+                if ($alreadyReservedMl + $unitMl > $bloodBank->remainingVolumeMl()) {
+                    throw new \RuntimeException(localize('global.crossmatch_reserve_volume_exceeds_remaining'));
                 }
 
                 // Pivot table has a global unique on blood_unit_id: a unit may appear only once in blood_bank_unit.

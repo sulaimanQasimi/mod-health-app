@@ -148,11 +148,11 @@ class DepotReportController extends Controller
         }
 
         return $this->streamExcel('depot_requests_report.xlsx', [
-            'Number', 'Status', 'Requesting Depot', 'Source Depot', 'Item', 'Quantity', 'Requested By', 'Created At',
+            'Number', 'Status', 'Destination', 'Source Depot', 'Item', 'Quantity', 'Requested By', 'Created At',
         ], $items, function ($item, $row, $sheet) {
             $sheet->setCellValue('A' . $row, $item->request_number);
             $sheet->setCellValue('B' . $row, $item->status);
-            $sheet->setCellValue('C' . $row, $item->requestingDepot?->name ?? '-');
+            $sheet->setCellValue('C' . $row, $item->destinationLabel());
             $sheet->setCellValue('D' . $row, $item->sourceDepot?->name ?? '-');
             $sheet->setCellValue('E' . $row, $item->itemName());
             $sheet->setCellValue('F' . $row, $item->quantity);
@@ -202,16 +202,32 @@ class DepotReportController extends Controller
 
     private function buildRequestQuery(Request $request)
     {
-        $query = DepotRequest::with(['requestingDepot', 'sourceDepot', 'medicine', 'tool', 'requestedBy']);
+        $query = DepotRequest::with([
+            'requestingDepot',
+            'pharmacy',
+            'sourceDepot',
+            'items.medicine',
+            'items.tool',
+            'requestedBy',
+        ]);
 
         if ($request->filled('requesting_depot_id')) {
             $query->where('requesting_depot_id', $request->requesting_depot_id);
+        }
+        if ($request->filled('pharmacy_id')) {
+            $query->where('pharmacy_id', $request->pharmacy_id);
         }
         if ($request->filled('source_depot_id')) {
             $query->where('source_depot_id', $request->source_depot_id);
         }
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+        if ($request->filled('medicine_id')) {
+            $query->whereHas('items', fn ($q) => $q->where('medicine_id', $request->medicine_id));
+        }
+        if ($request->filled('tool_id')) {
+            $query->whereHas('items', fn ($q) => $q->where('tool_id', $request->tool_id));
         }
         if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);

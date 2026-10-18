@@ -15,10 +15,25 @@
         <div class="card-body">
             <form method="GET" class="row g-3">
                 <div class="col-md-2">
+                    <select name="destination_type" class="form-select">
+                        <option value="">{{ localize('global.depot.destination_type') ?? 'Destination' }}</option>
+                        <option value="depot" @selected(request('destination_type') === 'depot')>{{ localize('global.depot.depot') ?? 'Depot' }}</option>
+                        <option value="pharmacy" @selected(request('destination_type') === 'pharmacy')>{{ localize('global.pharmacy') ?? 'Pharmacy' }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
                     <select name="requesting_depot_id" class="form-select select2">
                         <option value="">{{ localize('global.depot.requesting_depot') }}</option>
                         @foreach($depots as $depot)
                             <option value="{{ $depot->id }}" @selected(request('requesting_depot_id') == $depot->id)>{{ $depot->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="pharmacy_id" class="form-select select2">
+                        <option value="">{{ localize('global.pharmacy') }}</option>
+                        @foreach($pharmacies as $pharmacy)
+                            <option value="{{ $pharmacy->id }}" @selected(request('pharmacy_id') == $pharmacy->id)>{{ $pharmacy->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -38,6 +53,7 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="col-md-2"><input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="{{ localize('global.search') }}"></div>
                 <div class="col-md-2"><input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control"></div>
                 <div class="col-md-2"><input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control"></div>
                 <div class="col-md-2"><button class="btn btn-secondary w-100" type="submit">{{ localize('global.search') }}</button></div>
@@ -54,7 +70,8 @@
                     <tr>
                         <th>{{ localize('global.number') }}</th>
                         <th>{{ localize('global.status') }}</th>
-                        <th>{{ localize('global.depot.requesting_depot') }}</th>
+                        <th>{{ localize('global.depot.destination_type') ?? 'Destination' }}</th>
+                        <th>{{ localize('global.depot.requesting_depot') }} / {{ localize('global.pharmacy') }}</th>
                         <th>{{ localize('global.depot.source_depot') }}</th>
                         <th>{{ localize('global.item') }}</th>
                         <th>{{ localize('global.quantity') }}</th>
@@ -67,15 +84,19 @@
                         <tr>
                             <td>{{ $item->request_number }}</td>
                             <td><span class="badge bg-secondary">{{ ucfirst($item->status) }}</span></td>
-                            <td>{{ $item->requestingDepot?->name }}</td>
+                            <td>{{ $item->isPharmacyRequest() ? (localize('global.pharmacy') ?? 'Pharmacy') : (localize('global.depot.depot') ?? 'Depot') }}</td>
+                            <td>{{ $item->destinationLabel() }}</td>
                             <td>{{ $item->sourceDepot?->name }}</td>
-                            <td>{{ $item->itemName() }}</td>
-                            <td>{{ $item->quantity }}</td>
+                            <td>{{ $item->itemsSummary() }}</td>
+                            <td>{{ $item->totalQuantity() }} <small class="text-muted">({{ $item->items_count }})</small></td>
                             <td>{{ $item->created_at ? verta($item->created_at)->format('Y-m-d') : '-' }}</td>
-                            <td><a href="{{ route('depots.requests.show', $item) }}" class="btn btn-sm btn-primary"><i class="bx bx-show-alt"></i></a></td>
+                            <td class="text-nowrap">
+                                <a href="{{ route('depots.requests.show', $item) }}" class="btn btn-sm btn-primary"><i class="bx bx-show-alt"></i></a>
+                                <a href="{{ route('depots.requests.print', $item) }}" class="btn btn-sm btn-outline-secondary" target="_blank"><i class="bx bx-printer"></i></a>
+                            </td>
                         </tr>
                     @empty
-                        <tr><td colspan="8" class="text-center">{{ localize('global.no_data_found') }}</td></tr>
+                        <tr><td colspan="9" class="text-center">{{ localize('global.no_data_found') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>

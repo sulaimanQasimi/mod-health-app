@@ -233,41 +233,7 @@
                                                         value="{{ $appointment->department_id }}">
                                                     <input type="hidden" name="branch_id"
                                                         value="{{ $appointment->branch_id }}">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">{{ localize('global.blood_group') }}</label>
-                                                        <select class="form-select" name="group" required>
-                                                            <option value="">{{ localize('global.select') }}</option>
-                                                            <option value="A">A</option>
-                                                            <option value="B">B</option>
-                                                            <option value="AB">AB</option>
-                                                            <option value="O">O</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">{{ localize('global.blood_rh') }}</label>
-                                                        <select class="form-select" name="rh" required>
-                                                            <option value="">{{ localize('global.select') }}</option>
-                                                            <option value="+">+</option>
-                                                            <option value="-">-</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">{{ localize('global.blood_type') }}</label>
-                                                        <select class="form-select" name="type" required>
-                                                            <option value="">{{ localize('global.select') }}</option>
-                                                            <option value="RBC">RBC</option>
-                                                            <option value="PRBC">PRBC</option>
-                                                            <option value="Fresh">Fresh</option>
-                                                            <option value="Platelets">Platelets</option>
-                                                            <option value="Plasma">Plasma</option>
-                                                            <option value="Whole Blood">Whole Blood</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">{{ localize('global.quantity') }}</label>
-                                                        <input type="number" min="1" class="form-control" name="quantity"
-                                                            required>
-                                                    </div>
+                                                    @include('pages.blood_banks.partials.request_form_fields', ['fieldId' => 'appointment'.$appointment->id])
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
@@ -287,6 +253,10 @@
                                                 <th>{{ localize('global.rh') }}</th>
                                                 <th>{{ localize('global.blood_type') }}</th>
                                                 <th>{{ localize('global.quantity') }}</th>
+                                                <th>{{ localize('global.hemoglobin') }}</th>
+                                                <th>{{ localize('global.hematocrit') }}</th>
+                                                <th>{{ localize('global.clotting_factor') }}</th>
+                                                <th>{{ localize('global.tests') }}</th>
                                                 <th>{{ localize('global.status') }}</th>
                                                 <th>{{ localize('global.actions') }}</th>
                                             </tr>
@@ -294,10 +264,14 @@
                                         <tbody>
                                             @forelse ($appointment->bloodBanks as $bloodBank)
                                                 <tr>
-                                                    <td>{{ $bloodBank->group }}</td>
-                                                    <td>{{ $bloodBank->rh }}</td>
+                                                    <td>{{ $bloodBank->group ?? '—' }}</td>
+                                                    <td>{{ $bloodBank->rh ?? '—' }}</td>
                                                     <td>{{ $bloodBank->type }}</td>
-                                                    <td>{{ $bloodBank->quantity }}</td>
+                                                    <td>{{ $bloodBank->quantity ?? '—' }}</td>
+                                                    <td>{{ $bloodBank->hemoglobin ?? '—' }}</td>
+                                                    <td>{{ $bloodBank->hematocrit ?? '—' }}</td>
+                                                    <td>{{ $bloodBank->factor ?? '—' }}</td>
+                                                    <td>{{ $bloodBank->tests->pluck('test_name')->filter()->implode(', ') ?: '—' }}</td>
                                                     <td>{{ $bloodBank->status }}</td>
                                                     <td>
                                                         <a href="{{ route('blood_banks.show', $bloodBank->id) }}"
@@ -315,7 +289,7 @@
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="6" class="text-center text-muted">
+                                                    <td colspan="10" class="text-center text-muted">
                                                         {{ localize('global.not_referred_to_bloodBank') }}</td>
                                                 </tr>
                                             @endforelse

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DepotController;
+use App\Http\Controllers\DepotMovementController;
 use App\Http\Controllers\DepotReportController;
 use App\Http\Controllers\DepotRequestController;
 use App\Http\Controllers\DepotTransactionController;
@@ -722,6 +723,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('{bloodBank}/blood-check', [BloodBankController::class, 'storeBloodCheck'])
             ->middleware('permission:receive-blood-units|manage-blood-inventory')
             ->name('blood_check.store');
+        Route::post('{bloodBank}/tests/{bloodBankTest}/fill', [BloodBankController::class, 'fillBloodBankTest'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('tests.fill');
         Route::post('{bloodBank}/crossmatch/units/{bloodUnit}', [BloodBankController::class, 'saveCrossmatch'])
             ->middleware('permission:receive-blood-units|manage-blood-inventory')
             ->name('crossmatch.save');
@@ -1422,6 +1426,15 @@ Route::prefix('depots')->middleware(['auth'])->name('depots.')->group(function (
     Route::post('requests', [DepotRequestController::class, 'store'])
         ->middleware('permission:depot.request.create')
         ->name('requests.store');
+    Route::get('requests/{depotRequest}/print', [DepotRequestController::class, 'print'])
+        ->middleware('permission:depot.request.create|depot.request.approve|depot.request.fulfill')
+        ->name('requests.print');
+    Route::get('requests/{depotRequest}/edit', [DepotRequestController::class, 'edit'])
+        ->middleware('permission:depot.request.create')
+        ->name('requests.edit');
+    Route::put('requests/{depotRequest}', [DepotRequestController::class, 'update'])
+        ->middleware('permission:depot.request.create')
+        ->name('requests.update');
     Route::get('requests/{depotRequest}', [DepotRequestController::class, 'show'])
         ->middleware('permission:depot.request.create|depot.request.approve|depot.request.fulfill')
         ->name('requests.show');
@@ -1460,20 +1473,20 @@ Route::prefix('depots')->middleware(['auth'])->name('depots.')->group(function (
         ->middleware('permission:depot.transaction.create')
         ->name('transactions.cancel');
 
-    Route::get('movements/depot-to-depot', [DepotTransactionController::class, 'depotToDepot'])
-        ->middleware('permission:depot.movement.depot_to_depot')
+    Route::get('movements/depot-to-depot', [DepotMovementController::class, 'depotToDepot'])
+        ->middleware('permission:depot.request.create|depot.movement.depot_to_depot')
         ->name('movements.depot_to_depot');
     Route::post('movements/depot-to-depot', [DepotTransactionController::class, 'storeDepotToDepot'])
         ->middleware('permission:depot.movement.depot_to_depot')
         ->name('movements.depot_to_depot.store');
-    Route::get('movements/depot-to-pharmacy', [DepotTransactionController::class, 'depotToPharmacy'])
-        ->middleware('permission:depot.movement.depot_to_pharmacy')
+    Route::get('movements/depot-to-pharmacy', [DepotMovementController::class, 'depotToPharmacy'])
+        ->middleware('permission:depot.movement.depot_to_pharmacy|depot.request.create')
         ->name('movements.depot_to_pharmacy');
     Route::post('movements/depot-to-pharmacy', [DepotTransactionController::class, 'storeDepotToPharmacy'])
         ->middleware('permission:depot.movement.depot_to_pharmacy')
         ->name('movements.depot_to_pharmacy.store');
     Route::get('stock/available', [DepotTransactionController::class, 'stock'])
-        ->middleware('permission:depot.transaction.view')
+        ->middleware('permission:depot.transaction.view|depot.request.create')
         ->name('stock.available');
 });
 

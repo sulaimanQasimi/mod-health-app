@@ -310,6 +310,7 @@ class HospitalizationController extends Controller
             'appointment',
             'bloodBanks.patient',
             'bloodBanks.department',
+            'bloodBanks.tests',
             'vitalSigns.vitalSignType',
             'vitalSigns.schedules',
         ]);

@@ -4,7 +4,7 @@
         <tr>
             <th>{{ localize('global.number') }}</th>
             <th>{{ localize('global.status') }}</th>
-            <th>{{ localize('global.depot.requesting_depot') }}</th>
+            <th>{{ localize('global.depot.requesting_depot') }} / {{ localize('global.pharmacy') }}</th>
             <th>{{ localize('global.depot.source_depot') }}</th>
             <th>{{ localize('global.item') }}</th>
             <th>{{ localize('global.quantity') }}</th>
@@ -16,7 +16,7 @@
             <tr>
                 <td>{{ $item->request_number }}</td>
                 <td>{{ $item->status }}</td>
-                <td>{{ $item->requestingDepot?->name }}</td>
+                <td>{{ $item->destinationLabel() }}</td>
                 <td>{{ $item->sourceDepot?->name }}</td>
                 <td>{{ $item->itemName() }}</td>
                 <td>{{ $item->quantity }}</td>

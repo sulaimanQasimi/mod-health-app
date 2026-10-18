@@ -39,19 +39,19 @@
                                 <li class="nav-item">
                                     <button type="button"
                                         class="nav-link fs-4"
-                                        role="tab" onclick="getTab('extraordinary')" data-bs-toggle="tab" data-bs-target="#extraordinary"
-                                        aria-controls="extraordinary"
+                                        role="tab" onclick="getTab('third')" data-bs-toggle="tab" data-bs-target="#third"
+                                        aria-controls="third"
                                         aria-selected="false">
-                                        {{localize('global.extraordinary')}}
+                                        {{localize('global.family')}}
                                     </button>
                                 </li>
                                 <li class="nav-item">
                                     <button type="button"
                                         class="nav-link fs-4"
-                                        role="tab" onclick="getTab('third')" data-bs-toggle="tab" data-bs-target="#third"
-                                        aria-controls="third"
+                                        role="tab" onclick="getTab('extraordinary')" data-bs-toggle="tab" data-bs-target="#extraordinary"
+                                        aria-controls="extraordinary"
                                         aria-selected="false">
-                                        {{localize('global.family')}}
+                                        {{localize('global.extraordinary')}}
                                     </button>
                                 </li>
                                 @if($canAccessVip)

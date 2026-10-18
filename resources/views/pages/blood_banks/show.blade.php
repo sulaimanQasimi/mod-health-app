@@ -179,6 +179,84 @@
                                     <div class="border rounded bg-body-secondary p-2">
                                         @include('pages.blood_banks.partials.request_summary')
                                     </div>
+
+                                    <div class="border rounded p-3 mt-3">
+                                        <h6 class="mb-3">
+                                            <i class="bx bx-test-tube me-1"></i>{{ localize('global.blood_bank_requested_tests') }}
+                                        </h6>
+                                        @if ($bloodBank->tests->isEmpty())
+                                            <p class="text-muted mb-0">{{ localize('global.blood_bank_tests_empty') }}</p>
+                                        @else
+                                            @php
+                                                $filledTests = $bloodBank->tests->filter(fn ($t) => $t->result);
+                                                $pendingTests = $bloodBank->tests->filter(fn ($t) => ! $t->result);
+                                            @endphp
+                                            @if ($filledTests->isNotEmpty())
+                                                <div class="table-responsive mb-3">
+                                                    <table class="table table-sm">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>{{ localize('global.test_name') }}</th>
+                                                                <th>{{ localize('global.result') }}</th>
+                                                                <th>{{ localize('global.notes') }}</th>
+                                                                <th>{{ localize('global.filled_test_by') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($filledTests as $test)
+                                                                <tr>
+                                                                    <td>{{ $test->test_name }}</td>
+                                                                    <td>
+                                                                        <span class="badge {{ $test->result === 'positive' ? 'bg-danger' : 'bg-success' }}">
+                                                                            {{ localize('global.'.$test->result) }}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td>{{ $test->notes ?? '—' }}</td>
+                                                                    <td>{{ $test->filledTestBy?->name ?? '—' }}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            @endif
+                                            @if ($bloodBank->status === 'approved' && $pendingTests->isNotEmpty())
+                                                @canany(['receive-blood-units', 'manage-blood-inventory'])
+                                                    @foreach ($pendingTests as $test)
+                                                        <form action="{{ route('blood_banks.tests.fill', [$bloodBank->id, $test->id]) }}"
+                                                            method="POST" class="border rounded p-3 mb-2">
+                                                            @csrf
+                                                            <div class="fw-semibold mb-2">{{ $test->test_name }}</div>
+                                                            <div class="row g-2 align-items-end">
+                                                                <div class="col-md-3">
+                                                                    <label class="form-label">{{ localize('global.result') }}</label>
+                                                                    <select name="result" class="form-select" required>
+                                                                        <option value="">{{ localize('global.select') }}</option>
+                                                                        <option value="positive">{{ localize('global.positive') }}</option>
+                                                                        <option value="negative">{{ localize('global.negative') }}</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label">{{ localize('global.notes') }}</label>
+                                                                    <input type="text" name="notes" class="form-control" maxlength="2000">
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <button type="submit" class="btn btn-primary w-100">
+                                                                        {{ localize('global.fill_test') }}
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    @endforeach
+                                                @endcanany
+                                            @elseif ($pendingTests->isNotEmpty())
+                                                <ul class="mb-0">
+                                                    @foreach ($pendingTests as $test)
+                                                        <li>{{ $test->test_name }} <span class="text-muted">({{ localize('global.pending') }})</span></li>
+                                                    @endforeach
+                                                </ul>
+                                            @endif
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 

@@ -413,48 +413,7 @@
                                                         @enderror
                                                         <div id="bloodRequestErrors{{ $operation->id }}"
                                                             class="alert alert-danger d-none"></div>
-                                                        <div class="mb-3">
-                                                            <label for="group{{ $operation->id }}"
-                                                                class="form-label">{{ localize('global.blood_group') }}</label>
-                                                            <select class="form-control form-select" name="group"
-                                                                id="group{{ $operation->id }}" required>
-                                                                <option value="">{{ localize('global.select') }}</option>
-                                                                <option value="A">A</option>
-                                                                <option value="B">B</option>
-                                                                <option value="AB">AB</option>
-                                                                <option value="O">O</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="rh{{ $operation->id }}"
-                                                                class="form-label">{{ localize('global.blood_rh') }}</label>
-                                                            <select class="form-control form-select" name="rh"
-                                                                id="rh{{ $operation->id }}" required>
-                                                                <option value="">{{ localize('global.select') }}</option>
-                                                                <option value="+">+</option>
-                                                                <option value="-">-</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="type{{ $operation->id }}"
-                                                                class="form-label">{{ localize('global.blood_type') }}</label>
-                                                            <select class="form-control form-select" name="type"
-                                                                id="type{{ $operation->id }}" required>
-                                                                <option value="">{{ localize('global.select') }}</option>
-                                                                <option value="RBC">RBC</option>
-                                                                <option value="PRBC">PRBC</option>
-                                                                <option value="Fresh">Fresh</option>
-                                                                <option value="Platelets">Platelets</option>
-                                                                <option value="Plasma">Plasma</option>
-                                                                <option value="Whole Blood">Whole Blood</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="quantity{{ $operation->id }}"
-                                                                class="form-label">{{ localize('global.quantity') }}</label>
-                                                            <input type="number" min="1" class="form-control"
-                                                                id="quantity{{ $operation->id }}" name="quantity" required>
-                                                        </div>
+                                                        @include('pages.blood_banks.partials.request_form_fields', ['fieldId' => 'operation'.$operation->id])
 
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"

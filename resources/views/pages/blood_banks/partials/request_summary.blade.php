@@ -65,6 +65,21 @@
     </div>
 </div>
 
+<div class="row p-2 text-center">
+    <div class="col-md-4 mt-2 mb-2">
+        <h5 class="mb-4 bg-label-info p-1">{{ localize('global.hemoglobin') }}</h5>
+        <div>{{ $bloodBank->hemoglobin ?? '—' }}</div>
+    </div>
+    <div class="col-md-4 mt-2 mb-2">
+        <h5 class="mb-4 bg-label-info p-1">{{ localize('global.hematocrit') }}</h5>
+        <div>{{ $bloodBank->hematocrit ?? '—' }}</div>
+    </div>
+    <div class="col-md-4 mt-2 mb-2">
+        <h5 class="mb-4 bg-label-info p-1">{{ localize('global.clotting_factor') }}</h5>
+        <div>{{ $bloodBank->factor ?? '—' }}</div>
+    </div>
+</div>
+
 @if ($bloodCheck->appointmentId)
     <div class="row p-2 text-center">
         <div class="col-12 mt-2 mb-2">

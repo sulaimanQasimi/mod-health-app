@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendNewBloodBankNotification;
 use App\Models\BloodBank;
+use App\Models\BloodBankTest;
 use App\Models\BloodBranchTransfer;
 use App\Models\BloodCheckRecord;
 use App\Models\BloodCrossmatch;
@@ -298,12 +299,16 @@ class BloodBankController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the input
         $validatedData = $request->validate([
-            'group' => 'required|string',
-            'rh' => 'required|string',
-            'type' => 'required|string',
-            'quantity' => 'required|integer',
+            'group' => ['nullable', 'string', Rule::in(['A', 'B', 'AB', 'O'])],
+            'rh' => ['nullable', 'string', Rule::in(['+', '-'])],
+            'type' => ['nullable', 'string', Rule::in(['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'Whole Blood'])],
+            'quantity' => ['nullable', 'integer', 'min:1'],
+            'hemoglobin' => ['nullable', 'numeric', 'min:0', 'max:999'],
+            'hematocrit' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'factor' => ['nullable', 'string', 'max:255'],
+            'tests' => ['nullable', 'array'],
+            'tests.*.test_name' => ['nullable', 'string', 'max:255'],
             'branch_id' => 'required|exists:branches,id',
             'appointment_id' => 'nullable|exists:appointments,id',
             'hospitalization_id' => 'nullable|exists:hospitalizations,id',
@@ -317,24 +322,42 @@ class BloodBankController extends Controller
             'appointment_id.exists' => 'Invalid appointment',
         ]);
 
-        // Create the blood bank record
-        $bloodBank = BloodBank::create([
-            'created_by' => auth()->id(),
-            'group' => $validatedData['group'],
-            'rh' => $validatedData['rh'],
-            'type' => $validatedData['type'],
-            'quantity' => $validatedData['quantity'],
-            'branch_id' => $validatedData['branch_id'],
-            'appointment_id' => $validatedData['appointment_id'] ?? null,
-            'hospitalization_id' => $validatedData['hospitalization_id'] ?? null,
-            'anesthesia_id' => $validatedData['anesthesia_id'] ?? null,
-            'patient_id' => $validatedData['patient_id'] ?? null,
-            'department_id' => $validatedData['department_id'] ?? null,
-            'operation_id' => $validatedData['operation_id'] ?? null,
-            'i_c_u_id' => $validatedData['i_c_u_id'] ?? null,
-            'under_review_id' => $validatedData['under_review_id'] ?? null,
-        ]);
-        // Send notification
+        $bloodBank = DB::transaction(function () use ($validatedData) {
+            $bloodBank = BloodBank::create([
+                'created_by' => auth()->id(),
+                'group' => $validatedData['group'] ?? null,
+                'rh' => $validatedData['rh'] ?? null,
+                'type' => $validatedData['type'] ?? 'Fresh',
+                'quantity' => $validatedData['quantity'] ?? null,
+                'hemoglobin' => $validatedData['hemoglobin'] ?? null,
+                'hematocrit' => $validatedData['hematocrit'] ?? null,
+                'factor' => $validatedData['factor'] ?? null,
+                'branch_id' => $validatedData['branch_id'],
+                'appointment_id' => $validatedData['appointment_id'] ?? null,
+                'hospitalization_id' => $validatedData['hospitalization_id'] ?? null,
+                'anesthesia_id' => $validatedData['anesthesia_id'] ?? null,
+                'patient_id' => $validatedData['patient_id'] ?? null,
+                'department_id' => $validatedData['department_id'] ?? null,
+                'operation_id' => $validatedData['operation_id'] ?? null,
+                'i_c_u_id' => $validatedData['i_c_u_id'] ?? null,
+                'under_review_id' => $validatedData['under_review_id'] ?? null,
+            ]);
+
+            foreach ($validatedData['tests'] ?? [] as $test) {
+                $name = trim((string) ($test['test_name'] ?? ''));
+                if ($name === '') {
+                    continue;
+                }
+
+                BloodBankTest::create([
+                    'blood_bank_id' => $bloodBank->id,
+                    'test_name' => $name,
+                ]);
+            }
+
+            return $bloodBank;
+        });
+
         SendNewBloodBankNotification::dispatch($bloodBank->created_by, $bloodBank->id);
 
         return redirect()->back()->with('success', localize('global.blood_request_created_successfully'));
@@ -357,6 +380,7 @@ class BloodBankController extends Controller
             'bloodUnits',
             'appointment',
             'patientSamples.collectedBy',
+            'tests.filledTestBy',
             'crossmatches.bloodUnit',
             'crossmatches.patientSample',
             'crossmatches.testedBy',
@@ -714,24 +738,57 @@ class BloodBankController extends Controller
     public function update(Request $request, BloodBank $bloodBank)
     {
         $validatedData = $request->validate([
-            'group' => 'required|string',
-            'rh' => 'required|string',
-            'type' => 'required|string',
-            'quantity' => 'required|integer',
-          
+            'group' => ['nullable', 'string', Rule::in(['A', 'B', 'AB', 'O'])],
+            'rh' => ['nullable', 'string', Rule::in(['+', '-'])],
+            'type' => ['nullable', 'string', Rule::in(['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'Whole Blood'])],
+            'quantity' => ['nullable', 'integer', 'min:1'],
+            'hemoglobin' => ['nullable', 'numeric', 'min:0', 'max:999'],
+            'hematocrit' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'factor' => ['nullable', 'string', 'max:255'],
         ]);
-        // Update the blood bank record
+
         $bloodBank->update([
-                'group' => $validatedData['group'],
-                'rh' => $validatedData['rh'],
-                'type' => $validatedData['type'],
-                'quantity' => $validatedData['quantity'],
-          ]);
-        // Send notification
-        // SendNewBloodBankNotification::dispatch($bloodBank->created_by, $bloodBank->id);
+            'group' => $validatedData['group'] ?? null,
+            'rh' => $validatedData['rh'] ?? null,
+            'type' => $validatedData['type'] ?? $bloodBank->type,
+            'quantity' => $validatedData['quantity'] ?? null,
+            'hemoglobin' => $validatedData['hemoglobin'] ?? null,
+            'hematocrit' => $validatedData['hematocrit'] ?? null,
+            'factor' => $validatedData['factor'] ?? null,
+        ]);
 
         return redirect()->back()->with('success', localize('global.blood_request_updated_successfully'));
-    
+    }
+
+    public function fillBloodBankTest(Request $request, BloodBank $bloodBank, BloodBankTest $bloodBankTest)
+    {
+        $this->ensureBloodRequestBranch($bloodBank);
+        $this->ensureCanManageCrossmatch($request);
+
+        if ((int) $bloodBankTest->blood_bank_id !== (int) $bloodBank->id) {
+            abort(404);
+        }
+
+        if ($bloodBank->status !== 'approved') {
+            return redirect()
+                ->route('blood_banks.show', $bloodBank)
+                ->with('error', localize('global.blood_bank_tests_only_when_approved'));
+        }
+
+        $validated = $request->validate([
+            'result' => ['required', Rule::in(BloodBankTest::RESULT_VALUES)],
+            'notes' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $bloodBankTest->update([
+            'result' => $validated['result'],
+            'notes' => $validated['notes'] ?? null,
+            'filled_test_by' => $request->user()->id,
+        ]);
+
+        return redirect()
+            ->route('blood_banks.show', $bloodBank)
+            ->with('success', localize('global.blood_bank_test_saved'));
     }
 
     /**

@@ -288,7 +288,7 @@ class AppointmentController extends Controller
 
         $appointment->load('nephrologyRegistrations.doctor', 'nephrologyRegistrations.patient');
 
-        $appointment->load(['bloodBanks.patient', 'bloodBanks.department']);
+        $appointment->load(['bloodBanks.patient', 'bloodBanks.department', 'bloodBanks.tests']);
 
         return view('pages.appointments.show', compact('appointment', 'labTypes', 'doctors', 'rooms', 'beds', 'previousDiagnoses', 'branches', 'operationTypes', 'departments', 'medicineTypes', 'medicines', 'foodTypes', 'relations', 'medicineUsageTypes', 'physiotherapyTypes', 'physiotherapists'));
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Depot;
 use App\Models\DepotTransaction;
 use App\Models\Medicine;
 use App\Models\Tool;
@@ -57,77 +58,177 @@ class DepotStockService
     /**
      * @return Collection<int, array{item_type: string, item_id: int, name: string, available: int, unit: ?string}>
      */
-    public function stockItemsForDepot(int $depotId, ?string $itemType = null, ?string $search = null): Collection
-    {
+    public function stockItemsForDepot(
+        int $depotId,
+        ?string $itemType = null,
+        ?string $search = null,
+        bool $includeZero = false,
+    ): Collection {
         $items = collect();
 
         if ($itemType === null || $itemType === self::ITEM_MEDICINE) {
-            $medicineIds = DepotTransaction::query()
-                ->completed()
-                ->forDepot($depotId)
-                ->whereNotNull('medicine_id')
-                ->distinct()
-                ->pluck('medicine_id');
-
-            foreach ($medicineIds as $medicineId) {
-                $medicine = Medicine::query()->find($medicineId);
-                if (! $medicine) {
-                    continue;
-                }
-
-                if ($search && stripos($medicine->name, $search) === false) {
-                    continue;
-                }
-
-                $available = $this->availableMedicineStock($depotId, (int) $medicineId);
-                if ($available <= 0) {
-                    continue;
-                }
-
-                $items->push([
-                    'item_type' => self::ITEM_MEDICINE,
-                    'item_id' => (int) $medicineId,
-                    'name' => $medicine->name,
-                    'available' => $available,
-                    'unit' => null,
-                ]);
-            }
+            $items = $items->merge(
+                $this->aggregatedStockForDepot($depotId, self::ITEM_MEDICINE, $search, $includeZero)
+            );
         }
 
         if ($itemType === null || $itemType === self::ITEM_TOOL) {
-            $toolIds = DepotTransaction::query()
-                ->completed()
-                ->forDepot($depotId)
-                ->whereNotNull('tool_id')
-                ->distinct()
-                ->pluck('tool_id');
-
-            foreach ($toolIds as $toolId) {
-                $tool = Tool::query()->with('unit')->find($toolId);
-                if (! $tool) {
-                    continue;
-                }
-
-                if ($search && stripos($tool->name, $search) === false && stripos($tool->code, $search) === false) {
-                    continue;
-                }
-
-                $available = $this->availableToolStock($depotId, (int) $toolId);
-                if ($available <= 0) {
-                    continue;
-                }
-
-                $items->push([
-                    'item_type' => self::ITEM_TOOL,
-                    'item_id' => (int) $toolId,
-                    'name' => $tool->name,
-                    'available' => $available,
-                    'unit' => $tool->unit?->symbol ?? $tool->unit?->name,
-                ]);
-            }
+            $items = $items->merge(
+                $this->aggregatedStockForDepot($depotId, self::ITEM_TOOL, $search, $includeZero)
+            );
         }
 
         return $items->sortBy('name')->values();
+    }
+
+    /**
+     * Single aggregated query for all medicine or tool balances in a depot.
+     *
+     * @return Collection<int, array{item_type: string, item_id: int, name: string, available: int, unit: ?string}>
+     */
+    private function aggregatedStockForDepot(
+        int $depotId,
+        string $itemType,
+        ?string $search,
+        bool $includeZero,
+    ): Collection {
+        $column = DepotTransaction::itemColumn($itemType);
+        $stockIn = DepotTransaction::TYPE_STOCK_IN;
+        $adjustment = DepotTransaction::TYPE_ADJUSTMENT;
+        $stockOut = DepotTransaction::TYPE_STOCK_OUT;
+        $depotToDepot = DepotTransaction::TYPE_DEPOT_TO_DEPOT;
+        $depotToPharmacy = DepotTransaction::TYPE_DEPOT_TO_PHARMACY;
+
+        $balances = DepotTransaction::query()
+            ->completed()
+            ->forDepot($depotId)
+            ->whereNotNull($column)
+            ->selectRaw("
+                {$column} as item_id,
+                SUM(CASE
+                    WHEN (depot_id = ? AND type IN (?, ?))
+                      OR (to_depot_id = ? AND type = ?)
+                    THEN quantity ELSE 0
+                END) -
+                SUM(CASE
+                    WHEN (depot_id = ? AND type = ?)
+                      OR (from_depot_id = ? AND type IN (?, ?))
+                    THEN quantity ELSE 0
+                END) as available
+            ", [
+                $depotId, $stockIn, $adjustment,
+                $depotId, $depotToDepot,
+                $depotId, $stockOut,
+                $depotId, $depotToDepot, $depotToPharmacy,
+            ])
+            ->groupBy($column)
+            ->pluck('available', 'item_id');
+
+        if ($balances->isEmpty()) {
+            return collect();
+        }
+
+        if ($itemType === self::ITEM_MEDICINE) {
+            $catalog = Medicine::query()
+                ->whereIn('id', $balances->keys())
+                ->when($search, fn ($q) => $q->where('name', 'like', '%'.$search.'%'))
+                ->get(['id', 'name'])
+                ->keyBy('id');
+        } else {
+            $catalog = Tool::query()
+                ->with('unit:id,name,symbol')
+                ->whereIn('id', $balances->keys())
+                ->when($search, function ($q) use ($search) {
+                    $q->where(function ($inner) use ($search) {
+                        $inner->where('name', 'like', '%'.$search.'%')
+                            ->orWhere('code', 'like', '%'.$search.'%');
+                    });
+                })
+                ->get(['id', 'name', 'code', 'unit_id'])
+                ->keyBy('id');
+        }
+
+        return $balances
+            ->map(function ($available, $itemId) use ($itemType, $catalog, $includeZero) {
+                $item = $catalog->get($itemId);
+                if (! $item) {
+                    return null;
+                }
+
+                $qty = (int) $available;
+                if (! $includeZero && $qty <= 0) {
+                    return null;
+                }
+
+                return [
+                    'item_type' => $itemType,
+                    'item_id' => (int) $itemId,
+                    'name' => $item->name,
+                    'available' => $qty,
+                    'unit' => $itemType === self::ITEM_TOOL
+                        ? ($item->unit?->symbol ?? $item->unit?->name)
+                        : null,
+                ];
+            })
+            ->filter()
+            ->values();
+    }
+
+    public const LOW_STOCK_THRESHOLD = 10;
+
+    /**
+     * @return array{
+     *     total_items: int,
+     *     total_quantity: int,
+     *     medicine_count: int,
+     *     tool_count: int,
+     *     total_low_stock: int,
+     *     total_out_of_stock: int,
+     *     total_healthy: int,
+     * }
+     */
+    public function stockStatsForDepot(int $depotId): array
+    {
+        $items = $this->stockItemsForDepot($depotId, includeZero: true);
+
+        return [
+            'total_items' => $items->count(),
+            'total_quantity' => (int) $items->sum('available'),
+            'medicine_count' => $items->where('item_type', self::ITEM_MEDICINE)->count(),
+            'tool_count' => $items->where('item_type', self::ITEM_TOOL)->count(),
+            'total_low_stock' => $items->filter(fn ($item) => $item['available'] > 0 && $item['available'] <= self::LOW_STOCK_THRESHOLD)->count(),
+            'total_out_of_stock' => $items->where('available', '<=', 0)->count(),
+            'total_healthy' => $items->where('available', '>', self::LOW_STOCK_THRESHOLD)->count(),
+        ];
+    }
+
+    /**
+     * @param  Collection<int, array{item_type: string, item_id: int, name: string, available: int, unit: ?string}>  $items
+     * @return Collection<int, array{item_type: string, item_id: int, name: string, available: int, unit: ?string}>
+     */
+    public function filterAndSortStockItems(
+        Collection $items,
+        ?string $stockStatus = null,
+        string $sortBy = 'name',
+        string $sortOrder = 'asc',
+    ): Collection {
+        if ($stockStatus === 'low_stock') {
+            $items = $items->filter(fn ($item) => $item['available'] > 0 && $item['available'] <= self::LOW_STOCK_THRESHOLD);
+        } elseif ($stockStatus === 'out_of_stock') {
+            $items = $items->where('available', '<=', 0);
+        } elseif ($stockStatus === 'healthy') {
+            $items = $items->where('available', '>', self::LOW_STOCK_THRESHOLD);
+        }
+
+        $descending = strtolower($sortOrder) === 'desc';
+
+        $sorted = match ($sortBy) {
+            'quantity' => $descending ? $items->sortByDesc('available') : $items->sortBy('available'),
+            'item_type' => $descending ? $items->sortByDesc('item_type') : $items->sortBy('item_type'),
+            default => $descending ? $items->sortByDesc('name') : $items->sortBy('name'),
+        };
+
+        return $sorted->values();
     }
 
     /**
@@ -152,10 +253,15 @@ class DepotStockService
                 ->unique()
                 ->values();
 
+        $depots = Depot::query()
+            ->whereIn('id', $depotIds)
+            ->get(['id', 'name'])
+            ->keyBy('id');
+
         $rows = collect();
 
         foreach ($depotIds as $id) {
-            $depot = \App\Models\Depot::query()->find($id);
+            $depot = $depots->get($id);
             if (! $depot) {
                 continue;
             }

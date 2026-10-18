@@ -50,21 +50,3 @@
     </div>
 </div>
 @endsection
-
-@section('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const requestingDepot = document.getElementById('requesting_depot_id');
-    const sourceDepot = document.getElementById('source_depot_id');
-    const parentMap = @json($depots->mapWithKeys(fn($d) => [$d->id => $d->parent_depot_id])->all());
-
-    requestingDepot?.addEventListener('change', function () {
-        const parentId = parentMap[this.value];
-        if (parentId && sourceDepot) {
-            sourceDepot.value = parentId;
-            if (window.jQuery) $('#source_depot_id').trigger('change.select2');
-        }
-    });
-});
-</script>
-@endsection

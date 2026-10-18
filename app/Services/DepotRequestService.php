@@ -4,8 +4,11 @@ namespace App\Services;
 
 use App\Models\Depot;
 use App\Models\DepotRequest;
+use App\Models\DepotRequestItem;
 use App\Models\DepotRequestStatusLog;
 use App\Models\DepotTransaction;
+use App\Models\PharmacyFulfillment;
+use App\Models\Unit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -17,6 +20,25 @@ class DepotRequestService
     ) {
     }
 
+    /**
+     * @param  array<int, array<string, mixed>>  $items
+     */
+    public function syncItems(DepotRequest $request, array $items): void
+    {
+        $request->items()->delete();
+
+        foreach (array_values($items) as $index => $item) {
+            $request->items()->create([
+                'medicine_id' => $item['medicine_id'] ?? null,
+                'tool_id' => $item['tool_id'] ?? null,
+                'unit_id' => $item['unit_id'] ?? null,
+                'quantity' => (int) $item['quantity'],
+                'batch_number' => $item['batch_number'] ?? null,
+                'sort_order' => $index,
+            ]);
+        }
+    }
+
     public function submit(DepotRequest $request): DepotRequest
     {
         if ($request->status !== DepotRequest::STATUS_DRAFT) {
@@ -25,8 +47,23 @@ class DepotRequestService
             ]);
         }
 
+        $request->loadCount('items');
+
+        if ($request->items_count < 1) {
+            throw ValidationException::withMessages([
+                'items' => 'Add at least one transfer line before submitting.',
+            ]);
+        }
+
         $requestingDepot = $request->requestingDepot;
-        if (! $requestingDepot || ! $requestingDepot->is_active) {
+        if ($request->isPharmacyRequest()) {
+            $pharmacy = $request->pharmacy;
+            if (! $pharmacy) {
+                throw ValidationException::withMessages([
+                    'pharmacy_id' => 'Destination pharmacy is required.',
+                ]);
+            }
+        } elseif (! $requestingDepot || ! $requestingDepot->is_active) {
             throw ValidationException::withMessages([
                 'requesting_depot_id' => 'Requesting depot must be active.',
             ]);
@@ -85,42 +122,116 @@ class DepotRequestService
             ]);
         }
 
-        $itemType = $request->itemType();
-        $itemId = $itemType === DepotTransaction::ITEM_MEDICINE
-            ? (int) $request->medicine_id
-            : (int) $request->tool_id;
+        $request->load('items');
 
-        return DB::transaction(function () use ($request, $itemType, $itemId) {
-            Depot::whereKey($request->source_depot_id)->lockForUpdate()->firstOrFail();
-            Depot::whereKey($request->requesting_depot_id)->lockForUpdate()->firstOrFail();
-
-            $this->stockService->lockLedger((int) $request->source_depot_id, $itemType, $itemId);
-            $this->stockService->ensureAvailable($itemType, (int) $request->source_depot_id, $itemId, (int) $request->quantity);
-
-            $transaction = DepotTransaction::create([
-                'depot_id' => $request->source_depot_id,
-                'from_depot_id' => $request->source_depot_id,
-                'to_depot_id' => $request->requesting_depot_id,
-                'medicine_id' => $request->medicine_id,
-                'tool_id' => $request->tool_id,
-                'unit_id' => $request->unit_id,
-                'batch_number' => $request->batch_number,
-                'quantity' => $request->quantity,
-                'type' => DepotTransaction::TYPE_DEPOT_TO_DEPOT,
-                'transaction_type' => 'transfer',
-                'status' => DepotTransaction::STATUS_COMPLETED,
-                'notes' => $request->notes,
-                'user_id' => Auth::id(),
+        if ($request->items->isEmpty()) {
+            throw ValidationException::withMessages([
+                'items' => 'This request has no transfer lines to fulfill.',
             ]);
+        }
+
+        return DB::transaction(function () use ($request) {
+            Depot::whereKey($request->source_depot_id)->lockForUpdate()->firstOrFail();
+
+            if (! $request->isPharmacyRequest()) {
+                Depot::whereKey($request->requesting_depot_id)->lockForUpdate()->firstOrFail();
+            }
+
+            foreach ($request->items as $item) {
+                if ($item->depot_transaction_id) {
+                    continue;
+                }
+
+                if ($request->isPharmacyRequest()) {
+                    $this->fulfillPharmacyLine($request, $item);
+
+                    continue;
+                }
+
+                $itemType = $item->itemType();
+                $itemId = $itemType === DepotTransaction::ITEM_MEDICINE
+                    ? (int) $item->medicine_id
+                    : (int) $item->tool_id;
+
+                $this->stockService->lockLedger((int) $request->source_depot_id, $itemType, $itemId);
+                $this->stockService->ensureAvailable($itemType, (int) $request->source_depot_id, $itemId, (int) $item->quantity);
+
+                $transaction = DepotTransaction::create([
+                    'depot_id' => $request->source_depot_id,
+                    'from_depot_id' => $request->source_depot_id,
+                    'to_depot_id' => $request->requesting_depot_id,
+                    'depot_request_id' => $request->id,
+                    'medicine_id' => $item->medicine_id,
+                    'tool_id' => $item->tool_id,
+                    'unit_id' => $item->unit_id,
+                    'batch_number' => $item->batch_number,
+                    'quantity' => $item->quantity,
+                    'type' => DepotTransaction::TYPE_DEPOT_TO_DEPOT,
+                    'transaction_type' => 'transfer',
+                    'status' => DepotTransaction::STATUS_COMPLETED,
+                    'notes' => $request->notes,
+                    'user_id' => Auth::id(),
+                ]);
+
+                $item->update(['depot_transaction_id' => $transaction->id]);
+            }
 
             $request->update([
-                'depot_transaction_id' => $transaction->id,
                 'fulfilled_by' => Auth::id(),
                 'fulfilled_at' => now(),
             ]);
 
-            return $this->transition($request, DepotRequest::STATUS_FULFILLED, 'Fulfilled with transfer');
+            return $this->transition($request, DepotRequest::STATUS_FULFILLED, 'Fulfilled with transfers');
         });
+    }
+
+    private function fulfillPharmacyLine(DepotRequest $request, DepotRequestItem $item): void
+    {
+        $medicineId = (int) $item->medicine_id;
+        $quantity = (int) $item->quantity;
+
+        $this->stockService->lockLedger((int) $request->source_depot_id, DepotTransaction::ITEM_MEDICINE, $medicineId);
+        $this->stockService->ensureAvailable(
+            DepotTransaction::ITEM_MEDICINE,
+            (int) $request->source_depot_id,
+            $medicineId,
+            $quantity
+        );
+
+        $transactionNumber = DepotTransaction::nextTransactionNumber();
+        $transactionDate = now()->toDateString();
+
+        $fulfillment = PharmacyFulfillment::create([
+            'medicine_id' => $medicineId,
+            'unit_type' => ! empty($item->unit_id) ? optional(Unit::find($item->unit_id))->name : null,
+            'amount' => (string) $quantity,
+            'form_no' => $transactionNumber,
+            'date' => $transactionDate,
+            'pharmacy_id' => $request->pharmacy_id,
+            'user_id' => Auth::id(),
+        ]);
+
+        $transaction = DepotTransaction::create([
+            'from_depot_id' => $request->source_depot_id,
+            'depot_id' => $request->source_depot_id,
+            'pharmacy_id' => $request->pharmacy_id,
+            'depot_request_id' => $request->id,
+            'medicine_id' => $medicineId,
+            'unit_id' => $item->unit_id,
+            'batch_number' => $item->batch_number,
+            'quantity' => $quantity,
+            'transaction_date' => $transactionDate,
+            'transaction_number' => $transactionNumber,
+            'type' => DepotTransaction::TYPE_DEPOT_TO_PHARMACY,
+            'transaction_type' => 'out',
+            'status' => DepotTransaction::STATUS_COMPLETED,
+            'notes' => $request->notes,
+            'user_id' => Auth::id(),
+            'transactionable_type' => PharmacyFulfillment::class,
+            'transactionable_id' => $fulfillment->id,
+        ]);
+
+        $item->update(['depot_transaction_id' => $transaction->id]);
     }
 
     public function cancel(DepotRequest $request): DepotRequest

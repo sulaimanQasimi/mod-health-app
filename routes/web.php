@@ -78,6 +78,7 @@ use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PhysiotherapyProcedureController;
 use App\Http\Controllers\PhysiotherapyReportController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\PhysiotherapyTypeController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\DiabetesChartController;
@@ -1353,6 +1354,12 @@ Route::prefix('backups')->name('backups.')->group(function () {
     Route::post('clean', [BackupController::class, 'clean'])->name('clean');
     Route::get('stats', [BackupController::class, 'stats'])->name('stats');
     Route::get('test', [BackupController::class, 'test'])->name('test');
+});
+
+// Activity log routes (super_admin)
+Route::prefix('activity-logs')->name('activity-logs.')->group(function () {
+    Route::get('/', [ActivityLogController::class, 'index'])->name('index');
+    Route::get('{activity}', [ActivityLogController::class, 'show'])->name('show');
 });
 
 // Nutrition Care Routes

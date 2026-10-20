@@ -918,6 +918,11 @@
 
 
                     @role('super_admin')
+                        <li class="menu-item {{ Route::is('activity-logs.*') ? 'active' : '' }}">
+                            <a href="{{ route('activity-logs.index') }}" class="menu-link">
+                                <div>{{ localize('activity_log.title') }}</div>
+                            </a>
+                        </li>
                         <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
                             <a href="{{ route('backups.index') }}" class="menu-link">
                                 <div>{{ localize('global.backups') }}</div>

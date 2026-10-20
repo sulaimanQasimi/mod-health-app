@@ -13,6 +13,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
+        \Spatie\Activitylog\Models\Activity::class => \App\Policies\ActivityPolicy::class,
         \Spatie\Backup\BackupDestination\Backup::class => \App\Policies\BackupPolicy::class,
         \App\Models\DiabetesChart::class => \App\Policies\DiabetesChartPolicy::class,
         \App\Models\MedicationAdministrationRecord::class => \App\Policies\MedicationAdministrationRecordPolicy::class,

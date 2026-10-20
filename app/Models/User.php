@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\DepotRolePermissions;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -137,6 +138,98 @@ class User extends Authenticatable
     public function activeDepots()
     {
         return $this->depots()->wherePivot('is_active', true);
+    }
+
+    public function hasDepotAccess(int $depotId): bool
+    {
+        return $this->depots()
+            ->where('depots.id', $depotId)
+            ->wherePivot('is_active', true)
+            ->exists();
+    }
+
+    public function getDepotRole(int $depotId): ?string
+    {
+        $depot = $this->depots()
+            ->where('depots.id', $depotId)
+            ->wherePivot('is_active', true)
+            ->first();
+
+        return $depot?->pivot?->role;
+    }
+
+    /**
+     * Whether the clinical show pages should render the prescription section.
+     */
+    public function canUsePrescriptionSection(): bool
+    {
+        return $this->can('show-prescriptions-menu')
+            || $this->can('add-prescription')
+            || $this->can('edit-prescription')
+            || $this->can('edit-prescriptions')
+            || $this->can('view-prescriptions');
+    }
+
+    public function canPerformDepotAction(int $depotId, string $action): bool
+    {
+        if ($this->hasSpatieDepotPermission($action)) {
+            return true;
+        }
+
+        $role = $this->getDepotRole($depotId);
+
+        return DepotRolePermissions::roleCan($role, $action);
+    }
+
+    public function canPerformDepotActionOnAny(string $action): bool
+    {
+        if ($this->hasSpatieDepotPermission($action)) {
+            return true;
+        }
+
+        foreach ($this->activeDepots as $depot) {
+            if (DepotRolePermissions::roleCan($depot->pivot->role, $action)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Spatie role permissions grant the same global depot access as legacy Blade routes.
+     */
+    public function hasSpatieDepotPermission(string $action): bool
+    {
+        return $this->can(DepotRolePermissions::actionToPermission($action));
+    }
+
+    public function hasAnySpatieDepotPermission(): bool
+    {
+        foreach (DepotRolePermissions::SPATIE_PERMISSIONS as $permission) {
+            if ($this->can($permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function allowedDepotIdsForAction(string $action): array
+    {
+        if ($this->hasSpatieDepotPermission($action) || $this->hasSpatieDepotPermission(DepotRolePermissions::ACTION_VIEW)) {
+            return Depot::query()->pluck('id')->map(fn ($id) => (int) $id)->all();
+        }
+
+        return $this->activeDepots
+            ->filter(fn ($depot) => DepotRolePermissions::roleCan($depot->pivot->role, $action))
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values()
+            ->all();
     }
 
     // Get pharmacies where user is manager

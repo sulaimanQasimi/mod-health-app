@@ -39,11 +39,15 @@
 
             <!-- Dashboard Content (hidden initially) -->
             <div id="dashboard-content" style="display: none;">
-            <div class="row">
+            <div id="dashboard-empty" class="alert alert-info d-none" role="alert">
+                <i class="bx bx-info-circle me-1"></i>
+                {{ localize('global.dashboard_no_widgets') ?? 'No dashboard widgets are available for your role.' }}
+            </div>
+            <div class="row" id="dashboard-widgets">
                 <div class="col-md-12 order-3 order-md-2">
-                    <div class="row g-4 mb-4">
+                    <div class="row g-4 mb-4" id="dashboard-stat-cards">
 
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="today_patients" style="display:none">
                             <div class="card border border-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -63,7 +67,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="emergency_today_patients" style="display:none">
                             <div class="card border border-danger">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -83,7 +87,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="all_patients" style="display:none">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -104,7 +108,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="all_appointments" style="display:none">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -125,7 +129,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="consultations" style="display:none">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -146,7 +150,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="hospitalizations" style="display:none">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -167,7 +171,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="checkups" style="display:none">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -188,7 +192,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="icu" style="display:none">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -209,7 +213,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="ccu" style="display:none">
                             <div class="card border border-info">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -230,7 +234,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="prescriptions" style="display:none">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -251,7 +255,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="operations" style="display:none">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -272,7 +276,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6 col-xl-3">
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="physiotherapy" style="display:none">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -293,8 +297,129 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <h4>{{ localize('global.all_depots') }}</h4>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2 p-1 rounded" id="total-depots">-</h4>
+                                            </div>
+                                            <p class="mb-0">{{ localize('global.all_registered_depots') }}</p>
+                                        </div>
+                                        <div class="avatar p-4">
+                                            <span class="avatar-initial rounded-circle bg-secondary">
+                                                <i class="bx bx-package bx-md text-white"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <h4>{{ localize('global.all_depot_transactions') }}</h4>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2 p-1 rounded" id="total-depot-transactions">-</h4>
+                                            </div>
+                                            <p class="mb-0">{{ localize('global.all_registered_depot_transactions') }}</p>
+                                        </div>
+                                        <div class="avatar p-4">
+                                            <span class="avatar-initial rounded-circle bg-indigo">
+                                                <i class="bx bx-transfer bx-md text-white"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <h4>{{ localize('global.pending_depot_requests') }}</h4>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2 p-1 rounded" id="pending-depot-requests">-</h4>
+                                            </div>
+                                            <p class="mb-0">{{ localize('global.all_pending_depot_requests') }}</p>
+                                        </div>
+                                        <div class="avatar p-4">
+                                            <span class="avatar-initial rounded-circle bg-orange">
+                                                <i class="bx bx-time-five bx-md text-white"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <h4>{{ localize('global.depot_stock_items') }}</h4>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2 p-1 rounded" id="depot-stock-items">-</h4>
+                                            </div>
+                                            <p class="mb-0">{{ localize('global.all_depot_stock_items') }}</p>
+                                        </div>
+                                        <div class="avatar p-4">
+                                            <span class="avatar-initial rounded-circle bg-cyan">
+                                                <i class="bx bx-list-ul bx-md text-white"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <h4>{{ localize('global.depot_stock_quantity') }}</h4>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2 p-1 rounded" id="depot-stock-quantity">-</h4>
+                                            </div>
+                                            <p class="mb-0">{{ localize('global.all_depot_stock_quantity') }}</p>
+                                        </div>
+                                        <div class="avatar p-4">
+                                            <span class="avatar-initial rounded-circle bg-teal">
+                                                <i class="bx bx-cube bx-md text-white"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                            <div class="card border border-warning">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <h4>{{ localize('global.depot_low_stock') }}</h4>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2 p-1 rounded text-warning" id="depot-low-stock">-</h4>
+                                            </div>
+                                            <p class="mb-0">{{ localize('global.all_depot_low_stock') }}</p>
+                                        </div>
+                                        <div class="avatar p-4">
+                                            <span class="avatar-initial rounded-circle bg-warning">
+                                                <i class="bx bx-error bx-md text-white"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="row g-3 mb-4">
+                    <div class="row g-3 mb-4 dash-vis" data-vis="beds" style="display:none">
                         <div class="col-sm-6 col-xl-4">
                             <div class="card bg-label-warning border ">
                                 <div class="card-body">
@@ -351,7 +476,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 dash-vis" data-vis="patients_trend" style="display:none">
                             <div class="card">
                                 <div class="card-body">
                                     <i class="bx bx-line-chart text-primary"></i>
@@ -361,7 +486,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 dash-vis" data-vis="appointments_trend" style="display:none">
                             <div class="card">
                                 <div class="card-body">
                                     <i class="bx bx-line-chart text-primary"></i>
@@ -374,7 +499,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12 mt-3">
+                    <div class="col-md-12 mt-3 dash-vis" data-vis="appointments_by_user" style="display:none">
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
@@ -395,7 +520,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12 mt-3">
+                    <div class="col-md-12 mt-3 dash-vis" data-vis="doctors_activity" style="display:none">
                         <div class="card">
                             <div class="card-body">
                                 <i class="bx bx-line-chart text-primary"></i>
@@ -409,7 +534,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12 mt-3">
+                    <div class="col-md-12 mt-3 dash-vis" data-vis="nurses_activity" style="display:none">
                         <div class="card">
                             <div class="card-body">
                                 <i class="bx bx-line-chart text-primary"></i>
@@ -447,73 +572,170 @@
         let wordCloudChart = null;
         let appointmentsByUserChart = null;
         let nurseActivityChart = null;
+        let dashboardVisible = {};
 
-        // Load dashboard data via AJAX (optional: chartBranchId for appointments-by-user chart filter)
-        function loadDashboardData(chartBranchId) {
-            var params = {};
+        function applyVisibility(visible) {
+            dashboardVisible = visible || {};
+            var anyVisible = false;
+            document.querySelectorAll('.dash-vis').forEach(function(el) {
+                var key = el.getAttribute('data-vis');
+                var show = !!dashboardVisible[key];
+                el.style.display = show ? '' : 'none';
+                if (show) anyVisible = true;
+            });
+            $('#dashboard-empty').toggleClass('d-none', anyVisible);
+            $('#dashboard-widgets').toggle(anyVisible);
+        }
+
+        function needsCharts() {
+            return !!(dashboardVisible.patients_trend
+                || dashboardVisible.appointments_trend
+                || dashboardVisible.appointments_by_user
+                || dashboardVisible.doctors_activity
+                || dashboardVisible.nurses_activity);
+        }
+
+        function fetchDashboardSection(section, chartBranchId) {
+            var params = { section: section };
             if (chartBranchId) params.chart_branch_id = chartBranchId;
-            $.ajax({
+            return $.ajax({
                 url: '{{ route("home") }}',
                 type: 'GET',
                 data: params,
                 dataType: 'json',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                success: function(response) {
-                    if (response.success && response.data) {
-                        const data = response.data;
-                        
-                        // Update statistics cards
-                        $('#today-patients').text(data.todayPatients || 0);
-                        $('#total-emergency-patients').text(data.totalEmergencyPatients || 0);
-                        $('#total-patients').text(data.totalPatients || 0);
-                        $('#total-appointments').text(data.totalAppointments || 0);
-                        $('#total-consultations').text(data.totalConsultations || 0);
-                        $('#total-inpatient-admissions').text(data.totalInPatientAdmissions || 0);
-                        $('#total-checkups').text(data.totalCheckups || 0);
-                        $('#total-icu-admissions').text(data.totalIcuAdmissions || 0);
-                        $('#total-ccu-admissions').text(data.totalCcuAdmissions || 0);
-                        $('#total-prescriptions').text(data.totalPrescriptions || 0);
-                        $('#total-operations').text(data.totalOperations || 0);
-                        $('#total-physiotherapy-procedures').text(data.totalPhysiotherapyProcedures || 0);
-                        
-                        // Update bed statistics
-                        $('#occupied-beds').text(data.occupied_beds || 0);
-                        $('#all-beds').text(data.all_beds || 0);
-                        $('#free-beds').text(data.free_beds || 0);
-                        
-                        // Populate branch filter for appointments-by-user chart
-                        var $branchSelect = $('#chart-branch-select');
-                        $branchSelect.empty();
-                        if (data.branches && data.branches.length) {
-                            data.branches.forEach(function(b) {
-                                $branchSelect.append($('<option></option>').attr('value', b.id).text(b.name));
-                            });
-                            $branchSelect.val(data.chartBranchId || '');
-                        } else {
-                            $branchSelect.append($('<option value="">—</option>'));
-                        }
-                        $branchSelect.off('change').on('change', function() {
-                            var branchId = $(this).val();
-                            if (branchId) loadDashboardData(branchId);
-                        });
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+        }
 
-                        // Initialize charts
-                        initializeCharts(data);
-                        
-                        // Hide loading, show content
-                        $('#dashboard-loading').hide();
-                        $('#dashboard-content').fadeIn();
-                    } else {
-                        showError('Failed to load dashboard data');
+        function updateStatCards(data) {
+            $('#today-patients').text(data.todayPatients || 0);
+            $('#total-emergency-patients').text(data.totalEmergencyPatients || 0);
+            $('#total-patients').text(data.totalPatients || 0);
+            $('#total-appointments').text(data.totalAppointments || 0);
+            $('#total-consultations').text(data.totalConsultations || 0);
+            $('#total-inpatient-admissions').text(data.totalInPatientAdmissions || 0);
+            $('#total-checkups').text(data.totalCheckups || 0);
+            $('#total-icu-admissions').text(data.totalIcuAdmissions || 0);
+            $('#total-ccu-admissions').text(data.totalCcuAdmissions || 0);
+            $('#total-prescriptions').text(data.totalPrescriptions || 0);
+            $('#total-operations').text(data.totalOperations || 0);
+            $('#total-physiotherapy-procedures').text(data.totalPhysiotherapyProcedures || 0);
+            $('#total-depots').text(data.totalDepots || 0);
+            $('#total-depot-transactions').text(data.totalDepotTransactions || 0);
+            $('#pending-depot-requests').text(data.pendingDepotRequests || 0);
+            $('#depot-stock-items').text(data.depotStockItems || 0);
+            $('#depot-stock-quantity').text(data.depotStockQuantity || 0);
+            $('#depot-low-stock').text(data.depotLowStock || 0);
+            $('#occupied-beds').text(data.occupied_beds || 0);
+            $('#all-beds').text(data.all_beds || 0);
+            $('#free-beds').text(data.free_beds || 0);
+        }
+
+        function populateBranchFilter(data) {
+            var $branchSelect = $('#chart-branch-select');
+            if (!$branchSelect.length) return;
+            $branchSelect.empty();
+            if (data.branches && data.branches.length) {
+                data.branches.forEach(function(b) {
+                    $branchSelect.append($('<option></option>').attr('value', b.id).text(b.name));
+                });
+                $branchSelect.val(data.chartBranchId || '');
+            } else {
+                $branchSelect.append($('<option value="">—</option>'));
+            }
+            $branchSelect.off('change').on('change', function() {
+                var branchId = $(this).val();
+                if (!branchId) return;
+                fetchDashboardSection('appointments_by_user', branchId).done(function(response) {
+                    if (response.success && response.data) {
+                        if (response.data.visible) applyVisibility(response.data.visible);
+                        populateBranchFilter(response.data);
+                        renderAppointmentsByUserChart(response.data);
                     }
+                });
+            });
+        }
+
+        function renderAppointmentsByUserChart(data) {
+            if (appointmentsByUserChart) {
+                appointmentsByUserChart.destroy();
+                appointmentsByUserChart = null;
+            }
+            var byUserCtx = document.getElementById('appointmentsByUserChart');
+            if (!byUserCtx || !data.appointmentsByUserData) return;
+            var labels = data.appointmentsByUserData.labels || [];
+            var counts = data.appointmentsByUserData.data || [];
+            if (!(labels.length && counts.length)) return;
+
+            appointmentsByUserChart = new Chart(byUserCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "{{ localize('global.appointments_processed') }}",
+                        data: counts,
+                        backgroundColor: 'rgba(13, 202, 240, 0.6)',
+                        borderColor: 'rgba(13, 202, 240, 1)',
+                        borderWidth: 1
+                    }]
                 },
-                error: function(xhr, status, error) {
-                    console.error('Error loading dashboard:', error);
-                    showError('Error loading dashboard data. Please refresh the page.');
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        x: { beginAtZero: true },
+                        y: { ticks: { maxRotation: 0, autoSkip: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(ctx) {
+                                    var total = counts.reduce(function(a, b) { return a + b; }, 0);
+                                    var pct = total ? Math.round((ctx.raw / total) * 100) : 0;
+                                    return (pct + '% of total');
+                                }
+                            }
+                        }
+                    }
                 }
             });
+        }
+
+        function loadDashboardData() {
+            fetchDashboardSection('meta')
+                .done(function(metaResponse) {
+                    if (!(metaResponse.success && metaResponse.data)) {
+                        showError('Failed to load dashboard data');
+                        return;
+                    }
+
+                    applyVisibility(metaResponse.data.visible);
+                    $('#dashboard-loading').hide();
+                    $('#dashboard-content').fadeIn();
+
+                    fetchDashboardSection('summary').done(function(summaryResponse) {
+                        if (summaryResponse.success && summaryResponse.data) {
+                            if (summaryResponse.data.visible) applyVisibility(summaryResponse.data.visible);
+                            updateStatCards(summaryResponse.data);
+                        }
+                    });
+
+                    if (needsCharts()) {
+                        fetchDashboardSection('charts').done(function(chartsResponse) {
+                            if (chartsResponse.success && chartsResponse.data) {
+                                if (chartsResponse.data.visible) applyVisibility(chartsResponse.data.visible);
+                                populateBranchFilter(chartsResponse.data);
+                                initializeCharts(chartsResponse.data);
+                            }
+                        });
+                    }
+                })
+                .fail(function(xhr, status, error) {
+                    console.error('Error loading dashboard:', error);
+                    showError('Error loading dashboard data. Please refresh the page.');
+                });
         }
 
         // Initialize charts with data
@@ -626,53 +848,7 @@
                 });
             }
 
-            // Appointments processed by user (horizontal bar chart – best for comparing counts per user)
-            if (appointmentsByUserChart) {
-                appointmentsByUserChart.destroy();
-            }
-            var byUserCtx = document.getElementById('appointmentsByUserChart');
-            if (byUserCtx && data.appointmentsByUserData) {
-                var labels = data.appointmentsByUserData.labels || [];
-                var counts = data.appointmentsByUserData.data || [];
-                if (labels.length && counts.length) {
-                    appointmentsByUserChart = new Chart(byUserCtx, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: "{{ localize('global.appointments_processed') }}",
-                                data: counts,
-                                backgroundColor: 'rgba(13, 202, 240, 0.6)',
-                                borderColor: 'rgba(13, 202, 240, 1)',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            indexAxis: 'y',
-                            responsive: true,
-                            maintainAspectRatio: true,
-                            scales: {
-                                x: { beginAtZero: true },
-                                y: {
-                                    ticks: { maxRotation: 0, autoSkip: false }
-                                }
-                            },
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    callbacks: {
-                                        afterLabel: function(ctx) {
-                                            var total = counts.reduce(function(a, b) { return a + b; }, 0);
-                                            var pct = total ? Math.round((ctx.raw / total) * 100) : 0;
-                                            return (pct + '% of total');
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-            }
+            renderAppointmentsByUserChart(data);
 
             // Nurses activity chart (horizontal bar chart – compares total activity per nurse)
             if (nurseActivityChart) {

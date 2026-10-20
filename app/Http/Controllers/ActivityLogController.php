@@ -3,13 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Support\ActivityLogTranslator;
+use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Spatie\Activitylog\Models\Activity;
 
 class ActivityLogController extends Controller
 {
+    /**
+     * Prune presets: delete logs older than this period.
+     *
+     * @var array<string, array{label_key: string, modify: string}>
+     */
+    public const PRUNE_PERIODS = [
+        '1_week' => ['label_key' => 'prune_1_week', 'modify' => '-1 week'],
+        '1_month' => ['label_key' => 'prune_1_month', 'modify' => '-1 month'],
+        '3_months' => ['label_key' => 'prune_3_months', 'modify' => '-3 months'],
+        '6_months' => ['label_key' => 'prune_6_months', 'modify' => '-6 months'],
+        '1_year' => ['label_key' => 'prune_1_year', 'modify' => '-1 year'],
+    ];
+
     public function __construct()
     {
         $this->middleware(['auth', 'role:super_admin']);
@@ -66,7 +82,15 @@ class ActivityLogController extends Controller
                 ->all();
         });
 
-        return view('pages.activity_logs.index', compact('activities', 'events', 'subjectTypes'));
+        $prunePeriods = collect(self::PRUNE_PERIODS)
+            ->map(fn (array $period, string $key) => [
+                'value' => $key,
+                'label' => localize('activity_log.'.$period['label_key']),
+            ])
+            ->values()
+            ->all();
+
+        return view('pages.activity_logs.index', compact('activities', 'events', 'subjectTypes', 'prunePeriods'));
     }
 
     public function show(Activity $activity): View
@@ -98,5 +122,31 @@ class ActivityLogController extends Controller
             'url',
             'method'
         ));
+    }
+
+    public function prune(Request $request): RedirectResponse
+    {
+        $this->authorize('deleteAny', Activity::class);
+
+        $validated = $request->validate([
+            'period' => ['required', 'string', Rule::in(array_keys(self::PRUNE_PERIODS))],
+        ]);
+
+        $period = self::PRUNE_PERIODS[$validated['period']];
+        $cutoff = Carbon::now()->modify($period['modify']);
+
+        $deleted = Activity::query()
+            ->where('created_at', '<', $cutoff)
+            ->delete();
+
+        Cache::forget('activity_log.subject_types');
+
+        return redirect()
+            ->route('activity-logs.index')
+            ->with('success', str_replace(
+                [':count', ':period'],
+                [(string) $deleted, localize('activity_log.'.$period['label_key'])],
+                localize('activity_log.prune_success')
+            ));
     }
 }

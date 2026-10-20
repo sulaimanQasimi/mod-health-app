@@ -31,6 +31,15 @@
             </a>
         </li>
 
+        @role('super_admin')
+            <li class="menu-item {{ Route::is('activity-logs.*') ? 'active' : '' }}">
+                <a href="{{ route('activity-logs.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-history"></i>
+                    <div>{{ localize('activity_log.title') }}</div>
+                </a>
+            </li>
+        @endrole
+
         <!-- Layouts -->
         @can('show-information-menu')
             <li
@@ -738,7 +747,7 @@
 
         @can('show-settings-menu')
             <li
-                class="menu-item {{ Route::is('users.index') || Route::is('doctors.*') || Route::is('roles.index') || Route::is('permissions.index') || Route::is('document-type-columns.index') || Route::is('notices.index') || Route::is('sectors.index') || Route::is('recipients.index') || Route::is('hukums.index') || Route::is('categories.index') ? 'active open' : '' }}">
+                class="menu-item {{ Route::is('users.index') || Route::is('doctors.*') || Route::is('roles.index') || Route::is('permissions.index') || Route::is('document-type-columns.index') || Route::is('notices.index') || Route::is('sectors.index') || Route::is('recipients.index') || Route::is('hukums.index') || Route::is('categories.index') || Route::is('activity-logs.*') || Route::is('backups.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-cog"></i>
                     <div>{{ localize('global.settings') }}</div>
@@ -918,11 +927,6 @@
 
 
                     @role('super_admin')
-                        <li class="menu-item {{ Route::is('activity-logs.*') ? 'active' : '' }}">
-                            <a href="{{ route('activity-logs.index') }}" class="menu-link">
-                                <div>{{ localize('activity_log.title') }}</div>
-                            </a>
-                        </li>
                         <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
                             <a href="{{ route('backups.index') }}" class="menu-link">
                                 <div>{{ localize('global.backups') }}</div>

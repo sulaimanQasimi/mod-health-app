@@ -25,12 +25,8 @@ FROM composer:2 AS vendor
 WORKDIR /app
 
 COPY composer.json composer.lock ./
-# Package is committed under vendor/sulaimanqasimi (prefer path over GitHub VCS)
-COPY vendor/sulaimanqasimi ./vendor/sulaimanqasimi
 
-RUN composer config --json repositories.sulaimanqasimi-router \
-        '{"type":"path","url":"vendor/sulaimanqasimi/router","options":{"symlink":false}}' \
-    && composer install \
+RUN composer install \
         --no-dev \
         --no-interaction \
         --no-scripts \

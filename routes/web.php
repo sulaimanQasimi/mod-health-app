@@ -1359,6 +1359,7 @@ Route::prefix('backups')->name('backups.')->group(function () {
 // Activity log routes (super_admin)
 Route::prefix('activity-logs')->name('activity-logs.')->group(function () {
     Route::get('/', [ActivityLogController::class, 'index'])->name('index');
+    Route::post('prune', [ActivityLogController::class, 'prune'])->name('prune');
     Route::get('{activity}', [ActivityLogController::class, 'show'])->name('show');
 });
 

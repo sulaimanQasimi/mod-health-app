@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Spatie\Permission\Exceptions\UnauthorizedException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -25,6 +26,14 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // After logout (or expired session), role/permission middleware throws 403 —
+        // send guests to login instead of showing Forbidden.
+        $this->renderable(function (UnauthorizedException $e, $request) {
+            if (! auth()->check()) {
+                return redirect()->guest(route('login'));
+            }
         });
     }
 }

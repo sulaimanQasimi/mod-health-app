@@ -118,24 +118,33 @@
                         </thead>
                         <tbody>
                             @foreach ($patients as $patient)
+                                @php
+                                    $maskVip = $patient->isVipRecord() && ! $patient->currentUserCanAccessVip();
+                                @endphp
                                 <tr>
                                     <td>{{ $patient->id }}</td>
-                                    <td>{{ $patient->id_card ?? '-' }}</td>
-                                    <td>{{ $patient->name }}</td>
-                                    <td>{{ $patient->last_name }}</td>
-                                    <td>{{ $patient->father_name ?? '-' }}</td>
+                                    <td>{{ $maskVip ? '********' : ($patient->id_card ?? '-') }}</td>
+                                    <td>{{ $maskVip ? '********' : $patient->name }}</td>
+                                    <td>{{ $maskVip ? '********' : $patient->last_name }}</td>
+                                    <td>{{ $maskVip ? '********' : ($patient->father_name ?? '-') }}</td>
                                     <td>
-                                        @php
-                                            $provinceName = $patient->province?->name_dr ?? '-';
-                                            $districtName = $patient->district?->name_dr ?? '-';
-                                            echo ($provinceName !== '-' && $districtName !== '-') ? $provinceName . ' / ' . $districtName : ($provinceName !== '-' ? $provinceName : ($districtName !== '-' ? $districtName : '-'));
-                                        @endphp
+                                        @if($maskVip)
+                                            ********
+                                        @else
+                                            @php
+                                                $provinceName = $patient->province?->name_dr ?? '-';
+                                                $districtName = $patient->district?->name_dr ?? '-';
+                                                echo ($provinceName !== '-' && $districtName !== '-') ? $provinceName . ' / ' . $districtName : ($provinceName !== '-' ? $provinceName : ($districtName !== '-' ? $districtName : '-'));
+                                            @endphp
+                                        @endif
                                     </td>
-                                    <td>{{ $patient->age ?? '-' }}</td>
-                                    <td>{{ $patient->militeryType?->name ?? '-' }}</td>
-                                    <td>{{ $patient->phone }}</td>
+                                    <td>{{ $maskVip ? '********' : ($patient->age ?? '-') }}</td>
+                                    <td>{{ $maskVip ? '********' : ($patient->militeryType?->name ?? '-') }}</td>
+                                    <td>{{ $maskVip ? '********' : ($patient->phone ?? '-') }}</td>
                                     <td>
-                                        @if($patient->creator)
+                                        @if($maskVip)
+                                            ********
+                                        @elseif($patient->creator)
                                             {{ $patient->creator->name }} {{ $patient->creator->last_name }}
                                         @else
                                             -
@@ -143,10 +152,12 @@
                                     </td>
                                     <td>
                                         <div class="d-flex gap-1">
-                                            <a href="{{ route('patients.show', $patient->id) }}"
-                                                class="btn btn-sm btn-icon text-primary" title="{{ localize('global.view') }}"><i class="bx bx-expand"></i></a>
+                                            @if(! $maskVip)
+                                                <a href="{{ route('patients.show', $patient->id) }}"
+                                                    class="btn btn-sm btn-icon text-primary" title="{{ localize('global.view') }}"><i class="bx bx-expand"></i></a>
+                                            @endif
                                             @can('edit-patients')
-                                                @if(! $patient->isVipRecord() || $patient->currentUserCanAccessVip())
+                                                @if(! $maskVip)
                                             <a href="{{ route('patients.edit', $patient->id) }}"
                                                 class="btn btn-sm btn-icon text-warning" title="{{ localize('global.edit') }}"><i class="bx bx-edit"></i></a>
                                                 @endif

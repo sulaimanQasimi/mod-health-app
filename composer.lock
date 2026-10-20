@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ff4a4b3868859106d975e5aec0e4bcb",
+    "content-hash": "1e9f79bced29771a18607430235bb4b3",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -5991,64 +5991,6 @@
             "time": "2025-01-13T13:04:43+00:00"
         },
         {
-            "name": "sulaimanqasimi/router",
-            "version": "dev-main",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sulaimanQasimi/router.git",
-                "reference": "4aab69948e5398d9e42540140851c8bb02b1831e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sulaimanQasimi/router/zipball/4aab69948e5398d9e42540140851c8bb02b1831e",
-                "reference": "4aab69948e5398d9e42540140851c8bb02b1831e",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "^10.0|^11.0",
-                "illuminate/view": "^10.0|^11.0",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^8.0|^9.0",
-                "phpunit/phpunit": "^10.0"
-            },
-            "default-branch": true,
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "SulaimanQasimi\\Router\\TailwindFormsServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "SulaimanQasimi\\Router\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "SulaimanQasimi\\Router\\Tests\\": "tests/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sulaiman Qasimi",
-                    "email": "sulaiman.qasimi@gmail.com"
-                }
-            ],
-            "description": "A Laravel package providing beautiful form components with Tailwind UI styling",
-            "support": {
-                "source": "https://github.com/sulaimanQasimi/router/tree/main",
-                "issues": "https://github.com/sulaimanQasimi/router/issues"
-            },
-            "time": "2025-09-06T10:17:37+00:00"
-        },
-        {
             "name": "symfony/console",
             "version": "v6.4.24",
             "source": {
@@ -10882,9 +10824,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "sulaimanqasimi/router": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

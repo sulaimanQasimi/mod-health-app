@@ -211,8 +211,10 @@ class HomeController extends Controller
             }
         }
 
-        // Return view for regular requests
-        return view('pages.dashboard.index');
+        // Return view for regular requests — only permitted widgets are rendered
+        return view('pages.dashboard.index', [
+            'visible' => app(DashboardVisibilityService::class)->forUser(auth()->user()),
+        ]);
     }
 
     /**

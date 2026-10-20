@@ -15,6 +15,10 @@ class PatientPolicy
 
     public function view(User $user, Patient $patient): bool
     {
+        if ($patient->isVipRecord() && ! $this->accessVip($user)) {
+            return false;
+        }
+
         return $this->belongsToUserBranch($user, $patient)
             && (
                 $this->hasReceptionAccess($user)

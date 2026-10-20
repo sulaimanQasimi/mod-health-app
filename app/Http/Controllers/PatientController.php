@@ -264,6 +264,8 @@ class PatientController extends Controller
 
     public function show(Patient $patient)
     {
+        $this->abortIfVipUnauthorized($patient);
+
         $departments = auth()->user()->category_id
             ? Department::where('category_id', auth()->user()->category_id)->get()
             : Department::all();
@@ -444,11 +446,15 @@ class PatientController extends Controller
 
     public function printCard(Patient $patient)
     {
+        $this->abortIfVipUnauthorized($patient);
+
         return view('pages.patients.print_card', compact('patient'));
     }
 
     public function webcam(Patient $patient)
     {
+        $this->abortIfVipUnauthorized($patient);
+
         return view('pages.patients.webcam', compact('patient'));
     }
 

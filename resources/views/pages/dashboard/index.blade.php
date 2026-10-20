@@ -39,15 +39,19 @@
 
             <!-- Dashboard Content (hidden initially) -->
             <div id="dashboard-content" style="display: none;">
-            <div id="dashboard-empty" class="alert alert-info d-none" role="alert">
+            @php
+                $hasAnyWidget = collect($visible ?? [])->contains(true);
+            @endphp
+            <div id="dashboard-empty" class="alert alert-info {{ $hasAnyWidget ? 'd-none' : '' }}" role="alert">
                 <i class="bx bx-info-circle me-1"></i>
                 {{ localize('global.dashboard_no_widgets') ?? 'No dashboard widgets are available for your role.' }}
             </div>
-            <div class="row" id="dashboard-widgets">
+            <div class="row" id="dashboard-widgets" @if(!$hasAnyWidget) style="display:none" @endif>
                 <div class="col-md-12 order-3 order-md-2">
                     <div class="row g-4 mb-4" id="dashboard-stat-cards">
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="today_patients" style="display:none">
+                        @if(!empty($visible['today_patients']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="today_patients">
                             <div class="card border border-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -67,7 +71,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="emergency_today_patients" style="display:none">
+                        @endif
+                        @if(!empty($visible['emergency_today_patients']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="emergency_today_patients">
                             <div class="card border border-danger">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -87,7 +93,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="all_patients" style="display:none">
+                        @endif
+                        @if(!empty($visible['all_patients']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="all_patients">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -107,8 +115,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="all_appointments" style="display:none">
+                        @if(!empty($visible['all_appointments']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="all_appointments">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -128,8 +138,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="consultations" style="display:none">
+                        @if(!empty($visible['consultations']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="consultations">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -149,8 +161,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="hospitalizations" style="display:none">
+                        @if(!empty($visible['hospitalizations']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="hospitalizations">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -170,8 +184,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="checkups" style="display:none">
+                        @if(!empty($visible['checkups']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="checkups">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -191,8 +207,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="icu" style="display:none">
+                        @if(!empty($visible['icu']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="icu">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -212,8 +230,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="ccu" style="display:none">
+                        @if(!empty($visible['ccu']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="ccu">
                             <div class="card border border-info">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -233,8 +253,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="prescriptions" style="display:none">
+                        @if(!empty($visible['prescriptions']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="prescriptions">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -254,8 +276,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="operations" style="display:none">
+                        @if(!empty($visible['operations']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="operations">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -275,8 +299,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="physiotherapy" style="display:none">
+                        @if(!empty($visible['physiotherapy']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="physiotherapy">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -297,8 +323,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                        @if(!empty($visible['depot']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
                             <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -318,7 +346,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                        @endif
+                        @if(!empty($visible['depot']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
                             <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -338,7 +368,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                        @endif
+                        @if(!empty($visible['depot']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
                             <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -358,7 +390,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                        @endif
+                        @if(!empty($visible['depot']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
                             <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -378,7 +412,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                        @endif
+                        @if(!empty($visible['depot']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
                             <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -398,7 +434,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot" style="display:none">
+                        @endif
+                        @if(!empty($visible['depot']))
+                        <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
                             <div class="card border border-warning">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -418,8 +456,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
-                    <div class="row g-3 mb-4 dash-vis" data-vis="beds" style="display:none">
+                    @if(!empty($visible['beds']))
+                    <div class="row g-3 mb-4 dash-vis" data-vis="beds">
                         <div class="col-sm-6 col-xl-4">
                             <div class="card bg-label-warning border ">
                                 <div class="card-body">
@@ -475,8 +515,10 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                     <div class="row">
-                        <div class="col-md-6 dash-vis" data-vis="patients_trend" style="display:none">
+                        @if(!empty($visible['patients_trend']))
+                        <div class="col-md-6 dash-vis" data-vis="patients_trend">
                             <div class="card">
                                 <div class="card-body">
                                     <i class="bx bx-line-chart text-primary"></i>
@@ -486,7 +528,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 dash-vis" data-vis="appointments_trend" style="display:none">
+                        @endif
+                        @if(!empty($visible['appointments_trend']))
+                        <div class="col-md-6 dash-vis" data-vis="appointments_trend">
                             <div class="card">
                                 <div class="card-body">
                                     <i class="bx bx-line-chart text-primary"></i>
@@ -497,9 +541,11 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
 
-                    <div class="col-md-12 mt-3 dash-vis" data-vis="appointments_by_user" style="display:none">
+                    @if(!empty($visible['appointments_by_user']))
+                    <div class="col-md-12 mt-3 dash-vis" data-vis="appointments_by_user">
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
@@ -519,8 +565,10 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
-                    <div class="col-md-12 mt-3 dash-vis" data-vis="doctors_activity" style="display:none">
+                    @if(!empty($visible['doctors_activity']))
+                    <div class="col-md-12 mt-3 dash-vis" data-vis="doctors_activity">
                         <div class="card">
                             <div class="card-body">
                                 <i class="bx bx-line-chart text-primary"></i>
@@ -533,8 +581,10 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
-                    <div class="col-md-12 mt-3 dash-vis" data-vis="nurses_activity" style="display:none">
+                    @if(!empty($visible['nurses_activity']))
+                    <div class="col-md-12 mt-3 dash-vis" data-vis="nurses_activity">
                         <div class="card">
                             <div class="card-body">
                                 <i class="bx bx-line-chart text-primary"></i>
@@ -545,6 +595,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
                 </div>
             </div>
@@ -572,7 +623,7 @@
         let wordCloudChart = null;
         let appointmentsByUserChart = null;
         let nurseActivityChart = null;
-        let dashboardVisible = {};
+        let dashboardVisible = @json($visible ?? []);
 
         function applyVisibility(visible) {
             dashboardVisible = visible || {};
@@ -583,6 +634,10 @@
                 el.style.display = show ? '' : 'none';
                 if (show) anyVisible = true;
             });
+            // Also hide widgets that were never rendered server-side
+            if (!anyVisible) {
+                anyVisible = Object.keys(dashboardVisible).some(function(k) { return !!dashboardVisible[k]; });
+            }
             $('#dashboard-empty').toggleClass('d-none', anyVisible);
             $('#dashboard-widgets').toggle(anyVisible);
         }

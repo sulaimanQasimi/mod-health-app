@@ -7,11 +7,33 @@
     @endif
 
     <div class="card mb-3">
-        <div class="card-header">
-            <h5 class="mb-0">
-                <i class="bx bx-history me-2"></i>{{ localize('activity_log.title') }}
-            </h5>
-            <small class="text-muted">{{ localize('activity_log.subtitle') }}</small>
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <h5 class="mb-0">
+                    <i class="bx bx-history me-2"></i>{{ localize('activity_log.title') }}
+                </h5>
+                <small class="text-muted">{{ localize('activity_log.subtitle') }}</small>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-outline-danger dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bx bx-trash me-1"></i>{{ localize('activity_log.prune') }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><h6 class="dropdown-header">{{ localize('activity_log.prune_hint') }}</h6></li>
+                    @foreach($prunePeriods as $period)
+                        <li>
+                            <form method="POST" action="{{ route('activity-logs.prune') }}"
+                                  onsubmit="return confirm(@json(str_replace(':period', $period['label'], localize('activity_log.prune_confirm'))));">
+                                @csrf
+                                <input type="hidden" name="period" value="{{ $period['value'] }}">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    {{ $period['label'] }}
+                                </button>
+                            </form>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
         <div class="card-body">
             <form method="GET" class="row g-3">

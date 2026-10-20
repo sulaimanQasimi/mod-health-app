@@ -78,45 +78,120 @@ class Patient extends Model
         return $this->isVipRecord() && ! $this->currentUserCanAccessVip();
     }
 
+    protected function maskedVipValue(?string $value): ?string
+    {
+        return $this->shouldMaskVipIdentity() ? '********' : $value;
+    }
+
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+            get: fn (?string $value) => $this->maskedVipValue($value),
         );
     }
 
     protected function lastName(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+            get: fn (?string $value) => $this->maskedVipValue($value),
         );
     }
 
     protected function fatherName(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+            get: fn (?string $value) => $this->maskedVipValue($value),
+        );
+    }
+
+    protected function phone(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->maskedVipValue($value),
+        );
+    }
+
+    protected function age(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->maskedVipValue($value),
+        );
+    }
+
+    protected function nid(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->maskedVipValue($value),
+        );
+    }
+
+    protected function idCard(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->maskedVipValue($value),
+        );
+    }
+
+    protected function job(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->maskedVipValue($value),
+        );
+    }
+
+    protected function rank(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->maskedVipValue($value),
+        );
+    }
+
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? null : $value,
         );
     }
 
     protected function referralName(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+            get: fn (?string $value) => $this->maskedVipValue($value),
         );
     }
 
     protected function referralLastName(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+            get: fn (?string $value) => $this->maskedVipValue($value),
         );
     }
 
     protected function referralFatherName(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value) => $this->shouldMaskVipIdentity() ? '********' : $value,
+            get: fn (?string $value) => $this->maskedVipValue($value),
+        );
+    }
+
+    protected function referralNid(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->maskedVipValue($value),
+        );
+    }
+
+    protected function referralIdCard(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->maskedVipValue($value),
+        );
+    }
+
+    protected function referralPhone(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->maskedVipValue($value),
         );
     }
 

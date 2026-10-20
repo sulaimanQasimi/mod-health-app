@@ -25,4 +25,13 @@ class LoginController extends Controller
 
         return $credentials;
     }
+
+    /**
+     * Always send users to the login page after logout (avoid hitting auth/role
+     * middleware on "/" which can surface as a 403 for guests).
+     */
+    protected function loggedOut(Request $request)
+    {
+        return redirect()->route('login');
+    }
 }

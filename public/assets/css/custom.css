@@ -43,6 +43,28 @@ table th {
     margin-left: 0.1rem;
 }
 
+/* Keep sidebar icons aligned in both LTR and RTL (customizer toggle) */
+.layout-menu .menu-inner > .menu-item > .menu-link .menu-icon {
+    width: 1.5rem !important;
+    min-width: 1.5rem !important;
+    height: 1.5rem;
+    font-size: 1.25rem !important;
+    line-height: 1.5rem;
+    text-align: center;
+    flex-shrink: 0;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    margin-inline-end: 0.5rem !important;
+}
+
+.layout-menu.menu-collapsed:not(:hover) .menu-inner > .menu-item > .menu-link .menu-icon {
+    margin-inline-end: 0 !important;
+    margin-inline-start: -2rem !important;
+    width: 5.25rem !important;
+    min-width: 5.25rem !important;
+    text-align: center;
+}
+
 [dir="rtl"] .bl-1 {
     border-left: 1px solid #696cff;
 }

@@ -87,6 +87,8 @@ TemplateCustomizer.LANGUAGES.fr = { ... };
  */
 
 if (typeof TemplateCustomizer !== 'undefined') {
+  const pageTextDir = document.documentElement.getAttribute('data-text-dir') === 'ltr' ? 'ltr' : 'rtl';
+
   window.templateCustomizer = new TemplateCustomizer({
     cssPath: assetsPath + 'vendor/css' + (rtlSupport ? '/rtl' : '') + '/',
     themesPath: assetsPath + 'vendor/css' + (rtlSupport ? '/rtl' : '') + '/',
@@ -94,7 +96,7 @@ if (typeof TemplateCustomizer !== 'undefined') {
     // lang: 'fr',
     // defaultTheme: 2,
     // defaultStyle: 'light',
-    // defaultTextDir: 'ltr',
+    defaultTextDir: pageTextDir,
     // defaultLayoutType: 'fixed',
     // defaultMenuCollapsed: true,
     // defaultNavbarFixed: true,

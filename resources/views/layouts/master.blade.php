@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 
+@php
+    $textDir = session()->has('language') && session()->get('language') == 'en' ? 'ltr' : 'rtl';
+@endphp
 <html class="light-style layout-navbar-fixed layout-menu-fixed" lang="en"
-    direction="{{ session()->has('language') && session()->get('language') == 'en' ? 'ltr' : 'rtl' }}"
-    dir="{{ session()->has('language') && session()->get('language') == 'en' ? 'ltr' : 'rtl' }}"
-    style="direction: {{ session()->has('language') && session()->get('language') == 'en' ? 'ltr' : 'rtl' }}"
+    dir="{{ $textDir }}"
+    data-text-dir="{{ $textDir }}"
     data-theme="theme-default" data-assets-path="{{ asset('assets/') }}"
     data-template="vertical-menu-template-no-customizer">
 

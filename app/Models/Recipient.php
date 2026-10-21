@@ -14,6 +14,11 @@ class Recipient extends Model
 
     protected $fillable=['name','description','created_by', 'updated_by', 'deleted_by'];
 
+    public function parts()
+    {
+        return $this->hasMany(RecipientPart::class);
+    }
+
     public static function boot()
     {
         parent::boot();

@@ -747,7 +747,7 @@
 
         @can('show-settings-menu')
             <li
-                class="menu-item {{ Route::is('users.index') || Route::is('doctors.*') || Route::is('roles.index') || Route::is('permissions.index') || Route::is('document-type-columns.index') || Route::is('notices.index') || Route::is('sectors.index') || Route::is('recipients.index') || Route::is('hukums.index') || Route::is('categories.index') || Route::is('activity-logs.*') || Route::is('backups.*') ? 'active open' : '' }}">
+                class="menu-item {{ Route::is('users.index') || Route::is('doctors.*') || Route::is('roles.index') || Route::is('permissions.index') || Route::is('document-type-columns.index') || Route::is('notices.index') || Route::is('sectors.index') || Route::is('recipients.index') || Route::is('recipient-parts.*') || Route::is('hukums.index') || Route::is('categories.index') || Route::is('activity-logs.*') || Route::is('backups.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-cog"></i>
                     <div>{{ localize('global.settings') }}</div>
@@ -793,6 +793,13 @@
                         <li class="menu-item {{ Route::is('recipients.index') ? 'active' : '' }}">
                             <a href="{{ route('recipients.index') }}" class="menu-link">
                                 <div>{{ localize('global.recipients') }}</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('show-recipient-parts-menu')
+                        <li class="menu-item {{ Route::is('recipient-parts.*') ? 'active' : '' }}">
+                            <a href="{{ route('recipient-parts.index') }}" class="menu-link">
+                                <div>{{ localize('global.recipient_parts') }}</div>
                             </a>
                         </li>
                     @endcan

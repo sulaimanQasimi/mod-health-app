@@ -26,6 +26,7 @@ use App\Http\Controllers\HospitalizationController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\LabTypeController;
 use App\Http\Controllers\RecipientController;
+use App\Http\Controllers\RecipientPartController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
@@ -123,6 +124,16 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{recipient}', [RecipientController::class, 'update'])->name('update');
         Route::get('destroy/{recipient}', [RecipientController::class, 'destroy'])->name('destroy');
 
+    });
+
+    // Recipient parts routes
+    Route::prefix('recipient-parts')->name('recipient-parts.')->group(function () {
+        Route::get('index', [RecipientPartController::class, 'index'])->name('index');
+        Route::get('create', [RecipientPartController::class, 'create'])->name('create');
+        Route::post('store', [RecipientPartController::class, 'store'])->name('store');
+        Route::get('edit/{recipientPart}', [RecipientPartController::class, 'edit'])->name('edit');
+        Route::put('update/{recipientPart}', [RecipientPartController::class, 'update'])->name('update');
+        Route::get('destroy/{recipientPart}', [RecipientPartController::class, 'destroy'])->name('destroy');
     });
 
     // Users routes

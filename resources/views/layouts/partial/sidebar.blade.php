@@ -162,12 +162,7 @@
         @can('access-dentist-registrations')
             <li class="menu-item {{ Route::is('dentist-registrations.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                        viewBox="0 0 24 24">
-                        <path
-                            d="M19.03 2.13a4.75 4.75 0 0 0-5.54 1.55l-.68.91c-.38.5-1.23.5-1.6 0l-.68-.91a4.72 4.72 0 0 0-5.54-1.55 4.7 4.7 0 0 0-2.97 4.39c0 1.72.21 3.44.63 5.12l2.04 8.18A2.88 2.88 0 0 0 7.48 22h.12c1.28 0 2.41-.86 2.76-2.08l1.2-4.2c.12-.42.51-.72.95-.72s.83.29.95.72l1.2 4.2A2.88 2.88 0 0 0 17.42 22c1.41 0 2.6-1.01 2.83-2.4l1.33-7.99c.28-1.67.42-3.38.42-5.08 0-1.95-1.17-3.67-2.97-4.39Zm.58 9.14-1.33 7.99a.87.87 0 0 1-.86.73c-.39 0-.73-.26-.84-.63l-1.2-4.2c-.37-1.28-1.55-2.17-2.87-2.17s-2.51.89-2.87 2.17l-1.2 4.2c-.11.37-.45.63-.84.63h-.12c-.4 0-.75-.27-.85-.66l-2.04-8.18c-.38-1.51-.57-3.07-.57-4.63 0-1.12.67-2.12 1.72-2.54 1.15-.46 2.46-.09 3.2.9l.69.91c.56.75 1.46 1.2 2.4 1.2s1.84-.45 2.4-1.2l.68-.91c.74-.99 2.05-1.36 3.2-.9 1.04.42 1.72 1.41 1.72 2.54 0 1.59-.13 3.18-.39 4.75Z">
-                        </path>
-                    </svg>
+                    <i class="menu-icon tf-icons bx bx-plus-medical"></i>
                     <div>{{ localize('global.dentist_department') }}</div>
                 </a>
                 <ul class="menu-sub">
@@ -183,12 +178,7 @@
         @can('access-nephrology-registrations')
             <li class="menu-item {{ Route::is('nephrology-registrations.*') || Route::is('hemodialysis-sessions.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                        viewBox="0 0 24 24">
-                        <path
-                            d="M8 22h8c1.1 0 2-.9 2-2V8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2v12c0 1.1.9 2 2 2M6 4h12v2H6zm10 4v3h-5v6h5v3H8V8z">
-                        </path>
-                    </svg>
+                    <i class="menu-icon tf-icons bx bx-droplet"></i>
                     <div>{{ localize('global.nephrology_department') }}</div>
                 </a>
                 <ul class="menu-sub">

@@ -26,7 +26,7 @@
         background-color: #0dcaf0 !important;
     }
 
-    /* Keep dashboard stat cards the same width/height, slightly compact */
+    /* Keep dashboard stat cards equal size, moderately compact */
     #dashboard-stat-cards > [class*="col-"] {
         display: flex;
     }
@@ -40,14 +40,13 @@
         display: flex;
         flex-direction: column;
         width: 100%;
-        padding: 0.85rem 1rem;
+        padding: 1.1rem 1.25rem;
     }
 
     #dashboard-stat-cards .card-body > .d-flex {
         flex: 1;
         width: 100%;
-        gap: 0.35rem;
-        align-items: center !important;
+        gap: 0.5rem;
     }
 
     #dashboard-stat-cards .content-left {
@@ -56,30 +55,30 @@
     }
 
     #dashboard-stat-cards .content-left > h4:first-of-type {
-        font-size: 0.95rem;
-        line-height: 1.25;
+        font-size: 1.05rem;
+        line-height: 1.3;
         margin-bottom: 0;
-        min-height: 1.25em;
+        min-height: calc(1.3em * 2);
         display: -webkit-box;
-        -webkit-line-clamp: 1;
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
 
     #dashboard-stat-cards .content-left > .d-flex {
-        margin-top: 0.25rem !important;
+        margin-top: 0.4rem !important;
     }
 
     #dashboard-stat-cards .content-left > .d-flex > h4 {
-        font-size: 1.15rem;
-        padding: 0 !important;
+        font-size: 1.35rem;
+        padding: 0.15rem 0.25rem !important;
     }
 
     #dashboard-stat-cards .content-left > p {
-        font-size: 0.75rem;
-        line-height: 1.25;
-        margin-top: 0.15rem;
-        min-height: 1.25em;
+        font-size: 0.8rem;
+        line-height: 1.3;
+        margin-top: 0.2rem;
+        min-height: 1.3em;
         display: -webkit-box;
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
@@ -88,16 +87,16 @@
 
     #dashboard-stat-cards .avatar {
         flex-shrink: 0;
-        padding: 0.5rem !important;
+        padding: 0.85rem !important;
     }
 
     #dashboard-stat-cards .avatar .avatar-initial {
-        width: 2.5rem;
-        height: 2.5rem;
+        width: 2.85rem;
+        height: 2.85rem;
     }
 
     #dashboard-stat-cards .avatar .bx-md {
-        font-size: 1.25rem !important;
+        font-size: 1.4rem !important;
     }
 </style>
 @section('content')

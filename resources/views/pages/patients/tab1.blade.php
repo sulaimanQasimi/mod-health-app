@@ -34,7 +34,7 @@
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="nid">{{ localize('global.nid') }}</label>
-                <input type="text" name="nid" required id="nid" value="{{ old('nid', $patient->nid ?? '') }}"
+                <input type="text" name="nid" id="nid" value="{{ old('nid', $patient->nid ?? '') }}"
                     class="form-control">
             </div>
         </div>

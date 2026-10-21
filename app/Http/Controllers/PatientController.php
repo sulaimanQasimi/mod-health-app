@@ -121,6 +121,11 @@ class PatientController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'nid' => $request->filled('nid') ? $request->input('nid') : null,
+            'referral_nid' => $request->filled('referral_nid') ? $request->input('referral_nid') : null,
+        ]);
+
         $data = $request->validate([
             'militery_type_id' => 'nullable|exists:militery_types,id',
             'name' => 'required',
@@ -131,7 +136,7 @@ class PatientController extends Controller
             'age_day' => 'nullable|integer|min:0|max:31',
             'age_month' => 'nullable|integer|min:0|max:11',
             'age_year' => 'nullable|integer|min:0|max:150',
-            'nid' => ['required', $this->nidUniqueRule(branchId: (int) $request->branch_id)],
+            'nid' => ['nullable', 'string', $this->nidUniqueRule(branchId: (int) $request->branch_id)],
             'province_id' => 'required',
             'district_id' => 'required',
             'relation_id' => 'nullable',
@@ -345,6 +350,11 @@ class PatientController extends Controller
             return $vipBlocked;
         }
 
+        $request->merge([
+            'nid' => $request->filled('nid') ? $request->input('nid') : null,
+            'referral_nid' => $request->filled('referral_nid') ? $request->input('referral_nid') : null,
+        ]);
+
         $data = $request->validate([
             'militery_type_id' => 'nullable|exists:militery_types,id',
             'name' => 'required',
@@ -355,7 +365,7 @@ class PatientController extends Controller
             'age_day' => 'nullable|integer|min:0|max:31',
             'age_month' => 'nullable|integer|min:0|max:11',
             'age_year' => 'nullable|integer|min:0|max:150',
-            'nid' => ['required', $this->nidUniqueRule($patient)],
+            'nid' => ['nullable', 'string', $this->nidUniqueRule($patient)],
             'province_id' => 'required',
             'district_id' => 'required',
             'relation_id' => 'nullable',

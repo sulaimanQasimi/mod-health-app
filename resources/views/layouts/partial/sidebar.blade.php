@@ -31,15 +31,6 @@
             </a>
         </li>
 
-        @role('super_admin')
-            <li class="menu-item {{ Route::is('activity-logs.*') ? 'active' : '' }}">
-                <a href="{{ route('activity-logs.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-history"></i>
-                    <div>{{ localize('activity_log.title') }}</div>
-                </a>
-            </li>
-        @endrole
-
         <!-- Layouts -->
         @can('show-information-menu')
             <li
@@ -786,6 +777,13 @@
                         <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
                             <a href="{{ route('backups.index') }}" class="menu-link">
                                 <div>{{ __('Backups') }}</div>
+                            </a>
+                        </li>
+                    @endrole
+                    @role('super_admin')
+                        <li class="menu-item {{ Route::is('activity-logs.*') ? 'active' : '' }}">
+                            <a href="{{ route('activity-logs.index') }}" class="menu-link">
+                                <div>{{ localize('activity_log.title') }}</div>
                             </a>
                         </li>
                     @endrole

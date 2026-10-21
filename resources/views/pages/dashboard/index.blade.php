@@ -25,6 +25,58 @@
     .bg-cyan {
         background-color: #0dcaf0 !important;
     }
+
+    /* Keep dashboard stat cards the same width/height */
+    #dashboard-stat-cards > [class*="col-"] {
+        display: flex;
+    }
+
+    #dashboard-stat-cards .card {
+        width: 100%;
+        height: 100%;
+    }
+
+    #dashboard-stat-cards .card-body {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #dashboard-stat-cards .card-body > .d-flex {
+        flex: 1;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    #dashboard-stat-cards .content-left {
+        flex: 1;
+        min-width: 0;
+    }
+
+    #dashboard-stat-cards .content-left > h4:first-of-type {
+        font-size: 1.05rem;
+        line-height: 1.35;
+        margin-bottom: 0;
+        min-height: calc(1.35em * 2);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    #dashboard-stat-cards .content-left > p {
+        font-size: 0.8125rem;
+        line-height: 1.35;
+        min-height: calc(1.35em * 2);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    #dashboard-stat-cards .avatar {
+        flex-shrink: 0;
+    }
 </style>
 @section('content')
     <div class="content-wrapper">

@@ -26,7 +26,7 @@
         background-color: #0dcaf0 !important;
     }
 
-    /* Keep dashboard stat cards the same width/height */
+    /* Keep dashboard stat cards the same width/height, slightly compact */
     #dashboard-stat-cards > [class*="col-"] {
         display: flex;
     }
@@ -40,12 +40,14 @@
         display: flex;
         flex-direction: column;
         width: 100%;
+        padding: 0.85rem 1rem;
     }
 
     #dashboard-stat-cards .card-body > .d-flex {
         flex: 1;
         width: 100%;
-        gap: 0.5rem;
+        gap: 0.35rem;
+        align-items: center !important;
     }
 
     #dashboard-stat-cards .content-left {
@@ -54,28 +56,48 @@
     }
 
     #dashboard-stat-cards .content-left > h4:first-of-type {
-        font-size: 1.05rem;
-        line-height: 1.35;
+        font-size: 0.95rem;
+        line-height: 1.25;
         margin-bottom: 0;
-        min-height: calc(1.35em * 2);
+        min-height: 1.25em;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
 
+    #dashboard-stat-cards .content-left > .d-flex {
+        margin-top: 0.25rem !important;
+    }
+
+    #dashboard-stat-cards .content-left > .d-flex > h4 {
+        font-size: 1.15rem;
+        padding: 0 !important;
+    }
+
     #dashboard-stat-cards .content-left > p {
-        font-size: 0.8125rem;
-        line-height: 1.35;
-        min-height: calc(1.35em * 2);
+        font-size: 0.75rem;
+        line-height: 1.25;
+        margin-top: 0.15rem;
+        min-height: 1.25em;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
 
     #dashboard-stat-cards .avatar {
         flex-shrink: 0;
+        padding: 0.5rem !important;
+    }
+
+    #dashboard-stat-cards .avatar .avatar-initial {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    #dashboard-stat-cards .avatar .bx-md {
+        font-size: 1.25rem !important;
     }
 </style>
 @section('content')

@@ -82,6 +82,16 @@ class PatientController extends Controller
             $query->where('id_card', 'like', '%' . $cardSearch . '%');
         }
 
+        // Filter by NID (تذکره)
+        if ($request->filled('nid')) {
+            $query->where('nid', 'like', '%' . $request->nid . '%');
+        }
+
+        // Filter by patient ID
+        if ($request->filled('id')) {
+            $query->where('id', $request->id);
+        }
+
         // Filter by militery type
         if ($request->filled('militery_type_id')) {
             $query->where('militery_type_id', $request->militery_type_id);
@@ -102,10 +112,7 @@ class PatientController extends Controller
             $query->where('job_category', $request->job_category);
         }
 
-        $patients = $query->latest()->paginate(15);
-        if ($request->hasAny(['name', 'father_name', 'last_name', 'nid', 'job_category'])) {
-            $patients->appends($request->query());
-        }
+        $patients = $query->latest()->paginate(15)->appends($request->query());
         // Get data for filters militery type, province
         $militeryTypes = MiliteryType::all();
         $provinces = Province::all();

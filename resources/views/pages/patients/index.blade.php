@@ -41,6 +41,16 @@
                                 value="{{ request('card_search') }}" placeholder="{{ localize('global.search_by_card') }}">
                         </div>
                         <div class="col-md-2">
+                            <label for="nid" class="form-label">{{ localize('global.nid') }}</label>
+                            <input type="text" class="form-control" id="nid" name="nid"
+                                value="{{ request('nid') }}" placeholder="{{ localize('global.nid') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="id" class="form-label">{{ localize('global.id') }}</label>
+                            <input type="text" class="form-control" id="id" name="id"
+                                value="{{ request('id') }}" placeholder="{{ localize('global.id') }}">
+                        </div>
+                        <div class="col-md-2">
                             <label for="militery_type_id" class="form-label">{{ localize('global.militery_type') }}</label>
                             <select class="form-select" id="militery_type_id" name="militery_type_id">
                                 <option value="">{{ localize('global.all') }}</option>

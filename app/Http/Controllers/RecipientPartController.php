@@ -8,6 +8,7 @@ use App\Models\RecipientPart;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class RecipientPartController extends Controller
@@ -53,7 +54,10 @@ class RecipientPartController extends Controller
     {
         DB::beginTransaction();
         try {
-            RecipientPart::create($request->validated());
+            $data = $request->validated();
+            $data['code'] = $this->generateUniqueCode((int) $data['recipient_id'], $data['name']);
+
+            RecipientPart::create($data);
             DB::commit();
 
             return redirect()
@@ -117,5 +121,24 @@ class RecipientPartController extends Controller
 
         return redirect()->back()
             ->with('success', localize('global.recipient_part_deleted_successfully.'));
+    }
+
+    private function generateUniqueCode(int $recipientId, string $name): string
+    {
+        $base = Str::upper(Str::limit(preg_replace('/\s+/', '-', trim($name)) ?: 'PART', 40, ''));
+
+        $code = $base;
+        $suffix = 1;
+
+        while (
+            RecipientPart::where('recipient_id', $recipientId)
+                ->where('code', $code)
+                ->exists()
+        ) {
+            $code = Str::limit($base, 40, '').'-'.$suffix;
+            $suffix++;
+        }
+
+        return Str::limit($code, 50, '');
     }
 }

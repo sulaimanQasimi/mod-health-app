@@ -42,20 +42,10 @@
                                     @endif
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">{{ localize('global.code') }}</label>
-                                    <input type="text" class="form-control" name="code" value="{{ old('code') }}">
-                                    @if ($errors->first('code'))
-                                        <div class="display-error">
-                                            {{ $errors->first('code') }}
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-6">
+                                <div class="col-md-6 d-flex align-items-end">
                                     <button type="submit"
                                             class="btn btn-primary">{{ localize('global.save') }}</button>
-                                    <a href="{{ route('recipient-parts.index') }}"><button type="button"
+                                    <a href="{{ route('recipient-parts.index') }}" class="ms-2"><button type="button"
                                         class="btn btn-danger">{{ localize('global.back') }}</button></a>
                                 </div>
                             </div>

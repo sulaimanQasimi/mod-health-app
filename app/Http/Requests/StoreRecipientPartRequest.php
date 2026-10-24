@@ -26,13 +26,6 @@ class StoreRecipientPartRequest extends FormRequest
                 Rule::unique('recipient_parts', 'name')
                     ->where(fn ($query) => $query->where('recipient_id', $this->input('recipient_id'))),
             ],
-            'code' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('recipient_parts', 'code')
-                    ->where(fn ($query) => $query->where('recipient_id', $this->input('recipient_id'))),
-            ],
         ];
     }
 

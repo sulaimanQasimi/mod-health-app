@@ -1083,22 +1083,51 @@ $hospitalization->appointment->update([
     }
 
     /**
-     * Room management: show rooms and beds with occupancy (patient name per bed, empty beds, unoccupy button).
+     * Room management: SPA-style overview, room list, and bed grid with occupancy actions.
      */
     public function roomManagement(Request $request)
     {
         $branchId = auth()->user()->branch_id;
-        $rooms = Room::select('id', 'name')
-            ->when($branchId, function ($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
-            })
+
+        $rooms = Room::query()
+            ->select('id', 'name', 'department_id', 'branch_id')
+            ->with('department:id,name')
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->withCount([
+                'allBeds as beds_count',
+                'allBeds as occupied_beds_count' => fn ($q) => $q->where('is_occupied', true),
+            ])
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->map(function (Room $room) {
+                $emptyBeds = max($room->beds_count - $room->occupied_beds_count, 0);
+
+                return (object) [
+                    'id' => $room->id,
+                    'name' => $room->name,
+                    'department_name' => $room->department?->name,
+                    'beds_count' => (int) $room->beds_count,
+                    'occupied_beds_count' => (int) $room->occupied_beds_count,
+                    'empty_beds_count' => $emptyBeds,
+                    'occupancy_rate' => $room->beds_count > 0
+                        ? (int) round(($room->occupied_beds_count / $room->beds_count) * 100)
+                        : 0,
+                ];
+            });
+
+        $overview = [
+            'rooms_count' => $rooms->count(),
+            'beds_count' => $rooms->sum('beds_count'),
+            'occupied_beds_count' => $rooms->sum('occupied_beds_count'),
+            'empty_beds_count' => $rooms->sum('empty_beds_count'),
+            'occupancy_rate' => $rooms->sum('beds_count') > 0
+                ? (int) round(($rooms->sum('occupied_beds_count') / $rooms->sum('beds_count')) * 100)
+                : 0,
+        ];
 
         $selectedRoom = null;
         $bedsWithOccupation = collect();
 
-        // Rooms that have at least one occupied bed (active hospitalization) — for swap room dropdown
         $roomIdsWithOccupiedBeds = Hospitalization::where('is_discharged', 0)
             ->whereHas('room', function ($q) use ($branchId) {
                 if ($branchId) {
@@ -1110,32 +1139,44 @@ $hospitalization->appointment->update([
             ->values()
             ->toArray();
         $roomsWithOccupiedBeds = Room::select('id', 'name')
-            ->when($branchId, function ($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
-            })
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
             ->whereIn('id', $roomIdsWithOccupiedBeds)
             ->orderBy('name')
             ->get();
 
-        if ($request->filled('room_id')) {
-            $roomId = $request->room_id;
-            $selectedRoom = Room::find($roomId);
+        $selectedRoomId = (int) $request->input('room_id', 0);
+        if ($selectedRoomId === 0 && $rooms->isNotEmpty()) {
+            $selectedRoomId = (int) $rooms->first()->id;
+        }
+
+        if ($selectedRoomId > 0) {
+            $selectedRoom = Room::with('department:id,name')
+                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                ->find($selectedRoomId);
+
             if ($selectedRoom) {
                 $beds = $selectedRoom->allBeds()->orderBy('number')->get();
-                $bedIds = $beds->pluck('id');
-                $activeHospitalizations = Hospitalization::whereIn('bed_id', $bedIds)
+                $activeHospitalizations = Hospitalization::whereIn('bed_id', $beds->pluck('id'))
                     ->where('is_discharged', 0)
-                    ->with('patient:id,name')
+                    ->with('patient:id,name,father_name')
                     ->get()
                     ->keyBy('bed_id');
+
                 foreach ($beds as $bed) {
-                    $bed->active_hospitalization = $activeHospitalizations->get($bed->id);
+                    $hospitalization = $activeHospitalizations->get($bed->id);
+                    $bed->active_hospitalization = $hospitalization;
+                    $bed->admission_date = $hospitalization
+                        ? Verta::instance($hospitalization->created_at)->format('Y/m/d')
+                        : null;
                 }
                 $bedsWithOccupation = $beds;
             }
         }
 
-        return view('pages.hospitalizations.room-management', compact('rooms', 'selectedRoom', 'bedsWithOccupation', 'roomsWithOccupiedBeds'));
+        return view(
+            'pages.hospitalizations.room-management',
+            compact('rooms', 'overview', 'selectedRoom', 'bedsWithOccupation', 'roomsWithOccupiedBeds')
+        );
     }
 
     /**

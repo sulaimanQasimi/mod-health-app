@@ -25,7 +25,6 @@ class RecipientPartController extends Controller
                 ->map(fn (RecipientPart $part) => [
                     'id' => $part->id,
                     'name' => $part->name,
-                    'code' => $part->code,
                     'recipient_name' => $part->recipient?->name,
                 ]);
 

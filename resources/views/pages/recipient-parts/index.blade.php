@@ -28,7 +28,6 @@
                             <th>{{ localize('global.number') }}</th>
                             <th>{{ localize('global.recipient') }}</th>
                             <th>{{ localize('global.name') }}</th>
-                            <th>{{ localize('global.code') }}</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -100,9 +99,6 @@
                         },
                         {
                             data: 'name'
-                        },
-                        {
-                            data: 'code'
                         },
                         {
                             data: ''

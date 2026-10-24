@@ -1144,15 +1144,8 @@ $hospitalization->appointment->update([
             ->orderBy('name')
             ->get();
 
-        $selectedRoomId = (int) $request->input('room_id', 0);
-        if ($selectedRoomId === 0 && $rooms->isNotEmpty()) {
-            $selectedRoomId = (int) $rooms->first()->id;
-        }
-
-        if ($selectedRoomId > 0) {
-            $selectedRoom = Room::with('department:id,name')
-                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
-                ->find($selectedRoomId);
+        if ($request->filled('room_id')) {
+            $selectedRoom = Room::with('department:id,name')->find((int) $request->room_id);
 
             if ($selectedRoom) {
                 $beds = $selectedRoom->allBeds()->orderBy('number')->get();
@@ -1163,11 +1156,7 @@ $hospitalization->appointment->update([
                     ->keyBy('bed_id');
 
                 foreach ($beds as $bed) {
-                    $hospitalization = $activeHospitalizations->get($bed->id);
-                    $bed->active_hospitalization = $hospitalization;
-                    $bed->admission_date = $hospitalization
-                        ? Verta::instance($hospitalization->created_at)->format('Y/m/d')
-                        : null;
+                    $bed->active_hospitalization = $activeHospitalizations->get($bed->id);
                 }
                 $bedsWithOccupation = $beds;
             }

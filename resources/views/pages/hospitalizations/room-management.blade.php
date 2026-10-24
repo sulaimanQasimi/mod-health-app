@@ -442,25 +442,33 @@
             var bedsApiUrl = '{{ url("/get_related_beds") }}';
 
             document.addEventListener('DOMContentLoaded', function() {
-                var roomSelect = document.getElementById('room_id');
-                if (roomSelect) {
-                    roomSelect.addEventListener('change', function() {
-                        document.getElementById('roomSelectForm').submit();
-                    });
-                }
-
                 if (typeof $ !== 'undefined' && $.fn.select2) {
                     var $roomSelect = $('#room_id');
                     if ($roomSelect.length) {
+                        if ($roomSelect.hasClass('select2-hidden-accessible')) {
+                            $roomSelect.select2('destroy');
+                        }
+
                         $roomSelect.select2({
                             placeholder: '{{ localize("global.select") }}...',
                             allowClear: true,
                             width: '100%'
                         });
+
+                        // Only submit on user action (not on Select2 init)
+                        $roomSelect
+                            .off('select2:select.roomManagement select2:clear.roomManagement')
+                            .on('select2:select.roomManagement select2:clear.roomManagement', function() {
+                                document.getElementById('roomSelectForm').submit();
+                            });
                     }
 
                     var $moveRoomSelect = $('#move_room_id');
                     if ($moveRoomSelect.length) {
+                        if ($moveRoomSelect.hasClass('select2-hidden-accessible')) {
+                            $moveRoomSelect.select2('destroy');
+                        }
+
                         $moveRoomSelect.select2({
                             placeholder: '{{ localize("global.select_room") ?: "Select Room" }}...',
                             allowClear: true,
@@ -489,7 +497,7 @@
                             }
                         });
 
-                        $(document).on('change', '#move_room_id', function() {
+                        $(document).off('change.moveRoomBeds', '#move_room_id').on('change.moveRoomBeds', '#move_room_id', function() {
                             var roomId = $(this).val();
                             var $bedSelect = $('#move_bed_id');
                             if (roomId) {

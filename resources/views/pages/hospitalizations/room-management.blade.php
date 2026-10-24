@@ -133,18 +133,17 @@
                         <div class="row align-items-end g-3">
                             <div class="col-md-6">
                                 <label for="room_id" class="form-label fw-semibold">{{ localize('global.room') }}</label>
-                                <select class="form-select select2" name="room_id" id="room_id">
-                                    <option value="">{{ localize('global.select') }}...</option>
-                                    @foreach ($rooms as $room)
-                                        <option value="{{ $room->id }}" {{ $selectedRoom && $selectedRoom->id == $room->id ? 'selected' : '' }}>
-                                            {{ $room->name }}
-                                            @if ($room->department_name)
-                                                ({{ $room->department_name }})
-                                            @endif
-                                            — {{ $room->occupied_beds_count }}/{{ $room->beds_count }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div class="position-relative">
+                                    {{-- Avoid global .select2 auto-init so AJAX search works reliably --}}
+                                    <select class="form-select room-management-select" name="room_id" id="room_id">
+                                        <option value="">{{ localize('global.select') }}...</option>
+                                        @foreach ($rooms as $room)
+                                            <option value="{{ $room->id }}" {{ $selectedRoom && $selectedRoom->id == $room->id ? 'selected' : '' }}>
+                                                {{ $room->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-md-2">
                                 <button type="submit" class="btn btn-primary">
@@ -452,7 +451,30 @@
                         $roomSelect.select2({
                             placeholder: '{{ localize("global.select") }}...',
                             allowClear: true,
-                            width: '100%'
+                            width: '100%',
+                            dropdownParent: $roomSelect.parent(),
+                            minimumInputLength: 0,
+                            ajax: {
+                                url: roomsApiUrl,
+                                dataType: 'json',
+                                delay: 250,
+                                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                                data: function(params) {
+                                    return { search: params.term || '', page: params.page || 1 };
+                                },
+                                processResults: function(data) {
+                                    if (data && data.results) {
+                                        return { results: data.results, pagination: data.pagination || { more: false } };
+                                    }
+                                    return { results: [], pagination: { more: false } };
+                                },
+                                cache: true
+                            },
+                            language: {
+                                noResults: function() { return '{{ localize("global.no_results_found") ?: "No results found" }}'; },
+                                searching: function() { return '{{ localize("global.searching") ?: "Searching" }}...'; },
+                                inputTooShort: function() { return ''; }
+                            }
                         });
 
                         // Only submit on user action (not on Select2 init)

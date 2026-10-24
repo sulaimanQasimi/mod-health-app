@@ -94,7 +94,10 @@ class SelectController extends Controller
             }
 
             if (auth()->check() && auth()->user()->branch_id) {
-                $query->where('branch_id', auth()->user()->branch_id);
+                $branchId = auth()->user()->branch_id;
+                $query->where(function ($scoped) use ($branchId) {
+                    $scoped->where('branch_id', $branchId)->orWhereNull('branch_id');
+                });
             }
 
             $rooms = $query

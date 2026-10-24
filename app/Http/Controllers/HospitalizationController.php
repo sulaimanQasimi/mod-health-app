@@ -1092,7 +1092,11 @@ $hospitalization->appointment->update([
         $rooms = Room::query()
             ->select('id', 'name', 'department_id', 'branch_id')
             ->with('department:id,name')
-            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->when($branchId, function ($q) use ($branchId) {
+                $q->where(function ($scoped) use ($branchId) {
+                    $scoped->where('branch_id', $branchId)->orWhereNull('branch_id');
+                });
+            })
             ->withCount([
                 'allBeds as beds_count',
                 'allBeds as occupied_beds_count' => fn ($q) => $q->where('is_occupied', true),

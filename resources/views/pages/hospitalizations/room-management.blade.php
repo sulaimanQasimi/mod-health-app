@@ -7,91 +7,113 @@
         @endif
         <div class="container-xxl flex-grow-1 container-p-y">
 
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-                <div>
-                    <h4 class="fw-bold mb-1">
-                        <i class="bx bx-building-house me-2 text-primary"></i>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="fw-bold mb-0">
+                        <i class="bx bx-bed me-2 text-primary"></i>
                         {{ localize('global.room_management') ?: 'Room Management' }}
                     </h4>
-                    <p class="text-muted mb-0">
-                        @if ($selectedRoom)
-                            {{ $selectedRoom->name }}
-                            @if ($selectedRoom->department?->name)
-                                · {{ $selectedRoom->department->name }}
-                            @endif
-                        @else
-                            {{ localize('global.rooms') }}
-                        @endif
-                    </p>
                 </div>
-                <a href="{{ route('hospitalizations.index') }}" class="btn btn-outline-secondary">
-                    <i class="bx bx-arrow-back me-1"></i>{{ localize('global.back') }}
-                </a>
             </div>
 
             @if ($rooms->isNotEmpty())
-                <div class="row g-3 mb-4">
-                    <div class="col-6 col-lg">
-                        <div class="card h-100 border-secondary border-opacity-25">
-                            <div class="card-body d-flex align-items-center gap-3">
-                                <span class="avatar avatar-md bg-secondary rounded">
-                                    <i class="bx bx-building-house text-white"></i>
-                                </span>
-                                <div>
-                                    <div class="text-muted small">{{ localize('global.rooms') }}</div>
-                                    <div class="fw-bold fs-4 mb-0">{{ $overview['rooms_count'] }}</div>
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6 col-xl">
+                        <div class="card border border-secondary h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                        <h4>{{ localize('global.rooms') }}</h4>
+                                        <div class="d-flex align-items-end mt-2">
+                                            <h4 class="mb-0 me-2 p-1 rounded text-secondary">{{ $overview['rooms_count'] }}</h4>
+                                        </div>
+                                        <p class="mb-0">{{ localize('global.rooms') }}</p>
+                                    </div>
+                                    <div class="avatar p-4">
+                                        <span class="avatar-initial rounded-circle bg-secondary">
+                                            <i class="bx bx-building-house bx-md text-white"></i>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-6 col-lg">
-                        <div class="card h-100 border-primary border-opacity-25">
-                            <div class="card-body d-flex align-items-center gap-3">
-                                <span class="avatar avatar-md bg-primary rounded">
-                                    <i class="bx bx-grid-alt text-white"></i>
-                                </span>
-                                <div>
-                                    <div class="text-muted small">{{ localize('global.beds') ?: 'Beds' }}</div>
-                                    <div class="fw-bold fs-4 mb-0 text-primary">{{ $overview['beds_count'] }}</div>
+                    <div class="col-sm-6 col-xl">
+                        <div class="card border border-primary h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                        <h4>{{ localize('global.beds') ?: 'Beds' }}</h4>
+                                        <div class="d-flex align-items-end mt-2">
+                                            <h4 class="mb-0 me-2 p-1 rounded text-primary">{{ $overview['beds_count'] }}</h4>
+                                        </div>
+                                        <p class="mb-0">{{ localize('global.beds') ?: 'Beds' }}</p>
+                                    </div>
+                                    <div class="avatar p-4">
+                                        <span class="avatar-initial rounded-circle bg-primary">
+                                            <i class="bx bx-grid-alt bx-md text-white"></i>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-6 col-lg">
-                        <div class="card h-100 border-warning border-opacity-25">
-                            <div class="card-body d-flex align-items-center gap-3">
-                                <span class="avatar avatar-md bg-warning rounded">
-                                    <i class="bx bx-user-pin text-white"></i>
-                                </span>
-                                <div>
-                                    <div class="text-muted small">{{ localize('global.occupied') ?: 'Occupied' }}</div>
-                                    <div class="fw-bold fs-4 mb-0 text-warning">{{ $overview['occupied_beds_count'] }}</div>
+                    <div class="col-sm-6 col-xl">
+                        <div class="card border border-warning h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                        <h4>{{ localize('global.occupied') ?: 'Occupied' }}</h4>
+                                        <div class="d-flex align-items-end mt-2">
+                                            <h4 class="mb-0 me-2 p-1 rounded text-warning">{{ $overview['occupied_beds_count'] }}</h4>
+                                        </div>
+                                        <p class="mb-0">{{ localize('global.occupied') ?: 'Occupied' }}</p>
+                                    </div>
+                                    <div class="avatar p-4">
+                                        <span class="avatar-initial rounded-circle bg-warning">
+                                            <i class="bx bx-user-pin bx-md text-white"></i>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-6 col-lg">
-                        <div class="card h-100 border-success border-opacity-25">
-                            <div class="card-body d-flex align-items-center gap-3">
-                                <span class="avatar avatar-md bg-success rounded">
-                                    <i class="bx bx-check-circle text-white"></i>
-                                </span>
-                                <div>
-                                    <div class="text-muted small">{{ localize('global.empty_bed') ?: 'Empty' }}</div>
-                                    <div class="fw-bold fs-4 mb-0 text-success">{{ $overview['empty_beds_count'] }}</div>
+                    <div class="col-sm-6 col-xl">
+                        <div class="card border border-success h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                        <h4>{{ localize('global.empty_bed') ?: 'Empty' }}</h4>
+                                        <div class="d-flex align-items-end mt-2">
+                                            <h4 class="mb-0 me-2 p-1 rounded text-success">{{ $overview['empty_beds_count'] }}</h4>
+                                        </div>
+                                        <p class="mb-0">{{ localize('global.empty_bed') ?: 'Empty' }}</p>
+                                    </div>
+                                    <div class="avatar p-4">
+                                        <span class="avatar-initial rounded-circle bg-success">
+                                            <i class="bx bx-check-circle bx-md text-white"></i>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg">
-                        <div class="card h-100 border-info border-opacity-25">
-                            <div class="card-body d-flex align-items-center gap-3">
-                                <span class="avatar avatar-md bg-info rounded">
-                                    <i class="bx bx-pie-chart-alt-2 text-white"></i>
-                                </span>
-                                <div>
-                                    <div class="text-muted small">{{ localize('global.bed_occupancy') ?: 'Bed occupancy' }}</div>
-                                    <div class="fw-bold fs-4 mb-0 text-info">{{ $overview['occupancy_rate'] }}%</div>
+                    <div class="col-sm-6 col-xl">
+                        <div class="card border border-info h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                        <h4>{{ localize('global.bed_occupancy') ?: 'Bed occupancy' }}</h4>
+                                        <div class="d-flex align-items-end mt-2">
+                                            <h4 class="mb-0 me-2 p-1 rounded text-info">{{ $overview['occupancy_rate'] }}%</h4>
+                                        </div>
+                                        <p class="mb-0">{{ localize('global.bed_occupancy') ?: 'Bed occupancy' }}</p>
+                                    </div>
+                                    <div class="avatar p-4">
+                                        <span class="avatar-initial rounded-circle bg-info">
+                                            <i class="bx bx-pie-chart-alt-2 bx-md text-white"></i>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -99,238 +121,147 @@
                 </div>
             @endif
 
-            @if ($rooms->isEmpty())
-                <div class="card">
-                    <div class="card-body text-center text-muted py-5">
-                        {{ localize('global.no_records_found') }}
-                    </div>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-none border-0">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bx bx-building me-2 text-primary"></i>
+                        {{ localize('global.select_room') ?: 'Select Room' }}
+                    </h6>
                 </div>
-            @else
-                <div class="row g-4">
-                    <div class="col-md-4 col-xl-3">
-                        <div class="card room-list-card sticky-lg-top" style="top: 1rem;">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0 fw-semibold">
-                                    <i class="bx bx-building-house me-1 text-primary"></i>
-                                    {{ localize('global.rooms') }}
-                                </h6>
-                                <span class="badge bg-label-secondary" id="roomListCount">{{ $rooms->count() }} / {{ $rooms->count() }}</span>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('hospitalizations.roomManagement') }}" id="roomSelectForm">
+                        <div class="row align-items-end g-3">
+                            <div class="col-md-6">
+                                <label for="room_id" class="form-label fw-semibold">{{ localize('global.room') }}</label>
+                                <select class="form-select select2" name="room_id" id="room_id">
+                                    <option value="">{{ localize('global.select') }}...</option>
+                                    @foreach ($rooms as $room)
+                                        <option value="{{ $room->id }}" {{ $selectedRoom && $selectedRoom->id == $room->id ? 'selected' : '' }}>
+                                            {{ $room->name }}
+                                            @if ($room->department_name)
+                                                ({{ $room->department_name }})
+                                            @endif
+                                            — {{ $room->occupied_beds_count }}/{{ $room->beds_count }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <div class="card-body border-bottom py-3">
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text"><i class="bx bx-search"></i></span>
-                                    <input type="search" class="form-control" id="roomSearchInput"
-                                           placeholder="{{ localize('global.search') }}...">
-                                </div>
-                            </div>
-                            <div class="card-body p-3 room-list-scroll" style="max-height: min(70vh, 36rem); overflow-y: auto;">
-                                @foreach ($rooms as $room)
-                                    @php
-                                        $isSelected = $selectedRoom && $selectedRoom->id == $room->id;
-                                        $rate = $room->occupancy_rate;
-                                        $badgeClass = $rate >= 85 ? 'bg-label-danger' : ($rate >= 55 ? 'bg-label-warning' : 'bg-label-success');
-                                        $barClass = $rate >= 85 ? 'bg-danger' : ($rate >= 55 ? 'bg-warning' : 'bg-success');
-                                    @endphp
-                                    <a href="{{ route('hospitalizations.roomManagement', ['room_id' => $room->id]) }}"
-                                       class="room-list-item text-decoration-none d-block mb-2 rounded border p-3 {{ $isSelected ? 'border-primary bg-label-primary' : 'border-light bg-lighter' }}"
-                                       data-room-name="{{ strtolower($room->name) }}"
-                                       data-department-name="{{ strtolower($room->department_name ?? '') }}">
-                                        <div class="d-flex justify-content-between align-items-start gap-2">
-                                            <div class="min-w-0">
-                                                <div class="fw-semibold text-heading text-truncate">{{ $room->name }}</div>
-                                                @if ($room->department_name)
-                                                    <div class="small text-muted text-truncate">{{ $room->department_name }}</div>
-                                                @endif
-                                            </div>
-                                            <span class="badge {{ $badgeClass }} flex-shrink-0">{{ $rate }}%</span>
-                                        </div>
-                                        <div class="progress mt-2" style="height: 6px;">
-                                            <div class="progress-bar {{ $barClass }}" role="progressbar"
-                                                 style="width: {{ $rate }}%;" aria-valuenow="{{ $rate }}"
-                                                 aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                        <div class="small text-muted mt-2">
-                                            {{ $room->occupied_beds_count }} / {{ $room->beds_count }} {{ localize('global.occupied') ?: 'Occupied' }}
-                                            · {{ $room->empty_beds_count }} {{ localize('global.empty_bed') ?: 'Empty' }}
-                                        </div>
-                                    </a>
-                                @endforeach
-                                <p class="text-center text-muted py-4 mb-0 d-none" id="roomListEmpty">
-                                    {{ localize('global.no_records_found') }}
-                                </p>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bx bx-show me-1"></i>{{ localize('global.show') ?: 'Show' }}
+                                </button>
                             </div>
                         </div>
+                    </form>
+                </div>
+            </div>
+
+            @if ($selectedRoom)
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bx bx-door-open me-2 text-info"></i>
+                            {{ localize('global.room') }}: {{ $selectedRoom->name }}
+                            @if ($selectedRoom->department?->name)
+                                <small class="text-muted fw-normal">· {{ $selectedRoom->department->name }}</small>
+                            @endif
+                        </h5>
+                        <span class="badge bg-label-primary">{{ localize('global.bed_occupancy') ?: 'Bed occupancy' }}</span>
                     </div>
-
-                    <div class="col-md-8 col-xl-9">
-                        @if ($selectedRoom)
-                            @php
-                                $occupiedCount = $bedsWithOccupation->filter(fn ($b) => $b->active_hospitalization)->count();
-                                $emptyCount = $bedsWithOccupation->count() - $occupiedCount;
-                                $roomRate = $bedsWithOccupation->count() > 0
-                                    ? (int) round(($occupiedCount / $bedsWithOccupation->count()) * 100)
-                                    : 0;
-                                $roomRateBadge = $roomRate >= 85 ? 'bg-label-danger' : ($roomRate >= 55 ? 'bg-label-warning' : 'bg-label-success');
-                                $canEditRooms = auth()->user()->hasRole(['super_admin', 'admin']) || auth()->user()->can('edit-hospitalizations');
-                            @endphp
-                            <div class="card">
-                                <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-                                    <div>
-                                        <h5 class="mb-1">
-                                            <i class="bx bx-bed me-2 text-info"></i>{{ $selectedRoom->name }}
-                                        </h5>
-                                        <div class="small text-muted">
-                                            @if ($selectedRoom->department?->name)
-                                                {{ $selectedRoom->department->name }} ·
-                                            @endif
-                                            {{ $occupiedCount }} / {{ $bedsWithOccupation->count() }}
-                                            {{ localize('global.occupied') ?: 'Occupied' }}
-                                            ({{ $roomRate }}%)
-                                        </div>
-                                    </div>
-                                    <span class="badge {{ $roomRateBadge }}">
-                                        {{ $roomRate }}% {{ localize('global.occupied') ?: 'Occupied' }}
-                                    </span>
-                                </div>
-
-                                <div class="card-body border-bottom py-3">
-                                    <div class="d-flex flex-wrap gap-2" id="bedFilterButtons">
-                                        <button type="button" class="btn btn-sm btn-outline-primary active bed-filter-btn" data-filter="all">
-                                            {{ localize('global.all') ?: 'All' }}
-                                            <span class="opacity-75">({{ $bedsWithOccupation->count() }})</span>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-warning bed-filter-btn" data-filter="occupied">
-                                            {{ localize('global.occupied') ?: 'Occupied' }}
-                                            <span class="opacity-75">({{ $occupiedCount }})</span>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-success bed-filter-btn" data-filter="empty">
-                                            {{ localize('global.empty_bed') ?: 'Empty' }}
-                                            <span class="opacity-75">({{ $emptyCount }})</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="card-body">
-                                    @if ($bedsWithOccupation->isEmpty())
-                                        <p class="text-muted mb-0 text-center py-5">
-                                            {{ localize('global.no_beds_in_room') ?: 'No beds in this room.' }}
-                                        </p>
-                                    @else
-                                        <div class="row g-3" id="bedGrid">
-                                            @foreach ($bedsWithOccupation as $bed)
-                                                @php
-                                                    $isOccupied = (bool) $bed->active_hospitalization;
-                                                    $patient = $bed->active_hospitalization->patient ?? null;
-                                                    $initials = $patient?->name
-                                                        ? mb_strtoupper(mb_substr(preg_replace('/\s+/', '', $patient->name), 0, 2))
-                                                        : '';
-                                                    $otherOccupiedBeds = $bedsWithOccupation->filter(
-                                                        fn ($b) => $b->id != $bed->id && $b->active_hospitalization
-                                                    );
-                                                @endphp
-                                                <div class="col-12 col-sm-6 col-xxl-4 bed-card-col"
-                                                     data-status="{{ $isOccupied ? 'occupied' : 'empty' }}">
-                                                    <div class="card h-100 border {{ $isOccupied ? 'border-warning bg-label-warning' : 'border-success bg-label-success' }} bg-opacity-10">
-                                                        <div class="card-body d-flex flex-column">
-                                                            <div class="d-flex align-items-start gap-3">
-                                                                <div class="avatar avatar-md {{ $isOccupied ? 'bg-warning' : 'bg-success' }} rounded-circle flex-shrink-0">
-                                                                    @if ($isOccupied)
-                                                                        <span class="avatar-initial text-white fw-semibold">{{ $initials ?: '?' }}</span>
-                                                                    @else
-                                                                        <span class="avatar-initial"><i class="bx bx-bed text-white"></i></span>
-                                                                    @endif
-                                                                </div>
-                                                                <div class="flex-grow-1 min-w-0">
-                                                                    <div class="d-flex justify-content-between align-items-start gap-2">
-                                                                        <div class="fw-semibold text-heading">
-                                                                            {{ localize('global.bed') ?: 'Bed' }} {{ $bed->number }}
-                                                                        </div>
-                                                                        @if ($isOccupied)
-                                                                            <span class="badge bg-label-danger flex-shrink-0">{{ localize('global.occupied') ?: 'Occupied' }}</span>
-                                                                        @else
-                                                                            <span class="badge bg-label-success flex-shrink-0">{{ localize('global.empty_bed') ?: 'Empty' }}</span>
-                                                                        @endif
-                                                                    </div>
-
-                                                                    @if ($isOccupied)
-                                                                        <div class="mt-2">
-                                                                            <div class="text-heading text-truncate">{{ $patient->name ?? '—' }}</div>
-                                                                            @if (!empty($patient?->father_name))
-                                                                                <div class="small text-muted text-truncate">{{ $patient->father_name }}</div>
-                                                                            @endif
-                                                                            @if ($bed->admission_date)
-                                                                                <div class="small text-muted" dir="ltr">{{ $bed->admission_date }}</div>
-                                                                            @endif
-                                                                        </div>
-                                                                    @else
-                                                                        <div class="small text-success mt-2">{{ localize('global.empty_bed') ?: 'Empty' }}</div>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="mt-auto pt-3 d-grid gap-2">
-                                                                @if ($isOccupied)
-                                                                    <a href="{{ route('hospitalizations.show', $bed->active_hospitalization) }}"
-                                                                       class="btn btn-sm btn-outline-secondary">
-                                                                        <i class="bx bx-show me-1"></i>{{ localize('global.view') }}
-                                                                    </a>
-                                                                    @if ($canEditRooms)
-                                                                        <div class="btn-group btn-group-sm flex-wrap">
-                                                                            <button type="button" class="btn btn-outline-primary"
-                                                                                data-bs-toggle="modal" data-bs-target="#movePatientModal"
-                                                                                data-move-action="{{ route('hospitalizations.updateRoomBed', $bed->active_hospitalization->id) }}"
-                                                                                data-patient-name="{{ $patient->name ?? '' }}"
-                                                                                data-current-room="{{ $selectedRoom->name }}"
-                                                                                data-current-bed="{{ $bed->number }}"
-                                                                                data-hospitalization-id="{{ $bed->active_hospitalization->id }}">
-                                                                                <i class="bx bx-transfer me-1"></i>{{ localize('global.change_room_bed') ?: 'Move' }}
-                                                                            </button>
-                                                                            @if ($otherOccupiedBeds->isNotEmpty())
-                                                                                <button type="button" class="btn btn-outline-info btn-swap-bed"
-                                                                                    data-bs-toggle="modal" data-bs-target="#swapBedModal"
-                                                                                    data-swap-action="{{ route('hospitalizations.swapBed', $bed->active_hospitalization) }}"
-                                                                                    data-patient-name="{{ $patient->name ?? '' }}"
-                                                                                    data-current-bed="{{ $bed->number }}"
-                                                                                    data-other-beds="{{ $otherOccupiedBeds->map(fn($b) => ['id' => $b->id, 'number' => $b->number, 'patient' => $b->active_hospitalization->patient->name ?? '—'])->values()->toJson() }}">
-                                                                                    <i class="bx bx-swap-horizontal me-1"></i>{{ localize('global.swap_bed') ?: 'Swap bed' }}
-                                                                                </button>
-                                                                            @endif
-                                                                            <button type="button" class="btn btn-outline-secondary btn-swap-room"
-                                                                                data-bs-toggle="modal" data-bs-target="#swapRoomModal"
-                                                                                data-swap-action="{{ route('hospitalizations.swapRoom', $bed->active_hospitalization) }}"
-                                                                                data-patient-name="{{ $patient->name ?? '' }}"
-                                                                                data-current-room-id="{{ $selectedRoom->id }}"
-                                                                                data-current-room-name="{{ $selectedRoom->name }}"
-                                                                                data-current-bed="{{ $bed->number }}"
-                                                                                data-return-room-id="{{ $selectedRoom->id }}">
-                                                                                <i class="bx bx-building me-1"></i>{{ localize('global.swap_room') ?: 'Swap room' }}
-                                                                            </button>
-                                                                            <button type="button" class="btn btn-outline-danger"
-                                                                                data-bs-toggle="modal" data-bs-target="#unoccupyBedModal"
-                                                                                data-action="{{ route('hospitalizations.unoccupyBed', $bed->active_hospitalization) }}"
-                                                                                data-patient-name="{{ $patient->name ?? '' }}">
-                                                                                <i class="bx bx-log-out me-1"></i>{{ localize('global.unoccupy_bed') ?: 'Unoccupy' }}
-                                                                            </button>
-                                                                        </div>
-                                                                    @endif
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                        <p class="text-center text-muted py-5 mb-0 d-none" id="bedGridEmpty">
-                                            {{ localize('global.no_records_found') }}
-                                        </p>
-                                    @endif
-                                </div>
-                            </div>
+                    <div class="card-body">
+                        @if ($bedsWithOccupation->isEmpty())
+                            <p class="text-muted mb-0">{{ localize('global.no_beds_in_room') ?: 'No beds in this room.' }}</p>
                         @else
-                            <div class="card">
-                                <div class="card-body text-center text-muted py-5">
-                                    {{ localize('global.select') }}
-                                </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ localize('global.bed_number') ?: 'Bed number' }}</th>
+                                            <th>{{ localize('global.patient') }}</th>
+                                            <th>{{ localize('global.status') ?: 'Status' }}</th>
+                                            @if (auth()->user()->hasRole(['super_admin', 'admin']) || auth()->user()->can('edit-hospitalizations'))
+                                                <th class="text-end">{{ localize('global.actions') ?: 'Actions' }}</th>
+                                            @endif
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($bedsWithOccupation as $bed)
+                                            @php
+                                                $canEditRooms = auth()->user()->hasRole(['super_admin', 'admin']) || auth()->user()->can('edit-hospitalizations');
+                                                $otherOccupiedBeds = $bedsWithOccupation->filter(fn($b) => $b->id != $bed->id && $b->active_hospitalization);
+                                            @endphp
+                                            <tr>
+                                                <td class="fw-semibold">{{ $bed->number }}</td>
+                                                <td>
+                                                    @if ($bed->active_hospitalization && $bed->active_hospitalization->patient)
+                                                        <div>{{ $bed->active_hospitalization->patient->name }}</div>
+                                                        @if ($bed->active_hospitalization->patient->father_name)
+                                                            <small class="text-muted">{{ $bed->active_hospitalization->patient->father_name }}</small>
+                                                        @endif
+                                                    @else
+                                                        <span class="text-muted">—</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($bed->active_hospitalization)
+                                                        <span class="badge bg-label-warning">{{ localize('global.occupied') ?: 'Occupied' }}</span>
+                                                    @else
+                                                        <span class="badge bg-label-success">{{ localize('global.empty_bed') ?: 'Empty' }}</span>
+                                                    @endif
+                                                </td>
+                                                @if ($canEditRooms)
+                                                    <td class="text-end">
+                                                        @if ($bed->active_hospitalization)
+                                                            <div class="btn-group btn-group-sm">
+                                                                <a href="{{ route('hospitalizations.show', $bed->active_hospitalization) }}"
+                                                                   class="btn btn-outline-secondary">
+                                                                    <i class="bx bx-show me-1"></i>{{ localize('global.view') }}
+                                                                </a>
+                                                                <button type="button" class="btn btn-outline-primary"
+                                                                    data-bs-toggle="modal" data-bs-target="#movePatientModal"
+                                                                    data-move-action="{{ route('hospitalizations.updateRoomBed', $bed->active_hospitalization->id) }}"
+                                                                    data-patient-name="{{ $bed->active_hospitalization->patient->name ?? '' }}"
+                                                                    data-current-room="{{ $selectedRoom->name }}"
+                                                                    data-current-bed="{{ $bed->number }}"
+                                                                    data-hospitalization-id="{{ $bed->active_hospitalization->id }}">
+                                                                    <i class="bx bx-transfer me-1"></i>{{ localize('global.change_room_bed') ?: 'Move to room/bed' }}
+                                                                </button>
+                                                                @if ($otherOccupiedBeds->isNotEmpty())
+                                                                    <button type="button" class="btn btn-outline-info btn-swap-bed"
+                                                                        data-bs-toggle="modal" data-bs-target="#swapBedModal"
+                                                                        data-swap-action="{{ route('hospitalizations.swapBed', $bed->active_hospitalization) }}"
+                                                                        data-patient-name="{{ $bed->active_hospitalization->patient->name ?? '' }}"
+                                                                        data-current-bed="{{ $bed->number }}"
+                                                                        data-other-beds="{{ $otherOccupiedBeds->map(fn($b) => ['id' => $b->id, 'number' => $b->number, 'patient' => $b->active_hospitalization->patient->name ?? '—'])->values()->toJson() }}">
+                                                                        <i class="bx bx-swap-horizontal me-1"></i>{{ localize('global.swap_bed') ?: 'Swap bed' }}
+                                                                    </button>
+                                                                @endif
+                                                                <button type="button" class="btn btn-outline-secondary btn-swap-room"
+                                                                    data-bs-toggle="modal" data-bs-target="#swapRoomModal"
+                                                                    data-swap-action="{{ route('hospitalizations.swapRoom', $bed->active_hospitalization) }}"
+                                                                    data-patient-name="{{ $bed->active_hospitalization->patient->name ?? '' }}"
+                                                                    data-current-room-id="{{ $selectedRoom->id }}"
+                                                                    data-current-room-name="{{ $selectedRoom->name }}"
+                                                                    data-current-bed="{{ $bed->number }}"
+                                                                    data-return-room-id="{{ $selectedRoom->id }}">
+                                                                    <i class="bx bx-building me-1"></i>{{ localize('global.swap_room') ?: 'Swap room' }}
+                                                                </button>
+                                                                <button type="button" class="btn btn-outline-danger"
+                                                                    data-bs-toggle="modal" data-bs-target="#unoccupyBedModal"
+                                                                    data-action="{{ route('hospitalizations.unoccupyBed', $bed->active_hospitalization) }}"
+                                                                    data-patient-name="{{ $bed->active_hospitalization->patient->name ?? '' }}">
+                                                                    <i class="bx bx-log-out me-1"></i>{{ localize('global.unoccupy_bed') ?: 'Unoccupy' }}
+                                                                </button>
+                                                            </div>
+                                                        @else
+                                                            <span class="text-muted">—</span>
+                                                        @endif
+                                                    </td>
+                                                @endif
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         @endif
                     </div>
@@ -509,49 +440,25 @@
         (function() {
             var roomsApiUrl = '{{ url("/api/select/rooms") }}';
             var bedsApiUrl = '{{ url("/get_related_beds") }}';
-            var totalRooms = {{ $rooms->count() }};
 
             document.addEventListener('DOMContentLoaded', function() {
-                var roomSearchInput = document.getElementById('roomSearchInput');
-                if (roomSearchInput) {
-                    roomSearchInput.addEventListener('input', function() {
-                        var query = (this.value || '').trim().toLowerCase();
-                        var visible = 0;
-                        document.querySelectorAll('.room-list-item').forEach(function(item) {
-                            var name = item.getAttribute('data-room-name') || '';
-                            var department = item.getAttribute('data-department-name') || '';
-                            var match = !query || name.indexOf(query) !== -1 || department.indexOf(query) !== -1;
-                            item.classList.toggle('d-none', !match);
-                            if (match) visible++;
-                        });
-                        var countEl = document.getElementById('roomListCount');
-                        if (countEl) countEl.textContent = visible + ' / ' + totalRooms;
-                        var emptyEl = document.getElementById('roomListEmpty');
-                        if (emptyEl) emptyEl.classList.toggle('d-none', visible > 0);
+                var roomSelect = document.getElementById('room_id');
+                if (roomSelect) {
+                    roomSelect.addEventListener('change', function() {
+                        document.getElementById('roomSelectForm').submit();
                     });
                 }
 
-                document.querySelectorAll('.bed-filter-btn').forEach(function(btn) {
-                    btn.addEventListener('click', function() {
-                        var filter = this.getAttribute('data-filter');
-                        document.querySelectorAll('.bed-filter-btn').forEach(function(b) {
-                            b.classList.remove('active');
-                        });
-                        this.classList.add('active');
-
-                        var visible = 0;
-                        document.querySelectorAll('.bed-card-col').forEach(function(col) {
-                            var status = col.getAttribute('data-status');
-                            var match = filter === 'all' || status === filter;
-                            col.classList.toggle('d-none', !match);
-                            if (match) visible++;
-                        });
-                        var emptyEl = document.getElementById('bedGridEmpty');
-                        if (emptyEl) emptyEl.classList.toggle('d-none', visible > 0);
-                    });
-                });
-
                 if (typeof $ !== 'undefined' && $.fn.select2) {
+                    var $roomSelect = $('#room_id');
+                    if ($roomSelect.length) {
+                        $roomSelect.select2({
+                            placeholder: '{{ localize("global.select") }}...',
+                            allowClear: true,
+                            width: '100%'
+                        });
+                    }
+
                     var $moveRoomSelect = $('#move_room_id');
                     if ($moveRoomSelect.length) {
                         $moveRoomSelect.select2({

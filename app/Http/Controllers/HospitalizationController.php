@@ -1089,14 +1089,9 @@ $hospitalization->appointment->update([
     {
         $branchId = auth()->user()->branch_id;
 
+        // Same source as the original page (Room::all) so the dropdown always has rooms.
         $rooms = Room::query()
-            ->select('id', 'name', 'department_id', 'branch_id')
             ->with('department:id,name')
-            ->when($branchId, function ($q) use ($branchId) {
-                $q->where(function ($scoped) use ($branchId) {
-                    $scoped->where('branch_id', $branchId)->orWhereNull('branch_id');
-                });
-            })
             ->withCount([
                 'allBeds as beds_count',
                 'allBeds as occupied_beds_count' => fn ($q) => $q->where('is_occupied', true),

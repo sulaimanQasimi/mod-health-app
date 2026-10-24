@@ -133,17 +133,14 @@
                         <div class="row align-items-end g-3">
                             <div class="col-md-6">
                                 <label for="room_id" class="form-label fw-semibold">{{ localize('global.room') }}</label>
-                                <div class="position-relative">
-                                    {{-- Avoid global .select2 auto-init so AJAX search works reliably --}}
-                                    <select class="form-select room-management-select" name="room_id" id="room_id">
-                                        <option value="">{{ localize('global.select') }}...</option>
-                                        @foreach ($rooms as $room)
-                                            <option value="{{ $room->id }}" {{ $selectedRoom && $selectedRoom->id == $room->id ? 'selected' : '' }}>
-                                                {{ $room->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                <select class="form-select select2" name="room_id" id="room_id">
+                                    <option value="">{{ localize('global.select') }}...</option>
+                                    @foreach ($rooms as $room)
+                                        <option value="{{ $room->id }}" {{ $selectedRoom && $selectedRoom->id == $room->id ? 'selected' : '' }}>
+                                            {{ $room->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-md-2">
                                 <button type="submit" class="btn btn-primary">
@@ -441,52 +438,19 @@
             var bedsApiUrl = '{{ url("/get_related_beds") }}';
 
             document.addEventListener('DOMContentLoaded', function() {
-                if (typeof $ !== 'undefined' && $.fn.select2) {
-                    var $roomSelect = $('#room_id');
-                    if ($roomSelect.length) {
-                        if ($roomSelect.hasClass('select2-hidden-accessible')) {
-                            $roomSelect.select2('destroy');
+                // Room select: rely on global forms-selects.js Select2 init (static options = local search).
+                // Only submit when the user picks a room.
+                if (typeof $ !== 'undefined') {
+                    $(document).on('change', '#room_id', function() {
+                        var roomId = $(this).val();
+                        if (roomId) {
+                            document.getElementById('roomSelectForm').submit();
                         }
+                    });
 
-                        $roomSelect.select2({
-                            placeholder: '{{ localize("global.select") }}...',
-                            allowClear: true,
-                            width: '100%',
-                            dropdownParent: $roomSelect.parent(),
-                            minimumInputLength: 0,
-                            ajax: {
-                                url: roomsApiUrl,
-                                dataType: 'json',
-                                delay: 250,
-                                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-                                data: function(params) {
-                                    return { search: params.term || '', page: params.page || 1 };
-                                },
-                                processResults: function(data) {
-                                    if (data && data.results) {
-                                        return { results: data.results, pagination: data.pagination || { more: false } };
-                                    }
-                                    return { results: [], pagination: { more: false } };
-                                },
-                                cache: true
-                            },
-                            language: {
-                                noResults: function() { return '{{ localize("global.no_results_found") ?: "No results found" }}'; },
-                                searching: function() { return '{{ localize("global.searching") ?: "Searching" }}...'; },
-                                inputTooShort: function() { return ''; }
-                            }
-                        });
-
-                        // Only submit on user action (not on Select2 init)
-                        $roomSelect
-                            .off('select2:select.roomManagement select2:clear.roomManagement')
-                            .on('select2:select.roomManagement select2:clear.roomManagement', function() {
-                                document.getElementById('roomSelectForm').submit();
-                            });
-                    }
-
+                    // Move modal room select (AJAX) — destroy global init first if present
                     var $moveRoomSelect = $('#move_room_id');
-                    if ($moveRoomSelect.length) {
+                    if ($moveRoomSelect.length && $.fn.select2) {
                         if ($moveRoomSelect.hasClass('select2-hidden-accessible')) {
                             $moveRoomSelect.select2('destroy');
                         }
@@ -519,7 +483,7 @@
                             }
                         });
 
-                        $(document).off('change.moveRoomBeds', '#move_room_id').on('change.moveRoomBeds', '#move_room_id', function() {
+                        $(document).on('change', '#move_room_id', function() {
                             var roomId = $(this).val();
                             var $bedSelect = $('#move_bed_id');
                             if (roomId) {

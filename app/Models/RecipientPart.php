@@ -23,6 +23,6 @@ class RecipientPart extends Model
 
     public function displayName(): string
     {
-        return $this->name.' ('.$this->code.')';
+        return $this->name;
     }
 }

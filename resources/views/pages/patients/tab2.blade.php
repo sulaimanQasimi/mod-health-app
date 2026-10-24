@@ -109,7 +109,7 @@
                     <option value="">{{ localize('global.select') }}</option>
                     @foreach (($recipientParts ?? []) as $part)
                     <option value="{{ $part->id }}" {{ old('recipient_part_id', $patient->recipient_part_id ?? '') == $part->id ? 'selected' : '' }}>
-                        {{ $part->name }} ({{ $part->code }})
+                        {{ $part->name }}
                     </option>
                     @endforeach
                 </select>

@@ -254,7 +254,7 @@
                         response.recipientParts.forEach(function (part) {
                             const option = document.createElement('option');
                             option.value = part.id;
-                            option.textContent = part.name + ' (' + part.code + ')';
+                            option.textContent = part.name;
                             partSelect.appendChild(option);
                         });
                     }

@@ -1083,13 +1083,13 @@ $hospitalization->appointment->update([
     }
 
     /**
-     * Room management: SPA-style overview, room list, and bed grid with occupancy actions.
+     * Room management: overview cards (filterable) + room/bed occupancy actions.
      */
     public function roomManagement(Request $request)
     {
         $branchId = auth()->user()->branch_id;
+        $activeFilter = $this->resolveRoomManagementFilter($request->input('filter'));
 
-        // Same source as the original page (Room::all) so the dropdown always has rooms.
         $rooms = Room::query()
             ->with('department:id,name')
             ->withCount([
@@ -1124,8 +1124,12 @@ $hospitalization->appointment->update([
                 : 0,
         ];
 
+        $overviewCards = $this->roomManagementOverviewCards($overview, $activeFilter);
+
         $selectedRoom = null;
         $bedsWithOccupation = collect();
+        $showRoomColumn = false;
+        $resultsTitle = null;
 
         $roomIdsWithOccupiedBeds = Hospitalization::where('is_discharged', 0)
             ->whereHas('room', function ($q) use ($branchId) {
@@ -1143,28 +1147,155 @@ $hospitalization->appointment->update([
             ->orderBy('name')
             ->get();
 
-        if ($request->filled('room_id')) {
+        if ($activeFilter !== null && $activeFilter !== 'rooms') {
+            $bedsWithOccupation = $this->loadBedsForRoomManagementFilter($activeFilter);
+            $showRoomColumn = true;
+            $resultsTitle = collect($overviewCards)->firstWhere('key', $activeFilter)['label'] ?? localize('global.beds');
+        } elseif ($request->filled('room_id')) {
             $selectedRoom = Room::with('department:id,name')->find((int) $request->room_id);
 
             if ($selectedRoom) {
-                $beds = $selectedRoom->allBeds()->orderBy('number')->get();
-                $activeHospitalizations = Hospitalization::whereIn('bed_id', $beds->pluck('id'))
-                    ->where('is_discharged', 0)
-                    ->with('patient:id,name,father_name')
-                    ->get()
-                    ->keyBy('bed_id');
-
-                foreach ($beds as $bed) {
-                    $bed->active_hospitalization = $activeHospitalizations->get($bed->id);
-                }
-                $bedsWithOccupation = $beds;
+                $bedsWithOccupation = $this->attachActiveHospitalizationsToBeds(
+                    $selectedRoom->allBeds()->orderBy('number')->get()
+                );
+                $resultsTitle = $selectedRoom->name;
             }
         }
 
         return view(
             'pages.hospitalizations.room-management',
-            compact('rooms', 'overview', 'selectedRoom', 'bedsWithOccupation', 'roomsWithOccupiedBeds')
+            compact(
+                'rooms',
+                'overview',
+                'overviewCards',
+                'activeFilter',
+                'selectedRoom',
+                'bedsWithOccupation',
+                'roomsWithOccupiedBeds',
+                'showRoomColumn',
+                'resultsTitle'
+            )
         );
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function roomManagementFilters(): array
+    {
+        return ['rooms', 'beds', 'occupied', 'empty', 'occupancy'];
+    }
+
+    private function resolveRoomManagementFilter(mixed $filter): ?string
+    {
+        $filter = is_string($filter) ? trim($filter) : null;
+
+        if ($filter === null || $filter === '') {
+            return null;
+        }
+
+        return in_array($filter, $this->roomManagementFilters(), true) ? $filter : null;
+    }
+
+    /**
+     * @param  array{rooms_count:int,beds_count:int,occupied_beds_count:int,empty_beds_count:int,occupancy_rate:int}  $overview
+     * @return list<array{key:string,label:string,value:string|int,border:string,text:string,icon:string,url:string,active:bool}>
+     */
+    private function roomManagementOverviewCards(array $overview, ?string $activeFilter): array
+    {
+        $cardDefinitions = [
+            [
+                'key' => 'rooms',
+                'label' => localize('global.rooms'),
+                'value_key' => 'rooms_count',
+                'border' => 'secondary',
+                'text' => 'secondary',
+                'icon' => 'bx-building-house',
+            ],
+            [
+                'key' => 'beds',
+                'label' => localize('global.beds') ?: 'Beds',
+                'value_key' => 'beds_count',
+                'border' => 'primary',
+                'text' => 'primary',
+                'icon' => 'bx-grid-alt',
+            ],
+            [
+                'key' => 'occupied',
+                'label' => localize('global.occupied') ?: 'Occupied',
+                'value_key' => 'occupied_beds_count',
+                'border' => 'warning',
+                'text' => 'warning',
+                'icon' => 'bx-user-pin',
+            ],
+            [
+                'key' => 'empty',
+                'label' => localize('global.empty_bed') ?: 'Empty',
+                'value_key' => 'empty_beds_count',
+                'border' => 'success',
+                'text' => 'success',
+                'icon' => 'bx-check-circle',
+            ],
+            [
+                'key' => 'occupancy',
+                'label' => localize('global.bed_occupancy') ?: 'Bed occupancy',
+                'value_key' => 'occupancy_rate',
+                'border' => 'info',
+                'text' => 'info',
+                'icon' => 'bx-pie-chart-alt-2',
+                'suffix' => '%',
+            ],
+        ];
+
+        return array_map(function (array $card) use ($overview, $activeFilter) {
+            $value = $overview[$card['value_key']] ?? 0;
+
+            return [
+                'key' => $card['key'],
+                'label' => $card['label'],
+                'value' => $value.($card['suffix'] ?? ''),
+                'border' => $card['border'],
+                'text' => $card['text'],
+                'icon' => $card['icon'],
+                'url' => route('hospitalizations.roomManagement', ['filter' => $card['key']]),
+                'active' => $activeFilter === $card['key'],
+            ];
+        }, $cardDefinitions);
+    }
+
+    private function loadBedsForRoomManagementFilter(string $filter)
+    {
+        $bedsQuery = Bed::query()
+            ->with('room:id,name,department_id')
+            ->orderBy('room_id')
+            ->orderBy('number');
+
+        if ($filter === 'occupied') {
+            $bedsQuery->where('is_occupied', true);
+        } elseif ($filter === 'empty') {
+            $bedsQuery->where('is_occupied', false);
+        }
+
+        return $this->attachActiveHospitalizationsToBeds($bedsQuery->get());
+    }
+
+    private function attachActiveHospitalizationsToBeds($beds)
+    {
+        if ($beds->isEmpty()) {
+            return $beds;
+        }
+
+        $activeHospitalizations = Hospitalization::whereIn('bed_id', $beds->pluck('id'))
+            ->where('is_discharged', 0)
+            ->with('patient:id,name,father_name')
+            ->get()
+            ->keyBy('bed_id');
+
+        foreach ($beds as $bed) {
+            $bed->active_hospitalization = $activeHospitalizations->get($bed->id);
+        }
+
+        return $beds;
     }
 
     /**

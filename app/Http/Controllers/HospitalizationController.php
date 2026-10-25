@@ -1183,7 +1183,7 @@ $hospitalization->appointment->update([
      */
     private function roomManagementFilters(): array
     {
-        return ['rooms', 'beds', 'occupied', 'empty', 'occupancy'];
+        return ['rooms', 'beds', 'occupied', 'empty'];
     }
 
     private function resolveRoomManagementFilter(mixed $filter): ?string
@@ -1235,15 +1235,6 @@ $hospitalization->appointment->update([
                 'border' => 'success',
                 'text' => 'success',
                 'icon' => 'bx-check-circle',
-            ],
-            [
-                'key' => 'occupancy',
-                'label' => localize('global.bed_occupancy') ?: 'Bed occupancy',
-                'value_key' => 'occupancy_rate',
-                'border' => 'info',
-                'text' => 'info',
-                'icon' => 'bx-pie-chart-alt-2',
-                'suffix' => '%',
             ],
         ];
 

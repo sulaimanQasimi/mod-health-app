@@ -1,3 +1,10 @@
+<IfModule mod_headers.c>
+    # Defense-in-depth clickjacking protections (also set in SecurityHeaders middleware).
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Content-Security-Policy "frame-ancestors 'self'"
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

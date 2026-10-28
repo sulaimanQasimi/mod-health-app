@@ -13,8 +13,18 @@ class TrustHosts extends Middleware
      */
     public function hosts(): array
     {
-        return [
+        $hosts = [
             $this->allSubdomainsOfApplicationUrl(),
+            ...config('security.trusted_hosts', []),
         ];
+
+        // Keep local/dev access working on common loopback hosts.
+        if (app()->environment(['local', 'testing'])) {
+            $hosts[] = 'localhost';
+            $hosts[] = '127.0.0.1';
+            $hosts[] = '\[::1\]';
+        }
+
+        return array_values(array_filter($hosts));
     }
 }

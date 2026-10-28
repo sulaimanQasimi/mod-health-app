@@ -17,7 +17,10 @@ class ConsultationController extends Controller
     {
         $departmentId = auth()->user()->department_id;
 
-        $consultations = Consultation::whereRaw("JSON_CONTAINS(department_id, '\"$departmentId\"')")->paginate(10);
+        $consultations = Consultation::whereRaw(
+            'JSON_CONTAINS(department_id, ?)',
+            [json_encode((string) $departmentId)]
+        )->paginate(10);
 
         // return $consultations;
         return view('pages.consultations.index',compact('consultations'));

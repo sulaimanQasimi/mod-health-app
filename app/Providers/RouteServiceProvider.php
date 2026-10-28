@@ -28,6 +28,25 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        RateLimiter::for('login', function (Request $request) {
+            $username = (string) $request->input('email', $request->ip());
+
+            return [
+                Limit::perMinute(5)->by($request->ip().'|'.strtolower($username)),
+                Limit::perMinute(20)->by($request->ip()),
+            ];
+        });
+
+        RateLimiter::for('password-reset', function (Request $request) {
+            $email = (string) $request->input('email', $request->ip());
+
+            return [
+                Limit::perMinute(3)->by($request->ip().'|'.strtolower($email)),
+                Limit::perMinute(10)->by($request->ip()),
+            ];
+        });
+
+
         // Route model bindings
         Route::model('review', \App\Models\PhysiotherapyProcedureReview::class);
         Route::model('physiotherapyProcedure', \App\Models\PhysiotherapyProcedure::class);

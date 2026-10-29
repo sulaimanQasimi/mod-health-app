@@ -7,40 +7,11 @@
                 @include('components.toast')
             @endif
 
-            <h4 class="mb-3">{{ localize('global.prosthetics_stock') }}</h4>
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <h4 class="mb-0">{{ localize('global.prosthetics_stock') }}</h4>
+            </div>
 
-            @can('manage-prosthetics-stock')
-                <div class="card mb-4">
-                    <div class="card-header">{{ localize('global.prosthetics_receive_stock') }}</div>
-                    <div class="card-body">
-                        <form method="post" action="{{ route('prosthetics.stock.receive') }}" class="row g-2 align-items-end">
-                            @csrf
-                            <div class="col-md-5">
-                                <label class="form-label">{{ localize('global.prosthetics_component') }}</label>
-                                <select name="prosthetic_component_catalog_id" class="form-select form-select-sm" required>
-                                    <option value="">—</option>
-                                    @foreach ($catalogForReceive as $c)
-                                        <option value="{{ $c->id }}">{{ $c->item_code }} — {{ $c->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">{{ localize('global.quantity') }}</label>
-                                <input type="number" step="0.001" min="0.001" name="quantity" class="form-control form-control-sm" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">{{ localize('global.notes') }}</label>
-                                <input type="text" name="notes" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-sm btn-primary">{{ localize('global.save') }}</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            @endcan
-
-            <div class="card mb-3">
+            <div class="card mb-4">
                 <div class="card-header">
                     <h6 class="mb-0">
                         <i class="bx bx-filter-alt me-1"></i>{{ localize('global.filters') }}
@@ -76,6 +47,37 @@
                     </form>
                 </div>
             </div>
+
+            @can('manage-prosthetics-stock')
+                <div class="card mb-4">
+                    <div class="card-header">{{ localize('global.prosthetics_receive_stock') }}</div>
+                    <div class="card-body">
+                        <form method="post" action="{{ route('prosthetics.stock.receive') }}" class="row g-2 align-items-end">
+                            @csrf
+                            <div class="col-md-5">
+                                <label class="form-label">{{ localize('global.prosthetics_component') }}</label>
+                                <select name="prosthetic_component_catalog_id" class="form-select form-select-sm" required>
+                                    <option value="">—</option>
+                                    @foreach ($catalogForReceive as $c)
+                                        <option value="{{ $c->id }}">{{ $c->item_code }} — {{ $c->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">{{ localize('global.quantity') }}</label>
+                                <input type="number" step="0.001" min="0.001" name="quantity" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">{{ localize('global.notes') }}</label>
+                                <input type="text" name="notes" class="form-control form-control-sm">
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-sm btn-primary">{{ localize('global.save') }}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            @endcan
 
             <div class="card mb-3">
                 <div class="card-header">{{ localize('global.prosthetics_stock_balances') }}</div>

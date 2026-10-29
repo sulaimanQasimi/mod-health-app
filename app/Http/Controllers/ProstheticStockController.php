@@ -24,8 +24,14 @@ class ProstheticStockController extends Controller
             $q = $request->q;
             $query->whereHas('catalogItem', function ($w) use ($q) {
                 $w->where('item_code', 'like', '%'.$q.'%')
-                    ->orWhere('name', 'like', '%'.$q.'%');
+                    ->orWhere('name', 'like', '%'.$q.'%')
+                    ->orWhere('local_name', 'like', '%'.$q.'%');
             });
+        }
+
+        if ($request->filled('category')) {
+            $category = $request->category;
+            $query->whereHas('catalogItem', fn ($w) => $w->where('category', $category));
         }
 
         $balances = $query->paginate(40)->withQueryString();
@@ -42,7 +48,14 @@ class ProstheticStockController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('pages.prosthetics.stock.index', compact('balances', 'movements', 'catalogForReceive'));
+        $categories = ProstheticComponentCatalog::query()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category');
+
+        return view('pages.prosthetics.stock.index', compact('balances', 'movements', 'catalogForReceive', 'categories'));
     }
 
     public function receive(Request $request, ProstheticsStockService $stock)

@@ -172,7 +172,7 @@ return [
         'ProstheticMeasurementSet' => 'مجموعه اندازه‌گیری',
         'ProstheticPrescription' => 'نسخه اعضای مصنوعی',
         'ProstheticPrescriptionLine' => 'خط نسخه اعضای مصنوعی',
-        'ProstheticReferral' => 'ارجاع اعضای مصنوعی',
+        'ProstheticReferral' => 'معرفی اعضای مصنوعی',
         'ProstheticStockBalance' => 'موجودی اعضای مصنوعی',
         'ProstheticStockMovement' => 'حرکت موجودی اعضای مصنوعی',
         'ProstheticWorkOrder' => 'دستور کار تولید',

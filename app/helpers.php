@@ -102,4 +102,55 @@ function storeImages($request, $file_names, $document_id)
         return $user;
         }
 
+/**
+ * Sanitize rich HTML (e.g. CKEditor lab text_result) before rendering or storing.
+ * Allows basic formatting tags and strips scripts/event handlers.
+ */
+function sanitize_html(?string $html): string
+{
+    if ($html === null || trim($html) === '') {
+        return '';
+    }
+
+    $allowed = '<p><br><br/><strong><b><em><i><u><ul><ol><li><table><thead><tbody><tr><th><td><span><div><h1><h2><h3><h4><h5><h6>';
+    $clean = strip_tags($html, $allowed);
+
+    // Remove inline event handlers (onclick, onerror, ...).
+    $clean = preg_replace('/\s+on\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $clean) ?? '';
+
+    // Remove javascript: / data: URLs in href/src.
+    $clean = preg_replace('/\s+(href|src|xlink:href)\s*=\s*(["\'])\s*(javascript|data|vbscript):.*?\2/i', '', $clean) ?? '';
+
+    // Remove dangerous CSS expressions.
+    $clean = preg_replace('/\s+style\s*=\s*(["\']).*?(expression|javascript).*?\1/i', '', $clean) ?? '';
+
+    return $clean;
+}
+
+/**
+ * Whitelist an ORDER BY direction from request input.
+ */
+function safe_sort_order(mixed $order, string $default = 'desc'): string
+{
+    $order = strtolower((string) $order);
+
+    if (in_array($order, ['asc', 'desc'], true)) {
+        return $order;
+    }
+
+    return strtolower($default) === 'asc' ? 'asc' : 'desc';
+}
+
+/**
+ * Whitelist an ORDER BY column from request input.
+ *
+ * @param  array<int, string>  $allowed
+ */
+function safe_sort_column(mixed $column, array $allowed, string $default): string
+{
+    $column = (string) $column;
+
+    return in_array($column, $allowed, true) ? $column : $default;
+}
+
 ?>

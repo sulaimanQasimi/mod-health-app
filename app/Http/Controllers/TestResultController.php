@@ -245,14 +245,16 @@ class TestResultController extends Controller
                     ->whereNull('lab_parameter_id')
                     ->first();
                 
+                $safeTextResult = sanitize_html($request->text_result);
+
                 if ($existingResult) {
-                    $existingResult->update(['text_result' => $request->text_result]);
+                    $existingResult->update(['text_result' => $safeTextResult]);
                 } else {
                     PatientTestResult::create([
                         'patient_id' => $request->patient_id ?? 1,
                         'ref_no' => $request->ref_no,
                         'lab_parameter_id' => null,
-                        'text_result' => $request->text_result,
+                        'text_result' => $safeTextResult,
                         'test_registration_id' => $request->test_registration_id,
                     ]);
                 }
@@ -930,7 +932,7 @@ class TestResultController extends Controller
 
                 // Handle text-based results
                 if (isset($textResults[$registrationId]) && !empty(trim($textResults[$registrationId]))) {
-                    $textResult = trim($textResults[$registrationId]);
+                    $textResult = sanitize_html(trim($textResults[$registrationId]));
                     
                     $existingTextResult = PatientTestResult::where('ref_no', $registration->ref_no)
                         ->where('test_registration_id', $registrationId)

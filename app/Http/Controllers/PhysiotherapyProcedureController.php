@@ -70,9 +70,9 @@ class PhysiotherapyProcedureController extends Controller
             $query->whereDate('end_date', '<=', Verta::parse($request->end_date)->datetime());
         }
 
-        // Sorting
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        // Sorting (allowlisted to prevent ORDER BY injection)
+        $sortBy = safe_sort_column($request->get('sort_by'), ['id', 'created_at', 'updated_at', 'start_date', 'end_date', 'status', 'type', 'duration', 'counter'], 'created_at');
+        $sortOrder = safe_sort_order($request->get('sort_order'), 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
         if ($request->ajax() || $request->wantsJson()) {
@@ -155,9 +155,9 @@ class PhysiotherapyProcedureController extends Controller
             $query->whereDate('end_date', Verta::parse($request->end_date)->datetime());
         }
 
-        // Sorting
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        // Sorting (allowlisted to prevent ORDER BY injection)
+        $sortBy = safe_sort_column($request->get('sort_by'), ['id', 'created_at', 'updated_at', 'start_date', 'end_date', 'status', 'type', 'duration', 'counter'], 'created_at');
+        $sortOrder = safe_sort_order($request->get('sort_order'), 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
         if ($request->ajax() || $request->wantsJson()) {

@@ -81,7 +81,7 @@ class OutcomeController extends Controller
         }
 
         $sortBy = $request->get('sort_by', 'usage_count');
-        $sortOrder = $request->get('sort_order', 'desc');
+        $sortOrder = safe_sort_order($request->get('sort_order'), 'desc');
         $validSortColumns = [
             'id' => 'm.id',
             'name' => 'm.name',
@@ -221,9 +221,9 @@ class OutcomeController extends Controller
             $query->whereDate('p.created_at', '<=', $toDate);
         }
 
-        // Sort functionality
+        // Sort functionality (allowlisted to prevent ORDER BY injection)
         $sortBy = $request->get('sort_by', 'usage_count');
-        $sortOrder = $request->get('sort_order', 'desc');
+        $sortOrder = safe_sort_order($request->get('sort_order'), 'desc');
         
         // Map sort_by to valid columns
         $validSortColumns = ['id' => 'm.id', 'name' => 'm.name', 'usage_count' => 'usage_count'];

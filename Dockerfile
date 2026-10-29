@@ -26,12 +26,15 @@ WORKDIR /app
 
 COPY composer.json composer.lock ./
 
+# composer:2 may run a newer PHP than the runtime image; ignore platform
+# checks here because the final php:8.2-apache stage provides required extensions.
 RUN composer install \
         --no-dev \
         --no-interaction \
         --no-scripts \
         --prefer-dist \
-        --optimize-autoloader
+        --optimize-autoloader \
+        --ignore-platform-reqs
 
 # -----------------------------------------------------------------------------
 # Stage 3: runtime (Apache + PHP)

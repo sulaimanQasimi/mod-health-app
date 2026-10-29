@@ -51,9 +51,9 @@ class IncomeController extends Controller
             $query->where('purchase_date', '<=', $toDate);
         }
 
-        // Sort functionality
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        // Sort functionality (allowlisted to prevent ORDER BY injection)
+        $sortBy = safe_sort_column($request->get('sort_by'), ['id', 'purchase_date', 'amount', 'income_type', 'created_at'], 'created_at');
+        $sortOrder = safe_sort_order($request->get('sort_order'), 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
         // Pagination

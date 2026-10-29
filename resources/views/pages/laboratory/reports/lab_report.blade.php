@@ -476,7 +476,7 @@
                     <h4 style="margin-bottom: 15px; color: #333;">{{ localize('global.test_result') }}</h4>
                     <div
                         style="background: white; border: 1px solid #ccc; border-radius: 3px; white-space: pre-wrap; direction: ltr; text-align: left;">
-                        {!! $results->where('text_result', '!=', null)->first()->text_result ?? localize('global.no_result_available') !!}
+                        {!! sanitize_html($results->where('text_result', '!=', null)->first()->text_result ?? '') ?: e(localize('global.no_result_available')) !!}
                     </div>
                 </div>
                 @else

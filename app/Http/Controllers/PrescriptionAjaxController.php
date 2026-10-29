@@ -436,12 +436,12 @@ class PrescriptionAjaxController extends Controller
                 'COALESCE(prescriptions.doctor_id, (SELECT doctor_id FROM appointments WHERE appointments.id = prescriptions.appointment_id LIMIT 1)) ASC'
             );
 
-            // Sorting
+            // Sorting (allowlisted to prevent ORDER BY injection)
             $sortBy = $request->get('sortBy', 'created_at');
-            $sortOrder = $request->get('sortOrder', 'desc');
+            $sortOrder = safe_sort_order($request->get('sortOrder'), 'desc');
             
             $allowedSortFields = ['created_at', 'is_completed', 'patient_name', 'doctor_name'];
-            if (in_array($sortBy, $allowedSortFields)) {
+            if (in_array($sortBy, $allowedSortFields, true)) {
                 if ($sortBy === 'patient_name') {
                     $query->join('patients', 'prescriptions.patient_id', '=', 'patients.id')
                           ->orderBy('patients.name', $sortOrder);

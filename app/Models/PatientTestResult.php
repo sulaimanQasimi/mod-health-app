@@ -26,6 +26,14 @@ class PatientTestResult extends Model
     ];
 
     /**
+     * Sanitize rich-text lab results so stored XSS payloads cannot execute on print/report pages.
+     */
+    public function setTextResultAttribute(?string $value): void
+    {
+        $this->attributes['text_result'] = $value === null ? null : sanitize_html($value);
+    }
+
+    /**
      * Get the patient that owns this result
      */
     public function patient()

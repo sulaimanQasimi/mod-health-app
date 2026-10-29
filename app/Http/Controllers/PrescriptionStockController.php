@@ -58,9 +58,9 @@ class PrescriptionStockController extends Controller
             }
         }
 
-        // Sort functionality
-        $sortBy = $request->get('sort_by', 'medicine_name');
-        $sortOrder = $request->get('sort_order', 'asc');
+        // Sort functionality (allowlisted to prevent ORDER BY injection)
+        $sortBy = safe_sort_column($request->get('sort_by'), ['medicine_name', 'pharmacy_name', 'pharmacy_stock', 'total_stock', 'minimum_stock', 'maximum_stock', 'created_at'], 'medicine_name');
+        $sortOrder = safe_sort_order($request->get('sort_order'), 'asc');
         $query->orderBy($sortBy, $sortOrder);
 
         // Pagination

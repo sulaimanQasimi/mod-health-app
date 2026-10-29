@@ -494,7 +494,7 @@
                         <div class="text-result-section">
                             <h4>{{ localize('global.test_result') }}</h4>
                             <div class="text-result-content">
-                                {!! $testResults->where('text_result', '!=', null)->first()->text_result ?? localize('global.no_result_available') !!}
+                                {!! sanitize_html($testResults->where('text_result', '!=', null)->first()->text_result ?? '') ?: e(localize('global.no_result_available')) !!}
                             </div>
                         </div>
                     @else

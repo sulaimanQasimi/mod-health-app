@@ -72,9 +72,9 @@ class AnesthesiaController extends Controller
             $query->where('anesthesia_type', $request->anesthesia_type);
         }
 
-        // Sort
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        // Sort (allowlisted to prevent ORDER BY injection)
+        $sortBy = safe_sort_column($request->get('sort_by'), ['id', 'created_at', 'updated_at', 'status', 'anesthesia_type'], 'created_at');
+        $sortOrder = safe_sort_order($request->get('sort_order'), 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
         $anesthesias = $query->paginate($request->get('per_page', 15))->withQueryString();
@@ -135,9 +135,9 @@ class AnesthesiaController extends Controller
             $query->where('anesthesia_type', $request->anesthesia_type);
         }
 
-        // Sort
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        // Sort (allowlisted to prevent ORDER BY injection)
+        $sortBy = safe_sort_column($request->get('sort_by'), ['id', 'created_at', 'updated_at', 'status', 'anesthesia_type'], 'created_at');
+        $sortOrder = safe_sort_order($request->get('sort_order'), 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
         $anesthesias = $query->paginate($request->get('per_page', 15))->withQueryString();
@@ -198,9 +198,9 @@ class AnesthesiaController extends Controller
             $query->where('anesthesia_type', $request->anesthesia_type);
         }
 
-        // Sort
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        // Sort (allowlisted to prevent ORDER BY injection)
+        $sortBy = safe_sort_column($request->get('sort_by'), ['id', 'created_at', 'updated_at', 'status', 'anesthesia_type'], 'created_at');
+        $sortOrder = safe_sort_order($request->get('sort_order'), 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
         $anesthesias = $query->paginate($request->get('per_page', 15))->withQueryString();

@@ -121,9 +121,9 @@ class PharmacyFulfillmentController extends Controller
             $query->whereDate('date', '<=', $toDate);
         }
 
-        // Sort functionality
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        // Sort functionality (allowlisted to prevent ORDER BY injection)
+        $sortBy = safe_sort_column($request->get('sort_by'), ['id', 'date', 'amount', 'created_at', 'updated_at'], 'created_at');
+        $sortOrder = safe_sort_order($request->get('sort_order'), 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
         return $query;

@@ -31,8 +31,10 @@
                             <label class="form-label small mb-0">{{ localize('global.category') }}</label>
                             <select name="category" class="form-select form-select-sm">
                                 <option value="">{{ localize('global.all') }}</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category }}" @selected(request('category') === $category)>{{ $category }}</option>
+                                @foreach (($categories ?? []) as $categoryOption)
+                                    <option value="{{ $categoryOption }}" {{ (string) request('category') === (string) $categoryOption ? 'selected' : '' }}>
+                                        {{ $categoryOption }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>

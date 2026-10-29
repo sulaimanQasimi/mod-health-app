@@ -48,12 +48,12 @@ class ProstheticStockController extends Controller
             ->orderBy('name')
             ->get();
 
-        $categories = ProstheticComponentCatalog::query()
-            ->whereNotNull('category')
-            ->where('category', '!=', '')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category');
+        $categories = $catalogForReceive
+            ->pluck('category')
+            ->filter(fn ($c) => filled($c))
+            ->unique()
+            ->sort()
+            ->values();
 
         return view('pages.prosthetics.stock.index', compact('balances', 'movements', 'catalogForReceive', 'categories'));
     }

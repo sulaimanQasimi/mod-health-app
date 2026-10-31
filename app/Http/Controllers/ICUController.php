@@ -297,7 +297,15 @@ class ICUController extends Controller
         $relations = Relation::all();
         $medicineUsageTypes = MedicineUsageType::all();
 
-        $icu->load(['doctor', 'patient', 'appointment', 'appointment.doctor']);
+        $icu->load([
+            'doctor',
+            'patient',
+            'appointment',
+            'appointment.doctor',
+            'bloodBanks.patient',
+            'bloodBanks.department',
+            'bloodBanks.tests',
+        ]);
 
         return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types','rooms','beds','relations','medicineUsageTypes'));
     }

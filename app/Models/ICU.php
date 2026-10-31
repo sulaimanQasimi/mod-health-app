@@ -100,4 +100,9 @@ class ICU extends Model
         return $this->hasMany(Hospitalization::class);
     }
 
+    public function bloodBanks()
+    {
+        return $this->hasMany(BloodBank::class, 'i_c_u_id');
+    }
+
 }

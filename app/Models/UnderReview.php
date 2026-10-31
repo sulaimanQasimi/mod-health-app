@@ -121,4 +121,9 @@ class UnderReview extends Model
     {
         return $this->morphMany(NursingAssessment::class, 'morphable');
     }
+
+    public function bloodBanks()
+    {
+        return $this->hasMany(BloodBank::class, 'under_review_id');
+    }
 }

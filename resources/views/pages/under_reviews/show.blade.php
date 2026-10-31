@@ -283,6 +283,20 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-12">
+                    @include('pages.blood_banks.partials.blood_clinical_section', [
+                        'sectionId' => 'underReview'.$underReview->id,
+                        'patientId' => $underReview->patient_id,
+                        'branchId' => $underReview->branch_id,
+                        'departmentId' => $underReview->appointment?->department_id ?? auth()->user()->department_id,
+                        'appointmentId' => $underReview->appointment_id,
+                        'hospitalizationId' => $underReview->hospitalization_id ?? null,
+                        'underReviewId' => $underReview->id,
+                        'records' => $underReview->bloodBanks,
+                        'departments' => $departments ?? [],
+                        'canCreate' => $underReview->is_discharged == 0,
+                    ])
+                </div>
                     <!-- Prescription Section Accordion -->
                     <div class="col-12">
                         <div style="border: #71dd37 3px solid;" class="accordion mt-2" id="prescriptionAccordion">

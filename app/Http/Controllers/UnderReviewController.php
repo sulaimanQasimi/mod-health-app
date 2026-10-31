@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bed;
+use App\Models\Department;
 use App\Models\FoodType;
 use App\Models\LabType;
 use App\Models\Medicine;
@@ -102,6 +103,7 @@ class UnderReviewController extends Controller
         $foodTypes = FoodType::all();
         $relations = Relation::all();
         $medicineUsageTypes = MedicineUsageType::all();
+        $departments = Department::all();
 
         // Load diabetes charts for this under review
         $diabetesChartsQuery = DiabetesChart::where('diabetes_chartable_type', 'App\\Models\\UnderReview')
@@ -232,18 +234,22 @@ class UnderReviewController extends Controller
         // Load appointment with prescription relationship and other relationships
         $underReview->load([
             'appointment.prescription',
+            'appointment.department',
             'patient',
             'doctor',
             'room',
             'bed',
             'visits',
-            'hospitalization'
+            'hospitalization',
+            'bloodBanks.patient',
+            'bloodBanks.department',
+            'bloodBanks.tests',
         ]);
 
         // Load current user's nurse relationship for auto-selection
         $currentUser = auth()->user()->load('nurse');
 
-        return view('pages.under_reviews.show',compact('underReview','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations','medicineUsageTypes','diabetesCharts','nurseNotes','medicationAdministrationRecords','currentUser'));
+        return view('pages.under_reviews.show',compact('underReview','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations','medicineUsageTypes','diabetesCharts','nurseNotes','medicationAdministrationRecords','currentUser','departments'));
     }
 
     /**

@@ -841,6 +841,19 @@
                         :appointment-completed="$icu->is_discharged == 1"
                     />
 
+                    @include('pages.blood_banks.partials.blood_clinical_section', [
+                        'sectionId' => 'icu'.$icu->id,
+                        'patientId' => $icu->patient_id,
+                        'branchId' => $icu->branch_id,
+                        'departmentId' => $icu->appointment?->department_id ?? auth()->user()->department_id,
+                        'appointmentId' => $icu->appointment_id,
+                        'hospitalizationId' => $icu->hospitalization_id,
+                        'icuId' => $icu->id,
+                        'records' => $icu->bloodBanks,
+                        'departments' => $departments ?? [],
+                        'canCreate' => $icu->is_discharged == 0,
+                    ])
+
                     <!-- Procedures Accordion -->
                     <div class="accordion mt-4" id="proceduresAccordion">
                         <div class="accordion-item">

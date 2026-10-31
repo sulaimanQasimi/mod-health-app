@@ -132,6 +132,7 @@ class BloodUnitController extends Controller
             'department_id' => 'nullable|integer|exists:departments,id',
             'donor_record_department' => 'nullable|boolean',
         ], [
+            'bag_number.unique' => localize('global.blood_bag_already_registered'),
             'expires_date.required' => localize('global.expires_date_required'),
             'expires_time.date_format' => localize('global.expires_time_invalid'),
             'donor_military_department.required_if' => localize('global.military_department_required_for_military_donor'),

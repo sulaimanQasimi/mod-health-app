@@ -74,6 +74,7 @@ class BloodUnitReceiveService
             'department_id' => 'nullable|integer|exists:departments,id',
             'donor_record_department' => 'nullable|boolean',
         ], [
+            'bag_number.unique' => localize('global.blood_bag_already_registered'),
             'expires_date.required' => localize('global.expires_date_required'),
             'expires_time.date_format' => localize('global.expires_time_invalid'),
             'collected_time.date_format' => localize('global.expires_time_invalid'),

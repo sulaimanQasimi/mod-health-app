@@ -99,6 +99,8 @@ class PhlebotomyController extends Controller
             'collected_at' => ['nullable', 'date'],
             'expires_at' => ['required', 'date', 'after_or_equal:today'],
             'notes' => ['nullable', 'string', 'max:2000'],
+        ], [
+            'bag_number.unique' => localize('global.blood_bag_already_registered'),
         ]);
 
         $volumeMl = $validated['volume_ml']

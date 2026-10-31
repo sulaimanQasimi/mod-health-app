@@ -136,8 +136,12 @@
                                     @csrf
                                     <div class="mb-3">
                                         <label class="form-label" for="bag_number">{{ localize('global.bag_number') }}</label>
-                                        <input type="text" name="bag_number" id="bag_number" class="form-control"
+                                        <input type="text" name="bag_number" id="bag_number"
+                                               class="form-control @error('bag_number') is-invalid @enderror"
                                                value="{{ old('bag_number') }}" required>
+                                        @error('bag_number')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="volume_ml">{{ localize('global.volume_ml') }}</label>
@@ -169,6 +173,14 @@
                             {{ localize('global.phlebotomy_waiting_stock_permission') }}
                         </div>
                     @endcanany
+                @elseif ($bloodBank->status === 'delivered')
+                    <div class="alert alert-success mb-0">
+                        {{ localize('global.phlebotomy_completed_status') }}
+                    </div>
+                @elseif ($bloodBank->status === 'rejected')
+                    <div class="alert alert-secondary mb-0">
+                        {{ localize('global.phlebotomy_rejected_status') }}
+                    </div>
                 @else
                     <div class="alert alert-secondary mb-0">
                         {{ localize('global.phlebotomy_read_only_status') }}

@@ -1,8 +1,4 @@
-{{--
-    Shared blood request fields (React BloodBankSection design parity).
-    Blade + Bootstrap only. Input names must stay compatible with blood_banks.store.
-    Expected include vars: $fieldId (unique suffix), optional $requireCore (bool).
---}}
+
 
 @once
     @push('scripts')

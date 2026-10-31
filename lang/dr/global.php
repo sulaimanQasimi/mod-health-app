@@ -1052,7 +1052,7 @@ return [
     'positive' => 'مثبت',
     'negative' => 'منفی',
     'hematocrit' => 'هماتوکریت',
-    'clotting_factor' => 'لخته شدن خون',
+    'clotting_factor' => 'لخته گی خون',
     'blood_delivery_volume_exceeds_remaining' => 'واحدهای انتخاب‌شده از حجم باقی‌مانده این درخواست بیشتر است.',
     'blood_delivery_select_at_least_one_unit' => 'حداقل یک واحد خون انتخاب کنید یا درخواست را بدون صدور بیشتر تکمیل کنید.',
     'crossmatch_reserve_volume_exceeds_remaining' => 'ریزف این واحد از حجم باقی‌مانده قابل صدور بیشتر خواهد شد.',

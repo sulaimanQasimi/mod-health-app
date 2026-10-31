@@ -173,37 +173,42 @@
                     </div>
                 @endif
 
-                <div class="{{ $bloodBank->bloodUnits->isNotEmpty() ? 'col-lg-5' : 'col-lg-6 col-xl-5' }}">
+                <div class="{{ $bloodBank->status === 'new' ? 'col-12' : ($bloodBank->bloodUnits->isNotEmpty() ? 'col-lg-5' : 'col-lg-6 col-xl-5') }}">
                     @if ($bloodBank->status === 'new')
-                        <div class="card mb-3">
+                        <div class="card">
                             <div class="card-header">
                                 <h5 class="mb-0">{{ localize('global.actions') }}</h5>
                             </div>
                             <div class="card-body">
-                                <form method="POST" action="{{ route('blood_banks.phlebotomy.approve', $bloodBank) }}" class="mb-0">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success w-100">
-                                        <i class="bx bx-check me-1"></i>{{ localize('global.approve') }}
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">{{ localize('global.reject') }}</h5>
-                            </div>
-                            <div class="card-body">
-                                <form method="POST" action="{{ route('blood_banks.phlebotomy.reject', $bloodBank) }}">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="mb-3">
-                                        <label class="form-label" for="reject_reason">{{ localize('global.reject_reason') }}</label>
-                                        <textarea name="reject_reason" id="reject_reason" class="form-control" rows="3" required>{{ old('reject_reason') }}</textarea>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="border rounded p-3 h-100 d-flex flex-column justify-content-between">
+                                            <h6 class="mb-3">{{ localize('global.approve') }}</h6>
+                                            <form method="POST" action="{{ route('blood_banks.phlebotomy.approve', $bloodBank) }}" class="mb-0">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success w-100">
+                                                    <i class="bx bx-check me-1"></i>{{ localize('global.approve') }}
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
-                                    <button type="submit" class="btn btn-danger w-100">
-                                        <i class="bx bx-x me-1"></i>{{ localize('global.reject') }}
-                                    </button>
-                                </form>
+                                    <div class="col-md-6">
+                                        <div class="border rounded p-3 h-100">
+                                            <h6 class="mb-3">{{ localize('global.reject') }}</h6>
+                                            <form method="POST" action="{{ route('blood_banks.phlebotomy.reject', $bloodBank) }}" class="mb-0">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="reject_reason">{{ localize('global.reject_reason') }}</label>
+                                                    <textarea name="reject_reason" id="reject_reason" class="form-control" rows="3" required>{{ old('reject_reason') }}</textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-danger w-100">
+                                                    <i class="bx bx-x me-1"></i>{{ localize('global.reject') }}
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     @elseif ($bloodBank->status === 'approved')

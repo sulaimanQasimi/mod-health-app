@@ -138,8 +138,8 @@
 
             <div class="row g-4">
                 @if ($bloodBank->bloodUnits->isNotEmpty())
-                    <div class="col-lg-7">
-                        <div class="card h-100">
+                    <div class="col-12">
+                        <div class="card">
                             <div class="card-header">
                                 <h5 class="mb-0">{{ localize('global.phlebotomy_stock_units') }}</h5>
                             </div>
@@ -173,8 +173,8 @@
                     </div>
                 @endif
 
-                <div class="{{ $bloodBank->status === 'new' ? 'col-12' : ($bloodBank->bloodUnits->isNotEmpty() ? 'col-lg-5' : 'col-lg-6 col-xl-5') }}">
-                    @if ($bloodBank->status === 'new')
+                @if ($bloodBank->status === 'new')
+                    <div class="col-12">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="mb-0">{{ localize('global.actions') }}</h5>
@@ -211,18 +211,20 @@
                                 </div>
                             </div>
                         </div>
-                    @elseif ($bloodBank->status === 'approved')
+                    </div>
+                @elseif ($bloodBank->status === 'approved')
+                    <div class="col-12">
                         @canany(['receive-blood-units', 'manage-blood-inventory'])
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="mb-0">{{ localize('global.phlebotomy_send_to_stock') }}</h5>
                                 </div>
                                 <div class="card-body">
-                                    <p class="text-muted small mb-3">{{ localize('global.phlebotomy_send_to_stock_hint') }}</p>
+                                    <p class="text-muted small mb-4">{{ localize('global.phlebotomy_send_to_stock_hint') }}</p>
                                     <form method="POST" action="{{ route('blood_banks.phlebotomy.send_to_stock', $bloodBank) }}">
                                         @csrf
                                         <div class="row g-3">
-                                            <div class="col-md-6">
+                                            <div class="col-sm-6 col-xl-3">
                                                 <label class="form-label" for="bag_number">{{ localize('global.bag_number') }}</label>
                                                 <input type="text" name="bag_number" id="bag_number"
                                                        class="form-control @error('bag_number') is-invalid @enderror"
@@ -231,26 +233,26 @@
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-sm-6 col-xl-3">
                                                 <label class="form-label" for="volume_ml">{{ localize('global.volume_ml') }}</label>
                                                 <input type="number" min="1" name="volume_ml" id="volume_ml" class="form-control"
                                                        value="{{ old('volume_ml', is_numeric($bloodBank->quantity) ? $bloodBank->quantity : '') }}">
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-sm-6 col-xl-3">
                                                 <label class="form-label" for="collected_at">{{ localize('global.collected_at') }}</label>
                                                 <input type="datetime-local" name="collected_at" id="collected_at" class="form-control"
                                                        value="{{ old('collected_at') }}">
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-sm-6 col-xl-3">
                                                 <label class="form-label" for="expires_at">{{ localize('global.expires_at') }}</label>
                                                 <input type="date" name="expires_at" id="expires_at" class="form-control"
                                                        value="{{ old('expires_at') }}" required>
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-12 col-xl-9">
                                                 <label class="form-label" for="notes">{{ localize('global.notes') }}</label>
                                                 <textarea name="notes" id="notes" class="form-control" rows="2">{{ old('notes') }}</textarea>
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-12 col-xl-3 d-flex align-items-end">
                                                 <button type="submit" class="btn btn-primary w-100">
                                                     <i class="bx bx-package me-1"></i>{{ localize('global.phlebotomy_send_to_stock') }}
                                                 </button>
@@ -264,20 +266,26 @@
                                 {{ localize('global.phlebotomy_waiting_stock_permission') }}
                             </div>
                         @endcanany
-                    @elseif ($bloodBank->status === 'delivered')
+                    </div>
+                @elseif ($bloodBank->status === 'delivered')
+                    <div class="col-12">
                         <div class="alert alert-success mb-0">
                             {{ localize('global.phlebotomy_completed_status') }}
                         </div>
-                    @elseif ($bloodBank->status === 'rejected')
+                    </div>
+                @elseif ($bloodBank->status === 'rejected')
+                    <div class="col-12">
                         <div class="alert alert-secondary mb-0">
                             {{ localize('global.phlebotomy_rejected_status') }}
                         </div>
-                    @else
+                    </div>
+                @else
+                    <div class="col-12">
                         <div class="alert alert-secondary mb-0">
                             {{ localize('global.phlebotomy_read_only_status') }}
                         </div>
-                    @endif
-                </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

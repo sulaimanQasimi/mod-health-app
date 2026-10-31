@@ -13,6 +13,15 @@ class BloodBank extends Model
     use HasFactory;
     use SoftDeletes;
 
+    public const FEATURE_REQUEST = 'request';
+
+    public const FEATURE_PHLEBOTOMY = 'phlebotomy';
+
+    public const FEATURES = [
+        self::FEATURE_REQUEST,
+        self::FEATURE_PHLEBOTOMY,
+    ];
+
     protected $fillable = [
         'group',
         'branch_id',
@@ -26,6 +35,7 @@ class BloodBank extends Model
         'anesthesia_id',
         'hospitalization_id',
         'status',
+        'feature',
         'quantity',
         'hemoglobin',
         'hematocrit',
@@ -38,6 +48,34 @@ class BloodBank extends Model
         'updated_by',
         'deleted_by',
     ];
+
+    public function isPhlebotomy(): bool
+    {
+        return ($this->feature ?? self::FEATURE_REQUEST) === self::FEATURE_PHLEBOTOMY;
+    }
+
+    public function isTransfusionRequest(): bool
+    {
+        return ! $this->isPhlebotomy();
+    }
+
+    public function scopeFeature($query, string $feature)
+    {
+        return $query->where('feature', $feature);
+    }
+
+    public function scopeTransfusionRequests($query)
+    {
+        return $query->where(function ($builder) {
+            $builder->where('feature', self::FEATURE_REQUEST)
+                ->orWhereNull('feature');
+        });
+    }
+
+    public function scopePhlebotomy($query)
+    {
+        return $query->where('feature', self::FEATURE_PHLEBOTOMY);
+    }
 
     public static function boot()
     {

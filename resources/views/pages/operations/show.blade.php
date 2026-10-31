@@ -383,6 +383,7 @@
 
                                                     <form action="{{ route('blood_banks.store') }}" method="POST">
                                                         @csrf
+                                                        <input type="hidden" name="feature" value="request">
                                                         <input type="hidden" name="patient_id" value="{{ $operation->patient_id }}">
                                                         @error('patient_id')
                                                             <span class="text-danger">{{ $message }}</span>
@@ -440,7 +441,8 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @forelse ($operation->bloodBanks as $bloodBank)
+                                                @php $operationBloodRequests = $operation->bloodBanks->filter(fn ($b) => $b->isTransfusionRequest()); @endphp
+                                                @forelse ($operationBloodRequests as $bloodBank)
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
                                                         <td>
@@ -485,7 +487,7 @@
                                     </div>
 
                                     <!-- Edit Blood Bank Modals -->
-                                    @foreach ($operation->bloodBanks as $bloodBank)
+                                    @foreach ($operationBloodRequests as $bloodBank)
                                         <div class="modal fade" id="editBloodBankModal{{ $bloodBank->id }}" tabindex="-1"
                                             aria-labelledby="editBloodBankModalLabel{{ $bloodBank->id }}" aria-hidden="true">
                                             <div class="modal-dialog">
@@ -573,6 +575,18 @@
                                         </div>
                                     </div>
                                     <!-- End Blood Request Accordion -->
+
+                                    @include('pages.blood_banks.partials.phlebotomy_clinical_section', [
+                                        'sectionId' => 'operation'.$operation->id,
+                                        'patientId' => $operation->patient_id,
+                                        'branchId' => auth()->user()->branch_id,
+                                        'departmentId' => auth()->user()->department_id,
+                                        'appointmentId' => $operation->appointment?->id,
+                                        'hospitalizationId' => $operation->hospitalization_id,
+                                        'anesthesiaId' => $operation->id,
+                                        'records' => $operation->bloodBanks,
+                                        'departments' => $departments ?? [],
+                                    ])
                                 @endif
 
                                 @if ($operation->is_operation_done == 1)

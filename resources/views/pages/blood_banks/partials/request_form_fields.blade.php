@@ -119,19 +119,39 @@
             @endunless
         </label>
         <input type="number" min="1" class="form-control rounded" name="quantity"
-               id="quantity{{ $fieldId }}" value="{{ old('quantity') }}">
+               id="quantity{{ $fieldId }}" value="{{ old('quantity') }}"
+               @if ($requireCore ?? false) required @endif>
     </div>
 </div>
+
+@if ($requireDepartment ?? false)
+    <div class="mb-3">
+        <label class="form-label" for="department{{ $fieldId }}">
+            {{ localize('global.department') }}
+        </label>
+        <select class="form-select rounded" name="department_id" id="department{{ $fieldId }}" required>
+            <option value="">{{ localize('global.select') }}</option>
+            @foreach (($departments ?? []) as $department)
+                <option value="{{ $department->id }}" @selected((string) old('department_id', $selectedDepartmentId ?? '') === (string) $department->id)>
+                    {{ $department->name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+@endif
 
 <div class="row g-3 mb-3">
     <div class="col-sm-6">
         <label class="form-label" for="hemoglobin{{ $fieldId }}">
             {{ localize('global.hemoglobin') }}
-            <span class="text-muted small">({{ localize('global.optional') }})</span>
+            @unless ($requireCore ?? false)
+                <span class="text-muted small">({{ localize('global.optional') }})</span>
+            @endunless
         </label>
         <input type="number" step="0.1" min="0" max="999" class="form-control rounded"
                name="hemoglobin" id="hemoglobin{{ $fieldId }}"
-               value="{{ old('hemoglobin') }}" placeholder="g/dL">
+               value="{{ old('hemoglobin') }}" placeholder="g/dL"
+               @if ($requireCore ?? false) required @endif>
     </div>
     <div class="col-sm-6">
         <label class="form-label" for="hematocrit{{ $fieldId }}">
@@ -144,31 +164,33 @@
     </div>
 </div>
 
-<div class="mb-3">
-    <label class="form-label" for="factor{{ $fieldId }}">
-        {{ localize('global.clotting_factor') }}
-        <span class="text-muted small">({{ localize('global.optional') }})</span>
-    </label>
-    <input type="text" maxlength="255" class="form-control rounded" name="factor"
-           id="factor{{ $fieldId }}" value="{{ old('factor') }}">
-</div>
-
-{{-- Requested tests --}}
-<div class="mb-3">
-    <div class="d-flex justify-content-between align-items-center mb-2 gap-2">
-        <label class="form-label mb-0">
-            {{ localize('global.blood_bank_requested_tests') }}
+@unless ($hideExtras ?? false)
+    <div class="mb-3">
+        <label class="form-label" for="factor{{ $fieldId }}">
+            {{ localize('global.clotting_factor') }}
             <span class="text-muted small">({{ localize('global.optional') }})</span>
         </label>
-        <button type="button" class="btn btn-sm btn-outline-secondary"
-                onclick="addBloodRequestTestRow(@json((string) $fieldId))">
-            <i class="bx bx-plus me-1"></i>{{ localize('global.add_test') }}
-        </button>
+        <input type="text" maxlength="255" class="form-control rounded" name="factor"
+               id="factor{{ $fieldId }}" value="{{ old('factor') }}">
     </div>
-    <div id="bloodRequestTestsEmpty{{ $fieldId }}" class="border border-dashed rounded p-3 text-muted small">
-        {{ localize('global.blood_bank_tests_empty') }}
+
+    {{-- Requested tests --}}
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2 gap-2">
+            <label class="form-label mb-0">
+                {{ localize('global.blood_bank_requested_tests') }}
+                <span class="text-muted small">({{ localize('global.optional') }})</span>
+            </label>
+            <button type="button" class="btn btn-sm btn-outline-secondary"
+                    onclick="addBloodRequestTestRow(@json((string) $fieldId))">
+                <i class="bx bx-plus me-1"></i>{{ localize('global.add_test') }}
+            </button>
+        </div>
+        <div id="bloodRequestTestsEmpty{{ $fieldId }}" class="border border-dashed rounded p-3 text-muted small">
+            {{ localize('global.blood_bank_tests_empty') }}
+        </div>
+        <div id="bloodRequestTests{{ $fieldId }}"
+             class="d-flex flex-column"
+             data-placeholder="{{ localize('global.test_name') }}"></div>
     </div>
-    <div id="bloodRequestTests{{ $fieldId }}"
-         class="d-flex flex-column"
-         data-placeholder="{{ localize('global.test_name') }}"></div>
-</div>
+@endunless

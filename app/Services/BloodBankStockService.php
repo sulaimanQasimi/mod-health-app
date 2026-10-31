@@ -81,12 +81,22 @@ class BloodBankStockService
                 'status' => 'quarantine',
             ]);
 
-            BloodStockMovement::create([
+            $movement = [
                 'blood_unit_id' => $unit->id,
                 'movement_type' => 'received',
                 'notes' => $data['notes'] ?? null,
                 'user_id' => auth()->id(),
-            ]);
+            ];
+
+            if (! empty($data['reference']) && is_object($data['reference'])) {
+                $movement['reference_type'] = $data['reference']->getMorphClass();
+                $movement['reference_id'] = $data['reference']->getKey();
+            } elseif (! empty($data['reference_type']) && ! empty($data['reference_id'])) {
+                $movement['reference_type'] = $data['reference_type'];
+                $movement['reference_id'] = $data['reference_id'];
+            }
+
+            BloodStockMovement::create($movement);
 
             return $unit->fresh();
         });

@@ -59,7 +59,7 @@
                                 <td>{{ $bloodRequest->quantity }}</td>
                                 <td>{{ $bloodRequest->status }}</td>
                                 <td class="text-end">
-                                    <a href="{{ route('blood_banks.show', $bloodRequest->id) }}"
+                                    <a href="{{ route($showRouteName ?? 'blood_banks.show', $bloodRequest->id) }}"
                                        class="btn btn-sm btn-outline-primary">
                                         <i class="bx bx-expand me-1"></i>{{ localize('global.show') }}
                                     </a>

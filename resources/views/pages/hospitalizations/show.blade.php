@@ -98,8 +98,9 @@
                                             aria-expanded="false" aria-controls="bloodBankCollapse{{ $hospitalization->id }}">
                                             <i class="bx bx-donate-blood p-1 me-2 text-danger"></i>
                                             {{ localize('global.request_blood') }}
-                                            @if ($hospitalization->bloodBanks->count() > 0)
-                                                <span class="badge bg-danger ms-2">{{ $hospitalization->bloodBanks->count() }}</span>
+                                            @php $hospitalizationBloodRequests = $hospitalization->bloodBanks->filter(fn ($b) => $b->isTransfusionRequest()); @endphp
+                                            @if ($hospitalizationBloodRequests->count() > 0)
+                                                <span class="badge bg-danger ms-2">{{ $hospitalizationBloodRequests->count() }}</span>
                                             @endif
                                         </button>
                                     </h2>
@@ -124,6 +125,7 @@
                                                             <div class="modal-body">
                                                                 <form action="{{ route('blood_banks.store') }}" method="POST">
                                                                     @csrf
+                                                                    <input type="hidden" name="feature" value="request">
                                                                     <input type="hidden" name="patient_id"
                                                                         value="{{ $hospitalization->patient_id }}">
                                                                     <input type="hidden" name="hospitalization_id"
@@ -164,7 +166,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @forelse ($hospitalization->bloodBanks as $bloodBank)
+                                                        @forelse ($hospitalizationBloodRequests as $bloodBank)
                                                             <tr>
                                                                 <td>{{ $bloodBank->group }}</td>
                                                                 <td>{{ $bloodBank->rh }}</td>
@@ -201,6 +203,18 @@
                                 </div>
                             </div>
                             <!-- End Blood bank requests -->
+
+                            @include('pages.blood_banks.partials.phlebotomy_clinical_section', [
+                                'sectionId' => 'hospitalization'.$hospitalization->id,
+                                'patientId' => $hospitalization->patient_id,
+                                'branchId' => $hospitalization->branch_id,
+                                'departmentId' => $hospitalization->appointment?->department_id,
+                                'appointmentId' => $hospitalization->appointment_id,
+                                'hospitalizationId' => $hospitalization->id,
+                                'records' => $hospitalization->bloodBanks,
+                                'departments' => $departments ?? [],
+                                'canCreate' => $hospitalization->is_discharged == 0,
+                            ])
 
                             <!-- Visits Accordion -->
                             <div class="accordion" id="visitsAccordion">

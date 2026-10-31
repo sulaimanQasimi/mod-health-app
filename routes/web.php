@@ -40,6 +40,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodBankController;
+use App\Http\Controllers\PhlebotomyController;
 use App\Http\Controllers\BloodBranchTransferController;
 use App\Http\Controllers\BloodUnitController;
 use App\Http\Controllers\BranchController;
@@ -720,6 +721,20 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('approved', [BloodBankController::class, 'approved'])->name('approved');
         Route::get('rejected', [BloodBankController::class, 'rejected'])->name('rejected');
         Route::get('delivered', [BloodBankController::class, 'delivered'])->name('delivered');
+
+        Route::prefix('phlebotomy')->name('phlebotomy.')->group(function () {
+            Route::get('new', [PhlebotomyController::class, 'new'])->name('new');
+            Route::get('approved', [PhlebotomyController::class, 'approved'])->name('approved');
+            Route::get('rejected', [PhlebotomyController::class, 'rejected'])->name('rejected');
+            Route::get('delivered', [PhlebotomyController::class, 'delivered'])->name('delivered');
+            Route::get('{bloodBank}', [PhlebotomyController::class, 'show'])->name('show');
+            Route::post('{bloodBank}/approve', [PhlebotomyController::class, 'approve'])->name('approve');
+            Route::put('{bloodBank}/reject', [PhlebotomyController::class, 'reject'])->name('reject');
+            Route::post('{bloodBank}/send-to-stock', [PhlebotomyController::class, 'sendToStock'])
+                ->middleware('permission:receive-blood-units|manage-blood-inventory')
+                ->name('send_to_stock');
+        });
+
         Route::get('nurses-by-department/{department}', [BloodBankController::class, 'nursesByDepartment'])->name('nurses_by_department');
         Route::get('create', [BloodBankController::class, 'create'])->name('create');
         Route::get('show/{bloodBank}', [BloodBankController::class, 'show'])->name('show');

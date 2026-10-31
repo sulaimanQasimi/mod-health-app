@@ -200,8 +200,9 @@
                                 aria-expanded="false" aria-controls="bloodBankCollapse{{ $appointment->id }}">
                                 <i class="bx bx-donate-blood me-2 text-danger"></i>
                                 {{ localize('global.request_blood') }}
-                                @if ($appointment->bloodBanks->count() > 0)
-                                    <span class="badge bg-danger ms-2">{{ $appointment->bloodBanks->count() }}</span>
+                                @php $appointmentBloodRequests = $appointment->bloodBanks->filter(fn ($b) => $b->isTransfusionRequest()); @endphp
+                                @if ($appointmentBloodRequests->count() > 0)
+                                    <span class="badge bg-danger ms-2">{{ $appointmentBloodRequests->count() }}</span>
                                 @endif
                             </button>
                         </h2>
@@ -227,6 +228,7 @@
                                                         aria-label="{{ localize('global.close') }}"></button>
                                                 </div>
                                                 <div class="modal-body blood-request-modal-body">
+                                                    <input type="hidden" name="feature" value="request">
                                                     <input type="hidden" name="patient_id"
                                                         value="{{ $appointment->patient_id }}">
                                                     <input type="hidden" name="appointment_id"
@@ -267,7 +269,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse ($appointment->bloodBanks as $bloodBank)
+                                            @forelse ($appointmentBloodRequests as $bloodBank)
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $bloodBank->group ?? '—' }}</td>
@@ -323,6 +325,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                @include('pages.blood_banks.partials.phlebotomy_clinical_section', [
+                    'sectionId' => 'appointment'.$appointment->id,
+                    'patientId' => $appointment->patient_id,
+                    'branchId' => $appointment->branch_id,
+                    'departmentId' => $appointment->department_id,
+                    'appointmentId' => $appointment->id,
+                    'records' => $appointment->bloodBanks,
+                    'departments' => $departments ?? [],
+                ])
+            </div>
+        </div>
+
         <!-- Complete Appointment Modal -->
         @can('update-appointment-status')
             <div class="modal fade" id="createStatusChangeModal{{ $appointment->id }}" tabindex="-1"

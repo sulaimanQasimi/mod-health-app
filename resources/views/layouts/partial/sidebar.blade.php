@@ -404,6 +404,33 @@
                             <div>{{ localize('global.rejected_blood_requests') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('blood_banks.phlebotomy.*') ? 'active open' : '' }}">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <div>{{ localize('global.phlebotomy') }}</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item {{ Route::is('blood_banks.phlebotomy.new') ? 'active' : '' }}">
+                                <a href="{{ route('blood_banks.phlebotomy.new') }}" class="menu-link">
+                                    <div>{{ localize('global.new_phlebotomy_requests') }}</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ Route::is('blood_banks.phlebotomy.approved') ? 'active' : '' }}">
+                                <a href="{{ route('blood_banks.phlebotomy.approved') }}" class="menu-link">
+                                    <div>{{ localize('global.approved_phlebotomy_requests') }}</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ Route::is('blood_banks.phlebotomy.delivered') ? 'active' : '' }}">
+                                <a href="{{ route('blood_banks.phlebotomy.delivered') }}" class="menu-link">
+                                    <div>{{ localize('global.delivered_phlebotomy_requests') }}</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ Route::is('blood_banks.phlebotomy.rejected') ? 'active' : '' }}">
+                                <a href="{{ route('blood_banks.phlebotomy.rejected') }}" class="menu-link">
+                                    <div>{{ localize('global.rejected_phlebotomy_requests') }}</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     <li
                         class="menu-item {{ Route::is('blood_banks.inventory') || Route::is('blood_banks.inventory.*') ? 'active' : '' }}">
                         <a href="{{ route('blood_banks.inventory') }}" class="menu-link">

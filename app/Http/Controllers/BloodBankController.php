@@ -36,6 +36,7 @@ class BloodBankController extends Controller
         $warningDays = config('blood_bank.expiry_warning_days', 7);
 
         $statusCounts = BloodBank::where('branch_id', $branchId)
+            ->transfusionRequests()
             ->selectRaw('status, count(*) as c')
             ->groupBy('status')
             ->pluck('c', 'status');
@@ -156,6 +157,7 @@ class BloodBankController extends Controller
 
         $query = BloodBank::query()
             ->with(['patient', 'department'])
+            ->transfusionRequests()
             ->where('branch_id', $branchId)
             ->where('status', $status);
 
@@ -237,6 +239,7 @@ class BloodBankController extends Controller
     public function approve($bloodBank)
     {
         $bloodBank = BloodBank::findOrFail($bloodBank);
+        $this->ensureTransfusionRequest($bloodBank);
         $bloodBank->approve();
 
         return redirect()->back();
@@ -245,6 +248,7 @@ class BloodBankController extends Controller
     public function reject(Request $request, $bloodBank)
     {
         $bloodBank = BloodBank::findOrFail($bloodBank);
+        $this->ensureTransfusionRequest($bloodBank);
         $bloodBank->reject();
         $bloodBank->update(['reject_reason' => $request->reject_reason]);
         $bloodBank->save();
@@ -255,6 +259,7 @@ class BloodBankController extends Controller
     {
         $bloodBank = BloodBank::findOrFail($bloodBank);
         $this->ensureBloodRequestBranch($bloodBank);
+        $this->ensureTransfusionRequest($bloodBank);
 
         $validated = $request->validate([
             'receiver_department_id' => [
@@ -304,12 +309,16 @@ class BloodBankController extends Controller
      */
     public function store(Request $request)
     {
+        $feature = $request->input('feature', BloodBank::FEATURE_REQUEST);
+        $isPhlebotomy = $feature === BloodBank::FEATURE_PHLEBOTOMY;
+
         $validatedData = $request->validate([
-            'group' => ['nullable', 'string', Rule::in(['A', 'B', 'AB', 'O'])],
-            'rh' => ['nullable', 'string', Rule::in(['+', '-'])],
-            'type' => ['nullable', 'string', Rule::in(['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'Whole Blood'])],
-            'quantity' => ['nullable', 'integer', 'min:1'],
-            'hemoglobin' => ['nullable', 'numeric', 'min:0', 'max:999'],
+            'feature' => ['nullable', 'string', Rule::in(BloodBank::FEATURES)],
+            'group' => [$isPhlebotomy ? 'required' : 'nullable', 'string', Rule::in(['A', 'B', 'AB', 'O'])],
+            'rh' => [$isPhlebotomy ? 'required' : 'nullable', 'string', Rule::in(['+', '-'])],
+            'type' => [$isPhlebotomy ? 'required' : 'nullable', 'string', Rule::in(['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'Whole Blood'])],
+            'quantity' => [$isPhlebotomy ? 'required' : 'nullable', 'integer', 'min:1'],
+            'hemoglobin' => [$isPhlebotomy ? 'required' : 'nullable', 'numeric', 'min:0', 'max:999'],
             'hematocrit' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'factor' => ['nullable', 'string', 'max:255'],
             'tests' => ['nullable', 'array'],
@@ -319,7 +328,7 @@ class BloodBankController extends Controller
             'hospitalization_id' => 'nullable|exists:hospitalizations,id',
             'anesthesia_id' => 'nullable|exists:anesthesias,id',
             'patient_id' => 'nullable|exists:patients,id',
-            'department_id' => 'nullable|exists:departments,id',
+            'department_id' => [$isPhlebotomy ? 'required' : 'nullable', 'exists:departments,id'],
             'operation_id' => 'nullable|exists:operations,id',
             'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
             'under_review_id' => 'nullable|exists:under_reviews,id',
@@ -327,9 +336,10 @@ class BloodBankController extends Controller
             'appointment_id.exists' => 'Invalid appointment',
         ]);
 
-        $bloodBank = DB::transaction(function () use ($validatedData) {
+        $bloodBank = DB::transaction(function () use ($validatedData, $isPhlebotomy) {
             $bloodBank = BloodBank::create([
                 'created_by' => auth()->id(),
+                'feature' => $validatedData['feature'] ?? BloodBank::FEATURE_REQUEST,
                 'group' => $validatedData['group'] ?? null,
                 'rh' => $validatedData['rh'] ?? null,
                 'type' => $validatedData['type'] ?? 'Fresh',
@@ -348,16 +358,18 @@ class BloodBankController extends Controller
                 'under_review_id' => $validatedData['under_review_id'] ?? null,
             ]);
 
-            foreach ($validatedData['tests'] ?? [] as $test) {
-                $name = trim((string) ($test['test_name'] ?? ''));
-                if ($name === '') {
-                    continue;
-                }
+            if (! $isPhlebotomy) {
+                foreach ($validatedData['tests'] ?? [] as $test) {
+                    $name = trim((string) ($test['test_name'] ?? ''));
+                    if ($name === '') {
+                        continue;
+                    }
 
-                BloodBankTest::create([
-                    'blood_bank_id' => $bloodBank->id,
-                    'test_name' => $name,
-                ]);
+                    BloodBankTest::create([
+                        'blood_bank_id' => $bloodBank->id,
+                        'test_name' => $name,
+                    ]);
+                }
             }
 
             return $bloodBank;
@@ -365,7 +377,11 @@ class BloodBankController extends Controller
 
         SendNewBloodBankNotification::dispatch($bloodBank->created_by, $bloodBank->id);
 
-        return redirect()->back()->with('success', localize('global.blood_request_created_successfully'));
+        $successKey = $isPhlebotomy
+            ? 'global.phlebotomy_created_successfully'
+            : 'global.blood_request_created_successfully';
+
+        return redirect()->back()->with('success', localize($successKey));
     }
 
     /**
@@ -374,6 +390,11 @@ class BloodBankController extends Controller
     public function show(BloodBank $bloodBank)
     {
         $this->ensureBloodRequestBranch($bloodBank);
+
+        if ($bloodBank->isPhlebotomy()) {
+            return redirect()->route('blood_banks.phlebotomy.show', $bloodBank);
+        }
+
         app(BloodBankStockService::class)->archiveExpiredUnits((int) $bloodBank->branch_id, auth()->id());
 
         $bloodBank->load([
@@ -732,6 +753,13 @@ class BloodBankController extends Controller
     protected function ensureBloodRequestBranch(BloodBank $bloodBank): void
     {
         if ((int) $bloodBank->branch_id !== (int) auth()->user()->branch_id) {
+            abort(404);
+        }
+    }
+
+    protected function ensureTransfusionRequest(BloodBank $bloodBank): void
+    {
+        if ($bloodBank->isPhlebotomy()) {
             abort(404);
         }
     }

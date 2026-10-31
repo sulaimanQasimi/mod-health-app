@@ -268,23 +268,6 @@
                                         </thead>
                                         <tbody>
                                             @forelse ($appointment->bloodBanks as $bloodBank)
-                                                @php
-                                                    // Badge colors aligned with React bloodStatusBadgeColor()
-                                                    $statusBadge = match ($bloodBank->status) {
-                                                        'approved' => 'bg-label-success',
-                                                        'delivered' => 'bg-label-primary',
-                                                        'rejected' => 'bg-label-danger',
-                                                        'new' => 'bg-label-warning',
-                                                        default => 'bg-label-secondary',
-                                                    };
-                                                    $statusLabel = match ($bloodBank->status) {
-                                                        'new' => localize('global.new_blood_requests'),
-                                                        'approved' => localize('global.approved'),
-                                                        'delivered' => localize('global.delivered'),
-                                                        'rejected' => localize('global.rejected'),
-                                                        default => $bloodBank->status,
-                                                    };
-                                                @endphp
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $bloodBank->group ?? '—' }}</td>
@@ -295,7 +278,19 @@
                                                     <td>{{ $bloodBank->hematocrit ?? '—' }}</td>
                                                     <td>{{ $bloodBank->factor ?? '—' }}</td>
                                                     <td>{{ $bloodBank->tests->pluck('test_name')->filter()->implode(', ') ?: '—' }}</td>
-                                                    <td><span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span></td>
+                                                    <td>
+                                                        @if ($bloodBank->status === 'approved')
+                                                            <span class="badge bg-label-success">{{ localize('global.approved') }}</span>
+                                                        @elseif ($bloodBank->status === 'delivered')
+                                                            <span class="badge bg-label-primary">{{ localize('global.delivered') }}</span>
+                                                        @elseif ($bloodBank->status === 'rejected')
+                                                            <span class="badge bg-label-danger">{{ localize('global.rejected') }}</span>
+                                                        @elseif ($bloodBank->status === 'new')
+                                                            <span class="badge bg-label-warning">{{ localize('global.new_blood_requests') }}</span>
+                                                        @else
+                                                            <span class="badge bg-label-secondary">{{ $bloodBank->status }}</span>
+                                                        @endif
+                                                    </td>
                                                     <td dir="ltr">{{ $bloodBank->created_at }}</td>
                                                     <td class="text-center">
                                                         <a href="{{ route('blood_banks.show', $bloodBank->id) }}"

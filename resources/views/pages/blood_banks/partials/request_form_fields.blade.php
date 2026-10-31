@@ -92,34 +92,35 @@
     </div>
 </div>
 
-{{-- Component type --}}
-<div class="mb-3">
-    <label class="form-label" for="type{{ $fieldId }}">
-        {{ localize('global.blood_type') }}
-        @unless ($requireCore ?? false)
-            <span class="text-muted small">({{ localize('global.optional') }})</span>
-        @endunless
-    </label>
-    <select class="form-select rounded" name="type" id="type{{ $fieldId }}"
-            @if ($requireCore ?? false) required @endif>
-        <option value="">{{ localize('global.select') }}</option>
-        @foreach (['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'Whole Blood'] as $componentType)
-            <option value="{{ $componentType }}" @selected(old('type') === $componentType)>
-                {{ $componentType }}
-            </option>
-        @endforeach
-    </select>
-</div>
-
-<div class="mb-3">
-    <label class="form-label" for="quantity{{ $fieldId }}">
-        {{ localize('global.quantity') }}
-        @unless ($requireCore ?? false)
-            <span class="text-muted small">({{ localize('global.optional') }})</span>
-        @endunless
-    </label>
-    <input type="number" min="1" class="form-control rounded" name="quantity"
-           id="quantity{{ $fieldId }}" value="{{ old('quantity') }}">
+{{-- Component type + quantity side by side --}}
+<div class="row g-3 mb-3">
+    <div class="col-sm-6">
+        <label class="form-label" for="type{{ $fieldId }}">
+            {{ localize('global.blood_type') }}
+            @unless ($requireCore ?? false)
+                <span class="text-muted small">({{ localize('global.optional') }})</span>
+            @endunless
+        </label>
+        <select class="form-select rounded" name="type" id="type{{ $fieldId }}"
+                @if ($requireCore ?? false) required @endif>
+            <option value="">{{ localize('global.select') }}</option>
+            @foreach (['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'Whole Blood'] as $componentType)
+                <option value="{{ $componentType }}" @selected(old('type') === $componentType)>
+                    {{ $componentType }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-sm-6">
+        <label class="form-label" for="quantity{{ $fieldId }}">
+            {{ localize('global.quantity') }}
+            @unless ($requireCore ?? false)
+                <span class="text-muted small">({{ localize('global.optional') }})</span>
+            @endunless
+        </label>
+        <input type="number" min="1" class="form-control rounded" name="quantity"
+               id="quantity{{ $fieldId }}" value="{{ old('quantity') }}">
+    </div>
 </div>
 
 <div class="row g-3 mb-3">

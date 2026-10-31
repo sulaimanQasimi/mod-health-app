@@ -192,7 +192,7 @@
         {{-- Blood bank requests (appointment) — UI aligned with React BloodBankSection; routes/fields unchanged --}}
         <div class="row mb-4">
             <div class="col-12">
-                <div class="accordion border border-danger rounded" id="bloodBankAccordion{{ $appointment->id }}">
+                <div class="accordion" id="bloodBankAccordion{{ $appointment->id }}">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="bloodBankHeading{{ $appointment->id }}">
                             <button class="accordion-button collapsed bg-body-secondary text-body" type="button"

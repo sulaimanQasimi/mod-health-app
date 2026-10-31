@@ -90,7 +90,13 @@ class PhlebotomyController extends Controller
         }
 
         if (! $bloodBank->group || ! $bloodBank->rh || ! $bloodBank->type) {
-            return redirect()->back()->with('error', localize('global.phlebotomy_missing_blood_data'));
+            return redirect()->back()->withInput()->with('error', localize('global.phlebotomy_missing_blood_data'));
+        }
+
+        foreach (['volume_ml', 'collected_at', 'notes'] as $optional) {
+            if ($request->input($optional) === '' || $request->input($optional) === null) {
+                $request->merge([$optional => null]);
+            }
         }
 
         $validated = $request->validate([
@@ -100,7 +106,16 @@ class PhlebotomyController extends Controller
             'expires_at' => ['required', 'date', 'after_or_equal:today'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ], [
+            'bag_number.required' => localize('global.phlebotomy_bag_number_required'),
             'bag_number.unique' => localize('global.blood_bag_already_registered'),
+            'bag_number.max' => localize('global.phlebotomy_bag_number_invalid'),
+            'volume_ml.integer' => localize('global.phlebotomy_volume_invalid'),
+            'volume_ml.min' => localize('global.phlebotomy_volume_invalid'),
+            'volume_ml.max' => localize('global.phlebotomy_volume_invalid'),
+            'collected_at.date' => localize('global.phlebotomy_collected_at_invalid'),
+            'expires_at.required' => localize('global.phlebotomy_expires_at_required'),
+            'expires_at.date' => localize('global.phlebotomy_expires_at_invalid'),
+            'expires_at.after_or_equal' => localize('global.phlebotomy_expires_at_must_be_today_or_later'),
         ]);
 
         $volumeMl = $validated['volume_ml']

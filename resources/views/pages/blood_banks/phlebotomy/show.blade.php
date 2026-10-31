@@ -220,37 +220,70 @@
                                     <h5 class="mb-0">{{ localize('global.phlebotomy_send_to_stock') }}</h5>
                                 </div>
                                 <div class="card-body">
-                                    <p class="text-muted small mb-4">{{ localize('global.phlebotomy_send_to_stock_hint') }}</p>
+                                    <p class="text-muted small mb-3">{{ localize('global.phlebotomy_send_to_stock_hint') }}</p>
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            <div class="fw-semibold mb-2">{{ localize('global.phlebotomy_form_errors_hint') }}</div>
+                                            <ul class="mb-0 ps-3">
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
                                     <form method="POST" action="{{ route('blood_banks.phlebotomy.send_to_stock', $bloodBank) }}">
                                         @csrf
                                         <div class="row g-3">
                                             <div class="col-sm-6 col-xl-3">
-                                                <label class="form-label" for="bag_number">{{ localize('global.bag_number') }}</label>
+                                                <label class="form-label" for="bag_number">
+                                                    {{ localize('global.bag_number') }}
+                                                    <span class="text-danger">*</span>
+                                                </label>
                                                 <input type="text" name="bag_number" id="bag_number"
                                                        class="form-control @error('bag_number') is-invalid @enderror"
                                                        value="{{ old('bag_number') }}" required>
                                                 @error('bag_number')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                             <div class="col-sm-6 col-xl-3">
                                                 <label class="form-label" for="volume_ml">{{ localize('global.volume_ml') }}</label>
-                                                <input type="number" min="1" name="volume_ml" id="volume_ml" class="form-control"
+                                                <input type="number" min="1" max="2000" name="volume_ml" id="volume_ml"
+                                                       class="form-control @error('volume_ml') is-invalid @enderror"
                                                        value="{{ old('volume_ml', is_numeric($bloodBank->quantity) ? $bloodBank->quantity : '') }}">
+                                                @error('volume_ml')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 col-xl-3">
                                                 <label class="form-label" for="collected_at">{{ localize('global.collected_at') }}</label>
-                                                <input type="datetime-local" name="collected_at" id="collected_at" class="form-control"
+                                                <input type="datetime-local" name="collected_at" id="collected_at"
+                                                       class="form-control @error('collected_at') is-invalid @enderror"
                                                        value="{{ old('collected_at') }}">
+                                                @error('collected_at')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 col-xl-3">
-                                                <label class="form-label" for="expires_at">{{ localize('global.expires_at') }}</label>
-                                                <input type="date" name="expires_at" id="expires_at" class="form-control"
+                                                <label class="form-label" for="expires_at">
+                                                    {{ localize('global.expires_at') }}
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="date" name="expires_at" id="expires_at"
+                                                       class="form-control @error('expires_at') is-invalid @enderror"
                                                        value="{{ old('expires_at') }}" required>
+                                                @error('expires_at')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-12 col-xl-9">
                                                 <label class="form-label" for="notes">{{ localize('global.notes') }}</label>
-                                                <textarea name="notes" id="notes" class="form-control" rows="2">{{ old('notes') }}</textarea>
+                                                <textarea name="notes" id="notes"
+                                                          class="form-control @error('notes') is-invalid @enderror"
+                                                          rows="2">{{ old('notes') }}</textarea>
+                                                @error('notes')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-12 col-xl-3 d-flex align-items-end">
                                                 <button type="submit" class="btn btn-primary w-100">

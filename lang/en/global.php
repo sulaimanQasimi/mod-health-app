@@ -1664,6 +1664,8 @@ return [
     'delivered_blood_requests' => 'Delivered Blood Requests',
     'rejected_blood_requests' => 'Rejected Blood Requests',
     'phlebotomy' => 'Phlebotomy',
+    'blood_requests' => 'Blood requests',
+    'blood_stock' => 'Stock & transfers',
     'new_phlebotomy_requests' => 'New Phlebotomy',
     'approved_phlebotomy_requests' => 'Approved Phlebotomy',
     'delivered_phlebotomy_requests' => 'Completed Phlebotomy',

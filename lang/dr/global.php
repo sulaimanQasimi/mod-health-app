@@ -1036,6 +1036,8 @@ return [
     'delivered_blood_requests' => 'درخواستی های تکمیل شده',
     'rejected_blood_requests' => 'درخواستی های مسترد شده',
     'phlebotomy' => 'فلبوتومی',
+    'blood_requests' => 'درخواست‌های خون',
+    'blood_stock' => 'موجودی و انتقالات',
     'new_phlebotomy_requests' => 'فلبوتومی های جدید',
     'approved_phlebotomy_requests' => 'فلبوتومی های تأیید شده',
     'delivered_phlebotomy_requests' => 'فلبوتومی های تکمیل شده',

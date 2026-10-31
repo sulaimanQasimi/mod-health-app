@@ -1035,6 +1035,8 @@ return [
 'delivered_blood_requests' => 'تکمیل شوې غوښتنې',
 'rejected_blood_requests' => 'رد شوې غوښتنې',
 'phlebotomy' => 'فلیبوتومي',
+    'blood_requests' => 'د وینې غوښتنې',
+    'blood_stock' => 'موجودي او لیږدونه',
 'new_phlebotomy_requests' => 'نوي فلیبوتومي',
 'approved_phlebotomy_requests' => 'تایید شوې فلیبوتومي',
 'delivered_phlebotomy_requests' => 'بشپړې شوې فلیبوتومي',

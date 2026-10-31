@@ -189,10 +189,10 @@
                 </div>
             </div>
         </div>
-        <!-- Blood bank requests (linked to this appointment) -->
+        {{-- Blood bank requests (appointment) — UI aligned with React BloodBankSection; routes/fields unchanged --}}
         <div class="row mb-4">
             <div class="col-12">
-                <div class="accordion" id="bloodBankAccordion{{ $appointment->id }}">
+                <div class="accordion border border-danger rounded" id="bloodBankAccordion{{ $appointment->id }}">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="bloodBankHeading{{ $appointment->id }}">
                             <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -209,22 +209,24 @@
                             aria-labelledby="bloodBankHeading{{ $appointment->id }}"
                             data-bs-parent="#bloodBankAccordion{{ $appointment->id }}">
                             <div class="accordion-body">
-                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-sm btn-primary mb-3" data-bs-toggle="modal"
                                     data-bs-target="#requestBloodModalAppointment{{ $appointment->id }}">
-                                    <i class="bx bx-plus"></i>
+                                    <i class="bx bx-plus me-1"></i>{{ localize('global.add') }}
                                 </button>
+
+                                {{-- Same store endpoint + hidden context fields as before --}}
                                 <div class="modal fade" id="requestBloodModalAppointment{{ $appointment->id }}"
                                     tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
                                         <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">{{ localize('global.request_blood') }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="{{ route('blood_banks.store') }}" method="POST">
-                                                    @csrf
+                                            <form action="{{ route('blood_banks.store') }}" method="POST">
+                                                @csrf
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">{{ localize('global.request_blood') }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="{{ localize('global.close') }}"></button>
+                                                </div>
+                                                <div class="modal-body blood-request-modal-body">
                                                     <input type="hidden" name="patient_id"
                                                         value="{{ $appointment->patient_id }}">
                                                     <input type="hidden" name="appointment_id"
@@ -234,21 +236,23 @@
                                                     <input type="hidden" name="branch_id"
                                                         value="{{ $appointment->branch_id }}">
                                                     @include('pages.blood_banks.partials.request_form_fields', ['fieldId' => 'appointment'.$appointment->id])
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                                        <button type="submit"
-                                                            class="btn btn-primary">{{ localize('global.save') }}</button>
-                                                    </div>
-                                                </form>
-                                            </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                    <button type="submit"
+                                                        class="btn btn-primary">{{ localize('global.save') }}</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="table-responsive">
-                                    <table class="table table-sm">
+                                    <table class="table table-sm align-middle">
                                         <thead>
                                             <tr>
+                                                <th>{{ localize('global.number') }}</th>
                                                 <th>{{ localize('global.blood_group') }}</th>
                                                 <th>{{ localize('global.rh') }}</th>
                                                 <th>{{ localize('global.blood_type') }}</th>
@@ -258,38 +262,60 @@
                                                 <th>{{ localize('global.clotting_factor') }}</th>
                                                 <th>{{ localize('global.tests') }}</th>
                                                 <th>{{ localize('global.status') }}</th>
-                                                <th>{{ localize('global.actions') }}</th>
+                                                <th>{{ localize('global.created_at') }}</th>
+                                                <th class="text-center">{{ localize('global.actions') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @forelse ($appointment->bloodBanks as $bloodBank)
+                                                @php
+                                                    // Badge colors aligned with React bloodStatusBadgeColor()
+                                                    $statusBadge = match ($bloodBank->status) {
+                                                        'approved' => 'bg-label-success',
+                                                        'delivered' => 'bg-label-primary',
+                                                        'rejected' => 'bg-label-danger',
+                                                        'new' => 'bg-label-warning',
+                                                        default => 'bg-label-secondary',
+                                                    };
+                                                    $statusLabel = match ($bloodBank->status) {
+                                                        'new' => localize('global.new_blood_requests'),
+                                                        'approved' => localize('global.approved'),
+                                                        'delivered' => localize('global.delivered'),
+                                                        'rejected' => localize('global.rejected'),
+                                                        default => $bloodBank->status,
+                                                    };
+                                                @endphp
                                                 <tr>
+                                                    <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $bloodBank->group ?? '—' }}</td>
                                                     <td>{{ $bloodBank->rh ?? '—' }}</td>
-                                                    <td>{{ $bloodBank->type }}</td>
+                                                    <td>{{ $bloodBank->type ?? '—' }}</td>
                                                     <td>{{ $bloodBank->quantity ?? '—' }}</td>
                                                     <td>{{ $bloodBank->hemoglobin ?? '—' }}</td>
                                                     <td>{{ $bloodBank->hematocrit ?? '—' }}</td>
                                                     <td>{{ $bloodBank->factor ?? '—' }}</td>
                                                     <td>{{ $bloodBank->tests->pluck('test_name')->filter()->implode(', ') ?: '—' }}</td>
-                                                    <td>{{ $bloodBank->status }}</td>
-                                                    <td>
+                                                    <td><span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span></td>
+                                                    <td dir="ltr">{{ $bloodBank->created_at }}</td>
+                                                    <td class="text-center">
                                                         <a href="{{ route('blood_banks.show', $bloodBank->id) }}"
-                                                            class="btn btn-sm btn-outline-primary"><i
+                                                            class="btn btn-sm btn-outline-primary"
+                                                            title="{{ localize('global.view') }}"><i
                                                                 class="bx bx-expand"></i></a>
                                                         <form action="{{ route('blood_banks.destroy', $bloodBank->id) }}"
                                                             method="POST" class="d-inline"
                                                             onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}');">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger"><i
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                                title="{{ localize('global.delete') }}"><i
                                                                     class="bx bx-trash"></i></button>
                                                         </form>
                                                     </td>
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="10" class="text-center text-muted">
+                                                    <td colspan="12" class="text-center text-muted py-4">
                                                         {{ localize('global.not_referred_to_bloodBank') }}</td>
                                                 </tr>
                                             @endforelse

@@ -1,5 +1,4 @@
-<div class="col-xl">
-    <div class="card mb-4">
+<div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h5 class="mb-0">{{ $cardTitle }}</h5>
             <div class="text-muted small">
@@ -80,4 +79,3 @@
             {{ $bloodRequests->links('pagination::bootstrap-5') }}
         </div>
     </div>
-</div>

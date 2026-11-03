@@ -317,10 +317,7 @@ class HospitalizationController extends Controller
             'bloodBanks.tests',
             'vitalSigns.vitalSignType',
             'vitalSigns.schedules',
-            'nursingAssessments',
         ]);
-
-        $hasNursingAssessment = $hospitalization->nursingAssessments->isNotEmpty();
 
         // Load current user's nurse relationship for auto-selection
         $currentUser = auth()->user()->load('nurse');
@@ -337,8 +334,7 @@ class HospitalizationController extends Controller
             'foodTypes', 
             'medicineUsageTypes', 
             'currentUser',
-            'roomsWithBeds',
-            'hasNursingAssessment'
+            'roomsWithBeds'
         ));
     }
 
@@ -373,12 +369,6 @@ class HospitalizationController extends Controller
             'discharge_status' => 'required',
             'discharged_at' => 'required',
         ]);
-
-        if ((int) $data['is_discharged'] === 1 && ! $hospitalization->nursingAssessments()->exists()) {
-            return redirect()
-                ->back()
-                ->with('error', localize('global.nursing_assessment_required_before_discharge'));
-        }
 
         $hospitalization->update($data);
 

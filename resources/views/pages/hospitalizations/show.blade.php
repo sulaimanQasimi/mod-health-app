@@ -924,7 +924,6 @@
 
                             {{-- discharge --}}
                             <!-- Discharge Accordion -->
-                            @php $hasNursingAssessment = $hasNursingAssessment ?? $hospitalization->nursingAssessments->isNotEmpty(); @endphp
                             <div class="accordion mt-4" id="dischargeAccordion">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="dischargeHeading">
@@ -936,28 +935,19 @@
                                     <div id="dischargeCollapse" class="accordion-collapse collapse" aria-labelledby="dischargeHeading"
                                         data-bs-parent="#dischargeAccordion">
                                         <div class="accordion-body">
-                                            {{-- Step 1: nursing assessment must be completed first --}}
                                             <div id="nursing-assessment-section"></div>
 
-                                            {{-- Step 2: discharge form only after assessment exists --}}
                                             @if ($hospitalization->is_discharged == 0)
-                                                @if ($hasNursingAssessment)
-                                                    <div class="border-top pt-3 mt-3">
-                                                        <h6 class="mb-3">
-                                                            <i class="bx bx-walk me-1"></i>{{ localize('global.discharge_patient') }}
-                                                        </h6>
-                                                        <button type="button" class="btn btn-success mb-3"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#createDischargeModal{{ $hospitalization->id }}">
-                                                            <i class="bx bx-plus me-1"></i>{{ localize('global.discharge_patient') }}
-                                                        </button>
-                                                    </div>
-                                                @else
-                                                    <div class="alert alert-warning mt-3 mb-0" role="alert">
-                                                        <i class="bx bx-info-circle me-1"></i>
-                                                        {{ localize('global.nursing_assessment_required_before_discharge') }}
-                                                    </div>
-                                                @endif
+                                                <div class="border-top pt-3 mt-3">
+                                                    <h6 class="mb-3">
+                                                        <i class="bx bx-walk me-1"></i>{{ localize('global.discharge_patient') }}
+                                                    </h6>
+                                                    <button type="button" class="btn btn-success mb-3"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#createDischargeModal{{ $hospitalization->id }}">
+                                                        <i class="bx bx-plus me-1"></i>{{ localize('global.discharge_patient') }}
+                                                    </button>
+                                                </div>
                                             @endif
 
                                             <div class="modal fade" id="createDischargeModal{{ $hospitalization->id }}" tabindex="-1"

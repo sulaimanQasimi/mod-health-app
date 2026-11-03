@@ -124,10 +124,6 @@
             margin-top: 5px;
         }
         
-        .no-print {
-            display: none;
-        }
-        
         @media print {
             .no-print {
                 display: none !important;
@@ -959,10 +955,16 @@
     </div>
     
     <script>
-        // Auto-print when page loads (optional)
-        // window.onload = function() {
-        //     window.print();
-        // }
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                window.focus();
+                window.print();
+            }, 300);
+        });
+
+        window.addEventListener('afterprint', function () {
+            // Keep window open so the user can reprint if needed.
+        });
     </script>
 </body>
 </html>

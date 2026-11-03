@@ -40,10 +40,12 @@
                                         </button>
                                     @endcan
                                     @can('view', $assessment)
-                                        <a href="{{ route('nursing-assessments.print', $assessment) }}"
-                                            class="btn btn-sm btn-outline-info" target="_blank">
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-info"
+                                            title="{{ localize('global.print') }}"
+                                            onclick="printNursingAssessment('{{ route('nursing-assessments.print', $assessment) }}')">
                                             <i class="bx bx-printer"></i>
-                                        </a>
+                                        </button>
                                     @endcan
                                 </div>
                             </td>
@@ -88,7 +90,24 @@
                     <button type="submit" class="btn btn-primary"
                         id="submitNursingAssessmentBtn">{{ localize('global.create') }}</button>
                 </div>
-            </form>
-        </div>
+        </form>
     </div>
 </div>
+</div>
+
+<script>
+    if (typeof window.printNursingAssessment !== 'function') {
+        window.printNursingAssessment = function (url) {
+            var width = 820;
+            var height = 1100;
+            var left = Math.max(0, (window.screen.width - width) / 2);
+            var top = Math.max(0, (window.screen.height - height) / 2);
+            var features = 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top +
+                ',scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no';
+            var printWindow = window.open(url, 'nursingAssessmentPrint', features);
+            if (printWindow) {
+                printWindow.focus();
+            }
+        };
+    }
+</script>

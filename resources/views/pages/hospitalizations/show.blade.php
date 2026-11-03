@@ -924,6 +924,7 @@
 
                             {{-- discharge --}}
                             <!-- Discharge Accordion -->
+                            @php $hasNursingAssessment = $hasNursingAssessment ?? $hospitalization->nursingAssessments->isNotEmpty(); @endphp
                             <div class="accordion mt-4" id="dischargeAccordion">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="dischargeHeading">
@@ -935,117 +936,129 @@
                                     <div id="dischargeCollapse" class="accordion-collapse collapse" aria-labelledby="dischargeHeading"
                                         data-bs-parent="#dischargeAccordion">
                                         <div class="accordion-body">
+                                            {{-- Step 1: nursing assessment must be completed first --}}
+                                            <div id="nursing-assessment-section"></div>
+
+                                            {{-- Step 2: discharge form only after assessment exists --}}
                                             @if ($hospitalization->is_discharged == 0)
-                                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
-                                                    data-bs-target="#createDischargeModal{{ $hospitalization->id }}"><span><i
-                                                            class="bx bx-plus"></i></span></button>
+                                                @if ($hasNursingAssessment)
+                                                    <div class="border-top pt-3 mt-3">
+                                                        <h6 class="mb-3">
+                                                            <i class="bx bx-walk me-1"></i>{{ localize('global.discharge_patient') }}
+                                                        </h6>
+                                                        <button type="button" class="btn btn-success mb-3"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#createDischargeModal{{ $hospitalization->id }}">
+                                                            <i class="bx bx-plus me-1"></i>{{ localize('global.discharge_patient') }}
+                                                        </button>
+                                                    </div>
+                                                @else
+                                                    <div class="alert alert-warning mt-3 mb-0" role="alert">
+                                                        <i class="bx bx-info-circle me-1"></i>
+                                                        {{ localize('global.nursing_assessment_required_before_discharge') }}
+                                                    </div>
+                                                @endif
                                             @endif
-                            <!-- Create  Lab Modal -->
-                            <div class="modal fade" id="createDischargeModal{{ $hospitalization->id }}" tabindex="-1"
-                                aria-labelledby="createDischargeModalLabel{{ $hospitalization->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title"
-                                                id="createDischargeModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.add_lab_test') }}
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('hospitalizations.update', $hospitalization) }}"
-                                                method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" id="is_discharged{{ $hospitalization->id }}"
-                                                    name="is_discharged" value="1">
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <label class="form-label text-muted">{{ localize('global.room') }}</label>
-                                                        <div class="form-control bg-light">{{ $hospitalization->room->name ?? '—' }}</div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label text-muted">{{ localize('global.bed') }}</label>
-                                                        <div class="form-control bg-light">{{ $hospitalization->bed->number ?? '—' }}</div>
+
+                                            <div class="modal fade" id="createDischargeModal{{ $hospitalization->id }}" tabindex="-1"
+                                                aria-labelledby="createDischargeModalLabel{{ $hospitalization->id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title"
+                                                                id="createDischargeModalLabel{{ $hospitalization->id }}">
+                                                                {{ localize('global.discharge_patient') }}
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+                                                        <form action="{{ route('hospitalizations.update', $hospitalization) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="modal-body">
+                                                                <input type="hidden" id="is_discharged{{ $hospitalization->id }}"
+                                                                    name="is_discharged" value="1">
+                                                                <div class="row mb-3">
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label text-muted">{{ localize('global.room') }}</label>
+                                                                        <div class="form-control bg-light">{{ $hospitalization->room->name ?? '—' }}</div>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label text-muted">{{ localize('global.bed') }}</label>
+                                                                        <div class="form-control bg-light">{{ $hospitalization->bed->number ?? '—' }}</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label
+                                                                        for="discharge_status{{ $hospitalization->id }}">{{ localize('global.discharge_status') }}</label>
+                                                                    <select class="form-control select2" name="discharge_status" required>
+                                                                        <option value="">{{ localize('global.select') }}</option>
+                                                                        <option value="recovered">{{ localize('global.recovered') }}</option>
+                                                                        <option value="died">{{ localize('global.died') }}</option>
+                                                                        <option value="moved">{{ localize('global.moved') }}</option>
+                                                                    </select>
+                                                                    <label
+                                                                        for="discharge_remark{{ $hospitalization->id }}">{{ localize('global.discharge_remark') }}</label>
+                                                                    <textarea class="form-control"
+                                                                        id="discharge_remark{{ $hospitalization->id }}"
+                                                                        name="discharge_remark" rows="3" required></textarea>
+                                                                    <input type="hidden" name="discharged_at"
+                                                                        value="{{ \Carbon\Carbon::now() }}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                                <button type="submit"
+                                                                    class="btn btn-primary">{{ localize('global.save') }}</button>
+                                                            </div>
+                                                        </form>
                                                     </div>
                                                 </div>
-                                                <div class="form-group">
-                                                    <label
-                                                        for="discharge_status{{ $hospitalization->id }}">{{ localize('global.discharge_status') }}</label>
-                                                    <select class="form-control select2" name="discharge_status">
-                                                        <option value="">{{ localize('global.select') }}</option>
-                                                        <option value="recovered">{{ localize('global.recovered') }}
-                                                        </option>
-                                                        <option value="died">{{ localize('global.died') }}</option>
-                                                        <option value="moved">{{ localize('global.moved') }}</option>
+                                            </div>
 
-                                                    </select>
-                                                    <label
-                                                        for="discharge_remark{{ $hospitalization->id }}">{{ localize('global.discharge_remark') }}</label>
-                                                    <textarea class="form-control"
-                                                        id="discharge_remark{{ $hospitalization->id }}"
-                                                        name="discharge_remark" rows="3"></textarea>
-                                                    <input type="hidden" name="discharged_at"
-                                                        value="{{ \Carbon\Carbon::now() }}">
+                                            <!-- Create Nutrition Care Modal -->
+                                            <div class="modal fade modal-xl" id="createNutritionCareModal" tabindex="-1"
+                                                aria-labelledby="createNutritionCareModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="createNutritionCareModalLabel">
+                                                                {{ localize('global.create_nutrition_care') }}
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+                                                        <form id="createNutritionCareForm" action="{{ route('nutrition-cares.store') }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            <div class="modal-body">
+                                                                @php
+                                                                    $nurses = \App\Models\Nurse::all();
+                                                                    $morphable_type = 'App\Models\Hospitalization';
+                                                                    $morphable_id = $hospitalization->id;
+                                                                    $patient_name = $hospitalization->patient->first_name . ' ' . $hospitalization->patient->last_name;
+                                                                @endphp
+                                                                @include('pages.nutrition-cares.partials.form')
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                                <button type="submit" class="btn btn-primary"
+                                                                    id="submitNutritionCareBtn">{{ localize('global.create') }}</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
-                                        </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Create Lab Modal -->
-
-                            <!-- Create Nutrition Care Modal -->
-                            <div class="modal fade modal-xl" id="createNutritionCareModal" tabindex="-1"
-                                aria-labelledby="createNutritionCareModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createNutritionCareModalLabel">
-                                                {{ localize('global.create_nutrition_care') }}
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <form id="createNutritionCareForm" action="{{ route('nutrition-cares.store') }}"
-                                            method="POST">
-                                            @csrf
-                                            <div class="modal-body">
-                                                @php
-                                                    $nurses = \App\Models\Nurse::all();
-                                                    $morphable_type = 'App\Models\Hospitalization';
-                                                    $morphable_id = $hospitalization->id;
-                                                    $patient_name = $hospitalization->patient->first_name . ' ' . $hospitalization->patient->last_name;
-                                                @endphp
-                                                @include('pages.nutrition-cares.partials.form')
                                             </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                                <button type="submit" class="btn btn-primary"
-                                                    id="submitNutritionCareBtn">{{ localize('global.create') }}</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Create Nutrition Care Modal -->
+                                            <!-- End Create Nutrition Care Modal -->
 
-                            <!-- Nursing Assessment Section -->
-                            <div id="nursing-assessment-section">
-                            </div>
-                            <!-- End Create Nursing Assessment Modal -->
-
-                                            <div class="col-md-12 mt-4">
-                                                {{ $hospitalization->discharge_remark }}
-                                            </div>
+                                            @if ($hospitalization->is_discharged == 1 && $hospitalization->discharge_remark)
+                                                <div class="col-md-12 mt-4">
+                                                    {{ $hospitalization->discharge_remark }}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -1397,6 +1410,19 @@
                     location.reload();
                 }
             });
+        }
+
+        function printNursingAssessment(url) {
+            var width = 820;
+            var height = 1100;
+            var left = Math.max(0, (window.screen.width - width) / 2);
+            var top = Math.max(0, (window.screen.height - height) / 2);
+            var features = 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top +
+                ',scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no';
+            var printWindow = window.open(url, 'nursingAssessmentPrint', features);
+            if (printWindow) {
+                printWindow.focus();
+            }
         }
 
         // Delete Nursing Assessment function

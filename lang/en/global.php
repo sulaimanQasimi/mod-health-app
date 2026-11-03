@@ -3315,6 +3315,7 @@ return [
     'no_nursing_assessments_found' => 'No Nursing Assessments Found',
     'create_nursing_assessment' => 'Create Nursing Assessment',
     'are_you_sure_delete_nursing_assessment' => 'Are You Sure Delete Nursing Assessment',
+    'nursing_assessment_required_before_discharge' => 'Please create the patient assessment form before discharging the patient.',
     'telephone' => 'Telephone',
     'vital_signs_management' => 'Vital Signs Management',
     'filter_by_vital_sign_type' => 'Filter By Vital Sign Type',

@@ -262,7 +262,11 @@ class HospitalizationController extends Controller
             $data['doctor_id'] = null;
         }
 
-        $data['food_type_id'] = json_encode($data['food_type_id']);
+        if (isset($data['food_type_id'])) {
+            $data['food_type_id'] = json_encode($data['food_type_id']);
+        } else {
+            $data['food_type_id'] = null;
+        }
 
         $hospitalization = Hospitalization::create($data);
 

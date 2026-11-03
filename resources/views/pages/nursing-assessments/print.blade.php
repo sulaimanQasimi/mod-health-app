@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ localize('global.nursing_assessment') }} - {{ $nursingAssessment->patient_name }}</title>
+    @php
+        $patient = $nursingAssessment->morphable->patient ?? null;
+        $patientFullName = trim(($patient->first_name ?? '') . ' ' . ($patient->last_name ?? ''));
+        if ($patientFullName === '') {
+            $patientFullName = $nursingAssessment->patient_name;
+        }
+    @endphp
+    <title>{{ localize('global.nursing_assessment') }} - {{ $patientFullName }}</title>
     <style>
         @page {
             size: A4;
@@ -271,7 +278,7 @@
                 <th>{{ localize('global.serial_number') }}</th>
             </tr>
             <tr>
-                <td>{{ $nursingAssessment->patient_name }}</td>
+                <td>{{ $patientFullName }}</td>
                 <td>{{ $nursingAssessment->patient_age ?? '________________' }}</td>
                 <td>{{ $nursingAssessment->file_number ?? '________________' }}</td>
                 <td>{{ $nursingAssessment->hospital_number ?? '________________' }}</td>

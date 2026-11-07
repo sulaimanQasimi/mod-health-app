@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\HasBillableInvoiceItems;
 use App\Models\Concerns\HasInvoices;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -223,5 +224,33 @@ class Appointment extends Model
     public function canChangeDoctor(): bool
     {
         return ! (bool) $this->is_completed && ! (bool) $this->doctor_reassigned;
+    }
+
+    /**
+     * Department/doctor queues: hide visits that still have an unpaid appointment fee.
+     */
+    public function scopeWhereVisitFeeCleared(Builder $query): Builder
+    {
+        return $query->whereDoesntHave('invoices', function ($invoiceQuery) {
+            $invoiceQuery
+                ->whereIn('status', [Invoice::STATUS_DRAFT, Invoice::STATUS_ISSUED])
+                ->whereHas('items', function ($itemQuery) {
+                    $itemQuery
+                        ->where('item_type', InvoiceItem::TYPE_APPOINTMENT_FEE)
+                        ->where('payment_status', InvoiceItem::PAYMENT_UNPAID);
+                });
+        });
+    }
+
+    public function hasUnpaidVisitFee(): bool
+    {
+        return $this->invoices()
+            ->whereIn('status', [Invoice::STATUS_DRAFT, Invoice::STATUS_ISSUED])
+            ->whereHas('items', function ($itemQuery) {
+                $itemQuery
+                    ->where('item_type', InvoiceItem::TYPE_APPOINTMENT_FEE)
+                    ->where('payment_status', InvoiceItem::PAYMENT_UNPAID);
+            })
+            ->exists();
     }
 }

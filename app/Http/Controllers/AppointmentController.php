@@ -818,6 +818,12 @@ class AppointmentController extends Controller
     {
         $this->authorize('accept', $appointment);
 
+        if ($appointment->hasUnpaidVisitFee()) {
+            return redirect()
+                ->back()
+                ->with('error', localize('global.appointment_requires_payment'));
+        }
+
         $user = $request->user();
         $doctorId = $user->doctor()
             ->where('active_status', true)
@@ -1003,11 +1009,13 @@ class AppointmentController extends Controller
         $departmentId = $user->doctor()->value('department_id')
             ?? $user->department_id;
 
-        $query = Appointment::query()->with([
-            'patient:id,name,last_name,father_name,id_card',
-            'department:id,name',
-            'referringDoctor:id,name',
-        ]);
+        $query = Appointment::query()
+            ->whereVisitFeeCleared()
+            ->with([
+                'patient:id,name,last_name,father_name,id_card',
+                'department:id,name',
+                'referringDoctor:id,name',
+            ]);
 
         if (! $isAdmin && $user->branch_id) {
             $query->where('appointments.branch_id', $user->branch_id);

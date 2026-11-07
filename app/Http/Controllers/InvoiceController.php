@@ -36,7 +36,11 @@ class InvoiceController extends Controller
             ->latest('id');
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'unpaid') {
+                $query->whereIn('status', [Invoice::STATUS_DRAFT, Invoice::STATUS_ISSUED]);
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         if ($request->filled('search')) {

@@ -14,6 +14,7 @@ use App\Models\StockBatch;
 use App\Models\Unit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -145,6 +146,7 @@ class StockBatchService
                     'form_no' => $transactionNumber,
                     'date' => $transactionDate,
                     'pharmacy_id' => $pharmacy->id,
+                    'user_id' => Auth::id() ?? 0,
                 ]);
 
                 $transaction = DepotTransaction::create([

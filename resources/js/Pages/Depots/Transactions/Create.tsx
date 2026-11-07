@@ -159,36 +159,40 @@ export default function CreateDepotTransaction({
                                     <p className="mt-1 text-sm text-red-600">{errors.batch_number}</p>
                                 )}
                             </div>
-                            {isStockIn && (
-                                <>
-                                    <div>
-                                        <Label>{t('global.purchase_price')}</Label>
-                                        <TextInput
-                                            type="number"
-                                            min={0}
-                                            step="0.01"
-                                            value={data.purchase_price}
-                                            onChange={(event) => setData('purchase_price', event.target.value)}
-                                        />
-                                        {errors.purchase_price && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.purchase_price}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <Label>{t('global.sale_price')}</Label>
-                                        <TextInput
-                                            type="number"
-                                            min={0}
-                                            step="0.01"
-                                            value={data.sale_price}
-                                            onChange={(event) => setData('sale_price', event.target.value)}
-                                        />
-                                        {errors.sale_price && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.sale_price}</p>
-                                        )}
-                                    </div>
-                                </>
-                            )}
+                            <div>
+                                <Label>
+                                    {t('global.purchase_price')}
+                                    {isStockIn ? ' *' : ''}
+                                </Label>
+                                <TextInput
+                                    type="number"
+                                    min={0}
+                                    step="0.01"
+                                    required={isStockIn}
+                                    value={data.purchase_price}
+                                    onChange={(event) => setData('purchase_price', event.target.value)}
+                                />
+                                {errors.purchase_price && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.purchase_price}</p>
+                                )}
+                            </div>
+                            <div>
+                                <Label>
+                                    {t('global.sale_price')}
+                                    {isStockIn ? ' *' : ''}
+                                </Label>
+                                <TextInput
+                                    type="number"
+                                    min={0}
+                                    step="0.01"
+                                    required={isStockIn}
+                                    value={data.sale_price}
+                                    onChange={(event) => setData('sale_price', event.target.value)}
+                                />
+                                {errors.sale_price && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.sale_price}</p>
+                                )}
+                            </div>
                             <div>
                                 <Label>{t('global.transaction_date')}</Label>
                                 <TextInput

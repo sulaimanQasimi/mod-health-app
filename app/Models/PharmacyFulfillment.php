@@ -46,6 +46,9 @@ class PharmacyFulfillment extends Model
         self::creating(function ($model) {
             $user = Auth::user();
             $model->created_by = $user->id ?? 0;
+            if (empty($model->user_id)) {
+                $model->user_id = $user->id ?? 0;
+            }
         });
 
         self::updating(function ($model) {

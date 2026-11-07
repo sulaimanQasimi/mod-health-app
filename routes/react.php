@@ -65,6 +65,7 @@ use App\Http\Controllers\ICUSections\DailyProgressController as IcuDailyProgress
 use App\Http\Controllers\ICUSections\ProcedureController as IcuProcedureController;
 use App\Http\Controllers\ICUSections\VisitController as IcuVisitController;
 use App\Http\Controllers\IncomeController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LabTypeController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\MedicineController;
@@ -317,6 +318,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{eyeGlassesOrder}/deliver', [EyeGlassesOrderController::class, 'deliver'])->name('deliver');
         Route::post('/{eyeGlassesOrder}/cancel', [EyeGlassesOrderController::class, 'cancel'])->name('cancel');
         Route::delete('/{eyeGlassesOrder}', [EyeGlassesOrderController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('finance')->name('finance.')->group(function () {
+        Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+        Route::post('/invoices/{invoice}/issue', [InvoiceController::class, 'issue'])->name('invoices.issue');
+        Route::post('/invoices/{invoice}/pay', [InvoiceController::class, 'pay'])->name('invoices.pay');
+        Route::get('/receipts/{receipt}', [InvoiceController::class, 'printReceipt'])->name('receipts.print');
     });
 
     Route::prefix('dental-charts')->name('dental-charts.')->group(function () {

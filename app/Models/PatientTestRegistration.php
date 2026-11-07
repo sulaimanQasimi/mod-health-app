@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasBillableInvoiceItems;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class PatientTestRegistration extends Model
 {
+    use HasBillableInvoiceItems;
     use HasFactory;
 
     protected $fillable = [
@@ -24,6 +26,7 @@ class PatientTestRegistration extends Model
         'lab_type_id',
         'category_id',
         'status',
+        'payment_status',
         'doctor_id',
         'branch_id',
         'priority',

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasBillableInvoiceItems;
+use App\Models\Concerns\HasInvoices;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 class Appointment extends Model
 {
+    use HasBillableInvoiceItems;
+    use HasInvoices;
     use SoftDeletes;
 
     protected $fillable = [

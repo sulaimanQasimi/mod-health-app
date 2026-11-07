@@ -181,6 +181,18 @@ class SidebarMenuService
             }
         }
 
+        if (
+            $user->hasRole(['admin', 'super_admin'])
+            || $user->can('access-finance')
+            || $user->can('manage-finance')
+        ) {
+            $items[] = $this->group('finance', 'global.finance', 'bx-money', [
+                'finance.*',
+            ], [
+                $this->item('finance-invoices', 'global.finance_invoices', null, 'finance.invoices.index'),
+            ]);
+        }
+
         if ($user->can('show-blood-bank-menu')) {
             $items[] = $this->group('blood-bank', 'global.blood_bank', 'bx-donate-blood', [
                 'blood-banks.*',

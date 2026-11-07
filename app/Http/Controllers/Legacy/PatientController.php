@@ -237,6 +237,14 @@ class PatientController extends Controller
 
             $appointment = Appointment::create($appointmentData);
 
+            try {
+                app(\App\Services\InvoiceService::class)->syncAppointmentFee(
+                    $appointment->load('department:id,name,price')
+                );
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             // Send notification for new appointment
             SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
         }

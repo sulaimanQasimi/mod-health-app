@@ -754,6 +754,10 @@ class LaboratoryController extends Controller
             return back()->with('error', localize('global.only_pending_tests_can_be_accepted'));
         }
 
+        if (($registration->payment_status ?? 'unpaid') !== 'paid') {
+            return back()->with('error', localize('global.lab_test_requires_payment'));
+        }
+
         $registration->assignToUser($request->user()->id);
 
         return back()->with('success', localize('global.test_accepted_successfully'));

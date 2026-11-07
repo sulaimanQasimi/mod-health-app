@@ -20,6 +20,10 @@ trait ManagesLaboratoryRegistrations
     {
         return PatientTestRegistration::query()
             ->when($user->branch_id, fn (Builder $query) => $query->where('branch_id', $user->branch_id))
+            ->where(function (Builder $paymentQuery) {
+                $paymentQuery->where('payment_status', 'paid')
+                    ->orWhereNull('payment_status');
+            })
             ->whereHas(
                 'labType',
                 fn (Builder $query) => $query->where('department_id', $user->department_id)

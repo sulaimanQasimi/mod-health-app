@@ -8,6 +8,7 @@ use App\Models\Appointment;
 use App\Models\LabType;
 use App\Models\PatientTestRegistration;
 use App\Models\PatientTestResult;
+use App\Services\InvoiceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +29,7 @@ class LabTestController extends Controller
                     ->map(fn (LabType $labType) => [
                         'id' => $labType->id,
                         'name' => $labType->name,
+                        'price' => $labType->price,
                         'category_name' => $labType->category?->name,
                         'parameters_count' => $labType->directLabTestParameters->count(),
                     ])
@@ -44,16 +46,27 @@ class LabTestController extends Controller
         $appointment->load('patient:id,name,last_name');
 
         $patientName = trim(($appointment->patient?->name ?? '').' '.($appointment->patient?->last_name ?? ''));
+        $canSeeUnpaid = $user->hasRole(['admin', 'super_admin'])
+            || $user->can('access-finance')
+            || $user->can('manage-finance')
+            || $user->can('register-patient-tests');
 
-        $items = $appointment->patientTestRegistrations()
+        $query = $appointment->patientTestRegistrations()
             ->with([
-                'labType:id,name,category_id',
+                'labType:id,name,category_id,price',
                 'labType.category:id,name',
                 'labType.directLabTestParameters:id,lab_type_id',
                 'doctor:id,name',
                 'assignedSection:id,name',
                 'assignedTo:id,name',
-            ])
+            ]);
+
+        // Lab technicians / clinical viewers only see paid tests.
+        if (! $canSeeUnpaid) {
+            $query->where('payment_status', 'paid');
+        }
+
+        $items = $query
             ->latest()
             ->get()
             ->map(fn (PatientTestRegistration $item) => [
@@ -64,13 +77,15 @@ class LabTestController extends Controller
                 'category_name' => $item->labType?->category?->name,
                 'parameters_count' => $item->labType?->directLabTestParameters?->count() ?? 0,
                 'status' => $item->status,
+                'payment_status' => $item->payment_status ?? 'unpaid',
+                'price' => $item->labType?->price,
                 'priority' => $item->priority,
                 'doctor_name' => $item->doctor?->name,
                 'section_name' => $item->assignedSection?->name,
                 'assigned_to_name' => $item->assignedTo?->name,
                 'created_at' => $item->created_at ? verta($item->created_at)->format('Y-m-d H:i') : null,
                 'urls' => [
-                    'print' => $item->status === 'completed' && $item->ref_no
+                    'print' => $item->status === 'completed' && $item->ref_no && ($item->payment_status ?? 'unpaid') === 'paid'
                         ? url("/laboratory/reports/print/{$item->ref_no}")
                         : null,
                 ],
@@ -195,11 +210,14 @@ class LabTestController extends Controller
                     'lab_type_id' => $labTypeId,
                     'category_id' => $newCategoryId,
                     'status' => 'pending',
+                    'payment_status' => 'unpaid',
                     'doctor_id' => $appointment->doctor_id,
                     'branch_id' => $appointment->branch_id,
                     'priority' => $validated['priority'],
                     'notes' => $validated['notes'] ?? null,
                 ]);
+
+                app(InvoiceService::class)->addLabTestCharge($registration, $labType);
 
                 $createdIds[] = $registration->id;
 

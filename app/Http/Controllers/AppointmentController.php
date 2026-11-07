@@ -229,6 +229,12 @@ class AppointmentController extends Controller
         $appointment = Appointment::create($validatedData);
         $appointment->load(['department:id,name,price', 'doctor:id,name', 'patient:id,name,last_name']);
 
+        try {
+            app(\App\Services\InvoiceService::class)->syncAppointmentFee($appointment);
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
         SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
 
         if ($request->ajax() || $request->expectsJson()) {
@@ -852,6 +858,14 @@ class AppointmentController extends Controller
                 'department_id' => $validated['department_id'],
                 'price' => Appointment::resolvePriceFromDepartment((int) $validated['department_id']),
             ]);
+        }
+
+        try {
+            app(\App\Services\InvoiceService::class)->syncAppointmentFee(
+                $appointment->fresh()->load('department:id,name,price')
+            );
+        } catch (\Throwable $e) {
+            report($e);
         }
 
         return redirect()

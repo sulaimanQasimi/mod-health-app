@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
             PrescriptionStockSeeder::class,
             PharmacyPermissionSeeder::class,
             PhysiotherapyPermissionSeeder::class,
+            FinancePermissionSeeder::class,
             PhysiotherapyProcedureReviewSeeder::class,
             PhysiotherapyTypeSeeder::class,
           

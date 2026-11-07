@@ -43,6 +43,7 @@ return [
 'batch_number' => 'د بچ شمېره',
 'expiry_date' => 'د پای نېټه',
 'supplier_name' => 'د تامين کوونکي نوم',
+'price' => 'بيه',
 'purchase_price' => 'د پېرود بيه',
 'purchase_date' => 'د پېرود نېټه',
 'income_type' => 'د وارده ډول',

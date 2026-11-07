@@ -12,7 +12,7 @@ export default function EditLabType({
     formData,
     urls,
 }: {
-    labType: { id: number; name: string; category_id: string; department_id: string };
+    labType: { id: number; name: string; price: string; category_id: string; department_id: string };
     formData: { categories: OptionItem[]; departments: OptionItem[] };
     urls: SettingsFormUrls;
 }) {

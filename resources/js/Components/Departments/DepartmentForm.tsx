@@ -9,7 +9,20 @@ interface DepartmentFormProps {
     mode: 'create' | 'edit';
     urls: SettingsFormUrls;
     formData: { categories: OptionItem[] };
-    department?: { id: number; name: string; room_number: string; category_id: string };
+    department?: { id: number; name: string; room_number: string; price: string; category_id: string };
+}
+
+function sanitizeNonNegativePrice(value: string): string {
+    if (value === '' || value === '.') {
+        return value;
+    }
+
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) {
+        return '';
+    }
+
+    return parsed < 0 ? '0' : value;
 }
 
 export default function DepartmentForm({ mode, urls, formData, department }: DepartmentFormProps) {
@@ -18,6 +31,7 @@ export default function DepartmentForm({ mode, urls, formData, department }: Dep
     const { data, setData, post, put, processing, errors } = useForm({
         name: department?.name ?? '',
         room_number: department?.room_number ?? '',
+        price: department?.price ?? '',
         category_id: department?.category_id ?? '',
     });
 
@@ -44,6 +58,24 @@ export default function DepartmentForm({ mode, urls, formData, department }: Dep
                     onChange={(e) => setData('room_number', e.target.value)}
                 />
                 {errors.room_number && <p className="mt-1 text-sm text-red-600">{errors.room_number}</p>}
+            </div>
+            <div>
+                <Label htmlFor="price">{t('global.price')}</Label>
+                <TextInput
+                    id="price"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    inputMode="decimal"
+                    value={data.price}
+                    onChange={(e) => setData('price', sanitizeNonNegativePrice(e.target.value))}
+                    onKeyDown={(e) => {
+                        if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+') {
+                            e.preventDefault();
+                        }
+                    }}
+                />
+                {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
             </div>
             <div>
                 <Label htmlFor="category_id">{t('global.category')}</Label>

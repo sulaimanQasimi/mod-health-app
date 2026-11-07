@@ -15,9 +15,23 @@ interface LabTypeFormProps {
     labType?: {
         id: number;
         name: string;
+        price: string;
         category_id: string;
         department_id: string;
     };
+}
+
+function sanitizeNonNegativePrice(value: string): string {
+    if (value === '' || value === '.') {
+        return value;
+    }
+
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) {
+        return '';
+    }
+
+    return parsed < 0 ? '0' : value;
 }
 
 export default function LabTypeForm({ mode, urls, formData, labType }: LabTypeFormProps) {
@@ -25,6 +39,7 @@ export default function LabTypeForm({ mode, urls, formData, labType }: LabTypeFo
     const isEdit = mode === 'edit';
     const { data, setData, post, put, processing, errors } = useForm({
         name: labType?.name ?? '',
+        price: labType?.price ?? '',
         category_id: labType?.category_id ?? '',
         department_id: labType?.department_id ?? '',
     });
@@ -43,6 +58,24 @@ export default function LabTypeForm({ mode, urls, formData, labType }: LabTypeFo
                 <Label htmlFor="name">{t('global.name')} *</Label>
                 <TextInput id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+            </div>
+            <div>
+                <Label htmlFor="price">{t('global.price')}</Label>
+                <TextInput
+                    id="price"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    inputMode="decimal"
+                    value={data.price}
+                    onChange={(e) => setData('price', sanitizeNonNegativePrice(e.target.value))}
+                    onKeyDown={(e) => {
+                        if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+') {
+                            e.preventDefault();
+                        }
+                    }}
+                />
+                {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
             </div>
             <div>
                 <Label htmlFor="category_id">{t('global.category')} *</Label>

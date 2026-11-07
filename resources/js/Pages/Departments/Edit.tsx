@@ -12,7 +12,7 @@ export default function EditDepartment({
     formData,
     urls,
 }: {
-    department: { id: number; name: string; room_number: string; category_id: string };
+    department: { id: number; name: string; room_number: string; price: string; category_id: string };
     formData: { categories: OptionItem[] };
     urls: SettingsFormUrls;
 }) {

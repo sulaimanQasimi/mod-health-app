@@ -446,6 +446,7 @@ return [
     'expiry_date' => 'Expiry Date',
     'supplier_name' => 'Supplier Name',
     'supplier_contact' => 'Supplier Contact',
+    'price' => 'Price',
     'purchase_price' => 'Purchase Price',
     'purchase_date' => 'Purchase Date',
     'invoice_number' => 'Invoice Number',

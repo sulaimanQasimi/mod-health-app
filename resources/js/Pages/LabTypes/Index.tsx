@@ -19,6 +19,7 @@ import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 interface LabTypeItem {
     id: number;
     name: string;
+    price: number | string | null;
     branch_name: string | null;
     category_name: string | null;
     department_name: string | null;
@@ -172,6 +173,7 @@ export default function IndexLabTypes({
                                 <TableRow variant="header">
                                     <TableHeader>#</TableHeader>
                                     <TableHeader>{t('global.name')}</TableHeader>
+                                    <TableHeader>{t('global.price')}</TableHeader>
                                     <TableHeader>{t('global.branch')}</TableHeader>
                                     <TableHeader>{t('global.category')}</TableHeader>
                                     <TableHeader>{t('global.department')}</TableHeader>
@@ -195,6 +197,7 @@ export default function IndexLabTypes({
                                                 item.name
                                             )}
                                         </TableCell>
+                                        <TableCell muted>{item.price ?? '0'}</TableCell>
                                         <TableCell muted>{item.branch_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.category_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.department_name ?? '—'}</TableCell>

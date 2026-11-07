@@ -26,6 +26,7 @@ export default function ShowLabType({
     labType: {
         id: number;
         name: string;
+        price: number | string | null;
         category_name: string | null;
         department_name: string | null;
         parameters_count: number;
@@ -78,6 +79,7 @@ export default function ShowLabType({
                     <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         <DetailField label={t('global.id')} value={String(labType.id)} />
                         <DetailField label={t('global.name')} value={labType.name} />
+                        <DetailField label={t('global.price')} value={String(labType.price ?? '0')} />
                         <DetailField label={t('global.category')} value={labType.category_name ?? ''} />
                         <DetailField label={t('global.department')} value={labType.department_name ?? ''} />
                         <DetailField

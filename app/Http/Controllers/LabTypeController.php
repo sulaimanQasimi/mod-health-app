@@ -57,6 +57,7 @@ class LabTypeController extends Controller
             'labTypes' => $this->paginationPayload($paginator, fn (LabType $labType) => [
                 'id' => $labType->id,
                 'name' => $labType->name,
+                'price' => $labType->price,
                 'branch_name' => $labType->branch?->name,
                 'category_name' => $labType->category?->name,
                 'department_name' => $labType->department?->name,
@@ -143,6 +144,7 @@ class LabTypeController extends Controller
             'labType' => [
                 'id' => $labType->id,
                 'name' => $labType->name,
+                'price' => $labType->price,
                 'category_name' => $labType->category?->name,
                 'department_name' => $labType->department?->name,
                 'parameters_count' => $labType->direct_lab_test_parameters_count,
@@ -193,6 +195,7 @@ class LabTypeController extends Controller
             'labType' => [
                 'id' => $labType->id,
                 'name' => $labType->name,
+                'price' => $labType->price !== null ? (string) $labType->price : '',
                 'category_id' => $labType->category_id ? (string) $labType->category_id : '',
                 'department_id' => $labType->department_id ? (string) $labType->department_id : '',
             ],
@@ -395,12 +398,17 @@ class LabTypeController extends Controller
                     ->where(fn ($query) => $query->where('branch_id', $branchId))
                     ->ignore($labType?->id),
             ],
+            'price' => 'nullable|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'department_id' => [
                 'required',
                 Rule::exists('departments', 'id')->where(fn ($query) => $query->where('branch_id', $branchId)),
             ],
         ]);
+
+        if (! array_key_exists('price', $data) || $data['price'] === null || $data['price'] === '') {
+            $data['price'] = 0;
+        }
 
         $data['branch_id'] = $branchId;
 

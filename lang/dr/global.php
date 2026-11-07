@@ -2976,6 +2976,7 @@ return [
     'pupils' => 'PUPILS',
     'purchase' => 'خرید',
     'purchase_date' => 'تاریخ خرید',
+    'price' => 'قیمت',
     'purchase_price' => 'قیمت خرید',
     'qr_code' => 'کی ار کد',
     'qr_code_data' => 'نتیجه سکن',

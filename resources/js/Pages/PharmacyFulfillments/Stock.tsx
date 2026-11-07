@@ -22,6 +22,8 @@ interface StockItem {
     income: number;
     outcome: number;
     stock: number;
+    purchase_price?: number;
+    sale_price?: number;
 }
 
 interface StockStats {
@@ -254,6 +256,8 @@ export default function StockPharmacyFulfillments({
                                     <TableHeader>{t('global.income')}</TableHeader>
                                     <TableHeader>{t('global.outcome')}</TableHeader>
                                     <TableHeader>{t('global.stock')}</TableHeader>
+                                    <TableHeader>{t('global.purchase_price')}</TableHeader>
+                                    <TableHeader>{t('global.sale_price')}</TableHeader>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -265,6 +269,8 @@ export default function StockPharmacyFulfillments({
                                         <TableCell>{item.income}</TableCell>
                                         <TableCell>{item.outcome}</TableCell>
                                         <TableCell className="font-semibold">{item.stock}</TableCell>
+                                        <TableCell className="tabular-nums">{item.purchase_price ?? 0}</TableCell>
+                                        <TableCell className="tabular-nums">{item.sale_price ?? 0}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

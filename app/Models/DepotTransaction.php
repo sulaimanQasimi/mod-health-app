@@ -34,12 +34,15 @@ class DepotTransaction extends Model
         'tool_id',
         'unit_id',
         'batch_number',
+        'stock_batch_id',
         'transactionable_type',
         'transactionable_id',
         'transaction_type',
         'type',
         'status',
         'quantity',
+        'purchase_price',
+        'sale_price',
         'from_depot_id',
         'to_depot_id',
         'depot_request_id',
@@ -54,6 +57,8 @@ class DepotTransaction extends Model
 
     protected $casts = [
         'quantity' => 'integer',
+        'purchase_price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
         'transaction_date' => 'date',
         'issued_date' => 'date',
         'expiry_date' => 'date',
@@ -277,6 +282,11 @@ class DepotTransaction extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function stockBatch()
+    {
+        return $this->belongsTo(StockBatch::class);
     }
 
     public function transactionable()

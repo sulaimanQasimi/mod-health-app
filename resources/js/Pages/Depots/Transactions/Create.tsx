@@ -41,11 +41,14 @@ export default function CreateDepotTransaction({
         quantity: '',
         unit_id: '',
         batch_number: '',
+        purchase_price: '',
+        sale_price: '',
         transaction_date: today,
         issued_date: '',
         expiry_date: '',
         notes: '',
     });
+    const isStockIn = data.type === 'stock_in';
 
     const itemId = itemKind === 'medicine' ? data.medicine_id : data.tool_id;
     const { available, loading } = useAvailableStock(
@@ -146,12 +149,46 @@ export default function CreateDepotTransaction({
                                 />
                             </div>
                             <div>
-                                <Label>{t('global.batch_number')}</Label>
+                                <Label>{t('global.batch_code')}</Label>
                                 <TextInput
                                     value={data.batch_number}
-                                    onChange={(event) => setData('batch_number', event.target.value)}
+                                    placeholder={isStockIn ? t('global.auto_batch_fefo') : undefined}
+                                    onChange={(event) => setData('batch_number', event.target.value.replace(/[;,|]/g, ''))}
                                 />
+                                {errors.batch_number && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.batch_number}</p>
+                                )}
                             </div>
+                            {isStockIn && (
+                                <>
+                                    <div>
+                                        <Label>{t('global.purchase_price')}</Label>
+                                        <TextInput
+                                            type="number"
+                                            min={0}
+                                            step="0.01"
+                                            value={data.purchase_price}
+                                            onChange={(event) => setData('purchase_price', event.target.value)}
+                                        />
+                                        {errors.purchase_price && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.purchase_price}</p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <Label>{t('global.sale_price')}</Label>
+                                        <TextInput
+                                            type="number"
+                                            min={0}
+                                            step="0.01"
+                                            value={data.sale_price}
+                                            onChange={(event) => setData('sale_price', event.target.value)}
+                                        />
+                                        {errors.sale_price && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.sale_price}</p>
+                                        )}
+                                    </div>
+                                </>
+                            )}
                             <div>
                                 <Label>{t('global.transaction_date')}</Label>
                                 <TextInput

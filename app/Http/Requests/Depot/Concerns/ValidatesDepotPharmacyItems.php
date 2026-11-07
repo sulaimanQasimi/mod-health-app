@@ -28,9 +28,12 @@ trait ValidatesDepotPharmacyItems
             'items' => ['required', 'array', 'min:1'],
             'items.*.medicine_id' => ['required', 'exists:medicines,id'],
             'items.*.unit_id' => ['nullable', 'exists:units,id'],
-            'items.*.batch_number' => ['nullable', 'string', 'max:255'],
+            'items.*.batch_number' => ['nullable', 'string', 'max:255', 'not_regex:/[;,|]/'],
+            'items.*.stock_batch_id' => ['nullable', 'exists:stock_batches,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.expiry_date' => ['nullable', 'date'],
+            'items.*.purchase_price' => ['nullable', 'numeric', 'min:0'],
+            'items.*.sale_price' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

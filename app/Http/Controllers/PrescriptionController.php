@@ -14,6 +14,7 @@ use App\Models\Prescription;
 use App\Models\PrescriptionAlternativeItem;
 use App\Models\PrescriptionItem;
 use App\Models\PrintedNumber;
+use App\Services\PharmacyDispenseService;
 use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -272,18 +273,10 @@ class PrescriptionController extends Controller
     {
         $this->authorize('manageItems', $prescription);
 
-        $prescription->load([
-            'prescriptionItems.selectedAlternative',
-        ]);
-
-        foreach ($prescription->prescriptionItems as $item) {
-            if (! $item->selectedAlternative && ! $item->is_delivered) {
-                $item->update(['is_delivered' => true]);
-            }
-
-            if ($item->selectedAlternative && $item->selectedAlternative->is_delivered != '1') {
-                $item->selectedAlternative->update(['is_delivered' => '1']);
-            }
+        try {
+            app(PharmacyDispenseService::class)->deliverAll($prescription);
+        } catch (\Throwable $e) {
+            return back()->with('error', $e->getMessage());
         }
 
         return back()->with('success', localize('global.items_marked_as_delivered'));
@@ -349,7 +342,15 @@ class PrescriptionController extends Controller
             'is_delivered' => 'required|boolean',
         ]);
 
-        $prescriptionItem->update(['is_delivered' => $validated['is_delivered']]);
+        try {
+            if ($validated['is_delivered']) {
+                app(PharmacyDispenseService::class)->deliverItem($prescriptionItem, true);
+            } else {
+                $prescriptionItem->update(['is_delivered' => false]);
+            }
+        } catch (\Throwable $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
         return back()->with('success', localize('global.item_status_updated_successfully'));
     }

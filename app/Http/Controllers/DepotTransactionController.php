@@ -122,11 +122,35 @@ class DepotTransactionController extends Controller
         $itemId = (int) ($data['medicine_id'] ?? $data['tool_id']);
 
         DB::transaction(function () use ($data, $itemType, $itemId) {
-            Depot::whereKey($data['depot_id'])->lockForUpdate()->firstOrFail();
+            $depot = Depot::whereKey($data['depot_id'])->lockForUpdate()->firstOrFail();
+
+            if ($data['type'] === DepotTransaction::TYPE_STOCK_IN) {
+                app(\App\Services\StockBatchService::class)->receiveIntoDepot($depot, $data);
+
+                return;
+            }
 
             if ($data['type'] === DepotTransaction::TYPE_STOCK_OUT) {
                 $this->stockService->lockLedger((int) $data['depot_id'], $itemType, $itemId);
                 $this->stockService->ensureAvailable($itemType, (int) $data['depot_id'], $itemId, (int) $data['quantity']);
+
+                // Deduct from FEFO batches when medicines are stocked out.
+                if ($itemType === DepotTransaction::ITEM_MEDICINE) {
+                    $batchService = app(\App\Services\StockBatchService::class);
+                    $batches = $batchService->listOwnerBatches($depot, $itemId);
+                    $remaining = (int) $data['quantity'];
+                    foreach ($batches as $batch) {
+                        if ($remaining <= 0) {
+                            break;
+                        }
+                        $take = min($remaining, (int) $batch->qty_on_hand);
+                        if ($take <= 0) {
+                            continue;
+                        }
+                        $batch->forceFill(['qty_on_hand' => (int) $batch->qty_on_hand - $take])->save();
+                        $remaining -= $take;
+                    }
+                }
             }
 
             DepotTransaction::create([

@@ -16,6 +16,10 @@ class DepotRequestItem extends Model
         'unit_id',
         'quantity',
         'batch_number',
+        'stock_batch_id',
+        'expiry_date',
+        'purchase_price',
+        'sale_price',
         'sort_order',
         'depot_transaction_id',
     ];
@@ -23,6 +27,9 @@ class DepotRequestItem extends Model
     protected $casts = [
         'quantity' => 'integer',
         'sort_order' => 'integer',
+        'expiry_date' => 'date',
+        'purchase_price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
     ];
 
     public function depotRequest()
@@ -48,6 +55,11 @@ class DepotRequestItem extends Model
     public function depotTransaction()
     {
         return $this->belongsTo(DepotTransaction::class);
+    }
+
+    public function stockBatch()
+    {
+        return $this->belongsTo(StockBatch::class);
     }
 
     public function itemType(): ?string

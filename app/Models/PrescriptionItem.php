@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasBillableInvoiceItems;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PrescriptionItem extends Model
 {
+    use HasBillableInvoiceItems;
     use HasFactory;
     use SoftDeletes;
 
@@ -86,5 +88,10 @@ class PrescriptionItem extends Model
     public function outcomes()
     {
         return $this->hasMany(Outcome::class);
+    }
+
+    public function batchAllocations()
+    {
+        return $this->hasMany(PrescriptionItemBatchAllocation::class);
     }
 }

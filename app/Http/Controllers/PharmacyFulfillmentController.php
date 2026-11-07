@@ -7,6 +7,7 @@ use App\Http\Controllers\Concerns\AuthorizesPharmacyStockAccess;
 use App\Http\Controllers\Concerns\PaginatesInertiaIndex;
 use App\Models\Medicine;
 use App\Models\Pharmacy;
+use App\Models\StockBatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -49,37 +50,32 @@ class PharmacyFulfillmentController extends Controller
             ));
         }
 
-        $usageSql = "(SELECT p.pharmacy_id, COALESCE(pai.medicine_id, pi.medicine_id) as medicine_id, COUNT(*) as total
-            FROM prescription_items pi
-            LEFT JOIN prescription_alternative_items pai ON pai.prescription_item_id = pi.id AND pai.prescription_id = pi.prescription_id AND pai.is_selected = 1 AND pai.deleted_at IS NULL
-            JOIN prescriptions p ON pi.prescription_id = p.id
-            WHERE pi.deleted_at IS NULL AND p.deleted_at IS NULL AND p.pharmacy_id IS NOT NULL
-            GROUP BY p.pharmacy_id, COALESCE(pai.medicine_id, pi.medicine_id))";
+        $pharmacyMorph = DB::getPdo()->quote((new Pharmacy)->getMorphClass());
 
-        $unionSql = "((SELECT pharmacy_id, medicine_id FROM pharmacy_fulfillments WHERE deleted_at IS NULL)
-            UNION
-            (SELECT pharmacy_id, medicine_id FROM outcomes WHERE deleted_at IS NULL AND pharmacy_id IS NOT NULL)
-            UNION
-            (SELECT p.pharmacy_id as pharmacy_id, COALESCE(pai.medicine_id, pi.medicine_id) as medicine_id
-             FROM prescription_items pi
-             LEFT JOIN prescription_alternative_items pai ON pai.prescription_item_id = pi.id AND pai.prescription_id = pi.prescription_id AND pai.is_selected = 1 AND pai.deleted_at IS NULL
-             JOIN prescriptions p ON pi.prescription_id = p.id
-             WHERE pi.deleted_at IS NULL AND p.deleted_at IS NULL AND p.pharmacy_id IS NOT NULL)) as u";
-        $ftSql = '(SELECT pharmacy_id, medicine_id, SUM(CAST(amount AS UNSIGNED)) as total FROM pharmacy_fulfillments WHERE deleted_at IS NULL GROUP BY pharmacy_id, medicine_id)';
-        $stockSql = 'COALESCE(ft.total, 0) - COALESCE(ot.total, 0)';
-
-        $baseQuery = DB::table(DB::raw($unionSql))
-            ->join('medicines as m', 'm.id', '=', 'u.medicine_id')
-            ->join('pharmacies as p', 'p.id', '=', 'u.pharmacy_id')
-            ->leftJoin(DB::raw("{$ftSql} as ft"), function ($join) {
-                $join->on('ft.pharmacy_id', '=', 'u.pharmacy_id')->on('ft.medicine_id', '=', 'u.medicine_id');
+        $baseQuery = DB::table(DB::raw("(SELECT owner_id as pharmacy_id, medicine_id,
+                SUM(qty_on_hand) as stock,
+                AVG(purchase_price) as avg_purchase_price,
+                AVG(sale_price) as avg_sale_price
+            FROM stock_batches
+            WHERE deleted_at IS NULL
+              AND owner_type = {$pharmacyMorph}
+              AND medicine_id IS NOT NULL
+            GROUP BY owner_id, medicine_id) as sb"))
+            ->join('medicines as m', 'm.id', '=', 'sb.medicine_id')
+            ->join('pharmacies as p', 'p.id', '=', 'sb.pharmacy_id')
+            ->leftJoin(DB::raw("(SELECT sb2.owner_id as pharmacy_id, sb2.medicine_id, COALESCE(SUM(a.quantity), 0) as total
+                FROM prescription_item_batch_allocations a
+                JOIN stock_batches sb2 ON sb2.id = a.stock_batch_id
+                WHERE sb2.owner_type = {$pharmacyMorph}
+                  AND sb2.deleted_at IS NULL
+                GROUP BY sb2.owner_id, sb2.medicine_id) as ot"), function ($join) {
+                $join->on('ot.pharmacy_id', '=', 'sb.pharmacy_id')->on('ot.medicine_id', '=', 'sb.medicine_id');
             })
-            ->leftJoin(DB::raw("{$usageSql} as ot"), function ($join) {
-                $join->on('ot.pharmacy_id', '=', 'u.pharmacy_id')->on('ot.medicine_id', '=', 'u.medicine_id');
-            })
-            ->whereIn('u.pharmacy_id', $allowedPharmacyIds)
+            ->whereIn('sb.pharmacy_id', $allowedPharmacyIds)
             ->whereNull('m.deleted_at')
             ->whereNull('p.deleted_at');
+
+        $stockSql = 'COALESCE(sb.stock, 0)';
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -99,21 +95,17 @@ class PharmacyFulfillmentController extends Controller
             $baseQuery->whereRaw("{$stockSql} > 0 AND {$stockSql} <= 10");
         }
 
-        $stockStats['total_income'] = (int) DB::table('pharmacy_fulfillments')
-            ->whereNull('deleted_at')
-            ->whereIn('pharmacy_id', $allowedPharmacyIds)
-            ->sum(DB::raw('CAST(amount AS UNSIGNED)'));
-        $stockStats['total_outcome'] = (int) DB::table('prescription_items as pi')
-            ->leftJoin('prescription_alternative_items as pai', function ($join) {
-                $join->on('pai.prescription_item_id', '=', 'pi.id')
-                    ->on('pai.prescription_id', '=', 'pi.prescription_id')
-                    ->whereRaw('(pai.is_selected = 1 AND pai.deleted_at IS NULL)');
-            })
-            ->join('prescriptions as p', 'pi.prescription_id', '=', 'p.id')
-            ->whereNull('pi.deleted_at')
-            ->whereNull('p.deleted_at')
-            ->whereIn('p.pharmacy_id', $allowedPharmacyIds)
-            ->count();
+        $ownerType = (new Pharmacy)->getMorphClass();
+        $stockStats['total_income'] = (int) StockBatch::query()
+            ->where('owner_type', $ownerType)
+            ->whereIn('owner_id', $allowedPharmacyIds)
+            ->whereNotNull('medicine_id')
+            ->sum(DB::raw('qty_on_hand'));
+        $stockStats['total_outcome'] = (int) DB::table('prescription_item_batch_allocations as a')
+            ->join('stock_batches as sb', 'sb.id', '=', 'a.stock_batch_id')
+            ->where('sb.owner_type', $ownerType)
+            ->whereIn('sb.owner_id', $allowedPharmacyIds)
+            ->sum('a.quantity');
 
         $statsResult = (clone $baseQuery)->selectRaw("
             COUNT(*) as total_items,
@@ -134,9 +126,11 @@ class PharmacyFulfillmentController extends Controller
             'm.name as medicine_name',
             'p.id as pharmacy_id',
             'p.name as pharmacy_name',
-            DB::raw('COALESCE(ft.total, 0) as income'),
+            DB::raw('COALESCE(sb.stock, 0) + COALESCE(ot.total, 0) as income'),
             DB::raw('COALESCE(ot.total, 0) as outcome'),
             DB::raw("{$stockSql} as stock"),
+            DB::raw('COALESCE(sb.avg_purchase_price, 0) as purchase_price'),
+            DB::raw('COALESCE(sb.avg_sale_price, 0) as sale_price'),
         );
 
         $sortBy = $request->get('sort_by', 'medicine');
@@ -181,6 +175,8 @@ class PharmacyFulfillmentController extends Controller
                     'income' => (int) $item->income,
                     'outcome' => (int) $item->outcome,
                     'stock' => (int) $item->stock,
+                    'purchase_price' => (float) ($item->purchase_price ?? 0),
+                    'sale_price' => (float) ($item->sale_price ?? 0),
                 ])->values()->all(),
                 'links' => method_exists($paginator, 'linkCollection') ? $paginator->linkCollection()->toArray() : [],
                 'meta' => [

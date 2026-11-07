@@ -12,6 +12,8 @@ class InvoiceItem extends Model
 
     public const TYPE_LAB_TEST = 'lab_test';
 
+    public const TYPE_PHARMACY_MEDICINE = 'pharmacy_medicine';
+
     public const TYPE_CUSTOM = 'custom';
 
     public const PAYMENT_UNPAID = 'unpaid';

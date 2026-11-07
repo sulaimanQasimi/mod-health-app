@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasInvoices;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 class Prescription extends Model
 {
     use HasFactory;
+    use HasInvoices;
     use SoftDeletes;
 
     protected $fillable = ['branch_id', 'appointment_id', 'patient_id','doctor_id','is_completed','under_review_id','hospitalization_id','i_c_u_id','pharmacy_id'];

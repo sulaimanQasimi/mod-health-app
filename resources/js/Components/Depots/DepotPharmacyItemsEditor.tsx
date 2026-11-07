@@ -12,6 +12,8 @@ export interface DepotPharmacyLineItem {
     unit_id: string;
     batch_number: string;
     expiry_date: string;
+    purchase_price: string;
+    sale_price: string;
 }
 
 export const emptyPharmacyLine = (): DepotPharmacyLineItem => ({
@@ -20,6 +22,8 @@ export const emptyPharmacyLine = (): DepotPharmacyLineItem => ({
     unit_id: '',
     batch_number: '',
     expiry_date: '',
+    purchase_price: '',
+    sale_price: '',
 });
 
 interface LineStockProps {
@@ -216,7 +220,7 @@ export default function DepotPharmacyItemsEditor({
                 </Alert>
             )}
 
-            <Table className="min-w-[920px]">
+            <Table className="min-w-[1100px]">
                 <TableHead>
                     <TableRow variant="header">
                         <TableHeader className="w-10">#</TableHeader>
@@ -225,8 +229,9 @@ export default function DepotPharmacyItemsEditor({
                             {t('global.quantity')}
                         </TableHeader>
                         <TableHeader className="min-w-[8rem]">{t('global.unit')}</TableHeader>
-                        <TableHeader className="min-w-[8rem]">{t('global.batch_number')}</TableHeader>
-                        <TableHeader className="min-w-[9rem]">{t('global.expiry_date')}</TableHeader>
+                        <TableHeader className="min-w-[8rem]">{t('global.batch_code')}</TableHeader>
+                        <TableHeader className="min-w-[7rem]">{t('global.purchase_price')}</TableHeader>
+                        <TableHeader className="min-w-[7rem]">{t('global.sale_price')}</TableHeader>
                         <TableHeader align="center" className="w-14">
                             <span className="sr-only">{t('global.actions')}</span>
                         </TableHeader>
@@ -236,7 +241,6 @@ export default function DepotPharmacyItemsEditor({
                     {items.map((line, index) => {
                         const medicineError = errors[`items.${index}.medicine_id`];
                         const quantityError = errors[`items.${index}.quantity`];
-                        const expiryError = errors[`items.${index}.expiry_date`];
                         const duplicateTotal = line.medicine_id
                             ? medicineTotals.get(line.medicine_id) ?? 0
                             : 0;
@@ -305,23 +309,42 @@ export default function DepotPharmacyItemsEditor({
                                     <TextInput
                                         value={line.batch_number}
                                         disabled={disabled || !depotId}
+                                        placeholder={t('global.auto_batch_fefo')}
                                         onChange={(event) =>
-                                            updateLine(index, { batch_number: event.target.value })
+                                            updateLine(index, {
+                                                batch_number: event.target.value.replace(/[;,|]/g, ''),
+                                            })
+                                        }
+                                    />
+                                    <p className="mt-1 text-[11px] text-gray-500">
+                                        {t('global.auto_batch_fefo')}
+                                    </p>
+                                </TableCell>
+                                <TableCell className="align-top">
+                                    <TextInput
+                                        type="number"
+                                        min={0}
+                                        step="0.01"
+                                        className="w-28"
+                                        value={line.purchase_price}
+                                        disabled={disabled || !depotId}
+                                        onChange={(event) =>
+                                            updateLine(index, { purchase_price: event.target.value })
                                         }
                                     />
                                 </TableCell>
                                 <TableCell className="align-top">
                                     <TextInput
-                                        type="date"
-                                        value={line.expiry_date}
+                                        type="number"
+                                        min={0}
+                                        step="0.01"
+                                        className="w-28"
+                                        value={line.sale_price}
                                         disabled={disabled || !depotId}
                                         onChange={(event) =>
-                                            updateLine(index, { expiry_date: event.target.value })
+                                            updateLine(index, { sale_price: event.target.value })
                                         }
                                     />
-                                    {expiryError && (
-                                        <p className="mt-1 text-xs text-red-600">{expiryError}</p>
-                                    )}
                                 </TableCell>
                                 <TableCell align="center" className="align-top">
                                     <Button

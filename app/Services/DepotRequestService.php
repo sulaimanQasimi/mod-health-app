@@ -7,8 +7,6 @@ use App\Models\DepotRequest;
 use App\Models\DepotRequestItem;
 use App\Models\DepotRequestStatusLog;
 use App\Models\DepotTransaction;
-use App\Models\PharmacyFulfillment;
-use App\Models\Unit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -16,7 +14,8 @@ use Illuminate\Validation\ValidationException;
 class DepotRequestService
 {
     public function __construct(
-        private readonly DepotStockService $stockService
+        private readonly DepotStockService $stockService,
+        private readonly StockBatchService $batchService,
     ) {
     }
 
@@ -28,12 +27,23 @@ class DepotRequestService
         $request->items()->delete();
 
         foreach (array_values($items) as $index => $item) {
+            $batchNumber = isset($item['batch_number']) ? trim((string) $item['batch_number']) : null;
+            if ($batchNumber !== null && $batchNumber !== '' && preg_match('/[;,|]/', $batchNumber)) {
+                throw ValidationException::withMessages([
+                    "items.{$index}.batch_number" => 'Enter one batch code only. Create separate lines for multiple lots.',
+                ]);
+            }
+
             $request->items()->create([
                 'medicine_id' => $item['medicine_id'] ?? null,
                 'tool_id' => $item['tool_id'] ?? null,
                 'unit_id' => $item['unit_id'] ?? null,
                 'quantity' => (int) $item['quantity'],
-                'batch_number' => $item['batch_number'] ?? null,
+                'batch_number' => $batchNumber ?: null,
+                'stock_batch_id' => $item['stock_batch_id'] ?? null,
+                'expiry_date' => $item['expiry_date'] ?? null,
+                'purchase_price' => $item['purchase_price'] ?? null,
+                'sale_price' => $item['sale_price'] ?? null,
                 'sort_order' => $index,
             ]);
         }
@@ -198,40 +208,21 @@ class DepotRequestService
             $quantity
         );
 
-        $transactionNumber = DepotTransaction::nextTransactionNumber();
-        $transactionDate = now()->toDateString();
+        $depot = Depot::query()->findOrFail($request->source_depot_id);
+        $pharmacy = $request->pharmacy;
+        if (! $pharmacy) {
+            throw ValidationException::withMessages([
+                'pharmacy_id' => 'Destination pharmacy is required.',
+            ]);
+        }
 
-        $fulfillment = PharmacyFulfillment::create([
-            'medicine_id' => $medicineId,
-            'unit_type' => ! empty($item->unit_id) ? optional(Unit::find($item->unit_id))->name : null,
-            'amount' => (string) $quantity,
-            'form_no' => $transactionNumber,
-            'date' => $transactionDate,
-            'pharmacy_id' => $request->pharmacy_id,
-            'user_id' => Auth::id(),
-        ]);
-
-        $transaction = DepotTransaction::create([
-            'from_depot_id' => $request->source_depot_id,
-            'depot_id' => $request->source_depot_id,
-            'pharmacy_id' => $request->pharmacy_id,
-            'depot_request_id' => $request->id,
-            'medicine_id' => $medicineId,
-            'unit_id' => $item->unit_id,
-            'batch_number' => $item->batch_number,
-            'quantity' => $quantity,
-            'transaction_date' => $transactionDate,
-            'transaction_number' => $transactionNumber,
-            'type' => DepotTransaction::TYPE_DEPOT_TO_PHARMACY,
-            'transaction_type' => 'out',
-            'status' => DepotTransaction::STATUS_COMPLETED,
-            'notes' => $request->notes,
-            'user_id' => Auth::id(),
-            'transactionable_type' => PharmacyFulfillment::class,
-            'transactionable_id' => $fulfillment->id,
-        ]);
-
-        $item->update(['depot_transaction_id' => $transaction->id]);
+        $this->batchService->transferRequestItemToPharmacy(
+            $depot,
+            $pharmacy,
+            $item,
+            (int) $request->id,
+            $request->notes
+        );
     }
 
     public function cancel(DepotRequest $request): DepotRequest

@@ -17,6 +17,11 @@ class PharmacyFulfillment extends Model
         'medicine_id',
         'unit_type',
         'amount',
+        'batch_code',
+        'expiry_date',
+        'purchase_price',
+        'sale_price',
+        'stock_batch_id',
         'form_no',
         'date',
         'form',
@@ -24,11 +29,14 @@ class PharmacyFulfillment extends Model
         'user_id',
         'created_by',
         'updated_by',
-        'deleted_by'
+        'deleted_by',
     ];
 
     protected $casts = [
         'date' => 'date',
+        'expiry_date' => 'date',
+        'purchase_price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
     ];
 
     public static function boot()
@@ -63,6 +71,11 @@ class PharmacyFulfillment extends Model
     public function medicine()
     {
         return $this->belongsTo(Medicine::class);
+    }
+
+    public function stockBatch()
+    {
+        return $this->belongsTo(StockBatch::class);
     }
 
     /**

@@ -3342,6 +3342,7 @@ return [
     'sale_price' => 'Sale Price',
     'batch_code' => 'Batch Code',
     'auto_batch_fefo' => 'Auto (FEFO)',
+    'batch_auto_assigned' => 'Assigned automatically on save (e.g. BT-20261107-0001)',
     'friend' => 'Friend',
     'never' => 'Never',
     'none' => 'None',

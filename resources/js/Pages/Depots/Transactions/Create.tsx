@@ -149,15 +149,10 @@ export default function CreateDepotTransaction({
                                 />
                             </div>
                             <div>
-                                <Label>{t('global.batch_code')}</Label>
-                                <TextInput
-                                    value={data.batch_number}
-                                    placeholder={isStockIn ? t('global.auto_batch_fefo') : undefined}
-                                    onChange={(event) => setData('batch_number', event.target.value.replace(/[;,|]/g, ''))}
-                                />
-                                {errors.batch_number && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.batch_number}</p>
-                                )}
+                                <Label>{t('global.batch_number')}</Label>
+                                <div className="mt-1 rounded-lg border border-dashed border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
+                                    {t('global.batch_auto_assigned')}
+                                </div>
                             </div>
                             <div>
                                 <Label>

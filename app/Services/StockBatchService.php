@@ -25,13 +25,15 @@ class StockBatchService
      */
     public function receiveIntoDepot(Depot $depot, array $data): StockBatch
     {
-        $batchCode = $this->normalizeBatchCode($data['batch_number'] ?? $data['batch_code'] ?? null);
         $quantity = max(1, (int) ($data['quantity'] ?? 0));
         $purchasePrice = max(0, (float) ($data['purchase_price'] ?? 0));
         $salePrice = max(0, (float) ($data['sale_price'] ?? $purchasePrice));
 
-        return DB::transaction(function () use ($depot, $data, $batchCode, $quantity, $purchasePrice, $salePrice) {
+        return DB::transaction(function () use ($depot, $data, $quantity, $purchasePrice, $salePrice) {
             Depot::whereKey($depot->id)->lockForUpdate()->firstOrFail();
+
+            // Always auto-assign a lot code on stock-in (ignore manual / empty input).
+            $batchCode = $this->nextBatchCode($depot);
 
             $transaction = DepotTransaction::create([
                 'depot_id' => $depot->id,
@@ -350,7 +352,24 @@ class StockBatchService
         return $query->get();
     }
 
-    private function normalizeBatchCode(?string $raw): string
+    public function nextBatchCode(?Model $owner = null): string
+    {
+        $prefix = 'BT-'.now()->format('Ymd');
+        $sequence = random_int(1000, 9999);
+
+        if ($owner) {
+            $count = StockBatch::query()
+                ->forOwner($owner)
+                ->where('batch_code', 'like', $prefix.'%')
+                ->withTrashed()
+                ->count();
+            $sequence = $count + 1;
+        }
+
+        return sprintf('%s-%04d', $prefix, $sequence);
+    }
+
+    private function normalizeBatchCode(?string $raw, ?Model $owner = null): string
     {
         $code = trim((string) $raw);
         // Reject multi-lot packing via semicolon / comma lists — one lot per row.
@@ -361,7 +380,7 @@ class StockBatchService
         }
 
         if ($code === '') {
-            $code = 'AUTO-'.now()->format('YmdHis').'-'.random_int(100, 999);
+            return $this->nextBatchCode($owner);
         }
 
         return $code;

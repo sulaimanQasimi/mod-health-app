@@ -1,7 +1,5 @@
 import { Head } from '@inertiajs/react';
-import { useState } from 'react';
 import PatientCreateForm from '../../Components/Patients/PatientCreateForm';
-import PatientTypeSelector from '../../Components/Patients/ui/PatientTypeSelector';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
@@ -29,13 +27,10 @@ export function PatientFormPage({
     urls,
     patient,
     permissions,
-    canAccessVip = false,
 }: PatientFormPageProps) {
     const { t } = useTranslation();
     const isEdit = mode === 'edit';
-    const [patientType, setPatientType] = useState<PatientType>(
-        patient?.type ?? '0',
-    );
+    const patientType: PatientType = patient?.type ?? '0';
 
     const title = isEdit ? t('global.edit_patient') : t('global.create_patient');
     const backHref = isEdit && urls.show ? urls.show : urls.back;
@@ -51,16 +46,8 @@ export function PatientFormPage({
                     </div>
 
                     <div className="px-5 py-5">
-                        {!isEdit && (
-                            <PatientTypeSelector
-                                value={patientType}
-                                onChange={setPatientType}
-                                canAccessVip={canAccessVip}
-                            />
-                        )}
-
                         <PatientCreateForm
-                            key={isEdit ? `edit-${patient?.id}` : patientType}
+                            key={isEdit ? `edit-${patient?.id}` : 'create'}
                             mode={mode}
                             patientType={patientType}
                             formData={formData}
@@ -83,13 +70,6 @@ interface CreatePatientProps {
     canAccessVip?: boolean;
 }
 
-export default function CreatePatient({ formData, urls, canAccessVip = false }: CreatePatientProps) {
-    return (
-        <PatientFormPage
-            mode="create"
-            formData={formData}
-            urls={urls}
-            canAccessVip={canAccessVip}
-        />
-    );
+export default function CreatePatient({ formData, urls }: CreatePatientProps) {
+    return <PatientFormPage mode="create" formData={formData} urls={urls} />;
 }

@@ -8,6 +8,7 @@ interface TokenModalProps {
     patientLastName: string;
     department: string;
     doctor: string;
+    price?: string | number | null;
     date: string;
     time: string;
     tokenUrl: string;
@@ -29,6 +30,7 @@ export default function TokenModal({
     patientLastName,
     department,
     doctor,
+    price,
     date,
     time,
     tokenUrl,
@@ -60,6 +62,10 @@ export default function TokenModal({
                         </h6>
                         <InfoRow label={t('global.department')} value={department} />
                         <InfoRow label={t('global.doctor')} value={doctor} />
+                        <InfoRow
+                            label={t('global.price')}
+                            value={price === null || price === undefined || price === '' ? '0' : String(price)}
+                        />
                         <InfoRow label={t('global.date')} value={date} />
                         <InfoRow label={t('global.time')} value={time} />
                     </div>

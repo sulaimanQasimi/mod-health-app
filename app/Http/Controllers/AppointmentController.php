@@ -212,6 +212,10 @@ class AppointmentController extends Controller
             $validatedData['clinic_type'] = $user->clinic_type;
         }
 
+        $validatedData['price'] = Appointment::resolvePriceFromDepartment(
+            (int) $validatedData['department_id']
+        );
+
         if ($request->filled('current_appointment_id')) {
             $currentAppointment = Appointment::query()->findOrFail($request->input('current_appointment_id'));
             $this->authorize('update', $currentAppointment);
@@ -223,7 +227,7 @@ class AppointmentController extends Controller
         }
 
         $appointment = Appointment::create($validatedData);
-        $appointment->load(['department:id,name', 'doctor:id,name', 'patient:id,name,last_name']);
+        $appointment->load(['department:id,name,price', 'doctor:id,name', 'patient:id,name,last_name']);
 
         SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
 
@@ -240,6 +244,7 @@ class AppointmentController extends Controller
                     'id' => $appointment->id,
                     'department' => $appointment->department->name ?? '',
                     'doctor' => $appointment->doctor->name ?? '',
+                    'price' => $appointment->price,
                     'date' => $now->format('Y-m-d'),
                     'time' => $now->format('H:i:s'),
                     'token_url' => route('appointments.printToken', $appointment),
@@ -255,6 +260,8 @@ class AppointmentController extends Controller
     public function printToken(Appointment $appointment): SymfonyResponse|RedirectResponse
     {
         $this->authorize('view', $appointment);
+
+        $appointment->loadMissing(['department:id,name,price,room_number', 'doctor:id,name', 'patient']);
 
         $patient = $appointment->patient;
         $today = Carbon::today();
@@ -835,6 +842,7 @@ class AppointmentController extends Controller
 
             $appointment->update([
                 'department_id' => $validated['department_id'],
+                'price' => Appointment::resolvePriceFromDepartment((int) $validated['department_id']),
                 'doctor_id' => (int) $doctorDepartmentId === (int) $validated['department_id']
                     ? $appointment->doctor_id
                     : null,
@@ -842,6 +850,7 @@ class AppointmentController extends Controller
         } else {
             $appointment->update([
                 'department_id' => $validated['department_id'],
+                'price' => Appointment::resolvePriceFromDepartment((int) $validated['department_id']),
             ]);
         }
 

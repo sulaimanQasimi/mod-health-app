@@ -259,8 +259,8 @@ class PatientController extends Controller
                 'branchId' => $patient->branch_id,
                 'clinicType' => $user->clinic_type,
                 'departments' => $user->category_id
-                    ? Department::query()->where('category_id', $user->category_id)->orderBy('name')->get(['id', 'name'])
-                    : Department::query()->orderBy('name')->get(['id', 'name']),
+                    ? Department::query()->where('category_id', $user->category_id)->orderBy('name')->get(['id', 'name', 'price'])
+                    : Department::query()->orderBy('name')->get(['id', 'name', 'price']),
             ],
             'permissions' => [
                 'edit' => $user->can('update', $patient),
@@ -630,8 +630,8 @@ class PatientController extends Controller
     private function buildFormData($user, ?Patient $patient = null): array
     {
         $departments = $user->category_id
-            ? Department::query()->where('category_id', $user->category_id)->orderBy('name')->get(['id', 'name'])
-            : Department::query()->orderBy('name')->get(['id', 'name']);
+            ? Department::query()->where('category_id', $user->category_id)->orderBy('name')->get(['id', 'name', 'price'])
+            : Department::query()->orderBy('name')->get(['id', 'name', 'price']);
 
         $registrationDate = $patient?->registration_date
             ? verta($patient->registration_date)->format('Y-m-d')

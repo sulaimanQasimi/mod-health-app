@@ -11,7 +11,35 @@ class Appointment extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['patient_id','doctor_id','department_id','branch_id','date','time','is_completed','status_remark','refferal_remarks','clinic_type','processed_by','doctor_reassigned'];
+    protected $fillable = [
+        'patient_id',
+        'doctor_id',
+        'department_id',
+        'price',
+        'branch_id',
+        'date',
+        'time',
+        'is_completed',
+        'status_remark',
+        'refferal_remarks',
+        'clinic_type',
+        'processed_by',
+        'doctor_reassigned',
+    ];
+
+    /**
+     * Resolve the fee stored on an appointment from the selected department.
+     */
+    public static function resolvePriceFromDepartment(?int $departmentId): float
+    {
+        if (! $departmentId) {
+            return 0;
+        }
+
+        $price = Department::query()->whereKey($departmentId)->value('price');
+
+        return max(0, (float) ($price ?? 0));
+    }
 
     public static function boot()
     {

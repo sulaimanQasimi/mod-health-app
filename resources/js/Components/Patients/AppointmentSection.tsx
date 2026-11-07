@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DoctorOption, NamedOption, PatientCreateUrls } from '../../types/patient';
 import { FormField, GridDivider } from './ui/FormField';
@@ -28,6 +28,11 @@ export default function AppointmentSection({
     const { t } = useTranslation();
     const [doctors, setDoctors] = useState<DoctorOption[]>([]);
     const [loadingDoctors, setLoadingDoctors] = useState(false);
+
+    const selectedDepartment = useMemo(
+        () => departments.find((department) => String(department.id) === String(values.appointment_department_id)),
+        [departments, values.appointment_department_id],
+    );
 
     useEffect(() => {
         const departmentId = values.appointment_department_id;
@@ -99,9 +104,25 @@ export default function AppointmentSection({
                     {departments.map((department) => (
                         <option key={department.id} value={department.id}>
                             {department.name}
+                            {department.price !== null && department.price !== undefined && department.price !== ''
+                                ? ` (${t('global.price')}: ${department.price})`
+                                : ''}
                         </option>
                     ))}
                 </SearchableSelect>
+            </FormField>
+            <FormField label={t('global.price')} compact className="lg:col-span-2">
+                <input
+                    type="text"
+                    readOnly
+                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    value={
+                        selectedDepartment
+                            ? String(selectedDepartment.price ?? 0)
+                            : ''
+                    }
+                    placeholder="—"
+                />
             </FormField>
             <FormField label={t('global.doctor')} error={errors.appointment_doctor_id} compact className="lg:col-span-2">
                 <SearchableSelect

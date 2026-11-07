@@ -219,6 +219,11 @@ class PatientController extends Controller
                 'patient_id' => $patient->id,
                 'doctor_id' => $request->appointment_doctor_id,
                 'department_id' => $request->appointment_department_id,
+                'price' => Appointment::resolvePriceFromDepartment(
+                    $request->filled('appointment_department_id')
+                        ? (int) $request->appointment_department_id
+                        : null
+                ),
                 'branch_id' => $patient->branch_id,
                 'date' => $now->format('Y-m-d'),
                 'time' => $now->format('H:i:s'),
@@ -253,6 +258,7 @@ class PatientController extends Controller
                     'id' => $appointment->id,
                     'department' => $appointment->department->name ?? '',
                     'doctor' => $appointment->doctor->name ?? '',
+                    'price' => $appointment->price,
                     'date' => $appointment->date,
                     'time' => $appointment->time,
                     'token_url' => route('appointments.printToken', $appointment->id)

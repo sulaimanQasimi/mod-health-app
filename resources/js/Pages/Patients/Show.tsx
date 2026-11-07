@@ -159,13 +159,6 @@ export default function ShowPatient({
               ? t('global.female')
               : '—';
 
-    const jobCategoryLabel =
-        patient.job_category === 0 || patient.job_category === '0'
-            ? t('global.military')
-            : patient.job_category === 1 || patient.job_category === '1'
-              ? t('global.civilian')
-              : '—';
-
     const handleDelete = () => {
         if (!window.confirm(t('global.confirm_delete'))) {
             return;
@@ -249,12 +242,8 @@ export default function ShowPatient({
                                 <DetailField label={t('global.age')} value={patient.age} icon="bx-calendar" />
                                 <DetailField label={t('global.gender')} value={genderLabel} icon="bx-male-female" />
                                 <DetailField label={t('global.job')} value={patient.job} icon="bx-briefcase" />
-                                <DetailField label={t('global.job_category')} value={jobCategoryLabel} icon="bx-group" />
-                                <DetailField label={t('global.rank')} value={patient.rank} icon="bx-medal" />
-                                <DetailField label={t('global.militery_type')} value={patient.militery_type} icon="bx-shield" />
                                 <DetailField label={t('global.province')} value={patient.province} icon="bx-map" />
                                 <DetailField label={t('global.district')} value={patient.district} icon="bx-map-pin" />
-                                <DetailField label={t('global.referred_by')} value={patient.referred_by} icon="bx-user-plus" />
                                 <DetailField label={t('global.commanded_by')} value={patient.commanded_by} icon="bx-user-voice" />
                                 <DetailField label={t('global.creation_date')} value={patient.created_at} icon="bx-time" />
                                 <DetailField label={t('global.created_by')} value={patient.created_by} icon="bx-user-check" />

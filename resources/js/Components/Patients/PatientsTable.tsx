@@ -34,7 +34,7 @@ export default function PatientsTable({
     onDelete,
 }: PatientsTableProps) {
     const { t } = useTranslation();
-    const columnCount = 11;
+    const columnCount = 10;
 
     return (
         <Table id="patients-table">
@@ -49,7 +49,6 @@ export default function PatientsTable({
                         {t('global.province')} / {t('global.district')}
                     </TableHeader>
                     <TableHeader>{t('global.age')}</TableHeader>
-                    <TableHeader>{t('global.militery_type')}</TableHeader>
                     <TableHeader>{t('global.phone')}</TableHeader>
                     <TableHeader>{t('global.created_by')}</TableHeader>
                     <TableHeader align="center">{t('global.actions')}</TableHeader>
@@ -84,9 +83,6 @@ export default function PatientsTable({
                             </TableCell>
                             <TableCell muted className="whitespace-nowrap">
                                 {displayValue(patient.age)}
-                            </TableCell>
-                            <TableCell muted className="whitespace-nowrap">
-                                {displayValue(patient.militery_type)}
                             </TableCell>
                             <TableCell muted className="whitespace-nowrap">
                                 {displayValue(patient.phone)}

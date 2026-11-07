@@ -259,22 +259,6 @@ export default function IndexPatient({
                                     />
                                 </div>
                                 <div>
-                                    <Label htmlFor="filter-militery-type">{t('global.militery_type')}</Label>
-                                    <SearchableSelect
-                                        id="filter-militery-type"
-                                        value={filters.militery_type_id}
-                                        onChange={(value) => handleSelectChange('militery_type_id', value)}
-                                        placeholder={t('global.all')}
-                                    >
-                                        <option value="">{t('global.all')}</option>
-                                        {filterOptions.militeryTypes.map((type) => (
-                                            <option key={type.id} value={type.id}>
-                                                {type.name}
-                                            </option>
-                                        ))}
-                                    </SearchableSelect>
-                                </div>
-                                <div>
                                     <Label htmlFor="filter-province">{t('global.province')}</Label>
                                     <SearchableSelect
                                         id="filter-province"
@@ -301,19 +285,6 @@ export default function IndexPatient({
                                         <option value="">{t('global.all')}</option>
                                         <option value="0">{t('global.male')}</option>
                                         <option value="1">{t('global.female')}</option>
-                                    </SearchableSelect>
-                                </div>
-                                <div>
-                                    <Label htmlFor="filter-job-category">{t('global.job_category')}</Label>
-                                    <SearchableSelect
-                                        id="filter-job-category"
-                                        value={filters.job_category}
-                                        onChange={(value) => handleSelectChange('job_category', value)}
-                                        placeholder={t('global.all')}
-                                    >
-                                        <option value="">{t('global.all')}</option>
-                                        <option value="0">{t('global.military')}</option>
-                                        <option value="1">{t('global.civilian')}</option>
                                     </SearchableSelect>
                                 </div>
                             </div>

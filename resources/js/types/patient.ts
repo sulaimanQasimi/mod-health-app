@@ -3,6 +3,7 @@ export interface NamedOption {
     name?: string;
     name_dr?: string;
     code?: string;
+    price?: number | string | null;
 }
 
 export interface PatientFormData {
@@ -92,6 +93,7 @@ export interface StorePatientResponse {
         id: number;
         department: string;
         doctor: string;
+        price?: number | string | null;
         date: string;
         time: string;
         token_url: string;
@@ -234,6 +236,7 @@ export interface CreateAppointmentResponse {
         id: number;
         department: string;
         doctor: string;
+        price?: number | string | null;
         date: string;
         time: string;
         token_url: string;

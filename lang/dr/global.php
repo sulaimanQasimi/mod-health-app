@@ -1524,7 +1524,7 @@ return [
     'invoice' => 'بل',
     'invoice_source' => 'منبع',
     'invoice_items' => 'اقلام بل',
-    'invoice_status_draft' => 'مسوده',
+    'invoice_status_draft' => 'پیش‌نویس',
     'invoice_status_issued' => 'صادر شده',
     'invoice_status_paid' => 'تادیه شده',
     'invoice_status_cancelled' => 'لغو شده',

@@ -12,7 +12,7 @@ class FinancePermissionSeeder extends Seeder
     public const PERMISSIONS = [
         'access-finance' => ['دسترسی به مالی', 'مالي ته لاسرسی'],
         'manage-finance' => ['مدیریت مالی', 'د مالیې مدیریت'],
-        'pay-invoices' => ['پرداخت فاکتور', 'د فاکتور تادیه'],
+        'pay-invoices' => ['تادیه بل', 'د فاکتور تادیه'],
     ];
 
     public function run(): void
@@ -34,7 +34,7 @@ class FinancePermissionSeeder extends Seeder
 
         $cashier = Role::firstOrCreate(
             ['name' => 'cashier', 'guard_name' => 'web'],
-            ['name_dr' => 'صندوقدار', 'name_pa' => 'صندوقدار'],
+            ['name_dr' => 'کیشیر', 'name_pa' => 'صندوقدار'],
         );
         $cashier->givePermissionTo($all);
 

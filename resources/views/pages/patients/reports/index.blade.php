@@ -91,6 +91,12 @@
                                             <option value="2"
                                                 {{ ($filters['type'] ?? old('type')) == '2' ? 'selected' : '' }}>
                                                 {{ localize('global.family') }}</option>
+                                            <option value="3"
+                                                {{ ($filters['type'] ?? old('type')) == '3' ? 'selected' : '' }}>
+                                                {{ localize('global.extraordinary') }}</option>
+                                            <option value="4"
+                                                {{ ($filters['type'] ?? old('type')) == '4' ? 'selected' : '' }}>
+                                                {{ localize('global.vip') }}</option>
                                         </select>
                                     </div>
 
@@ -293,9 +299,17 @@
                                                     @elseif($item->type == '1')
                                                         <span
                                                             class="badge bg-info rounded-pill">{{ localize('global.recipient') }}</span>
-                                                    @else
+                                                    @elseif($item->type == '2')
                                                         <span
                                                             class="badge bg-secondary rounded-pill">{{ localize('global.family') }}</span>
+                                                    @elseif($item->type == '3')
+                                                        <span
+                                                            class="badge bg-warning rounded-pill">{{ localize('global.extraordinary') }}</span>
+                                                    @elseif($item->type == '4')
+                                                        <span
+                                                            class="badge bg-danger rounded-pill">{{ localize('global.vip') }}</span>
+                                                    @else
+                                                        <span class="badge bg-light text-dark border">—</span>
                                                     @endif
                                                 </td>
                                                 <td><span class="text-muted">{{ $item->recipient->name ?? '—' }}</span>

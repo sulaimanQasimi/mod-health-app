@@ -1100,7 +1100,7 @@ return [
     'patient_id_card' => 'Patient ID Card',
     'referral_name' => 'Referral Name',
     'job_category' => 'Job Category',
-    'disease_type' => 'Disease Type',
+    'disease_type' => 'Patient Registration Type',
     'recipient_name' => 'Recipient Name',
     'registered_date' => 'Registered Date',
     'militery_type' => 'Militery Type',

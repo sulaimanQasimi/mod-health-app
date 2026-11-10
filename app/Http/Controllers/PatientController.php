@@ -895,7 +895,10 @@ class PatientController extends Controller
                 'type_label' => match ((string) $p->type) {
                     '0' => localize('global.mod'),
                     '1' => localize('global.recipient'),
-                    default => localize('global.family'),
+                    '2' => localize('global.family'),
+                    '3' => localize('global.extraordinary'),
+                    '4' => localize('global.vip'),
+                    default => '—',
                 },
                 'referred_by' => $p->recipient->name ?? null,
                 'province_name' => $p->province->name_dr ?? null,
@@ -949,14 +952,14 @@ class PatientController extends Controller
                     $job_category = 'ملکی';
                 }
 
-                $type = '';
-                if ($item->type == '0') {
-                    $type = 'وزارت دفاع ملی';
-                } elseif ($item->type == '1') {
-                    $type = 'سایر دارات';
-                } else {
-                    $type = 'اعضای فامیل و سایرین';
-                }
+                $type = match ((string) $item->type) {
+                    '0' => localize('global.mod'),
+                    '1' => localize('global.recipient'),
+                    '2' => localize('global.family'),
+                    '3' => localize('global.extraordinary'),
+                    '4' => localize('global.vip'),
+                    default => '—',
+                };
                 $sheet->setCellValue('A' . $row . '', ++$index);
                 $sheet->setCellValue('B' . $row . '', $item->patient_name);
                 $sheet->setCellValue('C' . $row . '', $item->nid);

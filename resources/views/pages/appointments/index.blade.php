@@ -31,6 +31,24 @@
                                 value="{{ request('patient_id') }}" placeholder="{{ localize('global.search_by_patient_id') }}">
                         </div>
                         <div class="col-md-2">
+                            <label for="father_name" class="form-label">{{ localize('global.father_name') }}</label>
+                            <input type="text" class="form-control" id="father_name" name="father_name"
+                                value="{{ request('father_name') }}" placeholder="{{ localize('global.search_by_father_name') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="phone" class="form-label">{{ localize('global.phone') }}</label>
+                            <input type="text" class="form-control" id="phone" name="phone"
+                                value="{{ request('phone') }}" placeholder="{{ localize('global.search_by_phone') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="gender" class="form-label">{{ localize('global.gender') }}</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="">{{ localize('global.all') }}</option>
+                                <option value="0" {{ request('gender') == '0' ? 'selected' : '' }}>{{ localize('global.male') }}</option>
+                                <option value="1" {{ request('gender') == '1' ? 'selected' : '' }}>{{ localize('global.female') }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
                             <label for="doctor_id" class="form-label">{{ localize('global.doctor') }}</label>
                             <select class="form-select" id="doctor_id" name="doctor_id">
                                 <option value="">{{ localize('global.all') }}</option>
@@ -178,7 +196,7 @@
     <script>
 $(document).ready(function() {
     // Auto-submit form when select values change
-    $('select[name="doctor_id"], select[name="department_id"], select[name="is_completed"]').change(function() {
+    $('select[name="doctor_id"], select[name="department_id"], select[name="is_completed"], select[name="gender"]').change(function() {
         $(this).closest('form').submit();
     });
     

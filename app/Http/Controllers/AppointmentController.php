@@ -45,6 +45,27 @@ class AppointmentController extends Controller
                 $q->where('id_card', 'like', '%' . $request->id_card . '%');
             });
         }
+
+        // Search by father name
+        if ($request->filled('father_name')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('father_name', 'like', '%' . $request->father_name . '%');
+            });
+        }
+
+        // Search by phone
+        if ($request->filled('phone')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('phone', 'like', '%' . $request->phone . '%');
+            });
+        }
+
+        // Filter by gender (0 male, 1 female)
+        if ($request->filled('gender')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('gender', $request->gender);
+            });
+        }
     
         // Filter by patient ID
         if ($request->filled('patient_id')) {

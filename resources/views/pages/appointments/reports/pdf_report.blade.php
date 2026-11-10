@@ -60,7 +60,7 @@
                     <th>{{ localize('global.processed_by') }}</th>
                     <th>{{ localize('global.registered_by') }}</th>
                     <th>{{ localize('global.job') }}</th>
-                    <th>{{ localize('global.job_type') }}</th>
+                    <th>{{ localize('global.job_category') }}</th>
                     <th>{{ localize('global.gender') }}</th>
                     <th>{{ localize('global.rank') }}</th>
                     <th>{{ localize('global.relation') }}</th>
@@ -82,7 +82,13 @@
                         <td>{{ $item->processed_by_name ?? '—' }}</td>
                         <td>{{ $item->registered_by_name ?? '—' }}</td>
                         <td>{{ $item->job ?? '—' }}</td>
-                        <td>{{ $item->job_type ? localize('global.' . $item->job_type) : '—' }}</td>
+                        <td>
+                            @if($item->job_category !== null && $item->job_category !== '')
+                                {{ (string) $item->job_category === '0' ? localize('global.military') : localize('global.civilian') }}
+                            @else
+                                —
+                            @endif
+                        </td>
                         <td>{{ isset($item->gender) ? ($item->gender == '1' ? localize('global.female') : localize('global.male')) : '—' }}</td>
                         <td>{{ $item->rank ?? '—' }}</td>
                         <td>{{ $item->relation_name ?? '—' }}</td>

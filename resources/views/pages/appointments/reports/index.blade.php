@@ -99,12 +99,11 @@
                                             value="{{ old('job', request('job')) }}" placeholder="{{ localize('global.job') }}" />
                                     </div>
                                     <div class="col-md-3">
-                                        <label for="job_type" class="form-label">{{ localize('global.job_type') }}</label>
-                                        <select class="form-control pager-search select2" name="job_type" id="job_type">
+                                        <label for="job_category" class="form-label">{{ localize('global.job_category') }}</label>
+                                        <select class="form-control pager-search select2" name="job_category" id="job_category">
                                             <option value="">{{ localize('global.select') }}</option>
-                                            <option value="civilian" {{ request('job_type') == 'civilian' ? 'selected' : '' }}>{{ localize('global.civilian') }}</option>
-                                            <option value="militant" {{ request('job_type') == 'militant' ? 'selected' : '' }}>{{ localize('global.militant') }}</option>
-                                            <option value="retired" {{ request('job_type') == 'retired' ? 'selected' : '' }}>{{ localize('global.retired') }}</option>
+                                            <option value="0" {{ request('job_category') === '0' ? 'selected' : '' }}>{{ localize('global.military') }}</option>
+                                            <option value="1" {{ request('job_category') === '1' ? 'selected' : '' }}>{{ localize('global.civilian') }}</option>
                                         </select>
                                     </div>
                                     <div class="col-md-3">

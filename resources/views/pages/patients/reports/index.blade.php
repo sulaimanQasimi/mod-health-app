@@ -82,20 +82,16 @@
                                             class="form-label">{{ localize('global.disease_type') }}</label>
                                         <select class="form-control select2" name="type">
                                             <option value="">{{ localize('global.select') }}</option>
-                                            <option value="0"
-                                                {{ ($filters['type'] ?? old('type')) == '0' ? 'selected' : '' }}>
+                                            @php $selectedType = (string) ($filters['type'] ?? old('type') ?? ''); @endphp
+                                            <option value="0" {{ $selectedType === '0' ? 'selected' : '' }}>
                                                 {{ localize('global.mod') }}</option>
-                                            <option value="1"
-                                                {{ ($filters['type'] ?? old('type')) == '1' ? 'selected' : '' }}>
+                                            <option value="1" {{ $selectedType === '1' ? 'selected' : '' }}>
                                                 {{ localize('global.recipient') }}</option>
-                                            <option value="2"
-                                                {{ ($filters['type'] ?? old('type')) == '2' ? 'selected' : '' }}>
+                                            <option value="2" {{ $selectedType === '2' ? 'selected' : '' }}>
                                                 {{ localize('global.family') }}</option>
-                                            <option value="3"
-                                                {{ ($filters['type'] ?? old('type')) == '3' ? 'selected' : '' }}>
+                                            <option value="3" {{ $selectedType === '3' ? 'selected' : '' }}>
                                                 {{ localize('global.extraordinary') }}</option>
-                                            <option value="4"
-                                                {{ ($filters['type'] ?? old('type')) == '4' ? 'selected' : '' }}>
+                                            <option value="4" {{ $selectedType === '4' ? 'selected' : '' }}>
                                                 {{ localize('global.vip') }}</option>
                                         </select>
                                     </div>
@@ -293,19 +289,20 @@
                                                     @endif
                                                 </td>
                                                 <td class="text-center">
-                                                    @if ($item->type == '0')
+                                                    @php $patientType = (string) $item->type; @endphp
+                                                    @if ($patientType === '0')
                                                         <span
                                                             class="badge bg-success rounded-pill">{{ localize('global.mod') }}</span>
-                                                    @elseif($item->type == '1')
+                                                    @elseif ($patientType === '1')
                                                         <span
                                                             class="badge bg-info rounded-pill">{{ localize('global.recipient') }}</span>
-                                                    @elseif($item->type == '2')
+                                                    @elseif ($patientType === '2')
                                                         <span
                                                             class="badge bg-secondary rounded-pill">{{ localize('global.family') }}</span>
-                                                    @elseif($item->type == '3')
+                                                    @elseif ($patientType === '3')
                                                         <span
                                                             class="badge bg-warning rounded-pill">{{ localize('global.extraordinary') }}</span>
-                                                    @elseif($item->type == '4')
+                                                    @elseif ($patientType === '4')
                                                         <span
                                                             class="badge bg-danger rounded-pill">{{ localize('global.vip') }}</span>
                                                     @else

@@ -1285,6 +1285,7 @@ return [
     'system_theme_dark' => 'System Theme Dark',
     'system_theme_switch_dark' => 'System Theme Switch Dark',
     'system_theme_switch_light' => 'System Theme Switch Light',
+    'system_theme_primary_colors' => 'Primary Colors',
     'system_theme_system_layout' => 'System Theme System Layout',
     'system_theme_layouts' => 'System Theme Layouts',
     'system_theme_static' => 'System Theme Static',

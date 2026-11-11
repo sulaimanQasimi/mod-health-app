@@ -23,6 +23,29 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+    <script>
+        (function () {
+            try {
+                var template = document.documentElement.getAttribute('data-template') || 'vertical-menu-template';
+                var key = 'templateCustomizer-' + template + '--PrimaryColor';
+                var map = {
+                    default: '#696cff',
+                    raspberry: '#e30b5c',
+                    ocean: '#00cfe8',
+                    forest: '#28c76f',
+                    amber: '#ff9f43',
+                    blue: '#2092ec',
+                    violet: '#9c27b0',
+                    slate: '#4b465c'
+                };
+                var saved = localStorage.getItem(key);
+                var hex = map[saved] || (/^#([0-9a-fA-F]{6})$/.test(saved || '') ? saved : '#696cff');
+                var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+                document.documentElement.style.setProperty('--bs-primary', hex);
+                document.documentElement.style.setProperty('--bs-primary-rgb', r + ', ' + g + ', ' + b);
+            } catch (e) {}
+        })();
+    </script>
     <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/core.css')}}" class="template-customizer-core-css" />
     <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/theme-default.css')}}"
         class="template-customizer-theme-css" />
@@ -48,6 +71,30 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('assets/js/config.js') }}"></script>
+    <script src="{{ asset('assets/js/primary-color.js') }}"></script>
+    <style>
+        .template-customizer-primary-colors-options {
+            gap: 0.5rem;
+        }
+        .app-primary-color-swatch {
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            box-shadow: 0 0 0 1px rgba(67, 89, 113, 0.2);
+            padding: 0;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .app-primary-color-swatch:hover {
+            transform: scale(1.08);
+        }
+        .app-primary-color-swatch.active {
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px currentColor;
+            outline: 2px solid rgba(67, 89, 113, 0.45);
+            outline-offset: 2px;
+        }
+    </style>
     @if (session()->get('language') == 'en')
         <style type="text/css">
             @font-face {
@@ -203,6 +250,11 @@
         $('.template-customizer-t-style_label').html("{{localize('global.system_theme_dark')}}");
         $('.template-customizer-t-style_switch_light').html("{{localize('global.system_theme_switch_light')}}");
         $('.template-customizer-t-style_switch_dark').html("{{localize('global.system_theme_switch_dark')}}");
+        window.__appPrimaryColorsLabel = @json(localize('global.system_theme_primary_colors'));
+        $('.template-customizer-t-primary_colors_label').html(window.__appPrimaryColorsLabel);
+        if (window.AppPrimaryColor && typeof window.AppPrimaryColor.mountSwatches === 'function') {
+            window.AppPrimaryColor.mountSwatches();
+        }
         $('.template-customizer-t-layout_header').html("{{localize('global.system_theme_system_layout')}}");
         $('.template-customizer-t-layout_label').html("{{localize('global.system_theme_layouts')}}");
 

@@ -616,6 +616,7 @@ return [
     'system_theme_dark' => 'ستایل تاریک',
     'system_theme_switch_dark' => 'تاریک',
     'system_theme_switch_light' => 'روشن',
+    'system_theme_primary_colors' => 'رنگ‌های اصلی',
     'system_theme_system_layout' => 'طرح بندی',
     'system_theme_layouts' => 'طرح مینو عمومی',
     'system_theme_static' => 'آزاد',

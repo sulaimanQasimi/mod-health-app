@@ -613,6 +613,7 @@ return [
 'system_theme_dark' => 'توره سټایل',
 'system_theme_switch_dark' => 'توره',
 'system_theme_switch_light' => 'روښانه',
+'system_theme_primary_colors' => 'اصلي رنګونه',
 'system_theme_system_layout' => 'ډیزاین',
 'system_theme_layouts' => 'عام مینو ډیزاین',
 'system_theme_static' => 'آزاد',

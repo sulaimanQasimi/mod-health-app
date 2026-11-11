@@ -1,140 +1,63 @@
 /**
- * App primary color picker
- * Persists selection and remaps theme primary shades across the whole app.
+ * Primary color picker for the template customizer.
+ * Stores the choice and applies it app-wide via CSS variables + overrides.
  */
 'use strict';
 
 window.AppPrimaryColor = (function () {
-  var BASE_PRIMARY = '#696cff';
-
-  // Purple-family shades used by default / semi-dark / bordered themes
-  var BASE_SHADES = [
-    '#2a2b4b', '#35365f', '#38396d', '#3e3f79', '#434d99', '#4f51bf', '#595cd9',
-    '#5f61e6', '#6467f2', '#696cff', '#6a6cc9', '#6d70ff', '#7174ff', '#787bff',
-    '#8385ff', '#878899', '#b0b2ff', '#c2c4ff', '#c3c4ff', '#c8c8ff', '#cbcbe6',
-    '#cfd0eb', '#d1d4f1', '#d2d3ff', '#d6d7f2', '#d8daf6', '#dcdefb', '#e0e1ff',
-    '#e1e2ff', '#e7e7ff', '#e9e9ff'
-  ];
-
-  // Raspberry-family shades (so remapping still works if that theme CSS is active)
-  var RASPBERRY_PRIMARY = '#e30b5c';
-  var RASPBERRY_SHADES = [
-    '#341c31', '#482744', '#581f41', '#622248', '#792250', '#957c85', '#a14080',
-    '#aa0845', '#c1094e', '#cc0a53', '#d80a57', '#e0b9c8', '#e30b5c', '#e41160',
-    '#e51764', '#e5becc', '#e6236c', '#e7c2d3', '#e83578', '#edc4d3', '#eec7d7',
-    '#f076a3', '#f391b5', '#f49dbe', '#f4cadb', '#f7b6ce', '#f8bcd2', '#f8bed3',
-    '#f9cede', '#fbd8e5', '#fbdae7'
-  ];
-
   var COLORS = [
-    { id: 'default', hex: '#696cff' },
-    { id: 'raspberry', hex: '#e30b5c' },
-    { id: 'ocean', hex: '#00cfe8' },
-    { id: 'forest', hex: '#28c76f' },
-    { id: 'amber', hex: '#ff9f43' },
-    { id: 'blue', hex: '#2092ec' },
-    { id: 'violet', hex: '#9c27b0' },
-    { id: 'slate', hex: '#4b465c' }
+    { id: 'default', hex: '#696cff', labelKey: 'default' },
+    { id: 'raspberry', hex: '#e30b5c', labelKey: 'raspberry' },
+    { id: 'ocean', hex: '#00cfe8', labelKey: 'ocean' },
+    { id: 'forest', hex: '#28c76f', labelKey: 'forest' },
+    { id: 'amber', hex: '#ff9f43', labelKey: 'amber' },
+    { id: 'blue', hex: '#2092ec', labelKey: 'blue' },
+    { id: 'violet', hex: '#9c27b0', labelKey: 'violet' },
+    { id: 'slate', hex: '#4b465c', labelKey: 'slate' }
   ];
+
+  var mounted = false;
 
   function storageKey() {
     var template = document.documentElement.getAttribute('data-template') || 'vertical-menu-template';
     return 'templateCustomizer-' + template + '--PrimaryColor';
   }
 
-  function hexToRgb(hex) {
+  function labels() {
+    return window.__appPrimaryColorLabels || {};
+  }
+
+  function colorLabel(color) {
+    return labels()[color.labelKey] || color.id;
+  }
+
+  function hexToRgbTriplet(hex) {
     hex = String(hex).replace('#', '');
-    if (hex.length === 3) {
-      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-    }
     return [
-      parseInt(hex.slice(0, 2), 16) / 255,
-      parseInt(hex.slice(2, 4), 16) / 255,
-      parseInt(hex.slice(4, 6), 16) / 255
-    ];
-  }
-
-  function rgbToHex(rgb) {
-    return (
-      '#' +
-      rgb
-        .map(function (c) {
-          var v = Math.round(Math.min(1, Math.max(0, c)) * 255);
-          return (v < 16 ? '0' : '') + v.toString(16);
-        })
-        .join('')
-    );
-  }
-
-  function rgbToCssTriplet(hex) {
-    var rgb = hexToRgb(hex);
-    return [
-      Math.round(rgb[0] * 255),
-      Math.round(rgb[1] * 255),
-      Math.round(rgb[2] * 255)
+      parseInt(hex.slice(0, 2), 16),
+      parseInt(hex.slice(2, 4), 16),
+      parseInt(hex.slice(4, 6), 16)
     ].join(', ');
   }
 
-  function mix(a, b, t) {
-    return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
-  }
-
-  function approxMix(target, base) {
-    var best = { err: 1e9, toward: 'white', t: 0 };
-    var targets = [
-      ['white', [1, 1, 1]],
-      ['black', [0, 0, 0]]
-    ];
-    for (var i = 0; i < targets.length; i++) {
-      var toward = targets[i][0];
-      var towardRgb = targets[i][1];
-      var ts = [];
-      for (var c = 0; c < 3; c++) {
-        var denom = towardRgb[c] - base[c];
-        if (Math.abs(denom) < 1e-6) continue;
-        ts.push((target[c] - base[c]) / denom);
-      }
-      if (!ts.length) continue;
-      var t =
-        ts.reduce(function (s, v) {
-          return s + v;
-        }, 0) / ts.length;
-      t = Math.min(1, Math.max(0, t));
-      var got = mix(base, towardRgb, t);
-      var err = Math.sqrt(
-        Math.pow(got[0] - target[0], 2) + Math.pow(got[1] - target[1], 2) + Math.pow(got[2] - target[2], 2)
-      );
-      if (err < best.err) {
-        best = { err: err, toward: toward, t: t };
-      }
-    }
-    return best;
-  }
-
-  function recolorShade(oldHex, oldPrimaryHex, newPrimaryHex) {
-    var oldRgb = hexToRgb(oldHex);
-    var oldPrimary = hexToRgb(oldPrimaryHex);
-    var newPrimary = hexToRgb(newPrimaryHex);
-    if (oldHex.toLowerCase() === oldPrimaryHex.toLowerCase()) {
-      return newPrimaryHex.toLowerCase();
-    }
-    var fit = approxMix(oldRgb, oldPrimary);
-    var towardRgb = fit.toward === 'white' ? [1, 1, 1] : [0, 0, 0];
-    return rgbToHex(mix(newPrimary, towardRgb, fit.t));
-  }
-
-  function buildReplacementMap(newPrimary) {
-    var map = {};
-    var i;
-    for (i = 0; i < BASE_SHADES.length; i++) {
-      map[BASE_SHADES[i]] = recolorShade(BASE_SHADES[i], BASE_PRIMARY, newPrimary);
-    }
-    for (i = 0; i < RASPBERRY_SHADES.length; i++) {
-      map[RASPBERRY_SHADES[i]] = recolorShade(RASPBERRY_SHADES[i], RASPBERRY_PRIMARY, newPrimary);
-    }
-    map[BASE_PRIMARY] = newPrimary.toLowerCase();
-    map[RASPBERRY_PRIMARY] = newPrimary.toLowerCase();
-    return map;
+  function mixHex(hex, towardWhite, amount) {
+    var h = String(hex).replace('#', '');
+    var r = parseInt(h.slice(0, 2), 16);
+    var g = parseInt(h.slice(2, 4), 16);
+    var b = parseInt(h.slice(4, 6), 16);
+    var t = towardWhite ? 255 : 0;
+    r = Math.round(r + (t - r) * amount);
+    g = Math.round(g + (t - g) * amount);
+    b = Math.round(b + (t - b) * amount);
+    return (
+      '#' +
+      [r, g, b]
+        .map(function (v) {
+          var s = Math.max(0, Math.min(255, v)).toString(16);
+          return s.length === 1 ? '0' + s : s;
+        })
+        .join('')
+    );
   }
 
   function getSelected() {
@@ -151,10 +74,10 @@ window.AppPrimaryColor = (function () {
     return COLORS[0];
   }
 
-  function setSelected(colorIdOrHex) {
+  function setSelected(colorId) {
     var color = null;
     for (var i = 0; i < COLORS.length; i++) {
-      if (COLORS[i].id === colorIdOrHex || COLORS[i].hex.toLowerCase() === String(colorIdOrHex).toLowerCase()) {
+      if (COLORS[i].id === colorId) {
         color = COLORS[i];
         break;
       }
@@ -163,166 +86,189 @@ window.AppPrimaryColor = (function () {
     try {
       localStorage.setItem(storageKey(), color.id);
     } catch (e) {}
-    apply(color.hex);
-    syncSwatches(color.id);
+    apply(color);
+    syncUi(color.id);
   }
 
-  function setCssVars(hex) {
-    var root = document.documentElement;
-    root.style.setProperty('--bs-primary', hex);
-    root.style.setProperty('--bs-primary-rgb', rgbToCssTriplet(hex));
-    root.setAttribute('data-primary-color', hex.toLowerCase());
-    if (window.config && config.colors) {
-      config.colors.primary = hex;
+  function ensureStyleEl() {
+    var el = document.getElementById('app-primary-color-overrides');
+    if (!el) {
+      el = document.createElement('style');
+      el.id = 'app-primary-color-overrides';
+      document.head.appendChild(el);
     }
+    return el;
   }
 
-  function replaceCssColors(cssText, map) {
-    return cssText.replace(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g, function (match) {
-      var hex = match.toLowerCase();
-      if (hex.length === 4) {
-        hex = '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
-      }
-      return map[hex] || match;
-    });
-  }
+  function buildOverrides(hex) {
+    var soft = mixHex(hex, true, 0.84);
+    var soft2 = mixHex(hex, true, 0.78);
+    var dark = mixHex(hex, false, 0.1);
+    var darker = mixHex(hex, false, 0.18);
+    var rgb = hexToRgbTriplet(hex);
 
-  function ensureOverrideStyle() {
-    var style = document.getElementById('app-primary-color-overrides');
-    if (!style) {
-      style = document.createElement('style');
-      style.id = 'app-primary-color-overrides';
-      document.head.appendChild(style);
-    }
-    return style;
-  }
-
-  function utilityOverrides(hex) {
-    var soft = recolorShade('#e7e7ff', BASE_PRIMARY, hex);
-    var soft2 = recolorShade('#e0e1ff', BASE_PRIMARY, hex);
-    var dark = recolorShade('#5f61e6', BASE_PRIMARY, hex);
     return [
-      ':root{--bs-primary:' + hex + ';--bs-primary-rgb:' + rgbToCssTriplet(hex) + ';}',
-      '.bg-primary,.btn-primary,.btn-primary:hover,.btn-primary:focus,.btn-primary:active,.btn-primary.active,',
-      '.dropdown-item.active,.dropdown-item:active,.page-item.active .page-link,',
-      '.progress-bar,.form-check-input:checked,.nav-pills .nav-link.active,',
-      '.list-group-item.active,.badge.bg-primary{background-color:' + hex + ' !important;border-color:' + hex + ' !important;}',
-      '.text-primary,.btn-outline-primary,.btn-label-primary,.page-link,',
-      'a.text-primary:hover,.menu-vertical .menu-item.active > .menu-link:not(.menu-toggle){color:' + hex + ' !important;}',
-      '.btn-outline-primary{border-color:' + hex + ' !important;color:' + hex + ' !important;}',
-      '.btn-outline-primary:hover,.btn-outline-primary:focus,.btn-outline-primary:active{background-color:' + hex + ' !important;color:#fff !important;}',
-      '.border-primary{border-color:' + hex + ' !important;}',
-      '.bg-label-primary{background-color:' + soft + ' !important;color:' + hex + ' !important;}',
-      '.alert-primary{background-color:' + soft2 + ' !important;border-color:' + soft + ' !important;color:' + dark + ' !important;}',
-      '.form-control:focus,.form-select:focus{border-color:' + hex + ' !important;}',
-      '.layout-wrapper:not(.layout-horizontal) .bg-menu-theme .menu-inner > .menu-item.active:before{background:' + hex + ' !important;}',
-      '.template-customizer-open-btn{background-color:' + hex + ' !important;}'
+      ':root{',
+      '--bs-primary:' + hex + ';',
+      '--bs-primary-rgb:' + rgb + ';',
+      '--app-primary:' + hex + ';',
+      '--app-primary-rgb:' + rgb + ';',
+      '--app-primary-soft:' + soft + ';',
+      '--app-primary-soft-2:' + soft2 + ';',
+      '--app-primary-dark:' + dark + ';',
+      '--app-primary-darker:' + darker + ';',
+      '}',
+      '.text-primary,.btn-link,.page-link,',
+      '.dropdown-item.active,.dropdown-item:active{color:var(--app-primary)!important;}',
+      '.bg-primary,.badge.bg-primary,.progress-bar,.list-group-item.active,',
+      '.nav-pills .nav-link.active,.page-item.active .page-link,',
+      '.form-check-input:checked{background-color:var(--app-primary)!important;border-color:var(--app-primary)!important;}',
+      '.border-primary,.form-control:focus,.form-select:focus,.form-check-input:focus{border-color:var(--app-primary)!important;}',
+      '.btn-primary{background-color:var(--app-primary)!important;border-color:var(--app-primary)!important;box-shadow:0 .125rem .25rem rgba(var(--app-primary-rgb),.4)!important;}',
+      '.btn-primary:hover,.btn-primary:focus,.btn-primary:active,.btn-primary.active,',
+      '.btn-check:checked+.btn-primary{background-color:var(--app-primary-dark)!important;border-color:var(--app-primary-dark)!important;}',
+      '.btn-outline-primary{color:var(--app-primary)!important;border-color:var(--app-primary)!important;}',
+      '.btn-outline-primary:hover,.btn-outline-primary:focus,.btn-outline-primary:active,',
+      '.btn-check:checked+.btn-outline-primary{background-color:var(--app-primary)!important;border-color:var(--app-primary)!important;color:#fff!important;}',
+      '.btn-label-primary{background:var(--app-primary-soft)!important;color:var(--app-primary)!important;border:0!important;}',
+      '.btn-label-primary:hover,.btn-label-primary:focus{background:var(--app-primary-soft-2)!important;color:var(--app-primary-dark)!important;}',
+      '.bg-label-primary{background-color:var(--app-primary-soft)!important;color:var(--app-primary)!important;}',
+      '.alert-primary{background-color:var(--app-primary-soft-2)!important;border-color:var(--app-primary-soft)!important;color:var(--app-primary-dark)!important;}',
+      '.table-primary{--bs-table-bg:var(--app-primary-soft)!important;--bs-table-color:var(--app-primary-darker)!important;}',
+      '.layout-menu .menu-inner>.menu-item.active>.menu-link:not(.menu-toggle),',
+      '.layout-menu .menu-inner>.menu-item.active>.menu-link.menu-toggle,',
+      '.bg-menu-theme .menu-inner>.menu-item.active>.menu-link{color:var(--app-primary)!important;}',
+      '.layout-wrapper:not(.layout-horizontal) .bg-menu-theme .menu-inner>.menu-item.active:before{background:var(--app-primary)!important;}',
+      '.bg-menu-theme .menu-sub>.menu-item.active>.menu-link:not(.menu-toggle):before,',
+      '.bg-menu-theme .menu-sub>.menu-item.active>.menu-link.menu-toggle:before{background:var(--app-primary)!important;border-color:var(--app-primary)!important;}',
+      '.template-customizer-open-btn{background-color:var(--app-primary)!important;}',
+      '.footer-link:hover,.navbar.bg-primary{color:var(--app-primary)!important;}',
+      'html:not([data-primary-color="#696cff"]) .menu-vertical .menu-item.active>.menu-link:not(.menu-toggle){background-color:rgba(var(--app-primary-rgb),.16)!important;}'
     ].join('');
   }
 
-  function recolorStylesheets(newPrimary) {
-    var map = buildReplacementMap(newPrimary);
-    var style = ensureOverrideStyle();
-    var chunks = [utilityOverrides(newPrimary)];
-    var links = document.querySelectorAll('link.template-customizer-theme-css');
-    var pending = [];
-    var seen = {};
+  function apply(color) {
+    color = color || getSelected();
+    var hex = color.hex.toLowerCase();
+    document.documentElement.style.setProperty('--bs-primary', hex);
+    document.documentElement.style.setProperty('--bs-primary-rgb', hexToRgbTriplet(hex));
+    document.documentElement.setAttribute('data-primary-color', hex);
+    if (window.config && config.colors) {
+      config.colors.primary = hex;
+    }
+    ensureStyleEl().textContent = buildOverrides(hex);
+  }
 
-    links.forEach(function (link) {
-      if (!link.href || seen[link.href]) return;
-      seen[link.href] = true;
-      pending.push(
-        fetch(link.href, { credentials: 'same-origin' })
-          .then(function (res) {
-            return res.ok ? res.text() : '';
-          })
-          .then(function (css) {
-            if (css) chunks.push(replaceCssColors(css, map));
-          })
-          .catch(function () {})
-      );
-    });
-
-    return Promise.all(pending).then(function () {
-      style.textContent = chunks.join('\n');
+  function syncUi(activeId) {
+    document.querySelectorAll('.app-primary-color-option').forEach(function (el) {
+      var active = el.getAttribute('data-app-primary-color') === activeId;
+      el.classList.toggle('active', active);
+      var input = el.querySelector('input[type="radio"]');
+      if (input) input.checked = active;
     });
   }
 
-  function apply(hex) {
-    hex = (hex || getSelected().hex).toLowerCase();
-    setCssVars(hex);
-    return recolorStylesheets(hex);
+  function liveCustomizer() {
+    // TemplateCustomizer appends its own panel to body; prefer that one.
+    var panels = document.querySelectorAll('body > #template-customizer');
+    if (panels.length) return panels[panels.length - 1];
+    return document.querySelector('#template-customizer');
   }
 
-  function syncSwatches(activeId) {
-    var nodes = document.querySelectorAll('[data-app-primary-color]');
-    nodes.forEach(function (el) {
-      var id = el.getAttribute('data-app-primary-color');
-      el.classList.toggle('active', id === activeId);
-      el.setAttribute('aria-pressed', id === activeId ? 'true' : 'false');
-    });
-  }
+  function ensureSection(panel) {
+    if (!panel) return null;
+    var theming = panel.querySelector('.template-customizer-theming');
+    if (!theming) return null;
 
-  function ensureColorsSection() {
-    var themingBlocks = document.querySelectorAll('.template-customizer-theming');
-    themingBlocks.forEach(function (theming) {
-      if (theming.querySelector('.template-customizer-primary-colors')) return;
+    var existing = theming.querySelector('.template-customizer-primary-colors');
+    if (existing) return existing;
 
-      var section = document.createElement('div');
-      section.className = 'm-0 px-4 pb-3 pt-1 template-customizer-primary-colors w-100';
-      section.innerHTML =
-        '<label class="form-label d-block template-customizer-t-primary_colors_label"></label>' +
-        '<div class="d-flex flex-wrap gap-2 align-items-center template-customizer-primary-colors-options"></div>';
+    var styleBlock = theming.querySelector('.template-customizer-style');
+    var section = document.createElement('div');
+    section.className = 'm-0 px-4 pb-3 pt-1 template-customizer-primary-colors w-100';
+    section.innerHTML =
+      '<label class="form-label d-block template-customizer-t-primary_colors_label"></label>' +
+      '<div class="row g-2 template-customizer-primary-colors-options"></div>';
+
+    if (styleBlock && styleBlock.nextSibling) {
+      theming.insertBefore(section, styleBlock.nextSibling);
+    } else {
       theming.appendChild(section);
-    });
-
-    var labelNodes = document.querySelectorAll('.template-customizer-t-primary_colors_label');
-    var labelText =
-      (window.__appPrimaryColorsLabel) ||
-      (document.documentElement.lang === 'en' ? 'Primary Colors' : 'رنگ‌های اصلی');
-    labelNodes.forEach(function (node) {
-      if (!node.textContent) node.textContent = labelText;
-    });
+    }
+    return section;
   }
 
-  function renderSwatches(container) {
+  function renderOptions(container) {
     if (!container) return;
     container.innerHTML = '';
     var selected = getSelected();
+    var sectionLabel = window.__appPrimaryColorsLabel || 'Primary Colors';
+
+    var labelEl = container
+      .closest('.template-customizer-primary-colors')
+      .querySelector('.template-customizer-t-primary_colors_label');
+    if (labelEl) labelEl.textContent = sectionLabel;
+
     COLORS.forEach(function (color) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'app-primary-color-swatch' + (color.id === selected.id ? ' active' : '');
-      btn.setAttribute('data-app-primary-color', color.id);
-      btn.setAttribute('title', color.id);
-      btn.setAttribute('aria-label', color.id);
-      btn.setAttribute('aria-pressed', color.id === selected.id ? 'true' : 'false');
-      btn.style.backgroundColor = color.hex;
-      btn.style.color = color.hex;
-      btn.addEventListener('click', function () {
+      var col = document.createElement('div');
+      col.className = 'col-6';
+
+      var option = document.createElement('label');
+      option.className =
+        'app-primary-color-option' + (color.id === selected.id ? ' active' : '');
+      option.setAttribute('data-app-primary-color', color.id);
+
+      option.innerHTML =
+        '<input class="d-none" type="radio" name="appPrimaryColorRadios" value="' +
+        color.id +
+        '"' +
+        (color.id === selected.id ? ' checked' : '') +
+        '>' +
+        '<span class="app-primary-color-option-swatch" style="background-color:' +
+        color.hex +
+        '"></span>' +
+        '<span class="app-primary-color-option-meta">' +
+        '<span class="app-primary-color-option-name">' +
+        colorLabel(color) +
+        '</span>' +
+        '<span class="app-primary-color-option-hex">' +
+        color.hex.toUpperCase() +
+        '</span>' +
+        '</span>' +
+        '<span class="app-primary-color-option-check" aria-hidden="true">' +
+        '<svg viewBox="0 0 16 16" width="12" height="12"><path fill="currentColor" d="M6.3 11.5 2.8 8l1.1-1.1 2.4 2.4 5-5L12.4 5.4z"/></svg>' +
+        '</span>';
+
+      option.addEventListener('click', function (e) {
+        e.preventDefault();
         setSelected(color.id);
       });
-      container.appendChild(btn);
+
+      col.appendChild(option);
+      container.appendChild(col);
     });
   }
 
-  function mountSwatches() {
-    ensureColorsSection();
-    document.querySelectorAll('.template-customizer-primary-colors-options').forEach(function (container) {
-      renderSwatches(container);
-    });
-    syncSwatches(getSelected().id);
+  function mount() {
+    var panel = liveCustomizer();
+    var section = ensureSection(panel);
+    if (!section) return false;
+    renderOptions(section.querySelector('.template-customizer-primary-colors-options'));
+    syncUi(getSelected().id);
+    mounted = true;
+    return true;
   }
 
   function init() {
-    var selected = getSelected();
-    setCssVars(selected.hex);
-    apply(selected.hex).finally(function () {
-      mountSwatches();
-      // TemplateCustomizer appends its panel asynchronously; remount shortly after.
-      setTimeout(mountSwatches, 50);
-      setTimeout(mountSwatches, 300);
-    });
+    apply(getSelected());
+
+    if (mount()) return;
+
+    var tries = 0;
+    var timer = setInterval(function () {
+      tries += 1;
+      if (mount() || tries > 20) clearInterval(timer);
+    }, 100);
   }
 
   return {
@@ -331,8 +277,8 @@ window.AppPrimaryColor = (function () {
     setSelected: setSelected,
     apply: apply,
     init: init,
-    mountSwatches: mountSwatches,
-    renderSwatches: renderSwatches
+    mount: mount,
+    mountSwatches: mount
   };
 })();
 

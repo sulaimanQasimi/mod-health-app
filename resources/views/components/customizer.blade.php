@@ -35,12 +35,6 @@
           </label>
         </div>
 
-        <!-- Primary colors -->
-        <div class="m-0 px-4 pb-3 pt-1 template-customizer-primary-colors w-100">
-          <label class="form-label d-block template-customizer-t-primary_colors_label"></label>
-          <div class="d-flex flex-wrap gap-2 align-items-center template-customizer-primary-colors-options"></div>
-        </div>
-
       </div>
       <!--/ Theming -->
 

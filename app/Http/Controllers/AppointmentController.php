@@ -746,7 +746,7 @@ class AppointmentController extends Controller
         // Only query if there are search parameters
         if ($request->hasAny(['patient_name', 'doctor_id', 'processed_by', 'start', 'end',
                               'date', 'time', 'is_completed', 'per_page', 'clinic_type', 'registered_by',
-                              'job', 'job_category', 'job_type', 'gender', 'rank', 'relation_id', 'province_id', 'district_id'])) {
+                              'job', 'job_type', 'gender', 'rank', 'relation_id', 'province_id', 'district_id'])) {
             $perPage = $request->get('per_page', 15);
             
             $query = Appointment::with(['patient.relation', 'patient.province', 'patient.district', 'creator', 'doctor', 'processedBy', 'branch'])
@@ -791,9 +791,8 @@ class AppointmentController extends Controller
      */
     private function applyAppointmentReportFilters($query, Request $request)
     {
-        // Patient filters (name, job, job_category, gender, rank, relation, province, district)
+        // Patient filters (name, job, job_type, gender, rank, relation, province, district)
         $hasPatientFilter = $request->filled('patient_name') || $request->filled('job')
-            || ($request->filled('job_category') && $request->job_category !== '')
             || $request->filled('job_type') || ($request->filled('gender') && $request->gender !== '')
             || $request->filled('rank') || $request->filled('relation_id') || $request->filled('province_id') || $request->filled('district_id');
         if ($hasPatientFilter) {
@@ -803,9 +802,6 @@ class AppointmentController extends Controller
                 }
                 if ($request->filled('job')) {
                     $q->where('job', 'like', '%' . $request->job . '%');
-                }
-                if ($request->filled('job_category') && $request->job_category !== '') {
-                    $q->where('job_category', $request->job_category);
                 }
                 if ($request->filled('job_type')) {
                     $q->where('job_type', $request->job_type);
@@ -907,7 +903,6 @@ class AppointmentController extends Controller
                 'uc.name as registered_by_name',
                 'p.job',
                 'p.job_type',
-                'p.job_category',
                 'p.gender',
                 'p.rank',
                 'rel.name as relation_name',
@@ -938,9 +933,6 @@ class AppointmentController extends Controller
             }
             if ($request->filled('job')) {
                 $query->where('p.job', 'like', '%' . $request->job . '%');
-            }
-            if ($request->filled('job_category') && $request->job_category !== '') {
-                $query->where('p.job_category', $request->job_category);
             }
             if ($request->filled('job_type')) {
                 $query->where('p.job_type', $request->job_type);
@@ -1053,12 +1045,7 @@ class AppointmentController extends Controller
                 foreach ($items as $index => $item) {
                     $status = $item->is_completed == '1' ? 'ملاقات های تکمیل شده' : 'ملاقات های در حال اجراٰ';
                     $clinicType = $item->clinic_type === 'hospital' ? __('global.hospital') : ($item->clinic_type === 'clinic' ? __('global.clinic') : '');
-                    $jobType = '';
-                    if ($item->job_category !== null && $item->job_category !== '') {
-                        $jobType = (string) $item->job_category === '0'
-                            ? __('global.military')
-                            : __('global.civilian');
-                    }
+                    $jobType = $item->job_type ? __('global.' . $item->job_type) : '';
                     $gender = isset($item->gender) ? ($item->gender == '1' ? __('global.female') : __('global.male')) : '';
 
                     $sheet->setCellValue('A' . $row, $index + 1);

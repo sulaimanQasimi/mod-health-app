@@ -26,30 +26,6 @@
         background-color: #0dcaf0 !important;
     }
 
-    .border-purple {
-        border-color: #6f42c1 !important;
-    }
-
-    .border-pink {
-        border-color: #e83e8c !important;
-    }
-
-    .border-orange {
-        border-color: #fd7e14 !important;
-    }
-
-    .border-teal {
-        border-color: #20c997 !important;
-    }
-
-    .border-indigo {
-        border-color: #6610f2 !important;
-    }
-
-    .border-cyan {
-        border-color: #0dcaf0 !important;
-    }
-
     /* Keep dashboard stat cards equal size, moderately compact */
     #dashboard-stat-cards > [class*="col-"] {
         display: flex;
@@ -193,13 +169,13 @@
                         @endif
                         @if(!empty($visible['all_patients']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="all_patients">
-                            <div class="card border border-primary">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_patients') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded text-primary" id="total-patients">-</h4>
+                                                <h4 class="mb-0 me-2  p-1 rounded" id="total-patients">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_patients') }}</p>
                                         </div>
@@ -216,13 +192,13 @@
 
                         @if(!empty($visible['all_appointments']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="all_appointments">
-                            <div class="card border border-success">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_appointments') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded text-success" id="total-appointments">-</h4>
+                                                <h4 class="mb-0 me-2  p-1 rounded" id="total-appointments">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_appointments') }}</p>
                                         </div>
@@ -239,13 +215,13 @@
 
                         @if(!empty($visible['consultations']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="consultations">
-                            <div class="card border border-info">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.consultations') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded text-info" id="total-consultations">-</h4>
+                                                <h4 class="mb-0 me-2  p-1 rounded" id="total-consultations">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_consultations') }}</p>
                                         </div>
@@ -262,13 +238,13 @@
 
                         @if(!empty($visible['hospitalizations']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="hospitalizations">
-                            <div class="card border border-warning">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_hospitalized_patients') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded text-warning" id="total-inpatient-admissions">-</h4>
+                                                <h4 class="mb-0 me-2  p-1 rounded" id="total-inpatient-admissions">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_hospitalizations') }}</p>
                                         </div>
@@ -285,13 +261,13 @@
 
                         @if(!empty($visible['checkups']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="checkups">
-                            <div class="card border border-danger">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.checkups') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded text-danger" id="total-checkups">-</h4>
+                                                <h4 class="mb-0 me-2  p-1 rounded" id="total-checkups">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_checkups') }}</p>
                                         </div>
@@ -308,13 +284,13 @@
 
                         @if(!empty($visible['icu']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="icu">
-                            <div class="card border border-dark">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_icu_patients') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded text-dark" id="total-icu-admissions">-</h4>
+                                                <h4 class="mb-0 me-2  p-1 rounded" id="total-icu-admissions">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_icu') }}</p>
                                         </div>
@@ -354,13 +330,13 @@
 
                         @if(!empty($visible['prescriptions']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="prescriptions">
-                            <div class="card border border-purple">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_prescriptions') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded text-purple" id="total-prescriptions" style="color:#6f42c1">-</h4>
+                                                <h4 class="mb-0 me-2  p-1 rounded" id="total-prescriptions">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_prescriptions') }}</p>
                                         </div>
@@ -377,13 +353,13 @@
 
                         @if(!empty($visible['operations']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="operations">
-                            <div class="card border border-pink">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_operations') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded" id="total-operations" style="color:#e83e8c">-</h4>
+                                                <h4 class="mb-0 me-2  p-1 rounded" id="total-operations">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_operations') }}</p>
                                         </div>
@@ -400,13 +376,13 @@
 
                         @if(!empty($visible['physiotherapy']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="physiotherapy">
-                            <div class="card border border-teal">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_physiotherapy_procedures') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded" id="total-physiotherapy-procedures" style="color:#20c997">-</h4>
+                                                <h4 class="mb-0 me-2  p-1 rounded" id="total-physiotherapy-procedures">-</h4>
                                             </div>
                                             <p class="mb-0">
                                                 {{ localize('global.all_registered_physiotherapy_procedures') }}</p>
@@ -424,13 +400,13 @@
 
                         @if(!empty($visible['depot']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
-                            <div class="card border border-secondary">
+                            <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_depots') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded text-secondary" id="total-depots">-</h4>
+                                                <h4 class="mb-0 me-2 p-1 rounded" id="total-depots">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_depots') }}</p>
                                         </div>
@@ -446,13 +422,13 @@
                         @endif
                         @if(!empty($visible['depot']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
-                            <div class="card border border-indigo">
+                            <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_depot_transactions') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded" id="total-depot-transactions" style="color:#6610f2">-</h4>
+                                                <h4 class="mb-0 me-2 p-1 rounded" id="total-depot-transactions">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_depot_transactions') }}</p>
                                         </div>
@@ -468,13 +444,13 @@
                         @endif
                         @if(!empty($visible['depot']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
-                            <div class="card border border-orange">
+                            <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.pending_depot_requests') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded" id="pending-depot-requests" style="color:#fd7e14">-</h4>
+                                                <h4 class="mb-0 me-2 p-1 rounded" id="pending-depot-requests">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_pending_depot_requests') }}</p>
                                         </div>
@@ -490,13 +466,13 @@
                         @endif
                         @if(!empty($visible['depot']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
-                            <div class="card border border-cyan">
+                            <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.depot_stock_items') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded text-info" id="depot-stock-items">-</h4>
+                                                <h4 class="mb-0 me-2 p-1 rounded" id="depot-stock-items">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_depot_stock_items') }}</p>
                                         </div>
@@ -512,13 +488,13 @@
                         @endif
                         @if(!empty($visible['depot']))
                         <div class="col-sm-6 col-xl-3 dash-vis" data-vis="depot">
-                            <div class="card border border-teal">
+                            <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.depot_stock_quantity') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 p-1 rounded" id="depot-stock-quantity" style="color:#20c997">-</h4>
+                                                <h4 class="mb-0 me-2 p-1 rounded" id="depot-stock-quantity">-</h4>
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_depot_stock_quantity') }}</p>
                                         </div>
@@ -558,7 +534,7 @@
                     @if(!empty($visible['beds']))
                     <div class="row g-3 mb-4 dash-vis" data-vis="beds">
                         <div class="col-sm-6 col-xl-4">
-                            <div class="card bg-label-warning border border-warning">
+                            <div class="card bg-label-warning border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -576,7 +552,7 @@
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-4">
-                            <div class="card bg-label-primary border border-primary">
+                            <div class="card bg-label-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -594,7 +570,7 @@
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-4">
-                            <div class="card bg-label-success border border-success">
+                            <div class="card bg-label-success ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -616,7 +592,7 @@
                     <div class="row">
                         @if(!empty($visible['patients_trend']))
                         <div class="col-md-6 dash-vis" data-vis="patients_trend">
-                            <div class="card border border-primary">
+                            <div class="card">
                                 <div class="card-body">
                                     <i class="bx bx-line-chart text-primary"></i>
                                     <h5 class="card-title text-center">{{ localize('global.patients_comparison_graph') }}
@@ -628,7 +604,7 @@
                         @endif
                         @if(!empty($visible['appointments_trend']))
                         <div class="col-md-6 dash-vis" data-vis="appointments_trend">
-                            <div class="card border border-success">
+                            <div class="card">
                                 <div class="card-body">
                                     <i class="bx bx-line-chart text-primary"></i>
                                     <h5 class="card-title text-center">
@@ -643,7 +619,7 @@
 
                     @if(!empty($visible['appointments_by_user']))
                     <div class="col-md-12 mt-3 dash-vis" data-vis="appointments_by_user">
-                        <div class="card border border-info">
+                        <div class="card">
                             <div class="card-body">
                                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
                                     <h5 class="card-title mb-0">
@@ -666,7 +642,7 @@
 
                     @if(!empty($visible['doctors_activity']))
                     <div class="col-md-12 mt-3 dash-vis" data-vis="doctors_activity">
-                        <div class="card border border-primary">
+                        <div class="card">
                             <div class="card-body">
                                 <i class="bx bx-line-chart text-primary"></i>
                                 <h5 class="card-title text-center">
@@ -682,7 +658,7 @@
 
                     @if(!empty($visible['nurses_activity']))
                     <div class="col-md-12 mt-3 dash-vis" data-vis="nurses_activity">
-                        <div class="card border border-teal">
+                        <div class="card">
                             <div class="card-body">
                                 <i class="bx bx-line-chart text-primary"></i>
                                 <h5 class="card-title text-center">

@@ -28,7 +28,7 @@
         <input type="hidden" name="clinic_type" value="{{ request('clinic_type', '') }}">
         <input type="hidden" name="registered_by" value="{{ request('registered_by', '') }}">
         <input type="hidden" name="job" value="{{ request('job', '') }}">
-        <input type="hidden" name="job_category" value="{{ request('job_category', '') }}">
+        <input type="hidden" name="job_type" value="{{ request('job_type', '') }}">
         <input type="hidden" name="gender" value="{{ request('gender', '') }}">
         <input type="hidden" name="rank" value="{{ request('rank', '') }}">
         <input type="hidden" name="relation_id" value="{{ request('relation_id', '') }}">
@@ -63,7 +63,7 @@
                     <th>{{ localize('global.processed_by') }}</th>
                     <th>{{ localize('global.registered_by') }}</th>
                     <th>{{ localize('global.job') }}</th>
-                    <th>{{ localize('global.job_category') }}</th>
+                    <th>{{ localize('global.job_type') }}</th>
                     <th>{{ localize('global.gender') }}</th>
                     <th>{{ localize('global.rank') }}</th>
                     <th>{{ localize('global.relation') }}</th>
@@ -100,9 +100,8 @@
                         <td>{{ $item->creator?->name ?? '—' }}</td>
                         <td>{{ $item->patient?->job ?? '—' }}</td>
                         <td>
-                            @php $jobCategory = $item->patient?->job_category; @endphp
-                            @if($jobCategory !== null && $jobCategory !== '')
-                                {{ (string) $jobCategory === '0' ? localize('global.military') : localize('global.civilian') }}
+                            @if($item->patient && $item->patient->job_type)
+                                {{ localize('global.' . $item->patient->job_type) }}
                             @else
                                 —
                             @endif

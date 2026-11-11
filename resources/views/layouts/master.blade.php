@@ -23,6 +23,7 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+  
     <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/core.css')}}" class="template-customizer-core-css" />
     <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/theme-default.css')}}"
         class="template-customizer-theme-css" />
@@ -48,6 +49,90 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('assets/js/config.js') }}"></script>
+    <script src="{{ asset('assets/js/primary-color.js') }}"></script>
+    <style>
+        .template-customizer-primary-colors .form-label {
+            margin-bottom: .65rem;
+        }
+        .app-primary-color-option {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            width: 100%;
+            min-height: 3rem;
+            margin: 0;
+            padding: .55rem .7rem;
+            border: 1px solid rgba(67, 89, 113, .14);
+            border-radius: .5rem;
+            background: rgba(255, 255, 255, .04);
+            cursor: pointer;
+            transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+        }
+        .app-primary-color-option:hover {
+            border-color: rgba(67, 89, 113, .28);
+            background: rgba(67, 89, 113, .04);
+        }
+        .app-primary-color-option.active {
+            border-color: var(--app-primary, #696cff);
+            box-shadow: 0 0 0 1px var(--app-primary, #696cff);
+            background: rgba(var(--app-primary-rgb, 105, 108, 255), .08);
+        }
+        .app-primary-color-option-swatch {
+            flex: 0 0 1.35rem;
+            width: 1.35rem;
+            height: 1.35rem;
+            border-radius: 50%;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .08), 0 1px 2px rgba(67, 89, 113, .18);
+        }
+        .app-primary-color-option-meta {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            line-height: 1.15;
+        }
+        .app-primary-color-option-name {
+            font-size: .8125rem;
+            font-weight: 600;
+            color: inherit;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .app-primary-color-option-hex {
+            font-size: .6875rem;
+            opacity: .65;
+            letter-spacing: .02em;
+        }
+        .app-primary-color-option-check {
+            position: absolute;
+            top: .35rem;
+            inset-inline-end: .4rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: var(--app-primary, #696cff);
+            opacity: 0;
+            transform: scale(.8);
+            transition: opacity .15s ease, transform .15s ease;
+        }
+        .app-primary-color-option.active .app-primary-color-option-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .dark-style .app-primary-color-option {
+            border-color: rgba(255, 255, 255, .12);
+            background: rgba(255, 255, 255, .03);
+        }
+        .dark-style .app-primary-color-option:hover {
+            border-color: rgba(255, 255, 255, .22);
+            background: rgba(255, 255, 255, .05);
+        }
+    </style>
     @if (session()->get('language') == 'en')
         <style type="text/css">
             @font-face {
@@ -203,6 +288,20 @@
         $('.template-customizer-t-style_label').html("{{localize('global.system_theme_dark')}}");
         $('.template-customizer-t-style_switch_light').html("{{localize('global.system_theme_switch_light')}}");
         $('.template-customizer-t-style_switch_dark').html("{{localize('global.system_theme_switch_dark')}}");
+        window.__appPrimaryColorsLabel = @json(localize('global.system_theme_primary_colors'));
+        window.__appPrimaryColorLabels = {
+            default: @json(localize('global.system_theme_color_default')),
+            raspberry: @json(localize('global.system_theme_color_raspberry')),
+            ocean: @json(localize('global.system_theme_color_ocean')),
+            forest: @json(localize('global.system_theme_color_forest')),
+            amber: @json(localize('global.system_theme_color_amber')),
+            blue: @json(localize('global.system_theme_color_blue')),
+            violet: @json(localize('global.system_theme_color_violet')),
+            slate: @json(localize('global.system_theme_color_slate'))
+        };
+        if (window.AppPrimaryColor && typeof window.AppPrimaryColor.mount === 'function') {
+            window.AppPrimaryColor.mount();
+        }
         $('.template-customizer-t-layout_header').html("{{localize('global.system_theme_system_layout')}}");
         $('.template-customizer-t-layout_label').html("{{localize('global.system_theme_layouts')}}");
 

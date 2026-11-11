@@ -3,13 +3,14 @@
     $records = collect($records ?? []);
     $requestRecords = $records->filter(fn ($item) => $item->isTransfusionRequest())->values();
     $phlebotomyRecords = $records->filter(fn ($item) => $item->isPhlebotomy())->values();
+    $bloodTypingRecords = $records->filter(fn ($item) => $item->isBloodTyping())->values();
     $canCreate = $canCreate ?? true;
     $requireDepartment = empty($departmentId);
     $activeTab = request('blood_tab', 'request');
-    if (! in_array($activeTab, ['request', 'phlebotomy'], true)) {
+    if (! in_array($activeTab, ['request', 'phlebotomy', 'blood_typing'], true)) {
         $activeTab = 'request';
     }
-    $totalCount = $requestRecords->count() + $phlebotomyRecords->count();
+    $totalCount = $requestRecords->count() + $phlebotomyRecords->count() + $bloodTypingRecords->count();
 @endphp
 
 <div class="accordion mt-4 mb-4" id="bloodClinicalAccordion{{ $sectionId }}">
@@ -52,6 +53,18 @@
                                 aria-selected="{{ $activeTab === 'phlebotomy' ? 'true' : 'false' }}">
                             {{ localize('global.phlebotomy') }}
                             <span class="badge bg-label-primary ms-1">{{ $phlebotomyRecords->count() }}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {{ $activeTab === 'blood_typing' ? 'active' : '' }}"
+                                id="bloodTypingTab{{ $sectionId }}"
+                                data-bs-toggle="tab"
+                                data-bs-target="#bloodTypingPane{{ $sectionId }}"
+                                type="button" role="tab"
+                                aria-controls="bloodTypingPane{{ $sectionId }}"
+                                aria-selected="{{ $activeTab === 'blood_typing' ? 'true' : 'false' }}">
+                            {{ localize('global.blood_typing') }}
+                            <span class="badge bg-label-info ms-1">{{ $bloodTypingRecords->count() }}</span>
                         </button>
                     </li>
                 </ul>
@@ -276,6 +289,117 @@
                                         <tr>
                                             <td colspan="9" class="text-center text-muted py-3">
                                                 {{ localize('global.no_phlebotomy_requests') }}
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- Blood typing tab --}}
+                    <div class="tab-pane fade {{ $activeTab === 'blood_typing' ? 'show active' : '' }}"
+                         id="bloodTypingPane{{ $sectionId }}" role="tabpanel"
+                         aria-labelledby="bloodTypingTab{{ $sectionId }}">
+                        @if ($canCreate)
+                            <button type="button" class="btn btn-sm btn-info mb-3" data-bs-toggle="modal"
+                                    data-bs-target="#bloodTypingModal{{ $sectionId }}">
+                                <i class="bx bx-plus me-1"></i>{{ localize('global.add') }}
+                            </button>
+
+                            <div class="modal fade" id="bloodTypingModal{{ $sectionId }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <form action="{{ route('blood_banks.store') }}" method="POST">
+                                            @csrf
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">{{ localize('global.blood_typing') }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="{{ localize('global.close') }}"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" name="feature" value="blood_typing">
+                                                <input type="hidden" name="patient_id" value="{{ $patientId }}">
+                                                <input type="hidden" name="branch_id" value="{{ $branchId }}">
+                                                @if (! empty($appointmentId))
+                                                    <input type="hidden" name="appointment_id" value="{{ $appointmentId }}">
+                                                @endif
+                                                @if (! empty($hospitalizationId))
+                                                    <input type="hidden" name="hospitalization_id" value="{{ $hospitalizationId }}">
+                                                @endif
+                                                @if (! empty($anesthesiaId))
+                                                    <input type="hidden" name="anesthesia_id" value="{{ $anesthesiaId }}">
+                                                @endif
+                                                @if (! empty($operationId))
+                                                    <input type="hidden" name="operation_id" value="{{ $operationId }}">
+                                                @endif
+                                                @if (! empty($icuId))
+                                                    <input type="hidden" name="i_c_u_id" value="{{ $icuId }}">
+                                                @endif
+                                                @if (! empty($underReviewId))
+                                                    <input type="hidden" name="under_review_id" value="{{ $underReviewId }}">
+                                                @endif
+                                                @if (! empty($departmentId))
+                                                    <input type="hidden" name="department_id" value="{{ $departmentId }}">
+                                                @endif
+
+                                                @include('pages.blood_banks.partials.request_form_fields', [
+                                                    'fieldId' => 'typing'.$sectionId,
+                                                    'requireCore' => false,
+                                                    'hideExtras' => true,
+                                                    'hideBloodFields' => true,
+                                                    'bloodTypingOnly' => true,
+                                                    'requireDepartment' => $requireDepartment,
+                                                    'departments' => $departments ?? [],
+                                                    'selectedDepartmentId' => $departmentId ?? null,
+                                                ])
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    {{ localize('global.cancel') }}
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    {{ localize('global.save') }}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>{{ localize('global.number') }}</th>
+                                        <th>{{ localize('global.blood_group') }}</th>
+                                        <th>{{ localize('global.rh') }}</th>
+                                        <th>{{ localize('global.department') }}</th>
+                                        <th>{{ localize('global.status') }}</th>
+                                        <th class="text-center">{{ localize('global.actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($bloodTypingRecords as $item)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->group ?? '—' }}</td>
+                                            <td>{{ $item->rh ?? '—' }}</td>
+                                            <td>{{ $item->department?->name ?? '—' }}</td>
+                                            <td><span class="badge bg-label-secondary">{{ $item->status }}</span></td>
+                                            <td class="text-center">
+                                                <a href="{{ route('blood_banks.blood_typing.show', $item->id) }}"
+                                                   class="btn btn-sm btn-outline-primary"
+                                                   title="{{ localize('global.view') }}">
+                                                    <i class="bx bx-expand"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-3">
+                                                {{ localize('global.no_blood_typing_requests') }}
                                             </td>
                                         </tr>
                                     @endforelse

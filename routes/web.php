@@ -41,6 +41,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodBankController;
 use App\Http\Controllers\PhlebotomyController;
+use App\Http\Controllers\BloodTypingController;
 use App\Http\Controllers\BloodBranchTransferController;
 use App\Http\Controllers\BloodUnitController;
 use App\Http\Controllers\BranchController;
@@ -733,6 +734,19 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('{bloodBank}/send-to-stock', [PhlebotomyController::class, 'sendToStock'])
                 ->middleware('permission:receive-blood-units|manage-blood-inventory')
                 ->name('send_to_stock');
+        });
+
+        Route::prefix('blood-typing')->name('blood_typing.')->group(function () {
+            Route::get('new', [BloodTypingController::class, 'new'])->name('new');
+            Route::get('approved', [BloodTypingController::class, 'approved'])->name('approved');
+            Route::get('rejected', [BloodTypingController::class, 'rejected'])->name('rejected');
+            Route::get('delivered', [BloodTypingController::class, 'delivered'])->name('delivered');
+            Route::get('{bloodBank}', [BloodTypingController::class, 'show'])->name('show');
+            Route::post('{bloodBank}/approve', [BloodTypingController::class, 'approve'])->name('approve');
+            Route::put('{bloodBank}/reject', [BloodTypingController::class, 'reject'])->name('reject');
+            Route::post('{bloodBank}/complete', [BloodTypingController::class, 'complete'])
+                ->middleware('permission:receive-blood-units|manage-blood-inventory')
+                ->name('complete');
         });
 
         Route::get('nurses-by-department/{department}', [BloodBankController::class, 'nursesByDepartment'])->name('nurses_by_department');

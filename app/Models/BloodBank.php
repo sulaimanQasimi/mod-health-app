@@ -17,9 +17,12 @@ class BloodBank extends Model
 
     public const FEATURE_PHLEBOTOMY = 'phlebotomy';
 
+    public const FEATURE_BLOOD_TYPING = 'blood_typing';
+
     public const FEATURES = [
         self::FEATURE_REQUEST,
         self::FEATURE_PHLEBOTOMY,
+        self::FEATURE_BLOOD_TYPING,
     ];
 
     protected $fillable = [
@@ -54,9 +57,16 @@ class BloodBank extends Model
         return ($this->feature ?? self::FEATURE_REQUEST) === self::FEATURE_PHLEBOTOMY;
     }
 
+    public function isBloodTyping(): bool
+    {
+        return ($this->feature ?? self::FEATURE_REQUEST) === self::FEATURE_BLOOD_TYPING;
+    }
+
     public function isTransfusionRequest(): bool
     {
-        return ! $this->isPhlebotomy();
+        $feature = $this->feature ?? self::FEATURE_REQUEST;
+
+        return $feature === self::FEATURE_REQUEST;
     }
 
     public function scopeFeature($query, string $feature)
@@ -75,6 +85,11 @@ class BloodBank extends Model
     public function scopePhlebotomy($query)
     {
         return $query->where('feature', self::FEATURE_PHLEBOTOMY);
+    }
+
+    public function scopeBloodTyping($query)
+    {
+        return $query->where('feature', self::FEATURE_BLOOD_TYPING);
     }
 
     public static function boot()

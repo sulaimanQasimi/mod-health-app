@@ -42,87 +42,95 @@
     @endpush
 @endonce
 
-{{-- Blood group — Bootstrap btn-check segmented control --}}
-<div class="mb-3">
-    <label class="form-label">
-        {{ localize('global.blood_group') }}
-        @unless ($requireCore ?? false)
-            <span class="text-muted small">({{ localize('global.optional') }})</span>
-        @endunless
-    </label>
-    <div class="btn-group w-100" role="group" aria-label="{{ localize('global.blood_group') }}">
-        @foreach (['A', 'B', 'AB', 'O'] as $group)
-            <input type="radio"
-                   class="btn-check"
-                   name="group"
-                   id="group{{ $fieldId }}_{{ $group }}"
-                   value="{{ $group }}"
-                   autocomplete="off"
-                   @checked(old('group') === $group)
-                   @if ($requireCore ?? false) required @endif>
-            <label class="btn btn-outline-danger" for="group{{ $fieldId }}_{{ $group }}">
-                <i class="bx bx-droplet me-1"></i>{{ $group }}
-            </label>
-        @endforeach
+@if ($bloodTypingOnly ?? false)
+    <div class="alert alert-info small mb-3">
+        {{ localize('global.blood_typing_form_hint') }}
     </div>
-</div>
+@endif
 
-{{-- Rh — Bootstrap btn-check --}}
-<div class="mb-3">
-    <label class="form-label">
-        {{ localize('global.blood_rh') }}
-        @unless ($requireCore ?? false)
-            <span class="text-muted small">({{ localize('global.optional') }})</span>
-        @endunless
-    </label>
-    <div class="btn-group w-100" role="group" aria-label="{{ localize('global.blood_rh') }}">
-        <input type="radio" class="btn-check" name="rh" id="rh{{ $fieldId }}_pos" value="+" autocomplete="off"
-               @checked(old('rh') === '+')
-               @if ($requireCore ?? false) required @endif>
-        <label class="btn btn-outline-danger" for="rh{{ $fieldId }}_pos">
-            <i class="bx bx-plus-medical me-1"></i>Rh+
-        </label>
-
-        <input type="radio" class="btn-check" name="rh" id="rh{{ $fieldId }}_neg" value="-" autocomplete="off"
-               @checked(old('rh') === '-')
-               @if ($requireCore ?? false) required @endif>
-        <label class="btn btn-outline-danger" for="rh{{ $fieldId }}_neg">
-            <i class="bx bx-minus me-1"></i>Rh−
-        </label>
-    </div>
-</div>
-
-{{-- Component type + quantity side by side --}}
-<div class="row g-3 mb-3">
-    <div class="col-sm-6">
-        <label class="form-label" for="type{{ $fieldId }}">
-            {{ localize('global.blood_type') }}
+@unless ($hideBloodFields ?? false)
+    {{-- Blood group — Bootstrap btn-check segmented control --}}
+    <div class="mb-3">
+        <label class="form-label">
+            {{ localize('global.blood_group') }}
             @unless ($requireCore ?? false)
                 <span class="text-muted small">({{ localize('global.optional') }})</span>
             @endunless
         </label>
-        <select class="form-select rounded" name="type" id="type{{ $fieldId }}"
-                @if ($requireCore ?? false) required @endif>
-            <option value="">{{ localize('global.select') }}</option>
-            @foreach (['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'Whole Blood'] as $componentType)
-                <option value="{{ $componentType }}" @selected(old('type') === $componentType)>
-                    {{ $componentType }}
-                </option>
+        <div class="btn-group w-100" role="group" aria-label="{{ localize('global.blood_group') }}">
+            @foreach (['A', 'B', 'AB', 'O'] as $group)
+                <input type="radio"
+                       class="btn-check"
+                       name="group"
+                       id="group{{ $fieldId }}_{{ $group }}"
+                       value="{{ $group }}"
+                       autocomplete="off"
+                       @checked(old('group') === $group)
+                       @if ($requireCore ?? false) required @endif>
+                <label class="btn btn-outline-danger" for="group{{ $fieldId }}_{{ $group }}">
+                    <i class="bx bx-droplet me-1"></i>{{ $group }}
+                </label>
             @endforeach
-        </select>
+        </div>
     </div>
-    <div class="col-sm-6">
-        <label class="form-label" for="quantity{{ $fieldId }}">
-            {{ localize('global.quantity') }}
+
+    {{-- Rh — Bootstrap btn-check --}}
+    <div class="mb-3">
+        <label class="form-label">
+            {{ localize('global.blood_rh') }}
             @unless ($requireCore ?? false)
                 <span class="text-muted small">({{ localize('global.optional') }})</span>
             @endunless
         </label>
-        <input type="number" min="1" class="form-control rounded" name="quantity"
-               id="quantity{{ $fieldId }}" value="{{ old('quantity') }}"
-               @if ($requireCore ?? false) required @endif>
+        <div class="btn-group w-100" role="group" aria-label="{{ localize('global.blood_rh') }}">
+            <input type="radio" class="btn-check" name="rh" id="rh{{ $fieldId }}_pos" value="+" autocomplete="off"
+                   @checked(old('rh') === '+')
+                   @if ($requireCore ?? false) required @endif>
+            <label class="btn btn-outline-danger" for="rh{{ $fieldId }}_pos">
+                <i class="bx bx-plus-medical me-1"></i>Rh+
+            </label>
+
+            <input type="radio" class="btn-check" name="rh" id="rh{{ $fieldId }}_neg" value="-" autocomplete="off"
+                   @checked(old('rh') === '-')
+                   @if ($requireCore ?? false) required @endif>
+            <label class="btn btn-outline-danger" for="rh{{ $fieldId }}_neg">
+                <i class="bx bx-minus me-1"></i>Rh−
+            </label>
+        </div>
     </div>
-</div>
+
+    {{-- Component type + quantity side by side --}}
+    <div class="row g-3 mb-3">
+        <div class="col-sm-6">
+            <label class="form-label" for="type{{ $fieldId }}">
+                {{ localize('global.blood_type') }}
+                @unless ($requireCore ?? false)
+                    <span class="text-muted small">({{ localize('global.optional') }})</span>
+                @endunless
+            </label>
+            <select class="form-select rounded" name="type" id="type{{ $fieldId }}"
+                    @if ($requireCore ?? false) required @endif>
+                <option value="">{{ localize('global.select') }}</option>
+                @foreach (['RBC', 'PRBC', 'Fresh', 'Platelets', 'Plasma', 'Whole Blood'] as $componentType)
+                    <option value="{{ $componentType }}" @selected(old('type') === $componentType)>
+                        {{ $componentType }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-sm-6">
+            <label class="form-label" for="quantity{{ $fieldId }}">
+                {{ localize('global.quantity') }}
+                @unless ($requireCore ?? false)
+                    <span class="text-muted small">({{ localize('global.optional') }})</span>
+                @endunless
+            </label>
+            <input type="number" min="1" class="form-control rounded" name="quantity"
+                   id="quantity{{ $fieldId }}" value="{{ old('quantity') }}"
+                   @if ($requireCore ?? false) required @endif>
+        </div>
+    </div>
+@endunless
 
 @if ($requireDepartment ?? false)
     <div class="mb-3">
@@ -140,29 +148,42 @@
     </div>
 @endif
 
-<div class="row g-3 mb-3">
-    <div class="col-sm-6">
-        <label class="form-label" for="hemoglobin{{ $fieldId }}">
-            {{ localize('global.hemoglobin') }}
-            @unless ($requireCore ?? false)
+@unless ($hideBloodFields ?? false)
+    <div class="row g-3 mb-3">
+        <div class="col-sm-6">
+            <label class="form-label" for="hemoglobin{{ $fieldId }}">
+                {{ localize('global.hemoglobin') }}
+                @unless ($requireCore ?? false)
+                    <span class="text-muted small">({{ localize('global.optional') }})</span>
+                @endunless
+            </label>
+            <input type="number" step="0.1" min="0" max="999" class="form-control rounded"
+                   name="hemoglobin" id="hemoglobin{{ $fieldId }}"
+                   value="{{ old('hemoglobin') }}" placeholder="g/dL"
+                   @if ($requireCore ?? false) required @endif>
+        </div>
+        <div class="col-sm-6">
+            <label class="form-label" for="hematocrit{{ $fieldId }}">
+                {{ localize('global.hematocrit') }}
                 <span class="text-muted small">({{ localize('global.optional') }})</span>
-            @endunless
-        </label>
-        <input type="number" step="0.1" min="0" max="999" class="form-control rounded"
-               name="hemoglobin" id="hemoglobin{{ $fieldId }}"
-               value="{{ old('hemoglobin') }}" placeholder="g/dL"
-               @if ($requireCore ?? false) required @endif>
+            </label>
+            <input type="number" step="0.1" min="0" max="100" class="form-control rounded"
+                   name="hematocrit" id="hematocrit{{ $fieldId }}"
+                   value="{{ old('hematocrit') }}" placeholder="%">
+        </div>
     </div>
-    <div class="col-sm-6">
-        <label class="form-label" for="hematocrit{{ $fieldId }}">
-            {{ localize('global.hematocrit') }}
+@endunless
+
+@if ($bloodTypingOnly ?? false)
+    <div class="mb-3">
+        <label class="form-label" for="factor{{ $fieldId }}">
+            {{ localize('global.notes') }}
             <span class="text-muted small">({{ localize('global.optional') }})</span>
         </label>
-        <input type="number" step="0.1" min="0" max="100" class="form-control rounded"
-               name="hematocrit" id="hematocrit{{ $fieldId }}"
-               value="{{ old('hematocrit') }}" placeholder="%">
+        <textarea maxlength="255" class="form-control rounded" name="factor"
+                  id="factor{{ $fieldId }}" rows="2">{{ old('factor') }}</textarea>
     </div>
-</div>
+@endif
 
 @unless ($hideExtras ?? false)
     <div class="mb-3">

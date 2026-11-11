@@ -23,6 +23,29 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+    <script>
+        (function () {
+            try {
+                var template = document.documentElement.getAttribute('data-template') || 'vertical-menu-template';
+                var key = 'templateCustomizer-' + template + '--PrimaryColor';
+                var map = {
+                    default: '#696cff',
+                    raspberry: '#e30b5c',
+                    ocean: '#00cfe8',
+                    forest: '#28c76f',
+                    amber: '#ff9f43',
+                    blue: '#2092ec',
+                    violet: '#9c27b0',
+                    slate: '#4b465c'
+                };
+                var saved = localStorage.getItem(key);
+                var hex = map[saved] || (/^#([0-9a-fA-F]{6})$/.test(saved || '') ? saved : '#696cff');
+                var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+                document.documentElement.style.setProperty('--bs-primary', hex);
+                document.documentElement.style.setProperty('--bs-primary-rgb', r + ', ' + g + ', ' + b);
+            } catch (e) {}
+        })();
+    </script>
     <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/core.css')}}" class="template-customizer-core-css" />
     <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/theme-default.css')}}"
         class="template-customizer-theme-css" />

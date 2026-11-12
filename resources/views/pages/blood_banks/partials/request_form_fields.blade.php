@@ -207,7 +207,7 @@
                 <span class="text-danger">*</span>
             </label>
             <button type="button" class="btn btn-sm btn-outline-secondary"
-                    onclick="addBloodRequestTestRow(@json((string) $fieldId))">
+                    onclick='addBloodRequestTestRow(@json((string) $fieldId))'>
                 <i class="bx bx-plus me-1"></i>{{ localize('global.add_test') }}
             </button>
         </div>

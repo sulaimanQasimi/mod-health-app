@@ -478,6 +478,33 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="menu-item {{ Route::is('blood_banks.blood_tests.*') ? 'active open' : '' }}">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <div>{{ localize('global.blood_tests') }}</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item {{ Route::is('blood_banks.blood_tests.new') ? 'active' : '' }}">
+                                <a href="{{ route('blood_banks.blood_tests.new') }}" class="menu-link">
+                                    <div>{{ localize('global.new_blood_test_requests') }}</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ Route::is('blood_banks.blood_tests.approved') ? 'active' : '' }}">
+                                <a href="{{ route('blood_banks.blood_tests.approved') }}" class="menu-link">
+                                    <div>{{ localize('global.approved_blood_test_requests') }}</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ Route::is('blood_banks.blood_tests.rejected') ? 'active' : '' }}">
+                                <a href="{{ route('blood_banks.blood_tests.rejected') }}" class="menu-link">
+                                    <div>{{ localize('global.rejected_blood_test_requests') }}</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ Route::is('blood_banks.blood_tests.delivered') ? 'active' : '' }}">
+                                <a href="{{ route('blood_banks.blood_tests.delivered') }}" class="menu-link">
+                                    <div>{{ localize('global.delivered_blood_test_requests') }}</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     <li
                         class="menu-item {{ Route::is('blood_banks.inventory', 'blood_banks.inventory.*', 'blood_banks.movements', 'blood_banks.branch_transfers.*') ? 'active open' : '' }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">

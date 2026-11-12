@@ -312,6 +312,7 @@ class BloodBankController extends Controller
         $feature = $request->input('feature', BloodBank::FEATURE_REQUEST);
         $isPhlebotomy = $feature === BloodBank::FEATURE_PHLEBOTOMY;
         $isBloodTyping = $feature === BloodBank::FEATURE_BLOOD_TYPING;
+        $isBloodTest = $feature === BloodBank::FEATURE_BLOOD_TEST;
 
         $validatedData = $request->validate([
             'feature' => ['nullable', 'string', Rule::in(BloodBank::FEATURES)],
@@ -322,22 +323,36 @@ class BloodBankController extends Controller
             'hemoglobin' => [$isPhlebotomy ? 'required' : 'nullable', 'numeric', 'min:0', 'max:999'],
             'hematocrit' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'factor' => ['nullable', 'string', 'max:255'],
-            'tests' => ['nullable', 'array'],
-            'tests.*.test_name' => ['nullable', 'string', 'max:255'],
+            'tests' => [$isBloodTest ? 'required' : 'nullable', 'array', $isBloodTest ? 'min:1' : 'nullable'],
+            'tests.*.test_name' => [$isBloodTest ? 'required' : 'nullable', 'string', 'max:255'],
             'branch_id' => 'required|exists:branches,id',
             'appointment_id' => 'nullable|exists:appointments,id',
             'hospitalization_id' => 'nullable|exists:hospitalizations,id',
             'anesthesia_id' => 'nullable|exists:anesthesias,id',
             'patient_id' => 'nullable|exists:patients,id',
-            'department_id' => [($isPhlebotomy || $isBloodTyping) ? 'required' : 'nullable', 'exists:departments,id'],
+            'department_id' => [($isPhlebotomy || $isBloodTyping || $isBloodTest) ? 'required' : 'nullable', 'exists:departments,id'],
             'operation_id' => 'nullable|exists:operations,id',
             'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
             'under_review_id' => 'nullable|exists:under_reviews,id',
         ], [
             'appointment_id.exists' => 'Invalid appointment',
+            'tests.required' => localize('global.blood_test_at_least_one_required'),
+            'tests.min' => localize('global.blood_test_at_least_one_required'),
+            'tests.*.test_name.required' => localize('global.blood_test_name_required'),
         ]);
 
-        $bloodBank = DB::transaction(function () use ($validatedData, $isPhlebotomy, $isBloodTyping) {
+        if ($isBloodTest) {
+            $namedTests = collect($validatedData['tests'] ?? [])
+                ->map(fn ($test) => trim((string) ($test['test_name'] ?? '')))
+                ->filter()
+                ->values();
+
+            if ($namedTests->isEmpty()) {
+                return redirect()->back()->withInput()->with('error', localize('global.blood_test_at_least_one_required'));
+            }
+        }
+
+        $bloodBank = DB::transaction(function () use ($validatedData, $isBloodTyping, $isBloodTest) {
             $bloodBank = BloodBank::create([
                 'created_by' => auth()->id(),
                 'feature' => $validatedData['feature'] ?? BloodBank::FEATURE_REQUEST,
@@ -359,7 +374,7 @@ class BloodBankController extends Controller
                 'under_review_id' => $validatedData['under_review_id'] ?? null,
             ]);
 
-            if (! $isPhlebotomy && ! $isBloodTyping) {
+            if ($isBloodTest) {
                 foreach ($validatedData['tests'] ?? [] as $test) {
                     $name = trim((string) ($test['test_name'] ?? ''));
                     if ($name === '') {
@@ -385,11 +400,12 @@ class BloodBankController extends Controller
 
         SendNewBloodBankNotification::dispatch($bloodBank->created_by, $bloodBank->id);
 
-        $successKey = $isPhlebotomy
-            ? 'global.phlebotomy_created_successfully'
-            : ($isBloodTyping
-                ? 'global.blood_typing_created_successfully'
-                : 'global.blood_request_created_successfully');
+        $successKey = match (true) {
+            $isPhlebotomy => 'global.phlebotomy_created_successfully',
+            $isBloodTyping => 'global.blood_typing_created_successfully',
+            $isBloodTest => 'global.blood_test_created_successfully',
+            default => 'global.blood_request_created_successfully',
+        };
 
         return redirect()->back()->with('success', localize($successKey));
     }
@@ -407,6 +423,10 @@ class BloodBankController extends Controller
 
         if ($bloodBank->isBloodTyping()) {
             return redirect()->route('blood_banks.blood_typing.show', $bloodBank);
+        }
+
+        if ($bloodBank->isBloodTest()) {
+            return redirect()->route('blood_banks.blood_tests.show', $bloodBank);
         }
 
         app(BloodBankStockService::class)->archiveExpiredUnits((int) $bloodBank->branch_id, auth()->id());
@@ -816,7 +836,12 @@ class BloodBankController extends Controller
 
     public function fillBloodBankTest(Request $request, BloodBank $bloodBank, BloodBankTest $bloodBankTest)
     {
+        if ($bloodBank->isBloodTest()) {
+            return app(BloodTestController::class)->fillTest($request, $bloodBank, $bloodBankTest);
+        }
+
         $this->ensureBloodRequestBranch($bloodBank);
+        $this->ensureTransfusionRequest($bloodBank);
         $this->ensureCanManageCrossmatch($request);
 
         if ((int) $bloodBankTest->blood_bank_id !== (int) $bloodBank->id) {

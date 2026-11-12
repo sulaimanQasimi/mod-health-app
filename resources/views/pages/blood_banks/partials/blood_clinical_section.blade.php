@@ -4,13 +4,14 @@
     $requestRecords = $records->filter(fn ($item) => $item->isTransfusionRequest())->values();
     $phlebotomyRecords = $records->filter(fn ($item) => $item->isPhlebotomy())->values();
     $bloodTypingRecords = $records->filter(fn ($item) => $item->isBloodTyping())->values();
+    $bloodTestRecords = $records->filter(fn ($item) => $item->isBloodTest())->values();
     $canCreate = $canCreate ?? true;
     $requireDepartment = empty($departmentId);
     $activeTab = request('blood_tab', 'request');
-    if (! in_array($activeTab, ['request', 'phlebotomy', 'blood_typing'], true)) {
+    if (! in_array($activeTab, ['request', 'phlebotomy', 'blood_typing', 'blood_test'], true)) {
         $activeTab = 'request';
     }
-    $totalCount = $requestRecords->count() + $phlebotomyRecords->count() + $bloodTypingRecords->count();
+    $totalCount = $requestRecords->count() + $phlebotomyRecords->count() + $bloodTypingRecords->count() + $bloodTestRecords->count();
 @endphp
 
 <div class="accordion mt-4 mb-4" id="bloodClinicalAccordion{{ $sectionId }}">
@@ -65,6 +66,18 @@
                                 aria-selected="{{ $activeTab === 'blood_typing' ? 'true' : 'false' }}">
                             {{ localize('global.blood_typing') }}
                             <span class="badge bg-label-info ms-1">{{ $bloodTypingRecords->count() }}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {{ $activeTab === 'blood_test' ? 'active' : '' }}"
+                                id="bloodTestTab{{ $sectionId }}"
+                                data-bs-toggle="tab"
+                                data-bs-target="#bloodTestPane{{ $sectionId }}"
+                                type="button" role="tab"
+                                aria-controls="bloodTestPane{{ $sectionId }}"
+                                aria-selected="{{ $activeTab === 'blood_test' ? 'true' : 'false' }}">
+                            {{ localize('global.blood_tests') }}
+                            <span class="badge bg-label-warning ms-1">{{ $bloodTestRecords->count() }}</span>
                         </button>
                     </li>
                 </ul>
@@ -400,6 +413,121 @@
                                         <tr>
                                             <td colspan="6" class="text-center text-muted py-3">
                                                 {{ localize('global.no_blood_typing_requests') }}
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- Blood tests tab --}}
+                    <div class="tab-pane fade {{ $activeTab === 'blood_test' ? 'show active' : '' }}"
+                         id="bloodTestPane{{ $sectionId }}" role="tabpanel"
+                         aria-labelledby="bloodTestTab{{ $sectionId }}">
+                        @if ($canCreate)
+                            <button type="button" class="btn btn-sm btn-warning mb-3" data-bs-toggle="modal"
+                                    data-bs-target="#bloodTestModal{{ $sectionId }}">
+                                <i class="bx bx-plus me-1"></i>{{ localize('global.add') }}
+                            </button>
+
+                            <div class="modal fade" id="bloodTestModal{{ $sectionId }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <form action="{{ route('blood_banks.store') }}" method="POST">
+                                            @csrf
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">{{ localize('global.blood_tests') }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="{{ localize('global.close') }}"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" name="feature" value="blood_test">
+                                                <input type="hidden" name="patient_id" value="{{ $patientId }}">
+                                                <input type="hidden" name="branch_id" value="{{ $branchId }}">
+                                                @if (! empty($appointmentId))
+                                                    <input type="hidden" name="appointment_id" value="{{ $appointmentId }}">
+                                                @endif
+                                                @if (! empty($hospitalizationId))
+                                                    <input type="hidden" name="hospitalization_id" value="{{ $hospitalizationId }}">
+                                                @endif
+                                                @if (! empty($anesthesiaId))
+                                                    <input type="hidden" name="anesthesia_id" value="{{ $anesthesiaId }}">
+                                                @endif
+                                                @if (! empty($operationId))
+                                                    <input type="hidden" name="operation_id" value="{{ $operationId }}">
+                                                @endif
+                                                @if (! empty($icuId))
+                                                    <input type="hidden" name="i_c_u_id" value="{{ $icuId }}">
+                                                @endif
+                                                @if (! empty($underReviewId))
+                                                    <input type="hidden" name="under_review_id" value="{{ $underReviewId }}">
+                                                @endif
+                                                @if (! empty($departmentId))
+                                                    <input type="hidden" name="department_id" value="{{ $departmentId }}">
+                                                @endif
+
+                                                @include('pages.blood_banks.partials.request_form_fields', [
+                                                    'fieldId' => 'test'.$sectionId,
+                                                    'requireCore' => false,
+                                                    'hideExtras' => true,
+                                                    'hideBloodFields' => true,
+                                                    'showTests' => true,
+                                                    'requireDepartment' => $requireDepartment,
+                                                    'departments' => $departments ?? [],
+                                                    'selectedDepartmentId' => $departmentId ?? null,
+                                                ])
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    {{ localize('global.cancel') }}
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    {{ localize('global.save') }}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>{{ localize('global.number') }}</th>
+                                        <th>{{ localize('global.blood_bank_requested_tests') }}</th>
+                                        <th>{{ localize('global.department') }}</th>
+                                        <th>{{ localize('global.status') }}</th>
+                                        <th class="text-center">{{ localize('global.actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($bloodTestRecords as $item)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>
+                                                @if ($item->tests && $item->tests->isNotEmpty())
+                                                    {{ $item->tests->pluck('test_name')->filter()->implode(', ') }}
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+                                            <td>{{ $item->department?->name ?? '—' }}</td>
+                                            <td><span class="badge bg-label-secondary">{{ $item->status }}</span></td>
+                                            <td class="text-center">
+                                                <a href="{{ route('blood_banks.blood_tests.show', $item->id) }}"
+                                                   class="btn btn-sm btn-outline-primary"
+                                                   title="{{ localize('global.view') }}">
+                                                    <i class="bx bx-expand"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-3">
+                                                {{ localize('global.no_blood_test_requests') }}
                                             </td>
                                         </tr>
                                     @endforelse

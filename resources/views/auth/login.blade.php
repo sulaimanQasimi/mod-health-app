@@ -45,18 +45,19 @@
 
     <style>
         :root {
-            --ink: #0f1c2e;
-            --text: #122033;
-            --text-muted: #5b6b7c;
-            --glass: rgba(255, 252, 248, 0.88);
-            --glass-border: rgba(255, 255, 255, 0.55);
-            --field-border: rgba(18, 48, 72, 0.16);
-            --field-bg: rgba(255, 255, 255, 0.72);
-            --accent: #0f766e;
-            --accent-deep: #0b5f59;
-            --accent-soft: rgba(15, 118, 110, 0.14);
+            --ink: #132536;
+            --text: #1a3044;
+            --text-muted: #5f7386;
+            --field-border: rgba(30, 58, 76, 0.18);
+            --field-bg: rgba(255, 255, 255, 0.78);
+            --accent: #1a6b72;
+            --accent-deep: #14555b;
+            --accent-soft: rgba(26, 107, 114, 0.14);
             --danger: #c2410c;
-            --warm-glow: rgba(212, 163, 84, 0.28);
+            /* Hospital image palette: sky → stone → dusk */
+            --panel-light: #eef4f8;
+            --panel-mid: #d5e2ec;
+            --panel-dark: #9eb4c6;
         }
 
         * {
@@ -68,135 +69,145 @@
         body {
             min-height: 100vh;
             color: var(--text);
-            background: #0b1724;
+            background: #0d1b28;
             overflow-x: hidden;
         }
 
-        .login-scene {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            overflow: hidden;
+        .login-layout {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1.35fr minmax(340px, 440px);
+            direction: ltr; /* keep hospital left, form right in all languages */
         }
 
-        .login-scene__image {
+        .login-visual {
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        .login-visual__image {
             position: absolute;
-            inset: -2%;
-            width: 104%;
-            height: 104%;
+            inset: 0;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             object-position: center center;
-            transform: scale(1.04);
+            transform: scale(1.03);
             animation: sceneDrift 28s ease-in-out infinite alternate;
-            filter: saturate(1.05) contrast(1.02);
+            filter: saturate(1.06) contrast(1.03);
         }
 
-        .login-scene__veil {
+        .login-visual__veil {
             position: absolute;
             inset: 0;
             background:
-                linear-gradient(120deg, rgba(8, 22, 36, 0.72) 0%, rgba(8, 22, 36, 0.42) 42%, rgba(12, 40, 48, 0.55) 100%),
-                radial-gradient(ellipse 70% 55% at 70% 20%, var(--warm-glow), transparent 60%),
-                radial-gradient(ellipse 80% 70% at 50% 100%, rgba(8, 22, 36, 0.55), transparent 55%);
-        }
-
-        .login-scene__grain {
-            position: absolute;
-            inset: 0;
-            opacity: 0.08;
+                linear-gradient(90deg, rgba(8, 22, 36, 0.18) 0%, rgba(8, 22, 36, 0.08) 55%, rgba(13, 40, 52, 0.35) 100%),
+                linear-gradient(180deg, rgba(8, 22, 36, 0.12) 0%, transparent 30%, rgba(8, 22, 36, 0.28) 100%);
             pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            background-size: 180px 180px;
-            mix-blend-mode: soft-light;
         }
 
         @keyframes sceneDrift {
-            from { transform: scale(1.04) translate3d(0, 0, 0); }
-            to { transform: scale(1.08) translate3d(-1.2%, -0.6%, 0); }
+            from { transform: scale(1.03) translate3d(0, 0, 0); }
+            to { transform: scale(1.07) translate3d(-1%, -0.5%, 0); }
         }
 
-        .login-page {
+        .login-aside {
             position: relative;
             z-index: 1;
             min-height: 100vh;
-            display: grid;
-            place-items: center;
-            padding: clamp(1.25rem, 4vw, 2.5rem) 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: clamp(1.5rem, 4vh, 2.75rem) clamp(1.25rem, 3vw, 2.25rem);
+            background:
+                linear-gradient(
+                    165deg,
+                    var(--panel-light) 0%,
+                    var(--panel-mid) 48%,
+                    var(--panel-dark) 100%
+                );
+            box-shadow: -18px 0 40px rgba(6, 18, 28, 0.22);
+            animation: panelIn 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
-        .login-shell {
-            width: min(100%, 440px);
-            animation: riseIn 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        .login-aside::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 90% 55% at 50% -10%, rgba(255, 255, 255, 0.55), transparent 60%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 28%);
         }
 
-        @keyframes riseIn {
+        @keyframes panelIn {
             from {
                 opacity: 0;
-                transform: translateY(22px) scale(0.985);
+                transform: translateX(18px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateX(0);
             }
         }
 
-        .brand-hero {
+        .login-aside__inner {
+            position: relative;
+            width: 100%;
+            max-width: 360px;
+            margin-inline: auto;
+            direction: {{ $isRtl ? 'rtl' : 'ltr' }};
+        }
+
+        .brand-top {
             text-align: center;
-            margin-bottom: 1.35rem;
-            color: #f7f4ef;
-            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            margin-bottom: 1.75rem;
         }
 
         .brand-logo {
-            width: clamp(72px, 16vw, 92px);
-            height: clamp(72px, 16vw, 92px);
-            margin: 0 auto 0.9rem;
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 0.85rem;
             border-radius: 50%;
             object-fit: cover;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.35);
             box-shadow:
-                0 0 0 1px rgba(255, 255, 255, 0.28),
-                0 12px 36px rgba(0, 0, 0, 0.35);
-            animation: logoGlow 4.5s ease-in-out infinite;
+                0 0 0 1px rgba(255, 255, 255, 0.55),
+                0 10px 28px rgba(18, 48, 72, 0.18);
+            animation: logoGlow 4.8s ease-in-out infinite;
         }
 
         @keyframes logoGlow {
-            0%, 100% { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28), 0 12px 36px rgba(0, 0, 0, 0.35); }
-            50% { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 14px 42px rgba(0, 0, 0, 0.4), 0 0 28px rgba(212, 163, 84, 0.25); }
+            0%, 100% {
+                box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55), 0 10px 28px rgba(18, 48, 72, 0.18);
+            }
+            50% {
+                box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7), 0 12px 32px rgba(18, 48, 72, 0.22), 0 0 24px rgba(158, 180, 198, 0.45);
+            }
         }
 
         .brand-name {
-            font-size: clamp(1.55rem, 3.6vw, 2rem);
+            font-size: clamp(1.35rem, 2.4vw, 1.65rem);
             font-weight: 700;
+            color: var(--ink);
             letter-spacing: -0.02em;
-            line-height: 1.2;
-            margin-bottom: 0.4rem;
+            line-height: 1.25;
+            margin-bottom: 0.3rem;
         }
 
         .brand-tagline {
-            font-size: 0.95rem;
-            color: rgba(247, 244, 239, 0.82);
-            line-height: 1.5;
-        }
-
-        .login-panel {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 22px;
-            backdrop-filter: blur(18px) saturate(1.15);
-            -webkit-backdrop-filter: blur(18px) saturate(1.15);
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.55) inset,
-                0 24px 60px rgba(4, 14, 24, 0.28);
-            padding: clamp(1.4rem, 3.5vw, 1.85rem);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.45;
         }
 
         .form-head {
-            margin-bottom: 1.15rem;
+            margin-bottom: 1.1rem;
         }
 
         .form-head h1 {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: var(--ink);
         }
@@ -215,7 +226,7 @@
             top: 50%;
             transform: translateY(-50%);
             {{ $isRtl ? 'right' : 'left' }}: 0.9rem;
-            color: #7d8b99;
+            color: #7a8d9d;
             font-size: 1.08rem;
             pointer-events: none;
             transition: color 180ms ease;
@@ -234,12 +245,12 @@
         }
 
         .form-input::placeholder {
-            color: #8a97a5;
+            color: #8799a8;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: rgba(15, 118, 110, 0.55);
+            border-color: rgba(26, 107, 114, 0.55);
             box-shadow: 0 0 0 4px var(--accent-soft);
             background: #fff;
         }
@@ -259,7 +270,7 @@
             border: none;
             border-radius: 10px;
             background: transparent;
-            color: #7d8b99;
+            color: #7a8d9d;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -305,20 +316,19 @@
             font-weight: 700;
             cursor: pointer;
             color: #fff;
-            background:
-                linear-gradient(135deg, #129287 0%, var(--accent) 55%, var(--accent-deep) 100%);
+            background: linear-gradient(135deg, #2a858d 0%, var(--accent) 55%, var(--accent-deep) 100%);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
             transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
             position: relative;
-            box-shadow: 0 10px 24px rgba(15, 118, 110, 0.28);
+            box-shadow: 0 10px 22px rgba(20, 85, 91, 0.28);
         }
 
         .btn-login:hover {
             filter: brightness(1.05);
-            box-shadow: 0 14px 28px rgba(15, 118, 110, 0.34);
+            box-shadow: 0 14px 26px rgba(20, 85, 91, 0.34);
             transform: translateY(-1px);
         }
 
@@ -359,21 +369,39 @@
             box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.12);
         }
 
-        @media (max-width: 480px) {
-            .login-panel {
-                border-radius: 18px;
-                padding: 1.25rem 1.1rem 1.2rem;
+        @media (max-width: 900px) {
+            .login-layout {
+                grid-template-columns: 1fr;
             }
 
-            .brand-name {
-                font-size: 1.4rem;
+            .login-visual {
+                min-height: 34vh;
+                max-height: 38vh;
+            }
+
+            .login-aside {
+                min-height: auto;
+                flex: 1;
+                box-shadow: none;
+                animation-name: panelInUp;
+            }
+
+            @keyframes panelInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(16px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .login-scene__image,
+            .login-visual__image,
             .brand-logo,
-            .login-shell {
+            .login-aside {
                 animation: none;
             }
         }
@@ -381,31 +409,30 @@
 </head>
 
 <body dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-    <div class="login-scene" aria-hidden="true">
-        <img
-            class="login-scene__image"
-            src="{{ $bgPath }}"
-            alt=""
-            decoding="async"
-            fetchpriority="high">
-        <div class="login-scene__veil"></div>
-        <div class="login-scene__grain"></div>
-    </div>
+    <main class="login-layout">
+        <section class="login-visual" aria-hidden="true">
+            <img
+                class="login-visual__image"
+                src="{{ $bgPath }}"
+                alt=""
+                decoding="async"
+                fetchpriority="high">
+            <div class="login-visual__veil"></div>
+        </section>
 
-    <main class="login-page">
-        <div class="login-shell">
-            <header class="brand-hero">
-                <img
-                    class="brand-logo"
-                    src="{{ $logoPath }}"
-                    alt="{{ localize('global.system_name') }}"
-                    width="92"
-                    height="92">
-                <div class="brand-name">{{ localize('global.system_name') }}</div>
-                <p class="brand-tagline">{{ localize('global.login') }}</p>
-            </header>
+        <aside class="login-aside">
+            <div class="login-aside__inner">
+                <header class="brand-top">
+                    <img
+                        class="brand-logo"
+                        src="{{ $logoPath }}"
+                        alt="{{ localize('global.system_name') }}"
+                        width="88"
+                        height="88">
+                    <div class="brand-name">{{ localize('global.system_name') }}</div>
+                    <p class="brand-tagline">{{ localize('global.login') }}</p>
+                </header>
 
-            <article class="login-panel">
                 <div class="form-head">
                     <h1>{{ localize('global.sign_in') }}</h1>
                 </div>
@@ -468,8 +495,8 @@
                         <i class='bx bx-log-in'></i>
                     </button>
                 </form>
-            </article>
-        </div>
+            </div>
+        </aside>
     </main>
 
     <script>

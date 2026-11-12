@@ -45,18 +45,14 @@
 
     <style>
         :root {
-            --ink: #0f1c2e;
-            --text: #122033;
-            --text-muted: #5b6b7c;
-            --glass: rgba(255, 252, 248, 0.88);
-            --glass-border: rgba(255, 255, 255, 0.55);
-            --field-border: rgba(18, 48, 72, 0.16);
-            --field-bg: rgba(255, 255, 255, 0.72);
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --field-bg: #f8fafc;
             --accent: #0f766e;
-            --accent-deep: #0b5f59;
-            --accent-soft: rgba(15, 118, 110, 0.14);
-            --danger: #c2410c;
-            --warm-glow: rgba(212, 163, 84, 0.28);
+            --accent-hover: #0d9488;
+            --danger: #dc2626;
+            --panel: #ffffff;
         }
 
         * {
@@ -72,138 +68,92 @@
             overflow-x: hidden;
         }
 
-        .login-scene {
+        .login-bg {
             position: fixed;
             inset: 0;
             z-index: 0;
-            overflow: hidden;
         }
 
-        .login-scene__image {
-            position: absolute;
-            inset: -2%;
-            width: 104%;
-            height: 104%;
+        .login-bg img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            object-position: center center;
-            transform: scale(1.04);
-            animation: sceneDrift 28s ease-in-out infinite alternate;
-            filter: saturate(1.05) contrast(1.02);
+            object-position: center;
         }
 
-        .login-scene__veil {
+        .login-bg::after {
+            content: '';
             position: absolute;
             inset: 0;
-            background:
-                linear-gradient(120deg, rgba(8, 22, 36, 0.72) 0%, rgba(8, 22, 36, 0.42) 42%, rgba(12, 40, 48, 0.55) 100%),
-                radial-gradient(ellipse 70% 55% at 70% 20%, var(--warm-glow), transparent 60%),
-                radial-gradient(ellipse 80% 70% at 50% 100%, rgba(8, 22, 36, 0.55), transparent 55%);
-        }
-
-        .login-scene__grain {
-            position: absolute;
-            inset: 0;
-            opacity: 0.08;
-            pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            background-size: 180px 180px;
-            mix-blend-mode: soft-light;
-        }
-
-        @keyframes sceneDrift {
-            from { transform: scale(1.04) translate3d(0, 0, 0); }
-            to { transform: scale(1.08) translate3d(-1.2%, -0.6%, 0); }
+            background: linear-gradient(
+                180deg,
+                rgba(11, 23, 36, 0.35) 0%,
+                rgba(11, 23, 36, 0.45) 100%
+            );
         }
 
         .login-page {
             position: relative;
             z-index: 1;
             min-height: 100vh;
-            display: grid;
-            place-items: center;
-            padding: clamp(1.25rem, 4vw, 2.5rem) 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem 1rem;
         }
 
-        .login-shell {
-            width: min(100%, 440px);
-            animation: riseIn 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: var(--panel);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            border-radius: 16px;
+            padding: 2rem 1.75rem 1.75rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+            animation: fadeIn 400ms ease-out;
         }
 
-        @keyframes riseIn {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(22px) scale(0.985);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
             }
         }
 
-        .brand-hero {
+        .brand {
             text-align: center;
-            margin-bottom: 1.35rem;
-            color: #f7f4ef;
-            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            margin-bottom: 1.75rem;
         }
 
-        .brand-logo {
-            width: clamp(72px, 16vw, 92px);
-            height: clamp(72px, 16vw, 92px);
-            margin: 0 auto 0.9rem;
+        .brand img {
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             object-fit: cover;
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow:
-                0 0 0 1px rgba(255, 255, 255, 0.28),
-                0 12px 36px rgba(0, 0, 0, 0.35);
-            animation: logoGlow 4.5s ease-in-out infinite;
+            margin-bottom: 0.85rem;
+            display: block;
+            margin-inline: auto;
         }
 
-        @keyframes logoGlow {
-            0%, 100% { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28), 0 12px 36px rgba(0, 0, 0, 0.35); }
-            50% { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 14px 42px rgba(0, 0, 0, 0.4), 0 0 28px rgba(212, 163, 84, 0.25); }
-        }
-
-        .brand-name {
-            font-size: clamp(1.55rem, 3.6vw, 2rem);
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            line-height: 1.2;
-            margin-bottom: 0.4rem;
-        }
-
-        .brand-tagline {
-            font-size: 0.95rem;
-            color: rgba(247, 244, 239, 0.82);
-            line-height: 1.5;
-        }
-
-        .login-panel {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 22px;
-            backdrop-filter: blur(18px) saturate(1.15);
-            -webkit-backdrop-filter: blur(18px) saturate(1.15);
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.55) inset,
-                0 24px 60px rgba(4, 14, 24, 0.28);
-            padding: clamp(1.4rem, 3.5vw, 1.85rem);
-        }
-
-        .form-head {
-            margin-bottom: 1.15rem;
-        }
-
-        .form-head h1 {
+        .brand h1 {
             font-size: 1.2rem;
             font-weight: 700;
-            color: var(--ink);
+            color: var(--text);
+            line-height: 1.3;
+            margin-bottom: 0.25rem;
+        }
+
+        .brand p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
         }
 
         .field {
-            margin-bottom: 0.95rem;
-            position: relative;
+            margin-bottom: 0.9rem;
         }
 
         .input-wrap {
@@ -214,38 +164,36 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            {{ $isRtl ? 'right' : 'left' }}: 0.9rem;
-            color: #7d8b99;
-            font-size: 1.08rem;
+            {{ $isRtl ? 'right' : 'left' }}: 0.85rem;
+            color: #94a3b8;
+            font-size: 1.05rem;
             pointer-events: none;
-            transition: color 180ms ease;
         }
 
         .form-input {
             width: 100%;
-            height: 50px;
-            border-radius: 12px;
-            border: 1px solid var(--field-border);
+            height: 46px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
             background: var(--field-bg);
             color: var(--text);
-            font-size: 0.95rem;
-            padding: 0.75rem 2.7rem;
-            transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+            font-size: 0.9375rem;
+            padding: 0.7rem 2.5rem;
+            transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
         }
 
         .form-input::placeholder {
-            color: #8a97a5;
+            color: #94a3b8;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: rgba(15, 118, 110, 0.55);
-            box-shadow: 0 0 0 4px var(--accent-soft);
+            border-color: var(--accent);
             background: #fff;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
         }
 
-        .form-input:focus + .input-icon,
-        .field.has-value .input-icon {
+        .form-input:focus + .input-icon {
             color: var(--accent);
         }
 
@@ -253,36 +201,32 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            {{ $isRtl ? 'left' : 'right' }}: 0.45rem;
-            width: 38px;
-            height: 38px;
+            {{ $isRtl ? 'left' : 'right' }}: 0.4rem;
+            width: 34px;
+            height: 34px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             background: transparent;
-            color: #7d8b99;
+            color: #94a3b8;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: background 160ms ease, color 160ms ease;
         }
 
         .password-toggle:hover {
-            background: var(--accent-soft);
             color: var(--accent);
+            background: rgba(15, 118, 110, 0.08);
         }
 
         .meta-row {
-            margin: 0.15rem 0 1.15rem;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
+            margin: 0.15rem 0 1.1rem;
         }
 
         .remember {
             display: inline-flex;
             align-items: center;
-            gap: 0.55rem;
+            gap: 0.5rem;
             color: var(--text-muted);
             font-size: 0.875rem;
             cursor: pointer;
@@ -290,40 +234,32 @@
         }
 
         .remember input {
-            width: 16px;
-            height: 16px;
+            width: 15px;
+            height: 15px;
             accent-color: var(--accent);
             cursor: pointer;
         }
 
         .btn-login {
             width: 100%;
+            height: 46px;
             border: none;
-            border-radius: 12px;
-            height: 50px;
-            font-size: 0.98rem;
-            font-weight: 700;
-            cursor: pointer;
+            border-radius: 10px;
+            background: var(--accent);
             color: #fff;
-            background:
-                linear-gradient(135deg, #129287 0%, var(--accent) 55%, var(--accent-deep) 100%);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+            gap: 0.4rem;
             position: relative;
-            box-shadow: 0 10px 24px rgba(15, 118, 110, 0.28);
+            transition: background 150ms ease;
         }
 
         .btn-login:hover {
-            filter: brightness(1.05);
-            box-shadow: 0 14px 28px rgba(15, 118, 110, 0.34);
-            transform: translateY(-1px);
-        }
-
-        .btn-login:active {
-            transform: translateY(1px);
+            background: var(--accent-hover);
         }
 
         .btn-login.loading {
@@ -333,8 +269,8 @@
 
         .btn-login.loading::after {
             content: '';
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.9);
             border-top-color: transparent;
@@ -349,31 +285,22 @@
         .invalid-feedback {
             display: block;
             color: var(--danger);
-            font-size: 0.8125rem;
-            margin-top: 0.4rem;
-            padding-inline: 0.15rem;
+            font-size: 0.8rem;
+            margin-top: 0.35rem;
         }
 
         .form-input.is-invalid {
-            border-color: rgba(194, 65, 12, 0.55);
-            box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.12);
+            border-color: rgba(220, 38, 38, 0.55);
         }
 
-        @media (max-width: 480px) {
-            .login-panel {
-                border-radius: 18px;
-                padding: 1.25rem 1.1rem 1.2rem;
-            }
-
-            .brand-name {
-                font-size: 1.4rem;
+        @media (max-width: 420px) {
+            .login-card {
+                padding: 1.5rem 1.2rem 1.35rem;
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .login-scene__image,
-            .brand-logo,
-            .login-shell {
+            .login-card {
                 animation: none;
             }
         }
@@ -381,95 +308,76 @@
 </head>
 
 <body dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-    <div class="login-scene" aria-hidden="true">
-        <img
-            class="login-scene__image"
-            src="{{ $bgPath }}"
-            alt=""
-            decoding="async"
-            fetchpriority="high">
-        <div class="login-scene__veil"></div>
-        <div class="login-scene__grain"></div>
+    <div class="login-bg" aria-hidden="true">
+        <img src="{{ $bgPath }}" alt="" decoding="async" fetchpriority="high">
     </div>
 
     <main class="login-page">
-        <div class="login-shell">
-            <header class="brand-hero">
-                <img
-                    class="brand-logo"
-                    src="{{ $logoPath }}"
-                    alt="{{ localize('global.system_name') }}"
-                    width="92"
-                    height="92">
-                <div class="brand-name">{{ localize('global.system_name') }}</div>
-                <p class="brand-tagline">{{ localize('global.login') }}</p>
+        <article class="login-card">
+            <header class="brand">
+                <img src="{{ $logoPath }}" alt="{{ localize('global.system_name') }}" width="72" height="72">
+                <h1>{{ localize('global.system_name') }}</h1>
+                <p>{{ localize('global.sign_in') }}</p>
             </header>
 
-            <article class="login-panel">
-                <div class="form-head">
-                    <h1>{{ localize('global.sign_in') }}</h1>
+            <form method="POST" action="{{ route('login') }}" id="loginForm" novalidate>
+                @csrf
+
+                <div class="field">
+                    <div class="input-wrap">
+                        <input
+                            id="email"
+                            type="email"
+                            class="form-input @error('email') is-invalid @enderror"
+                            name="email"
+                            value="{{ old('email') }}"
+                            required
+                            autocomplete="email"
+                            autofocus
+                            placeholder="{{ localize('global.email') }}">
+                        <i class='bx bx-envelope input-icon'></i>
+                    </div>
+                    @if ($errors->has('email'))
+                        <span class="invalid-feedback">
+                            <strong>{{ $errors->first('email') }}</strong>
+                        </span>
+                    @endif
                 </div>
 
-                <form method="POST" action="{{ route('login') }}" id="loginForm" novalidate>
-                    @csrf
-
-                    <div class="field {{ old('email') ? 'has-value' : '' }}">
-                        <div class="input-wrap">
-                            <input
-                                id="email"
-                                type="email"
-                                class="form-input @error('email') is-invalid @enderror"
-                                name="email"
-                                value="{{ old('email') }}"
-                                required
-                                autocomplete="email"
-                                autofocus
-                                placeholder="{{ localize('global.email') }}">
-                            <i class='bx bx-envelope input-icon'></i>
-                        </div>
-                        @if ($errors->has('email'))
-                            <span class="invalid-feedback">
-                                <strong>{{ $errors->first('email') }}</strong>
-                            </span>
-                        @endif
+                <div class="field">
+                    <div class="input-wrap">
+                        <input
+                            id="password"
+                            type="password"
+                            class="form-input @error('password') is-invalid @enderror"
+                            name="password"
+                            required
+                            autocomplete="current-password"
+                            placeholder="{{ localize('global.password') }}">
+                        <i class='bx bx-lock-alt input-icon'></i>
+                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password">
+                            <i class='bx bx-hide' id="toggleIcon"></i>
+                        </button>
                     </div>
+                    @if ($errors->has('password'))
+                        <span class="invalid-feedback">
+                            <strong>{{ $errors->first('password') }}</strong>
+                        </span>
+                    @endif
+                </div>
 
-                    <div class="field">
-                        <div class="input-wrap">
-                            <input
-                                id="password"
-                                type="password"
-                                class="form-input @error('password') is-invalid @enderror"
-                                name="password"
-                                required
-                                autocomplete="current-password"
-                                placeholder="{{ localize('global.password') }}">
-                            <i class='bx bx-lock-alt input-icon'></i>
-                            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password">
-                                <i class='bx bx-hide' id="toggleIcon"></i>
-                            </button>
-                        </div>
-                        @if ($errors->has('password'))
-                            <span class="invalid-feedback">
-                                <strong>{{ $errors->first('password') }}</strong>
-                            </span>
-                        @endif
-                    </div>
+                <div class="meta-row">
+                    <label class="remember" for="remember-me">
+                        <input type="checkbox" id="remember-me" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                        <span>{{ localize('global.remember_me') }}</span>
+                    </label>
+                </div>
 
-                    <div class="meta-row">
-                        <label class="remember" for="remember-me">
-                            <input type="checkbox" id="remember-me" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                            <span>{{ localize('global.remember_me') }}</span>
-                        </label>
-                    </div>
-
-                    <button type="submit" class="btn-login">
-                        <span>{{ localize('global.sign_in') }}</span>
-                        <i class='bx bx-log-in'></i>
-                    </button>
-                </form>
-            </article>
-        </div>
+                <button type="submit" class="btn-login">
+                    <span>{{ localize('global.sign_in') }}</span>
+                </button>
+            </form>
+        </article>
     </main>
 
     <script>
@@ -486,14 +394,7 @@
         });
 
         loginForm.addEventListener('submit', function () {
-            const submitButton = this.querySelector('.btn-login');
-            submitButton.classList.add('loading');
-        });
-
-        document.querySelectorAll('.form-input').forEach(function (input) {
-            input.addEventListener('input', function () {
-                this.closest('.field').classList.toggle('has-value', this.value.trim().length > 0);
-            });
+            this.querySelector('.btn-login').classList.add('loading');
         });
     </script>
 </body>

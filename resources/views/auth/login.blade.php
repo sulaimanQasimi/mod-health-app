@@ -396,6 +396,13 @@
         loginForm.addEventListener('submit', function () {
             this.querySelector('.btn-login').classList.add('loading');
         });
+
+        // If browser restores this page from back/forward cache, reload so guest middleware runs.
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
     </script>
 </body>
 

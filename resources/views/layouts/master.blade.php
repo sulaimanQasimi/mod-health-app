@@ -237,6 +237,14 @@
 
     @yield('scripts')
     @stack('scripts')
+    <script>
+        // Avoid showing a cached authenticated page after logout via Back/Forward.
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
 </body>
 
 

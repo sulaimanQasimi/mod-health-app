@@ -19,10 +19,13 @@ class BloodBank extends Model
 
     public const FEATURE_BLOOD_TYPING = 'blood_typing';
 
+    public const FEATURE_BLOOD_TEST = 'blood_test';
+
     public const FEATURES = [
         self::FEATURE_REQUEST,
         self::FEATURE_PHLEBOTOMY,
         self::FEATURE_BLOOD_TYPING,
+        self::FEATURE_BLOOD_TEST,
     ];
 
     protected $fillable = [
@@ -62,6 +65,11 @@ class BloodBank extends Model
         return ($this->feature ?? self::FEATURE_REQUEST) === self::FEATURE_BLOOD_TYPING;
     }
 
+    public function isBloodTest(): bool
+    {
+        return ($this->feature ?? self::FEATURE_REQUEST) === self::FEATURE_BLOOD_TEST;
+    }
+
     public function isTransfusionRequest(): bool
     {
         $feature = $this->feature ?? self::FEATURE_REQUEST;
@@ -90,6 +98,11 @@ class BloodBank extends Model
     public function scopeBloodTyping($query)
     {
         return $query->where('feature', self::FEATURE_BLOOD_TYPING);
+    }
+
+    public function scopeBloodTest($query)
+    {
+        return $query->where('feature', self::FEATURE_BLOOD_TEST);
     }
 
     public static function boot()

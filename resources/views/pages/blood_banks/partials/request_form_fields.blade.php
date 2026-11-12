@@ -194,13 +194,17 @@
         <input type="text" maxlength="255" class="form-control rounded" name="factor"
                id="factor{{ $fieldId }}" value="{{ old('factor') }}">
     </div>
+@endunless
 
-    {{-- Requested tests --}}
+@if ($showTests ?? false)
+    <div class="alert alert-info small mb-3">
+        {{ localize('global.blood_test_form_hint') }}
+    </div>
     <div class="mb-3">
         <div class="d-flex justify-content-between align-items-center mb-2 gap-2">
             <label class="form-label mb-0">
                 {{ localize('global.blood_bank_requested_tests') }}
-                <span class="text-muted small">({{ localize('global.optional') }})</span>
+                <span class="text-danger">*</span>
             </label>
             <button type="button" class="btn btn-sm btn-outline-secondary"
                     onclick="addBloodRequestTestRow(@json((string) $fieldId))">
@@ -214,4 +218,12 @@
              class="d-flex flex-column"
              data-placeholder="{{ localize('global.test_name') }}"></div>
     </div>
-@endunless
+    <div class="mb-3">
+        <label class="form-label" for="factor{{ $fieldId }}">
+            {{ localize('global.notes') }}
+            <span class="text-muted small">({{ localize('global.optional') }})</span>
+        </label>
+        <textarea maxlength="255" class="form-control rounded" name="factor"
+                  id="factor{{ $fieldId }}" rows="2">{{ old('factor') }}</textarea>
+    </div>
+@endif

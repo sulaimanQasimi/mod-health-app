@@ -42,6 +42,7 @@ use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodBankController;
 use App\Http\Controllers\PhlebotomyController;
 use App\Http\Controllers\BloodTypingController;
+use App\Http\Controllers\BloodTestController;
 use App\Http\Controllers\BloodBranchTransferController;
 use App\Http\Controllers\BloodUnitController;
 use App\Http\Controllers\BranchController;
@@ -745,6 +746,22 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('{bloodBank}/approve', [BloodTypingController::class, 'approve'])->name('approve');
             Route::put('{bloodBank}/reject', [BloodTypingController::class, 'reject'])->name('reject');
             Route::post('{bloodBank}/complete', [BloodTypingController::class, 'complete'])
+                ->middleware('permission:receive-blood-units|manage-blood-inventory')
+                ->name('complete');
+        });
+
+        Route::prefix('blood-tests')->name('blood_tests.')->group(function () {
+            Route::get('new', [BloodTestController::class, 'new'])->name('new');
+            Route::get('approved', [BloodTestController::class, 'approved'])->name('approved');
+            Route::get('rejected', [BloodTestController::class, 'rejected'])->name('rejected');
+            Route::get('delivered', [BloodTestController::class, 'delivered'])->name('delivered');
+            Route::get('{bloodBank}', [BloodTestController::class, 'show'])->name('show');
+            Route::post('{bloodBank}/approve', [BloodTestController::class, 'approve'])->name('approve');
+            Route::put('{bloodBank}/reject', [BloodTestController::class, 'reject'])->name('reject');
+            Route::post('{bloodBank}/tests/{bloodBankTest}/fill', [BloodTestController::class, 'fillTest'])
+                ->middleware('permission:receive-blood-units|manage-blood-inventory')
+                ->name('fill');
+            Route::post('{bloodBank}/complete', [BloodTestController::class, 'complete'])
                 ->middleware('permission:receive-blood-units|manage-blood-inventory')
                 ->name('complete');
         });

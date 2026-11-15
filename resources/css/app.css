@@ -1,5 +1,10 @@
+@import "flowbite/src/themes/default";
 @import "tailwindcss";
 @import "../../vendor/wirechat/wirechat/resources/css/app.css";
+@import "./fonts.css";
+
+@plugin "flowbite/plugin";
+@custom-variant dark (&:where(.dark, .dark *));
 
 html,
 body {
@@ -27,11 +32,6 @@ select.appearance-none.bg-arrow-down-icon {
 .laboratory-ck-editor .ck.ck-toolbar {
     border-radius: 0.5rem 0.5rem 0 0;
 }
-
-@custom-variant dark (&:where(.dark, .dark *));
-@import "flowbite/src/themes/default";
-@plugin "flowbite/plugin";
-@import "./fonts.css";
 
 @source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
 @source "../../storage/framework/views/*.php";

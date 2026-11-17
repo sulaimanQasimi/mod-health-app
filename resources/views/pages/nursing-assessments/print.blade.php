@@ -230,7 +230,7 @@
 
         <div class="print-meta">
             <span>{{ localize('global.date') }}: {{ \Morilog\Jalali\Jalalian::now()->format('Y/m/d') }}</span>
-            <span>{{ localize('global.time') }}: {{ now()->format('H:i') }}</span>
+            <span>{{ localize('global.time') }}: {{ now()->format('h:i A') }}</span>
         </div>
 
         <div class="form-title">{{ localize('global.nursing_assessment') }}</div>

@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\PreparesNursingAssessmentData;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreNursingAssessmentRequest extends FormRequest
 {
+    use PreparesNursingAssessmentData;
+
     /**
      * Determine if the user is authorized to make this request.
      */

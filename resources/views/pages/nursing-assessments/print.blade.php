@@ -130,11 +130,20 @@
             margin: 0;
         }
 
+        .print-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
         .form-title {
             text-align: center;
             font-size: 18px;
             font-weight: bold;
-            margin: 12px 0 14px;
+            margin: 0 0 14px;
             padding: 6px 0;
             border: 2px solid #000;
             background: #f3f3f3;
@@ -252,6 +261,11 @@
                     <img src="{{ asset('images/logos/لوگوی جدید وزارت دفاع ملی.png') }}" alt="Ministry Logo" class="logo-image">
                 </div>
             </div>
+        </div>
+
+        <div class="print-meta">
+            <span>{{ localize('global.date') }}: {{ \Morilog\Jalali\Jalalian::now()->format('Y/m/d') }}</span>
+            <span>{{ localize('global.time') }}: {{ now()->format('H:i') }}</span>
         </div>
 
         <div class="form-title">{{ localize('global.nursing_assessment') }}</div>

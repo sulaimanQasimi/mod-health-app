@@ -105,7 +105,13 @@ class NursingAssessmentController extends Controller
     {
         $this->authorize('view', $nursingAssessment);
 
-        $nursingAssessment->load(['morphable.patient', 'nurse']);
+        $nursingAssessment->load([
+            'morphable.patient',
+            'morphable.room',
+            'morphable.appointment.department',
+            'nurse',
+        ]);
+
         return view('pages.nursing-assessments.print', compact('nursingAssessment'));
     }
     public function section(Request $request)

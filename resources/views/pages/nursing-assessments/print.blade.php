@@ -1,50 +1,79 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
         $patient = $nursingAssessment->morphable->patient ?? null;
-        $patientFullName = trim(($patient->first_name ?? '') . ' ' . ($patient->last_name ?? ''));
+        $patientFullName = trim(($patient->name ?? '') . ' ' . ($patient->last_name ?? ''));
         if ($patientFullName === '') {
             $patientFullName = $nursingAssessment->patient_name;
         }
 
+        $morphable = $nursingAssessment->morphable;
+        $departmentName = auth()->user()->department?->name
+            ?? $morphable?->appointment?->department?->name
+            ?? $morphable?->room?->name
+            ?? null;
+
         $formatDate = function ($value) {
             if (!$value) {
-                return '________________';
+                return '—';
             }
-            if ($value instanceof \Carbon\Carbon || $value instanceof \DateTimeInterface) {
-                return $value->format('Y-m-d');
+            try {
+                if ($value instanceof \Carbon\Carbon || $value instanceof \DateTimeInterface) {
+                    return \Verta($value)->format('Y/m/d');
+                }
+                return (string) $value;
+            } catch (\Throwable $e) {
+                return (string) $value;
             }
-            return (string) $value;
         };
 
         $formatTime = function ($value) {
             if (!$value) {
-                return '________________';
+                return '—';
             }
             if ($value instanceof \Carbon\Carbon || $value instanceof \DateTimeInterface) {
                 return $value->format('H:i');
             }
             return substr((string) $value, 0, 5);
         };
+
+        $mark = function ($checked) {
+            return $checked ? '☑' : '☐';
+        };
     @endphp
     <title>{{ localize('global.nursing_assessment') }} - {{ $patientFullName }}</title>
     <style>
+        @font-face {
+            font-family: 'ModFont';
+            src: url('{{ asset("assets/fonts/mod_font.ttf") }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         @page {
             size: A4;
-            margin: 1cm;
+            margin: 8mm;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'ModFont', 'Arial', sans-serif;
             font-size: 12px;
-            line-height: 1.4;
+            line-height: 1.45;
             color: #000;
             background: white;
-            margin: 0;
-            padding: 0;
+            direction: rtl;
+            text-align: right;
+            padding: 12px;
         }
 
         .print-container {
@@ -52,117 +81,138 @@
             max-width: 100%;
         }
 
+        .header {
+            margin-bottom: 12px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 12px;
+        }
+
+        .header-grid {
+            display: grid;
+            grid-template-columns: 110px 1fr 110px;
+            gap: 12px;
+            align-items: center;
+            min-height: 110px;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100px;
+        }
+
+        .logo-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .text-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 2px;
+        }
+
+        .text-column h2 {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .text-column h4 {
+            font-size: 13px;
+            font-weight: bold;
+            margin: 0;
+        }
+
         .form-title {
             text-align: center;
             font-size: 18px;
             font-weight: bold;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
+            margin: 12px 0 14px;
+            padding: 6px 0;
+            border: 2px solid #000;
+            background: #f3f3f3;
         }
 
-        .section-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin: 15px 0 10px 0;
-            border-bottom: 1px solid #000;
-            padding-bottom: 5px;
-        }
-
-        .patient-info {
+        table.info-table {
             width: 100%;
             border-collapse: collapse;
             border: 2px solid #000;
-            margin-top: 10px;
-        }
-
-        .patient-info th,
-        .patient-info td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: center;
-            font-size: 11px;
-        }
-
-        .patient-info th {
-            background-color: #f0f0f0;
-            font-weight: bold;
-        }
-
-        .checkbox {
-            width: 15px;
-            height: 15px;
-            border: 1px solid #000;
-            display: inline-block;
-            position: relative;
-            vertical-align: middle;
-        }
-
-        .checkbox.checked::after {
-            content: '✓';
-            position: absolute;
-            top: -2px;
-            left: 2px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .vital-signs-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .vital-sign-item {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: center;
-        }
-
-        .vital-sign-label {
-            font-weight: bold;
-            font-size: 10px;
-        }
-
-        .vital-sign-value {
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        .two-column-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .checkbox-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 5px;
             margin-bottom: 10px;
         }
 
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 11px;
-        }
-
-        .text-field {
+        table.info-table th,
+        table.info-table td {
             border: 1px solid #000;
-            padding: 8px;
-            min-height: 20px;
+            padding: 6px 8px;
+            vertical-align: middle;
             font-size: 11px;
         }
 
-        .history-block {
-            margin-bottom: 12px;
+        table.info-table th {
+            background: #f0f0f0;
+            font-weight: bold;
+            white-space: nowrap;
+            width: 14%;
+            text-align: center;
+        }
+
+        table.info-table td {
+            text-align: right;
+            width: 19%;
+        }
+
+        table.info-table td.center,
+        table.info-table th.center {
+            text-align: center;
+        }
+
+        .section-head {
+            background: #e8e8e8;
+            font-weight: bold;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .checks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            align-items: center;
+        }
+
+        .check-item {
+            white-space: nowrap;
+        }
+
+        .value-line {
+            min-height: 18px;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            z-index: 1000;
         }
 
         @media print {
+            body {
+                padding: 0;
+            }
+
             .no-print {
                 display: none !important;
             }
@@ -172,303 +222,235 @@
                 print-color-adjust: exact;
             }
         }
-
-        .print-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            z-index: 1000;
-        }
-
-        .print-button:hover {
-            background: #0056b3;
-        }
     </style>
 </head>
 <body>
-    <button class="print-button no-print" onclick="window.print()">
+    <button type="button" class="print-button no-print" onclick="window.print()">
         {{ localize('global.print') }}
     </button>
 
     <div class="print-container">
-        <div class="form-title">
-            {{ localize('global.nursing_assessment') }}
+        <!-- Official Header -->
+        <div class="header">
+            <div class="header-grid">
+                <div class="logo-container">
+                    <img src="{{ asset('images/logos/لوگو قومنداني.JPG') }}" alt="Hospital Logo" class="logo-image">
+                </div>
+
+                <div class="text-column">
+                    <h2>امارت اسلامی افغانستان</h2>
+                    <h4>وزارت دفاع ملی</h4>
+                    <h4>ستـــــــــــــردرستیــــــــــــز</h4>
+                    <h4>قوماندانیت صحیه</h4>
+                    <h4>قوماندانی اکادمی علوم طبی</h4>
+                    @if($departmentName)
+                        <h4>{{ $departmentName }}</h4>
+                    @endif
+                </div>
+
+                <div class="logo-container">
+                    <img src="{{ asset('images/logos/لوگوی جدید وزارت دفاع ملی.png') }}" alt="Ministry Logo" class="logo-image">
+                </div>
+            </div>
         </div>
 
-        <!-- Patient Information -->
-        <table class="patient-info">
+        <div class="form-title">{{ localize('global.nursing_assessment') }}</div>
+
+        <!-- Patient / file info -->
+        <table class="info-table">
             <tr>
                 <th>{{ localize('global.patient_name') }}</th>
+                <td>{{ $patientFullName ?: '—' }}</td>
                 <th>{{ localize('global.patient_age') }}</th>
+                <td class="center">{{ $nursingAssessment->patient_age ?? ($patient->age ?? '—') }}</td>
                 <th>{{ localize('global.file_number') }}</th>
-                <th>HN</th>
-                <th>SN</th>
+                <td class="center">{{ $nursingAssessment->file_number ?: '—' }}</td>
             </tr>
             <tr>
-                <td>{{ $patientFullName ?: '________________' }}</td>
-                <td>{{ $nursingAssessment->patient_age ?? '________________' }}</td>
-                <td>{{ $nursingAssessment->file_number ?: '________________' }}</td>
-                <td>{{ $nursingAssessment->hn ?: '________________' }}</td>
-                <td>{{ $nursingAssessment->sn ?: '________________' }}</td>
+                <th>HN</th>
+                <td class="center">{{ $nursingAssessment->hn ?: '—' }}</td>
+                <th>SN</th>
+                <td class="center">{{ $nursingAssessment->sn ?: '—' }}</td>
+                <th>{{ localize('global.nurse') }}</th>
+                <td>{{ $nursingAssessment->nurse->full_name ?? '—' }}</td>
             </tr>
         </table>
 
-        <!-- Admission Details -->
-        <div class="section-title">{{ localize('global.admission_details') }}</div>
-        <div class="two-column-grid">
-            <div>
-                <strong>{{ localize('global.date') }}:</strong>
-                {{ $formatDate($nursingAssessment->admitted_from_date) }}
-            </div>
-            <div>
-                <strong>{{ localize('global.time') }}:</strong>
-                {{ $formatTime($nursingAssessment->admitted_from_time) }}
-            </div>
-        </div>
+        <!-- Admission details -->
+        <table class="info-table">
+            <tr>
+                <th colspan="6" class="section-head">{{ localize('global.admission_details') }}</th>
+            </tr>
+            <tr>
+                <th>{{ localize('global.date') }}</th>
+                <td class="center">{{ $formatDate($nursingAssessment->admitted_from_date) }}</td>
+                <th>{{ localize('global.time') }}</th>
+                <td class="center">{{ $formatTime($nursingAssessment->admitted_from_time) }}</td>
+                <th>{{ localize('global.admitted_from') }}</th>
+                <td>
+                    <div class="checks">
+                        <span class="check-item">{{ $mark($nursingAssessment->admitted_from_emergency) }} {{ localize('global.emergency') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->admitted_from_hospital) }} {{ localize('global.hospital') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->admitted_from_family_member) }} {{ localize('global.family_member') }}</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>{{ localize('global.information_provided_by') }}</th>
+                <td colspan="2">
+                    <div class="checks">
+                        <span class="check-item">{{ $mark($nursingAssessment->information_provided_by_patient) }} {{ localize('global.patient') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->information_provided_by_family_member) }} {{ localize('global.family_member') }}</span>
+                    </div>
+                </td>
+                <th>{{ localize('global.chief_complaint') }}</th>
+                <td colspan="2">
+                    <div class="value-line">{{ $nursingAssessment->chief_complaint ?: '—' }}</div>
+                </td>
+            </tr>
+        </table>
 
-        <div class="section-title">{{ localize('global.admitted_from') }}</div>
-        <div class="checkbox-grid">
-            <div class="checkbox-item">
-                <div class="checkbox {{ $nursingAssessment->admitted_from_emergency ? 'checked' : '' }}"></div>
-                {{ localize('global.emergency') }}
-            </div>
-            <div class="checkbox-item">
-                <div class="checkbox {{ $nursingAssessment->admitted_from_hospital ? 'checked' : '' }}"></div>
-                {{ localize('global.hospital') }}
-            </div>
-            <div class="checkbox-item">
-                <div class="checkbox {{ $nursingAssessment->admitted_from_family_member ? 'checked' : '' }}"></div>
-                {{ localize('global.family_member') }}
-            </div>
-        </div>
-
-        <div class="section-title">{{ localize('global.information_provided_by') }}</div>
-        <div class="checkbox-grid">
-            <div class="checkbox-item">
-                <div class="checkbox {{ $nursingAssessment->information_provided_by_patient ? 'checked' : '' }}"></div>
-                {{ localize('global.patient') }}
-            </div>
-            <div class="checkbox-item">
-                <div class="checkbox {{ $nursingAssessment->information_provided_by_family_member ? 'checked' : '' }}"></div>
-                {{ localize('global.family_member') }}
-            </div>
-        </div>
-
-        <!-- Chief Complaint -->
-        <div class="section-title">{{ localize('global.chief_complaint') }}</div>
-        <div class="text-field">{{ $nursingAssessment->chief_complaint ?: '_________________________________________________' }}</div>
-
-        <!-- Vital Signs -->
-        <div class="section-title">{{ localize('global.vital_signs') }}</div>
-        <div class="vital-signs-grid">
-            <div class="vital-sign-item">
-                <div class="vital-sign-label">{{ localize('global.blood_pressure') }}</div>
-                <div class="vital-sign-value">{{ $nursingAssessment->blood_pressure ?: '________________' }}</div>
-            </div>
-            <div class="vital-sign-item">
-                <div class="vital-sign-label">{{ localize('global.pulse_rate') }}</div>
-                <div class="vital-sign-value">{{ $nursingAssessment->pulse_rate ?? '________________' }}</div>
-            </div>
-            <div class="vital-sign-item">
-                <div class="vital-sign-label">{{ localize('global.respiratory_rate') }}</div>
-                <div class="vital-sign-value">{{ $nursingAssessment->respiratory_rate ?? '________________' }}</div>
-            </div>
-            <div class="vital-sign-item">
-                <div class="vital-sign-label">{{ localize('global.temperature') }}</div>
-                <div class="vital-sign-value">{{ $nursingAssessment->temperature ?? '________________' }}</div>
-            </div>
-            <div class="vital-sign-item">
-                <div class="vital-sign-label">{{ localize('global.oxygen_saturation') }}</div>
-                <div class="vital-sign-value">{{ $nursingAssessment->oxygen_saturation ?? '________________' }}</div>
-            </div>
-            <div class="vital-sign-item">
-                <div class="vital-sign-label">{{ localize('global.weight') }}</div>
-                <div class="vital-sign-value">{{ $nursingAssessment->weight ?? '________________' }}</div>
-            </div>
-            <div class="vital-sign-item">
-                <div class="vital-sign-label">{{ localize('global.height') }}</div>
-                <div class="vital-sign-value">{{ $nursingAssessment->height ?? '________________' }}</div>
-            </div>
-            <div class="vital-sign-item">
-                <div class="vital-sign-label">{{ localize('global.bmi') }}</div>
-                <div class="vital-sign-value">{{ $nursingAssessment->bmi ?? '________________' }}</div>
-            </div>
-        </div>
+        <!-- Vital signs -->
+        <table class="info-table">
+            <tr>
+                <th colspan="8" class="section-head">{{ localize('global.vital_signs') }}</th>
+            </tr>
+            <tr>
+                <th>{{ localize('global.blood_pressure') }}</th>
+                <td class="center">{{ $nursingAssessment->blood_pressure ?: '—' }}</td>
+                <th>{{ localize('global.pulse_rate') }}</th>
+                <td class="center">{{ $nursingAssessment->pulse_rate ?? '—' }}</td>
+                <th>{{ localize('global.respiratory_rate') }}</th>
+                <td class="center">{{ $nursingAssessment->respiratory_rate ?? '—' }}</td>
+                <th>{{ localize('global.temperature') }}</th>
+                <td class="center">{{ $nursingAssessment->temperature ?? '—' }}</td>
+            </tr>
+            <tr>
+                <th>{{ localize('global.oxygen_saturation') }}</th>
+                <td class="center">{{ $nursingAssessment->oxygen_saturation ?? '—' }}</td>
+                <th>{{ localize('global.weight') }}</th>
+                <td class="center">{{ $nursingAssessment->weight ?? '—' }}</td>
+                <th>{{ localize('global.height') }}</th>
+                <td class="center">{{ $nursingAssessment->height ?? '—' }}</td>
+                <th>{{ localize('global.bmi') }}</th>
+                <td class="center">{{ $nursingAssessment->bmi ?? '—' }}</td>
+            </tr>
+        </table>
 
         <!-- Pregnancy -->
-        <div class="section-title">{{ localize('global.pregnancy') }}</div>
-        <div class="checkbox-grid">
-            <div class="checkbox-item">
-                <div class="checkbox {{ $nursingAssessment->pregnancy_yes ? 'checked' : '' }}"></div>
-                {{ localize('global.yes') }}
-            </div>
-            <div class="checkbox-item">
-                <div class="checkbox {{ $nursingAssessment->pregnancy_no ? 'checked' : '' }}"></div>
-                {{ localize('global.not') }}
-            </div>
-        </div>
-        @if($nursingAssessment->pregnancy_yes || $nursingAssessment->pregnancy_age)
-        <div style="margin-top: 10px;">
-            <strong>{{ localize('global.pregnancy_age') }}:</strong>
-            {{ $nursingAssessment->pregnancy_age ?? '________________' }}
-        </div>
-        @endif
+        <table class="info-table">
+            <tr>
+                <th colspan="6" class="section-head">{{ localize('global.pregnancy') }}</th>
+            </tr>
+            <tr>
+                <th>{{ localize('global.pregnancy') }}</th>
+                <td colspan="3">
+                    <div class="checks">
+                        <span class="check-item">{{ $mark($nursingAssessment->pregnancy_yes) }} {{ localize('global.yes') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->pregnancy_no) }} {{ localize('global.not') }}</span>
+                    </div>
+                </td>
+                <th>{{ localize('global.pregnancy_age') }}</th>
+                <td class="center">{{ $nursingAssessment->pregnancy_age ?? '—' }}</td>
+            </tr>
+        </table>
 
-        <!-- Medical History -->
-        <div class="section-title">{{ localize('global.medical_history') }}</div>
+        <!-- Medical history -->
+        <table class="info-table">
+            <tr>
+                <th colspan="4" class="section-head">{{ localize('global.medical_history') }}</th>
+            </tr>
+            <tr>
+                <th>{{ localize('global.underlying_disease') }}</th>
+                <td colspan="3">
+                    <div class="checks">
+                        <span class="check-item">{{ $mark($nursingAssessment->underlying_disease_yes) }} {{ localize('global.yes') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->underlying_disease_no) }} {{ localize('global.not') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->underlying_disease_dm) }} DM</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->underlying_disease_ht) }} HT</span>
+                    </div>
+                    <div class="value-line" style="margin-top:4px;">
+                        <strong>{{ localize('global.other') }}:</strong>
+                        {{ $nursingAssessment->underlying_disease_other ?: '—' }}
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>{{ localize('global.hospitalization_history') }}</th>
+                <td>
+                    <div class="checks">
+                        <span class="check-item">{{ $mark($nursingAssessment->hospitalization_history_yes) }} {{ localize('global.yes') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->hospitalization_history_no) }} {{ localize('global.not') }}</span>
+                    </div>
+                </td>
+                <th>{{ localize('global.reasons') }}</th>
+                <td>{{ $nursingAssessment->hospitalization_history_reasons ?: '—' }}</td>
+            </tr>
+            <tr>
+                <th>{{ localize('global.surgical_history') }}</th>
+                <td>
+                    <div class="checks">
+                        <span class="check-item">{{ $mark($nursingAssessment->surgical_history_yes) }} {{ localize('global.yes') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->surgical_history_no) }} {{ localize('global.not') }}</span>
+                    </div>
+                </td>
+                <th>{{ localize('global.reasons') }}</th>
+                <td>{{ $nursingAssessment->surgical_history_reasons ?: '—' }}</td>
+            </tr>
+            <tr>
+                <th>{{ localize('global.allergy_history') }}</th>
+                <td colspan="3">
+                    <div class="checks">
+                        <span class="check-item">{{ $mark($nursingAssessment->allergy_history_yes) }} {{ localize('global.yes') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->allergy_history_no) }} {{ localize('global.not') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->allergy_history_food) }} {{ localize('global.food') }}</span>
+                    </div>
+                    <div class="value-line" style="margin-top:4px;">
+                        <strong>{{ localize('global.others') }}:</strong>
+                        {{ $nursingAssessment->allergy_history_others ?: '—' }}
+                    </div>
+                </td>
+            </tr>
+        </table>
 
-        <div class="history-block">
-            <strong>{{ localize('global.underlying_disease') }}:</strong>
-            <div class="checkbox-grid">
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->underlying_disease_yes ? 'checked' : '' }}"></div>
-                    {{ localize('global.yes') }}
-                </div>
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->underlying_disease_no ? 'checked' : '' }}"></div>
-                    {{ localize('global.not') }}
-                </div>
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->underlying_disease_dm ? 'checked' : '' }}"></div>
-                    DM
-                </div>
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->underlying_disease_ht ? 'checked' : '' }}"></div>
-                    HT
-                </div>
-            </div>
-            @if($nursingAssessment->underlying_disease_other)
-            <div style="margin-top: 5px;">
-                <strong>{{ localize('global.other') }}:</strong>
-                {{ $nursingAssessment->underlying_disease_other }}
-            </div>
-            @endif
-        </div>
+        <!-- Pain assessment -->
+        <table class="info-table">
+            <tr>
+                <th colspan="6" class="section-head">{{ localize('global.pain_assessment') }}</th>
+            </tr>
+            <tr>
+                <th>{{ localize('global.pain_assessment') }}</th>
+                <td>
+                    <div class="checks">
+                        <span class="check-item">{{ $mark($nursingAssessment->pain_no) }} {{ localize('global.not') }}</span>
+                        <span class="check-item">{{ $mark($nursingAssessment->pain_yes) }} {{ localize('global.yes') }}</span>
+                    </div>
+                </td>
+                <th>{{ localize('global.pain_location') }}</th>
+                <td>{{ $nursingAssessment->pain_location ?: '—' }}</td>
+                <th>{{ localize('global.pain_intensity_score') }}</th>
+                <td class="center">{{ $nursingAssessment->pain_intensity_score ?? '—' }}</td>
+            </tr>
+        </table>
 
-        <div class="history-block">
-            <strong>{{ localize('global.hospitalization_history') }}:</strong>
-            <div class="checkbox-grid">
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->hospitalization_history_yes ? 'checked' : '' }}"></div>
-                    {{ localize('global.yes') }}
-                </div>
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->hospitalization_history_no ? 'checked' : '' }}"></div>
-                    {{ localize('global.not') }}
-                </div>
-            </div>
-            @if($nursingAssessment->hospitalization_history_reasons)
-            <div style="margin-top: 5px;">
-                <strong>{{ localize('global.reasons') }}:</strong>
-                {{ $nursingAssessment->hospitalization_history_reasons }}
-            </div>
-            @endif
-        </div>
-
-        <div class="history-block">
-            <strong>{{ localize('global.surgical_history') }}:</strong>
-            <div class="checkbox-grid">
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->surgical_history_yes ? 'checked' : '' }}"></div>
-                    {{ localize('global.yes') }}
-                </div>
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->surgical_history_no ? 'checked' : '' }}"></div>
-                    {{ localize('global.not') }}
-                </div>
-            </div>
-            @if($nursingAssessment->surgical_history_reasons)
-            <div style="margin-top: 5px;">
-                <strong>{{ localize('global.reasons') }}:</strong>
-                {{ $nursingAssessment->surgical_history_reasons }}
-            </div>
-            @endif
-        </div>
-
-        <div class="history-block">
-            <strong>{{ localize('global.allergy_history') }}:</strong>
-            <div class="checkbox-grid">
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->allergy_history_yes ? 'checked' : '' }}"></div>
-                    {{ localize('global.yes') }}
-                </div>
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->allergy_history_no ? 'checked' : '' }}"></div>
-                    {{ localize('global.not') }}
-                </div>
-                <div class="checkbox-item">
-                    <div class="checkbox {{ $nursingAssessment->allergy_history_food ? 'checked' : '' }}"></div>
-                    {{ localize('global.food') }}
-                </div>
-            </div>
-            @if($nursingAssessment->allergy_history_others)
-            <div style="margin-top: 5px;">
-                <strong>{{ localize('global.others') }}:</strong>
-                {{ $nursingAssessment->allergy_history_others }}
-            </div>
-            @endif
-        </div>
-
-        <!-- Pain Assessment -->
-        <div class="section-title">{{ localize('global.pain_assessment') }}</div>
-        <div class="checkbox-grid">
-            <div class="checkbox-item">
-                <div class="checkbox {{ $nursingAssessment->pain_no ? 'checked' : '' }}"></div>
-                {{ localize('global.not') }}
-            </div>
-            <div class="checkbox-item">
-                <div class="checkbox {{ $nursingAssessment->pain_yes ? 'checked' : '' }}"></div>
-                {{ localize('global.yes') }}
-            </div>
-        </div>
-        @if($nursingAssessment->pain_yes || $nursingAssessment->pain_location || $nursingAssessment->pain_intensity_score !== null)
-        <div class="two-column-grid" style="margin-top: 10px;">
-            <div>
-                <strong>{{ localize('global.pain_location') }}:</strong>
-                {{ $nursingAssessment->pain_location ?: '________________' }}
-            </div>
-            <div>
-                <strong>{{ localize('global.pain_intensity_score') }}:</strong>
-                {{ $nursingAssessment->pain_intensity_score ?? '________________' }}
-            </div>
-        </div>
-        @endif
-
-        <!-- Administrative Details -->
-        <div class="section-title">{{ localize('global.administrative_details') }}</div>
-        <div class="two-column-grid">
-            <div>
-                <strong>{{ localize('global.assessment_initiated_by_rn') }}:</strong>
-                {{ $nursingAssessment->assessment_initiated_by_rn ?: '________________' }}
-            </div>
-            <div>
-                <strong>{{ localize('global.assessment_initiated_by_nurse') }}:</strong>
-                {{ $nursingAssessment->assessment_initiated_by_nurse ?: '________________' }}
-            </div>
-            <div>
-                <strong>{{ localize('global.date') }}:</strong>
-                {{ $formatDate($nursingAssessment->assessment_initiated_by_date) }}
-            </div>
-            <div>
-                <strong>{{ localize('global.time') }}:</strong>
-                {{ $formatTime($nursingAssessment->assessment_initiated_by_time) }}
-            </div>
-        </div>
-
-        <div style="margin-top: 20px; font-size: 10px; text-align: center;">
-            <p><strong>{{ localize('global.nurse') }}:</strong> {{ $nursingAssessment->nurse->full_name ?? '________________' }}</p>
-            <p><strong>{{ localize('global.created_at') }}:</strong> {{ $nursingAssessment->created_at->format('Y-m-d H:i') }}</p>
-            @if($nursingAssessment->updated_at != $nursingAssessment->created_at)
-                <p><strong>{{ localize('global.updated_at') }}:</strong> {{ $nursingAssessment->updated_at->format('Y-m-d H:i') }}</p>
-            @endif
-        </div>
+        <!-- Administrative details -->
+        <table class="info-table">
+            <tr>
+                <th colspan="6" class="section-head">{{ localize('global.administrative_details') }}</th>
+            </tr>
+            <tr>
+                <th>{{ localize('global.assessment_initiated_by_rn') }}</th>
+                <td>{{ $nursingAssessment->assessment_initiated_by_rn ?: '—' }}</td>
+                <th>{{ localize('global.date') }}</th>
+                <td class="center">{{ $formatDate($nursingAssessment->assessment_initiated_by_date) }}</td>
+                <th>{{ localize('global.time') }}</th>
+                <td class="center">{{ $formatTime($nursingAssessment->assessment_initiated_by_time) }}</td>
+            </tr>
+            <tr>
+                <th>{{ localize('global.assessment_initiated_by_nurse') }}</th>
+                <td colspan="5">{{ $nursingAssessment->assessment_initiated_by_nurse ?: '—' }}</td>
+            </tr>
+        </table>
     </div>
 
     <script>

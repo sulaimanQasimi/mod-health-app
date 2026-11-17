@@ -26,7 +26,7 @@
                 <tbody>
                     @foreach($nursingAssessments as $assessment)
                         <tr>
-                            <td>{{ $assessment->morphable->patient->first_name . ' ' . $assessment->morphable->patient->last_name }}</td>
+                            <td>{{ $assessment->morphable->patient->name ?? ($assessment->patient_name ?? '—') }}</td>
                             <td>{{ $assessment->nurse->full_name ?? 'N/A' }}</td>
                             <td>{{ $assessment->assessment_initiated_by_date ? $assessment->assessment_initiated_by_date->format('Y-m-d') : 'N/A' }}
                             </td>
@@ -80,7 +80,7 @@
                         $nurses = \App\Models\Nurse::all();
                         $morphable_type = $morphable_type;
                         $morphable_id = $morphable_id;
-                        $patient_name = $morphModel->patient->first_name . ' ' . $morphModel->patient->last_name;
+                        $patient_name = $morphModel->patient->name ?? '';
                     @endphp
                     @include('pages.nursing-assessments.partials.form')
                 </div>

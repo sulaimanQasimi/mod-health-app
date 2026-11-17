@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
         $patient = $nursingAssessment->morphable->patient ?? null;
-        $patientFullName = trim(($patient->name ?? '') . ' ' . ($patient->last_name ?? ''));
+        // Match hospitalization pages: patient display name is `name` (not name + last_name).
+        $patientFullName = trim((string) ($patient->name ?? ''));
         if ($patientFullName === '') {
-            $patientFullName = $nursingAssessment->patient_name;
+            $patientFullName = trim((string) ($nursingAssessment->patient_name ?? ''));
         }
 
         $morphable = $nursingAssessment->morphable;

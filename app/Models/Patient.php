@@ -25,7 +25,6 @@ class Patient extends Model
         'referral_by',
         'image',
         'branch_id',
-        'job',
         'rank',
         'relation_id',
         'job_type',
@@ -127,6 +126,13 @@ class Patient extends Model
             $user = Auth::user();
             $model->registration_date = now();
             $model->created_by = $user->id ?? 0;
+        });
+
+        self::created(function ($model) {
+            $expected = 'Patient-'.$model->id;
+            if ($model->id_card !== $expected) {
+                $model->forceFill(['id_card' => $expected])->saveQuietly();
+            }
         });
 
         self::updating(function ($model) {

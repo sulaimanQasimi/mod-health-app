@@ -20,6 +20,7 @@
             display: inline-block;
             position: relative; /* For positioning the background */
             overflow: hidden; /* Clip the pseudo-elements */
+            min-width: 280px;
         }
         h1 {
             font-size: 24px;
@@ -31,6 +32,16 @@
         .bigFont {
             font-size: 70px;
             font-family: 'Didone', sans-serif; /* Set the font for the number */
+        }
+        .qr-code {
+            margin: 16px auto 0;
+            width: 120px;
+            height: 120px;
+        }
+        .qr-code img,
+        .qr-code svg {
+            width: 120px;
+            height: 120px;
         }
         /* Stylish background lines */
         .container::before,
@@ -73,7 +84,7 @@
             <br>
             {{ $appointment?->department?->name }}
             @php
-                $tokenPrice = $appointment->price ?? $appointment?->department?->price;
+                $tokenPrice = $appointment->price ?? $appointment?->doctor?->price;
             @endphp
             @if($tokenPrice !== null && $tokenPrice !== '')
                 <br>
@@ -87,6 +98,9 @@
                 <br>
                 <strong>{{ localize('global.room_number') }}: {{ $appointment->department->room_number }}</strong>
             @endif
+            <div class="qr-code">
+                {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)->margin(0)->generate((string) $patient->id) !!}
+            </div>
         </div>
     </div>
     <script>

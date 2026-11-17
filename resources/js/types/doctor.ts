@@ -14,6 +14,7 @@ export interface DoctorListItem {
     specialization: string | null;
     gender: string | null;
     clinic_type: string | null;
+    price: number | string | null;
     active_status: boolean;
     is_dentist: boolean;
     is_nephrologist: boolean;
@@ -99,6 +100,7 @@ export interface DoctorFormValues {
     qualification: string;
     room_no: string;
     clinic_type: string;
+    price: string;
     join_date: string;
     department_id: string;
     user_id: string;
@@ -134,6 +136,7 @@ export interface DoctorDetail {
     qualification: string | null;
     room_no: string | null;
     clinic_type: string | null;
+    price: number | string | null;
     join_date: string | null;
     active_status: boolean;
     is_dentist: boolean;

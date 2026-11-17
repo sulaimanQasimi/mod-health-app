@@ -267,6 +267,7 @@ class DoctorController extends Controller
             'specialization' => $doctor->specialization,
             'gender' => $doctor->gender,
             'clinic_type' => $doctor->clinic_type,
+            'price' => $doctor->price,
             'active_status' => (bool) $doctor->active_status,
             'is_dentist' => (bool) $doctor->is_dentist,
             'is_nephrologist' => (bool) $doctor->is_nephrologist,
@@ -292,6 +293,7 @@ class DoctorController extends Controller
             'qualification' => $doctor->qualification,
             'room_no' => $doctor->room_no,
             'clinic_type' => $doctor->clinic_type,
+            'price' => $doctor->price,
             'join_date' => $doctor->join_date ? verta($doctor->join_date)->format('Y-m-d') : null,
             'active_status' => (bool) $doctor->active_status,
             'is_dentist' => (bool) $doctor->is_dentist,
@@ -331,6 +333,7 @@ class DoctorController extends Controller
             'qualification' => $doctor->qualification ?? '',
             'room_no' => $doctor->room_no ?? '',
             'clinic_type' => $doctor->clinic_type ?? '',
+            'price' => $doctor->price !== null ? (string) $doctor->price : '',
             'join_date' => $doctor->join_date ? verta($doctor->join_date)->format('Y-m-d') : '',
             'department_id' => $doctor->department_id ? (string) $doctor->department_id : '',
             'user_id' => $doctor->user_id ? (string) $doctor->user_id : '',
@@ -392,6 +395,7 @@ class DoctorController extends Controller
             'qualification' => 'nullable|string|max:191',
             'room_no' => 'nullable|string|max:191',
             'clinic_type' => 'nullable|in:hospital,clinic',
+            'price' => 'nullable|numeric|min:0',
             'join_date' => 'nullable|string',
             'department_id' => 'required|exists:departments,id',
             'user_id' => 'nullable|exists:users,id',
@@ -418,6 +422,10 @@ class DoctorController extends Controller
         $data['is_dentist'] = $request->boolean('is_dentist');
         $data['is_nephrologist'] = $request->boolean('is_nephrologist');
         $data['is_eye_doctor'] = $request->boolean('is_eye_doctor');
+
+        if (! array_key_exists('price', $data) || $data['price'] === null || $data['price'] === '') {
+            $data['price'] = 0;
+        }
 
         if ($request->filled('join_date')) {
             try {

@@ -29,9 +29,9 @@ export default function AppointmentSection({
     const [doctors, setDoctors] = useState<DoctorOption[]>([]);
     const [loadingDoctors, setLoadingDoctors] = useState(false);
 
-    const selectedDepartment = useMemo(
-        () => departments.find((department) => String(department.id) === String(values.appointment_department_id)),
-        [departments, values.appointment_department_id],
+    const selectedDoctor = useMemo(
+        () => doctors.find((doctor) => String(doctor.id) === String(values.appointment_doctor_id)),
+        [doctors, values.appointment_doctor_id],
     );
 
     useEffect(() => {
@@ -104,25 +104,9 @@ export default function AppointmentSection({
                     {departments.map((department) => (
                         <option key={department.id} value={department.id}>
                             {department.name}
-                            {department.price !== null && department.price !== undefined && department.price !== ''
-                                ? ` (${t('global.price')}: ${department.price})`
-                                : ''}
                         </option>
                     ))}
                 </SearchableSelect>
-            </FormField>
-            <FormField label={t('global.price')} compact className="lg:col-span-2">
-                <input
-                    type="text"
-                    readOnly
-                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    value={
-                        selectedDepartment
-                            ? String(selectedDepartment.price ?? 0)
-                            : ''
-                    }
-                    placeholder="—"
-                />
             </FormField>
             <FormField label={t('global.doctor')} error={errors.appointment_doctor_id} compact className="lg:col-span-2">
                 <SearchableSelect
@@ -139,10 +123,24 @@ export default function AppointmentSection({
                     {doctors.map((doctor) => (
                         <option key={doctor.id} value={doctor.id}>
                             {doctor.name}
+                            {doctor.price !== null && doctor.price !== undefined && doctor.price !== ''
+                                ? ` (${t('global.price')}: ${doctor.price})`
+                                : ''}
                         </option>
                     ))}
                 </SearchableSelect>
             </FormField>
+            {values.appointment_doctor_id && (
+                <FormField label={t('global.price')} compact className="lg:col-span-2">
+                    <input
+                        type="text"
+                        readOnly
+                        className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        value={String(selectedDoctor?.price ?? 0)}
+                        placeholder="—"
+                    />
+                </FormField>
+            )}
         </>
     );
 }

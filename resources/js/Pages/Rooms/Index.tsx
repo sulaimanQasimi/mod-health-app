@@ -1,9 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Button, Card, Label, TextInput } from 'flowbite-react';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import FacilityFilterActions from '../../Components/FacilityLayout/FacilityFilterActions';
+import FacilityNavTabs, { FacilityNavProps } from '../../Components/FacilityLayout/FacilityNavTabs';
+import FacilityPageHeader from '../../Components/FacilityLayout/FacilityPageHeader';
 import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
-import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
@@ -15,12 +16,17 @@ import TableActionButton from '../../Components/ui/TableActionButton';
 import { TableActionsCell } from '../../Components/ui/TableActions';
 import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
+interface FloorOption extends OptionItem {
+    branch_id?: number;
+}
+
 interface RoomItem {
     id: number;
     name: string;
     floor_name: string | null;
     branch_name: string | null;
     department_name: string | null;
+    beds_count: number;
 }
 
 export default function IndexRooms({
@@ -29,6 +35,7 @@ export default function IndexRooms({
     filterOptions,
     permissions,
     urls,
+    nav,
 }: {
     rooms: PaginatedResult<RoomItem>;
     filters: {
@@ -38,13 +45,22 @@ export default function IndexRooms({
         department_id: string;
         per_page: string;
     };
-    filterOptions: { branches: OptionItem[]; floors: OptionItem[]; departments: OptionItem[] };
+    filterOptions: { branches: OptionItem[]; floors: FloorOption[]; departments: OptionItem[] };
     permissions: SettingsPermissions;
     urls: { index: string; create: string; show: string; edit: string; destroy: string };
+    nav: FacilityNavProps;
 }) {
     const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
+
+    const floorsForBranch = useMemo(
+        () =>
+            (filterOptions?.floors ?? []).filter((floor) =>
+                filters.branch_id ? String(floor.branch_id) === String(filters.branch_id) : true,
+            ),
+        [filterOptions?.floors, filters.branch_id],
+    );
 
     useEffect(() => setFilters(serverFilters), [serverFilters]);
 
@@ -61,47 +77,51 @@ export default function IndexRooms({
         [urls.index],
     );
 
-    const summaryLabel = buildPaginationSummary(rooms.meta, t);
-
     return (
         <DashboardLayout>
             <Head title={t('global.rooms')} />
-            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide}`}>
-                <Card className="shadow-sm">
-                    <SettingsPageHeader
+            <div className={`mx-auto space-y-3 ${SETTINGS_INDEX_WIDTH.simple}`}>
+                <FacilityNavTabs {...nav} />
+                <Card className="shadow-sm [&_.p-6]:!p-3">
+                    <FacilityPageHeader
                         title={t('global.rooms')}
-                        subtitle={summaryLabel}
+                        subtitle={buildPaginationSummary(rooms.meta, t)}
                         icon="bx-door-open"
-                        accent="from-emerald-500 to-green-600"
-                        backLabel={t('global.back')}
+                        backHref={nav.urls.dashboard}
+                        backLabel={t('global.dashboard')}
                         action={
                             permissions.create ? (
-                                <Button color="blue" as={Link} href={urls.create}>
-                                    <i className="bx bx-plus me-2 text-lg" />
+                                <Button color="blue" size="xs" as={Link} href={urls.create}>
+                                    <i className="bx bx-plus me-0.5 text-xs" />
                                     {t('global.create')}
                                 </Button>
                             ) : undefined
                         }
                     />
+
                     <form
                         onSubmit={(e: FormEvent) => {
                             e.preventDefault();
                             applyFilters(filters);
                         }}
-                        className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+                        className="mb-3 grid grid-cols-1 items-end gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
                     >
                         <div>
-                            <Label>{t('global.search')}</Label>
+                            <Label className="mb-0.5 !text-[11px]">{t('global.search')}</Label>
                             <TextInput
+                                sizing="sm"
                                 value={filters.search}
                                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                             />
                         </div>
                         <div>
-                            <Label>{t('global.branch')}</Label>
+                            <Label className="mb-0.5 !text-[11px]">{t('global.branch')}</Label>
                             <SearchableSelect
+                                compact
                                 value={filters.branch_id}
-                                onChange={(value) => setFilters({ ...filters, branch_id: value })}
+                                onChange={(value) =>
+                                    setFilters({ ...filters, branch_id: value, floor_id: '' })
+                                }
                                 options={(filterOptions?.branches ?? []).map((b) => ({
                                     value: String(b.id),
                                     label: b.name,
@@ -110,11 +130,12 @@ export default function IndexRooms({
                             />
                         </div>
                         <div>
-                            <Label>{t('global.floor')}</Label>
+                            <Label className="mb-0.5 !text-[11px]">{t('global.floor')}</Label>
                             <SearchableSelect
+                                compact
                                 value={filters.floor_id}
                                 onChange={(value) => setFilters({ ...filters, floor_id: value })}
-                                options={(filterOptions?.floors ?? []).map((f) => ({
+                                options={floorsForBranch.map((f) => ({
                                     value: String(f.id),
                                     label: f.name,
                                 }))}
@@ -122,8 +143,9 @@ export default function IndexRooms({
                             />
                         </div>
                         <div>
-                            <Label>{t('global.department')}</Label>
+                            <Label className="mb-0.5 !text-[11px]">{t('global.department')}</Label>
                             <SearchableSelect
+                                compact
                                 value={filters.department_id}
                                 onChange={(value) => setFilters({ ...filters, department_id: value })}
                                 options={(filterOptions?.departments ?? []).map((d) => ({
@@ -133,10 +155,9 @@ export default function IndexRooms({
                                 placeholder={t('global.all')}
                             />
                         </div>
-                        <div className="xl:col-span-4">
-                            <SettingsFilterActions
+                        <div className="xl:col-span-2">
+                            <FacilityFilterActions
                                 processing={processing}
-                                showClear
                                 onClear={() => {
                                     const empty = {
                                         search: '',
@@ -151,6 +172,7 @@ export default function IndexRooms({
                             />
                         </div>
                     </form>
+
                     {rooms.data.length > 0 ? (
                         <Table>
                             <TableHead>
@@ -160,6 +182,7 @@ export default function IndexRooms({
                                     <TableHeader>{t('global.floor')}</TableHeader>
                                     <TableHeader>{t('global.department')}</TableHeader>
                                     <TableHeader>{t('global.branch')}</TableHeader>
+                                    <TableHeader>{t('global.beds')}</TableHeader>
                                     <TableHeader align="center">{t('global.actions')}</TableHeader>
                                 </TableRow>
                             </TableHead>
@@ -171,7 +194,7 @@ export default function IndexRooms({
                                             {permissions.view ? (
                                                 <Link
                                                     href={`${urls.show}/${item.id}`}
-                                                    className="font-medium text-blue-600 hover:underline"
+                                                    className="text-sm font-medium text-blue-600 hover:underline"
                                                 >
                                                     {item.name}
                                                 </Link>
@@ -182,6 +205,7 @@ export default function IndexRooms({
                                         <TableCell muted>{item.floor_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.department_name ?? '—'}</TableCell>
                                         <TableCell muted>{item.branch_name ?? '—'}</TableCell>
+                                        <TableCell muted>{item.beds_count}</TableCell>
                                         <TableActionsCell>
                                             <TableActionButton
                                                 kind="view"

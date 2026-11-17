@@ -42,7 +42,6 @@ class DepartmentController extends Controller
                 'id' => $department->id,
                 'name' => $department->name,
                 'room_number' => $department->room_number,
-                'price' => $department->price,
                 'category_name' => $department->category?->name,
             ]),
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
@@ -76,7 +75,6 @@ class DepartmentController extends Controller
                 'id' => $department->id,
                 'name' => $department->name,
                 'room_number' => $department->room_number,
-                'price' => $department->price,
                 'category_name' => $department->category?->name,
                 'created_at' => $department->created_at?->format('Y-m-d H:i:s'),
                 'updated_at' => $department->updated_at?->format('Y-m-d H:i:s'),
@@ -124,7 +122,6 @@ class DepartmentController extends Controller
                 'id' => $department->id,
                 'name' => $department->name,
                 'room_number' => $department->room_number ?? '',
-                'price' => $department->price !== null ? (string) $department->price : '',
                 'category_id' => $department->category_id ? (string) $department->category_id : '',
             ],
             'formData' => $this->buildFormData(),
@@ -185,13 +182,8 @@ class DepartmentController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:191',
             'room_number' => 'nullable|string|max:255',
-            'price' => 'nullable|numeric|min:0',
             'category_id' => 'nullable|exists:categories,id',
         ]);
-
-        if (! array_key_exists('price', $data) || $data['price'] === null || $data['price'] === '') {
-            $data['price'] = 0;
-        }
 
         $data['branch_id'] = $request->user()->branch_id ?? $department?->branch_id;
 

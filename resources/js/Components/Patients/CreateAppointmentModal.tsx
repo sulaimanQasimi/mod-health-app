@@ -206,32 +206,9 @@ export default function CreateAppointmentModal({
                                 {formData.departments.map((department: NamedOption) => (
                                     <option key={department.id} value={department.id}>
                                         {department.name}
-                                        {department.price !== null &&
-                                        department.price !== undefined &&
-                                        department.price !== ''
-                                            ? ` (${t('global.price')}: ${department.price})`
-                                            : ''}
                                     </option>
                                 ))}
                             </IconSelect>
-                        </FormField>
-
-                        <FormField label={t('global.price')} icon="bx-money">
-                            <input
-                                type="text"
-                                readOnly
-                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                                value={
-                                    form.department_id
-                                        ? String(
-                                              formData.departments.find(
-                                                  (department) => String(department.id) === String(form.department_id),
-                                              )?.price ?? 0,
-                                          )
-                                        : ''
-                                }
-                                placeholder="—"
-                            />
                         </FormField>
 
                         <FormField
@@ -254,10 +231,30 @@ export default function CreateAppointmentModal({
                                 {doctors.map((doctor) => (
                                     <option key={doctor.id} value={doctor.id}>
                                         {doctor.name}
+                                        {doctor.price !== null &&
+                                        doctor.price !== undefined &&
+                                        doctor.price !== ''
+                                            ? ` (${t('global.price')}: ${doctor.price})`
+                                            : ''}
                                     </option>
                                 ))}
                             </IconSelect>
                         </FormField>
+
+                        {form.doctor_id && (
+                            <FormField label={t('global.price')} icon="bx-money">
+                                <input
+                                    type="text"
+                                    readOnly
+                                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                    value={String(
+                                        doctors.find((doctor) => String(doctor.id) === String(form.doctor_id))
+                                            ?.price ?? 0,
+                                    )}
+                                    placeholder="—"
+                                />
+                            </FormField>
+                        )}
                         </div>
                     </ModalBody>
                     <ModalFooter>

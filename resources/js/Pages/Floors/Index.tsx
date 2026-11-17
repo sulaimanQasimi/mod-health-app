@@ -1,9 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import FacilityFilterActions from '../../Components/FacilityLayout/FacilityFilterActions';
+import FacilityNavTabs, { FacilityNavProps } from '../../Components/FacilityLayout/FacilityNavTabs';
+import FacilityPageHeader from '../../Components/FacilityLayout/FacilityPageHeader';
 import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
-import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
@@ -19,6 +20,7 @@ interface FloorItem {
     id: number;
     name: string;
     branch_name: string | null;
+    rooms_count: number;
 }
 
 export default function IndexFloors({
@@ -27,12 +29,14 @@ export default function IndexFloors({
     filterOptions,
     permissions,
     urls,
+    nav,
 }: {
     floors: PaginatedResult<FloorItem>;
     filters: { search: string; branch_id: string; per_page: string };
     filterOptions: { branches: OptionItem[] };
     permissions: SettingsPermissions;
-    urls: { index: string; create: string; edit: string; destroy: string };
+    urls: { index: string; create: string; show: string; edit: string; destroy: string };
+    nav: FacilityNavProps;
 }) {
     const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
@@ -53,45 +57,47 @@ export default function IndexFloors({
         [urls.index],
     );
 
-    const summaryLabel = buildPaginationSummary(floors.meta, t);
-
     return (
         <DashboardLayout>
             <Head title={t('global.floors')} />
-            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.simple}`}>
-                <Card className="shadow-sm">
-                    <SettingsPageHeader
+            <div className={`mx-auto space-y-3 ${SETTINGS_INDEX_WIDTH.simple}`}>
+                <FacilityNavTabs {...nav} />
+                <Card className="shadow-sm [&_.p-6]:!p-3">
+                    <FacilityPageHeader
                         title={t('global.floors')}
-                        subtitle={summaryLabel}
+                        subtitle={buildPaginationSummary(floors.meta, t)}
                         icon="bx-layer"
-                        accent="from-amber-500 to-orange-600"
-                        backLabel={t('global.back')}
+                        backHref={nav.urls.dashboard}
+                        backLabel={t('global.dashboard')}
                         action={
                             permissions.create ? (
-                                <Button color="blue" as={Link} href={urls.create}>
-                                    <i className="bx bx-plus me-2 text-lg" />
+                                <Button color="blue" size="xs" as={Link} href={urls.create}>
+                                    <i className="bx bx-plus me-0.5 text-xs" />
                                     {t('global.create')}
                                 </Button>
                             ) : undefined
                         }
                     />
+
                     <form
                         onSubmit={(e: FormEvent) => {
                             e.preventDefault();
                             applyFilters(filters);
                         }}
-                        className="mb-6 grid gap-4 md:grid-cols-2"
+                        className="mb-3 grid grid-cols-1 items-end gap-2 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto]"
                     >
                         <div>
-                            <Label>{t('global.search')}</Label>
+                            <Label className="mb-0.5 !text-[11px]">{t('global.search')}</Label>
                             <TextInput
+                                sizing="sm"
                                 value={filters.search}
                                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                             />
                         </div>
                         <div>
-                            <Label>{t('global.branch')}</Label>
+                            <Label className="mb-0.5 !text-[11px]">{t('global.branch')}</Label>
                             <SearchableSelect
+                                compact
                                 value={filters.branch_id}
                                 onChange={(value) => setFilters({ ...filters, branch_id: value })}
                                 options={(filterOptions?.branches ?? []).map((b) => ({
@@ -101,25 +107,24 @@ export default function IndexFloors({
                                 placeholder={t('global.all')}
                             />
                         </div>
-                        <div className="md:col-span-2">
-                            <SettingsFilterActions
-                                processing={processing}
-                                showClear
-                                onClear={() => {
-                                    const empty = { search: '', branch_id: '', per_page: filters.per_page };
-                                    setFilters(empty);
-                                    applyFilters(empty);
-                                }}
-                            />
-                        </div>
+                        <FacilityFilterActions
+                            processing={processing}
+                            onClear={() => {
+                                const empty = { search: '', branch_id: '', per_page: filters.per_page };
+                                setFilters(empty);
+                                applyFilters(empty);
+                            }}
+                        />
                     </form>
+
                     {floors.data.length > 0 ? (
                         <Table>
                             <TableHead>
                                 <TableRow variant="header">
                                     <TableHeader>#</TableHeader>
-                                    <TableHeader>{t('global.name')}</TableHeader>
+                                    <TableHeader>{t('global.floor')}</TableHeader>
                                     <TableHeader>{t('global.branch')}</TableHeader>
+                                    <TableHeader>{t('global.rooms')}</TableHeader>
                                     <TableHeader align="center">{t('global.actions')}</TableHeader>
                                 </TableRow>
                             </TableHead>
@@ -127,9 +132,18 @@ export default function IndexFloors({
                                 {floors.data.map((item, i) => (
                                     <TableRow key={item.id}>
                                         <TableCell>{(floors.meta.from ?? 1) + i}</TableCell>
-                                        <TableCell>{item.name}</TableCell>
+                                        <TableCell>
+                                            <Link
+                                                href={`${urls.show}/${item.id}`}
+                                                className="text-sm font-medium text-blue-600 hover:underline"
+                                            >
+                                                {item.name}
+                                            </Link>
+                                        </TableCell>
                                         <TableCell muted>{item.branch_name ?? '—'}</TableCell>
+                                        <TableCell muted>{item.rooms_count}</TableCell>
                                         <TableActionsCell>
+                                            <TableActionButton kind="view" href={`${urls.show}/${item.id}`} />
                                             <TableActionButton
                                                 kind="edit"
                                                 href={`${urls.edit}/${item.id}/edit`}

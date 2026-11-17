@@ -15,7 +15,6 @@ export default function ShowDepartment({
         id: number;
         name: string;
         room_number: string | null;
-        price: number | string | null;
         category_name: string | null;
         created_at: string | null;
         updated_at: string | null;
@@ -70,7 +69,6 @@ export default function ShowDepartment({
                         {[
                             [t('global.name'), department.name],
                             [t('global.room_number'), department.room_number ?? '—'],
-                            [t('global.price'), department.price ?? '0'],
                             [t('global.category'), department.category_name ?? '—'],
                             [t('global.created_at'), department.created_at ?? '—'],
                             [t('global.updated_at'), department.updated_at ?? '—'],

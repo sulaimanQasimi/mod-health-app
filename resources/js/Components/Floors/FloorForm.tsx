@@ -16,8 +16,8 @@ export default function FloorForm({ mode, urls, formData, floor }: FloorFormProp
     const { t } = useTranslation();
     const isEdit = mode === 'edit';
     const { data, setData, post, put, processing, errors } = useForm({
-        name: floor?.name ?? '',
         branch_id: floor?.branch_id ?? '',
+        name: floor?.name ?? '',
     });
 
     return (
@@ -28,29 +28,48 @@ export default function FloorForm({ mode, urls, formData, floor }: FloorFormProp
                 if (isEdit) put(urls.update, opts);
                 else post(urls.store, opts);
             }}
-            className="space-y-4"
+            className="space-y-3"
         >
-            <div>
-                <Label htmlFor="name">{t('global.name')} *</Label>
-                <TextInput id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
-                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+            <div className="grid gap-2 sm:grid-cols-2">
+                <div>
+                    <Label htmlFor="branch_id" className="mb-0.5 !text-[11px]">
+                        {t('global.branch')} *
+                    </Label>
+                    <SearchableSelect
+                        compact
+                        value={data.branch_id}
+                        onChange={(value) => setData('branch_id', value)}
+                        options={formData.branches.map((branch) => ({
+                            value: String(branch.id),
+                            label: branch.name,
+                        }))}
+                        placeholder={t('global.select')}
+                    />
+                    {errors.branch_id && <p className="mt-0.5 text-[11px] text-red-600">{errors.branch_id}</p>}
+                </div>
+                <div>
+                    <Label htmlFor="name" className="mb-0.5 !text-[11px]">
+                        {t('global.floor')} *
+                    </Label>
+                    <TextInput
+                        id="name"
+                        sizing="sm"
+                        value={data.name}
+                        onChange={(event) => setData('name', event.target.value)}
+                        placeholder={t('global.floor')}
+                        disabled={!data.branch_id}
+                        required
+                    />
+                    {errors.name && <p className="mt-0.5 text-[11px] text-red-600">{errors.name}</p>}
+                </div>
             </div>
-            <div>
-                <Label htmlFor="branch_id">{t('global.branch')} *</Label>
-                <SearchableSelect
-                    value={data.branch_id}
-                    onChange={(value) => setData('branch_id', value)}
-                    options={formData.branches.map((b) => ({ value: String(b.id), label: b.name }))}
-                    placeholder={t('global.select')}
-                />
-                {errors.branch_id && <p className="mt-1 text-sm text-red-600">{errors.branch_id}</p>}
-            </div>
-            <div className="flex justify-end gap-2 border-t pt-4">
-                <Button color="light" type="button" as="a" href={urls.back} disabled={processing}>
+
+            <div className="flex justify-end gap-1.5 border-t border-gray-200 pt-2 dark:border-gray-700">
+                <Button color="light" size="xs" type="button" as="a" href={urls.back} disabled={processing}>
                     {t('global.cancel')}
                 </Button>
-                <Button type="submit" color="blue" disabled={processing}>
-                    {processing ? <Spinner size="sm" /> : isEdit ? t('global.update') : t('global.create')}
+                <Button type="submit" color="blue" size="xs" disabled={processing || !data.branch_id}>
+                    {processing ? <Spinner size="xs" /> : isEdit ? t('global.update') : t('global.create')}
                 </Button>
             </div>
         </form>

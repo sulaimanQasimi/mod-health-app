@@ -4750,4 +4750,12 @@ return [
     'stock_out' => 'د موجودي وتلو',
     'adjustment' => 'د موجودي سمون',
 ],
+    'facility_layout' => 'د تاسیساتو ترتیب',
+    'facility_layout_subtitle' => 'منزل، اطاق او بستر په یو ځای کې مدیریت کړئ.',
+    'available_beds' => 'خالي بسترونه',
+    'available' => 'خالي',
+    'select_branch_first' => 'لومړی څانګه وټاکئ',
+    'select_floor_first' => 'لومړی منزل وټاکئ',
+    'floor_branch_mismatch' => 'ټاکل شوی منزل د ټاکل شوې څانګې اړوند نه دی.',
+    'room_hierarchy_mismatch' => 'ټاکل شوې اطاق د څانګې/منزل سره سمون نه لري.',
 ];

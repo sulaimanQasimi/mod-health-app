@@ -241,7 +241,6 @@ export default function ShowPatient({
                                 <DetailField label={t('global.phone')} value={patient.phone} icon="bx-phone" />
                                 <DetailField label={t('global.age')} value={patient.age} icon="bx-calendar" />
                                 <DetailField label={t('global.gender')} value={genderLabel} icon="bx-male-female" />
-                                <DetailField label={t('global.job')} value={patient.job} icon="bx-briefcase" />
                                 <DetailField label={t('global.province')} value={patient.province} icon="bx-map" />
                                 <DetailField label={t('global.district')} value={patient.district} icon="bx-map-pin" />
                                 <DetailField label={t('global.commanded_by')} value={patient.commanded_by} icon="bx-user-voice" />

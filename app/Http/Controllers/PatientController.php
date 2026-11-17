@@ -259,8 +259,8 @@ class PatientController extends Controller
                 'branchId' => $patient->branch_id,
                 'clinicType' => $user->clinic_type,
                 'departments' => $user->category_id
-                    ? Department::query()->where('category_id', $user->category_id)->orderBy('name')->get(['id', 'name', 'price'])
-                    : Department::query()->orderBy('name')->get(['id', 'name', 'price']),
+                    ? Department::query()->where('category_id', $user->category_id)->orderBy('name')->get(['id', 'name'])
+                    : Department::query()->orderBy('name')->get(['id', 'name']),
             ],
             'permissions' => [
                 'edit' => $user->can('update', $patient),
@@ -630,8 +630,8 @@ class PatientController extends Controller
     private function buildFormData($user, ?Patient $patient = null): array
     {
         $departments = $user->category_id
-            ? Department::query()->where('category_id', $user->category_id)->orderBy('name')->get(['id', 'name', 'price'])
-            : Department::query()->orderBy('name')->get(['id', 'name', 'price']);
+            ? Department::query()->where('category_id', $user->category_id)->orderBy('name')->get(['id', 'name'])
+            : Department::query()->orderBy('name')->get(['id', 'name']);
 
         $registrationDate = $patient?->registration_date
             ? verta($patient->registration_date)->format('Y-m-d')
@@ -721,7 +721,7 @@ class PatientController extends Controller
             'last_name' => $patient->last_name ?? '',
             'father_name' => $patient->father_name ?? '',
             'nid' => $patient->nid ?? '',
-            'job' => $patient->job ?? '',
+            'job' => '',
             'job_category' => (string) ($patient->job_category ?? '0'),
             'militery_type_id' => $patient->militery_type_id ? (string) $patient->militery_type_id : '',
             'rank' => $patient->rank ?? '',
@@ -769,7 +769,7 @@ class PatientController extends Controller
             'phone' => $patient->phone,
             'age' => $patient->age,
             'gender' => $patient->gender,
-            'job' => $patient->job,
+            'job' => null,
             'rank' => $patient->rank,
             'job_category' => $patient->job_category,
             'type' => $patient->type,

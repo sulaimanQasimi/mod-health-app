@@ -79,6 +79,7 @@ export interface PatientFormPermissions {
 export interface DoctorOption {
     id: number;
     name: string;
+    price?: number | string | null;
 }
 
 export interface StorePatientResponse {

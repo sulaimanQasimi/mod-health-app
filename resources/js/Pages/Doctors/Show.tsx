@@ -165,6 +165,11 @@ export default function ShowDoctor({ doctor, permissions, urls }: ShowDoctorProp
                         />
                         <DetailField label={t('global.room_no')} value={doctor.room_no} icon="bx-door-open" />
                         <DetailField
+                            label={t('global.price')}
+                            value={doctor.price !== null && doctor.price !== undefined ? String(doctor.price) : '0'}
+                            icon="bx-money"
+                        />
+                        <DetailField
                             label={t('global.clinic_type')}
                             value={clinicTypeLabel()}
                             icon="bx-building"

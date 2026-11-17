@@ -177,8 +177,6 @@ export default function PatientCreateForm({
         setDistrictSelectOpen(true);
     }, [pendingDistrictOpen, loadingDistricts, form.province_id]);
 
-    const jobLabel = patientType === '2' ? t('global.job2') : t('global.job');
-
     const updateField = (field: keyof FormState | string, value: string) => {
         setForm((current) => ({
             ...current,
@@ -255,7 +253,6 @@ export default function PatientCreateForm({
         payload.append('last_name', form.last_name);
         payload.append('father_name', form.father_name);
         payload.append('nid', form.nid);
-        payload.append('job', form.job);
         payload.append('phone', form.phone);
         payload.append('gender', patientType === '2' ? form.gender : form.gender || '0');
         payload.append('province_id', form.province_id);
@@ -266,7 +263,6 @@ export default function PatientCreateForm({
         payload.append('age_day', form.age_day);
 
         if (patientType === '0') {
-            payload.append('id_card', form.id_card);
             payload.append('job_category', form.job_category);
             if (form.job_category === '0') {
                 payload.append('militery_type_id', form.militery_type_id);
@@ -401,17 +397,6 @@ export default function PatientCreateForm({
                 )}
 
                 <div className={FORM_GRID_CLASS}>
-                    {patientType === '0' && (
-                        <FormField label={t('global.id_card')} error={errors.id_card} compact>
-                            <TextInput
-                                id="id_card"
-                                sizing="sm"
-                                value={form.id_card}
-                                onChange={(e) => updateField('id_card', e.target.value)}
-                            />
-                        </FormField>
-                    )}
-
                     <FormField label={t('global.name')} required error={errors.name} compact>
                         <TextInput
                             id="name"
@@ -449,16 +434,6 @@ export default function PatientCreateForm({
                             onChange={(e) => updateField('nid', e.target.value)}
                         />
                     </FormField>
-
-                    <FormField label={jobLabel} error={errors.job} compact>
-                        <TextInput
-                            id="job"
-                            sizing="sm"
-                            value={form.job}
-                            onChange={(e) => updateField('job', e.target.value)}
-                        />
-                    </FormField>
-
 
                     <FormField label={t('global.phone')} error={errors.phone} compact>
                         <TextInput

@@ -212,8 +212,8 @@ class AppointmentController extends Controller
             $validatedData['clinic_type'] = $user->clinic_type;
         }
 
-        $validatedData['price'] = Appointment::resolvePriceFromDepartment(
-            (int) $validatedData['department_id']
+        $validatedData['price'] = Appointment::resolvePriceFromDoctor(
+            isset($validatedData['doctor_id']) ? (int) $validatedData['doctor_id'] : null
         );
 
         if ($request->filled('current_appointment_id')) {
@@ -227,7 +227,7 @@ class AppointmentController extends Controller
         }
 
         $appointment = Appointment::create($validatedData);
-        $appointment->load(['department:id,name,price', 'doctor:id,name', 'patient:id,name,last_name']);
+        $appointment->load(['department:id,name', 'doctor:id,name,price', 'patient:id,name,last_name']);
 
         try {
             app(\App\Services\InvoiceService::class)->syncAppointmentFee($appointment);
@@ -267,7 +267,7 @@ class AppointmentController extends Controller
     {
         $this->authorize('view', $appointment);
 
-        $appointment->loadMissing(['department:id,name,price,room_number', 'doctor:id,name', 'patient']);
+        $appointment->loadMissing(['department:id,name,room_number', 'doctor:id,name,price', 'patient']);
 
         $patient = $appointment->patient;
         $today = Carbon::today();
@@ -852,23 +852,27 @@ class AppointmentController extends Controller
                 ->whereKey($appointment->doctor_id)
                 ->value('department_id');
 
+            $nextDoctorId = (int) $doctorDepartmentId === (int) $validated['department_id']
+                ? $appointment->doctor_id
+                : null;
+
             $appointment->update([
                 'department_id' => $validated['department_id'],
-                'price' => Appointment::resolvePriceFromDepartment((int) $validated['department_id']),
-                'doctor_id' => (int) $doctorDepartmentId === (int) $validated['department_id']
-                    ? $appointment->doctor_id
-                    : null,
+                'doctor_id' => $nextDoctorId,
+                'price' => Appointment::resolvePriceFromDoctor($nextDoctorId ? (int) $nextDoctorId : null),
             ]);
         } else {
             $appointment->update([
                 'department_id' => $validated['department_id'],
-                'price' => Appointment::resolvePriceFromDepartment((int) $validated['department_id']),
+                'price' => Appointment::resolvePriceFromDoctor(
+                    $appointment->doctor_id ? (int) $appointment->doctor_id : null
+                ),
             ]);
         }
 
         try {
             app(\App\Services\InvoiceService::class)->syncAppointmentFee(
-                $appointment->fresh()->load('department:id,name,price')
+                $appointment->fresh()->load(['department:id,name', 'doctor:id,name,price'])
             );
         } catch (\Throwable $e) {
             report($e);

@@ -23,6 +23,12 @@ return new class extends Migration
             $table->date('join_date')->nullable()->after('clinic_type');
             $table->boolean('active_status')->default(true)->after('join_date');
         });
+
+        if (! Schema::hasColumn('doctors', 'price')) {
+            Schema::table('doctors', function (Blueprint $table) {
+                $table->decimal('price', 12, 2)->nullable()->default(0)->after('active_status');
+            });
+        }
     }
 
     /**
@@ -31,7 +37,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('doctors', function (Blueprint $table) {
-            $table->dropColumn([
+            $columns = [
                 'gender',
                 'father_name',
                 'contact_number',
@@ -41,8 +47,14 @@ return new class extends Migration
                 'room_no',
                 'clinic_type',
                 'join_date',
-                'active_status'
-            ]);
+                'active_status',
+            ];
+
+            if (Schema::hasColumn('doctors', 'price')) {
+                $columns[] = 'price';
+            }
+
+            $table->dropColumn($columns);
         });
     }
 };

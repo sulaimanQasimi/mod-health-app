@@ -33,17 +33,25 @@ class Appointment extends Model
     ];
 
     /**
-     * Resolve the fee stored on an appointment from the selected department.
+     * Resolve the fee stored on an appointment from the selected doctor.
      */
-    public static function resolvePriceFromDepartment(?int $departmentId): float
+    public static function resolvePriceFromDoctor(?int $doctorId): float
     {
-        if (! $departmentId) {
+        if (! $doctorId) {
             return 0;
         }
 
-        $price = Department::query()->whereKey($departmentId)->value('price');
+        $price = Doctor::query()->whereKey($doctorId)->value('price');
 
         return max(0, (float) ($price ?? 0));
+    }
+
+    /**
+     * @deprecated Use resolvePriceFromDoctor(). Kept for backward-compatible call sites.
+     */
+    public static function resolvePriceFromDepartment(?int $departmentId): float
+    {
+        return 0;
     }
 
     public static function boot()

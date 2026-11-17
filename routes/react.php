@@ -45,6 +45,7 @@ use App\Http\Controllers\DepotTransactionController;
 use App\Http\Controllers\DiseaseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\DoctorPerformanceReportController;
+use App\Http\Controllers\FacilityLayoutController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\FoodTypeController;
 use App\Http\Controllers\HemodialysisSessionController;
@@ -849,11 +850,15 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{section}', [SectionController::class, 'destroy'])->name('destroy');
     });
 
+    Route::get('/facility-layout', [FacilityLayoutController::class, 'index'])
+        ->name('facility-layout.index');
+
     Route::prefix('floors')->name('floors.')->group(function () {
         Route::get('/', [FloorController::class, 'index'])->name('index');
         Route::get('/create', [FloorController::class, 'create'])->name('create');
         Route::post('/', [FloorController::class, 'store'])->name('store');
         Route::get('/{floor}/edit', [FloorController::class, 'edit'])->name('edit');
+        Route::get('/{floor}', [FloorController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/{floor}', [FloorController::class, 'update'])->name('update');
         Route::delete('/{floor}', [FloorController::class, 'destroy'])->name('destroy');
     });
@@ -862,8 +867,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [RoomController::class, 'index'])->name('index');
         Route::get('/create', [RoomController::class, 'create'])->name('create');
         Route::post('/', [RoomController::class, 'store'])->name('store');
-        Route::get('/{room}', [RoomController::class, 'show'])->name('show');
         Route::get('/{room}/edit', [RoomController::class, 'edit'])->name('edit');
+        Route::get('/{room}', [RoomController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/{room}', [RoomController::class, 'update'])->name('update');
         Route::delete('/{room}', [RoomController::class, 'destroy'])->name('destroy');
     });
@@ -872,6 +877,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/create', [BedController::class, 'create'])->name('create');
         Route::post('/', [BedController::class, 'store'])->name('store');
         Route::get('/{bed}/edit', [BedController::class, 'edit'])->name('edit');
+        Route::get('/{bed}', [BedController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/{bed}', [BedController::class, 'update'])->name('update');
         Route::delete('/{bed}', [BedController::class, 'destroy'])->name('destroy');
     });

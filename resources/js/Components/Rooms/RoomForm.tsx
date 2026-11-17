@@ -1,25 +1,55 @@
 import { useForm } from '@inertiajs/react';
 import { Button, Label, Spinner, TextInput } from 'flowbite-react';
-import { FormEvent } from 'react';
+import { FormEvent, useMemo } from 'react';
 import SearchableSelect from '../ui/SearchableSelect';
 import { useTranslation } from '../../hooks/useTranslation';
-import { OptionItem, SettingsFormUrls } from '../../types/settings';
+import { SettingsFormUrls } from '../../types/settings';
+
+interface FloorOption {
+    id: number;
+    name: string;
+    branch_id: number;
+}
+
+interface OptionItem {
+    id: number;
+    name: string;
+}
 
 interface RoomFormProps {
     mode: 'create' | 'edit';
     urls: SettingsFormUrls;
-    formData: { floors: OptionItem[]; departments: OptionItem[] };
-    room?: { id: number; name: string; floor_id: string; department_id: string | null };
+    formData: {
+        branches: OptionItem[];
+        floors: FloorOption[];
+        departments: OptionItem[];
+    };
+    room?: {
+        id: number;
+        name: string;
+        branch_id: string;
+        floor_id: string;
+        department_id: string | null;
+    };
 }
 
 export default function RoomForm({ mode, urls, formData, room }: RoomFormProps) {
     const { t } = useTranslation();
     const isEdit = mode === 'edit';
     const { data, setData, post, put, processing, errors } = useForm({
-        name: room?.name ?? '',
+        branch_id: room?.branch_id ?? '',
         floor_id: room?.floor_id ?? '',
+        name: room?.name ?? '',
         department_id: room?.department_id ?? '',
     });
+
+    const floorsForBranch = useMemo(
+        () =>
+            formData.floors.filter((floor) =>
+                data.branch_id ? String(floor.branch_id) === String(data.branch_id) : false,
+            ),
+        [data.branch_id, formData.floors],
+    );
 
     return (
         <form
@@ -29,42 +59,86 @@ export default function RoomForm({ mode, urls, formData, room }: RoomFormProps) 
                 if (isEdit) put(urls.update, opts);
                 else post(urls.store, opts);
             }}
-            className="space-y-4"
+            className="space-y-3"
         >
-            <div>
-                <Label htmlFor="name">{t('global.name')} *</Label>
-                <TextInput id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
-                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                <div>
+                    <Label htmlFor="branch_id" className="mb-0.5 !text-[11px]">
+                        {t('global.branch')} *
+                    </Label>
+                    <SearchableSelect
+                        compact
+                        value={data.branch_id}
+                        onChange={(value) => setData({ ...data, branch_id: value, floor_id: '' })}
+                        options={formData.branches.map((branch) => ({
+                            value: String(branch.id),
+                            label: branch.name,
+                        }))}
+                        placeholder={t('global.select')}
+                    />
+                    {errors.branch_id && <p className="mt-0.5 text-[11px] text-red-600">{errors.branch_id}</p>}
+                </div>
+                <div>
+                    <Label htmlFor="floor_id" className="mb-0.5 !text-[11px]">
+                        {t('global.floor')} *
+                    </Label>
+                    <SearchableSelect
+                        compact
+                        value={data.floor_id}
+                        onChange={(value) => setData('floor_id', value)}
+                        options={floorsForBranch.map((floor) => ({
+                            value: String(floor.id),
+                            label: floor.name,
+                        }))}
+                        placeholder={data.branch_id ? t('global.select') : t('global.select_branch_first')}
+                        disabled={!data.branch_id}
+                    />
+                    {errors.floor_id && <p className="mt-0.5 text-[11px] text-red-600">{errors.floor_id}</p>}
+                </div>
+                <div>
+                    <Label htmlFor="name" className="mb-0.5 !text-[11px]">
+                        {t('global.room')} *
+                    </Label>
+                    <TextInput
+                        id="name"
+                        sizing="sm"
+                        value={data.name}
+                        onChange={(event) => setData('name', event.target.value)}
+                        placeholder={t('global.room')}
+                        disabled={!data.floor_id}
+                        required
+                    />
+                    {errors.name && <p className="mt-0.5 text-[11px] text-red-600">{errors.name}</p>}
+                </div>
+                <div>
+                    <Label htmlFor="department_id" className="mb-0.5 !text-[11px]">
+                        {t('global.department')}
+                    </Label>
+                    <SearchableSelect
+                        compact
+                        value={data.department_id}
+                        onChange={(value) => setData('department_id', value)}
+                        options={[
+                            { value: '', label: t('global.select') },
+                            ...formData.departments.map((department) => ({
+                                value: String(department.id),
+                                label: department.name,
+                            })),
+                        ]}
+                        placeholder={t('global.select')}
+                    />
+                    {errors.department_id && (
+                        <p className="mt-0.5 text-[11px] text-red-600">{errors.department_id}</p>
+                    )}
+                </div>
             </div>
-            <div>
-                <Label htmlFor="floor_id">{t('global.floor')} *</Label>
-                <SearchableSelect
-                    value={data.floor_id}
-                    onChange={(value) => setData('floor_id', value)}
-                    options={formData.floors.map((f) => ({ value: String(f.id), label: f.name }))}
-                    placeholder={t('global.select')}
-                />
-                {errors.floor_id && <p className="mt-1 text-sm text-red-600">{errors.floor_id}</p>}
-            </div>
-            <div>
-                <Label htmlFor="department_id">{t('global.department')}</Label>
-                <SearchableSelect
-                    value={data.department_id}
-                    onChange={(value) => setData('department_id', value)}
-                    options={[
-                        { value: '', label: t('global.select') },
-                        ...formData.departments.map((d) => ({ value: String(d.id), label: d.name })),
-                    ]}
-                    placeholder={t('global.select')}
-                />
-                {errors.department_id && <p className="mt-1 text-sm text-red-600">{errors.department_id}</p>}
-            </div>
-            <div className="flex justify-end gap-2 border-t pt-4">
-                <Button color="light" type="button" as="a" href={urls.back} disabled={processing}>
+
+            <div className="flex justify-end gap-1.5 border-t border-gray-200 pt-2 dark:border-gray-700">
+                <Button color="light" size="xs" type="button" as="a" href={urls.back} disabled={processing}>
                     {t('global.cancel')}
                 </Button>
-                <Button type="submit" color="blue" disabled={processing}>
-                    {processing ? <Spinner size="sm" /> : isEdit ? t('global.update') : t('global.create')}
+                <Button type="submit" color="blue" size="xs" disabled={processing || !data.floor_id}>
+                    {processing ? <Spinner size="xs" /> : isEdit ? t('global.update') : t('global.create')}
                 </Button>
             </div>
         </form>

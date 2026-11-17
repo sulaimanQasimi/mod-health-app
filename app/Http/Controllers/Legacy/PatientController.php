@@ -135,7 +135,6 @@ class PatientController extends Controller
             'district_id' => 'required',
             'relation_id' => 'nullable',
             'branch_id' => 'required',
-            'job' => 'nullable',
             'rank' => 'nullable',
             'job_type' => 'nullable',
             'gender' => 'required',
@@ -150,7 +149,6 @@ class PatientController extends Controller
             'referral_recipient_part_id' => 'nullable|exists:recipient_parts,id',
             'type' => 'nullable',
             'is_vip' => 'nullable|boolean',
-            'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
             'commanded_by' => 'nullable|string|max:255',
@@ -174,6 +172,7 @@ class PatientController extends Controller
         }
 
         $data['is_vip'] = $wantsVip;
+        unset($data['id_card'], $data['job']);
 
         // Format age from dropdowns if provided (priority: year > month > day)
         if (!$data['age'] || empty($data['age'])) {
@@ -219,9 +218,9 @@ class PatientController extends Controller
                 'patient_id' => $patient->id,
                 'doctor_id' => $request->appointment_doctor_id,
                 'department_id' => $request->appointment_department_id,
-                'price' => Appointment::resolvePriceFromDepartment(
-                    $request->filled('appointment_department_id')
-                        ? (int) $request->appointment_department_id
+                'price' => Appointment::resolvePriceFromDoctor(
+                    $request->filled('appointment_doctor_id')
+                        ? (int) $request->appointment_doctor_id
                         : null
                 ),
                 'branch_id' => $patient->branch_id,
@@ -239,7 +238,7 @@ class PatientController extends Controller
 
             try {
                 app(\App\Services\InvoiceService::class)->syncAppointmentFee(
-                    $appointment->load('department:id,name,price')
+                    $appointment->load(['department:id,name', 'doctor:id,name,price'])
                 );
             } catch (\Throwable $e) {
                 report($e);
@@ -379,7 +378,6 @@ class PatientController extends Controller
             'district_id' => 'required',
             'relation_id' => 'nullable',
             'branch_id' => 'required',
-            'job' => 'nullable',
             'rank' => 'nullable',
             'job_type' => 'nullable',
             'gender' => 'required',
@@ -394,12 +392,13 @@ class PatientController extends Controller
             'referral_recipient_part_id' => 'nullable|exists:recipient_parts,id',
             'type' => 'nullable',
             'is_vip' => 'nullable|boolean',
-            'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
             'commanded_by' => 'nullable|string|max:255',
             'recipient_part_id' => 'nullable|exists:recipient_parts,id',
         ]);
+
+        unset($data['id_card'], $data['job']);
 
         if ($patient->isVipRecord() && ! auth()->user()->can('access-to-vip') && ! auth()->user()->hasRole(['super_admin', 'admin'])) {
             if ($request->ajax() || $request->expectsJson()) {
@@ -660,11 +659,11 @@ class PatientController extends Controller
             $query->where('clinic_type', $userClinicType);
         }
 
-        $doctors = $query->get();
+        $doctors = $query->get(['id', 'name', 'price', 'department_id', 'clinic_type']);
 
         return response()->json([
             'success' => true,
-            'doctors' => $doctors
+            'doctors' => $doctors,
         ]);
     }
 

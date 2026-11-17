@@ -405,6 +405,7 @@ export default function IndexDoctors({
                                     <TableHeader>{t('global.department')}</TableHeader>
                                     <TableHeader>{t('global.branch')}</TableHeader>
                                     <TableHeader>{t('global.specialization')}</TableHeader>
+                                    <TableHeader>{t('global.price')}</TableHeader>
                                     <TableHeader>{t('global.gender')}</TableHeader>
                                     <TableHeader>{t('global.clinic_type')}</TableHeader>
                                     <TableHeader>{t('global.active_status')}</TableHeader>
@@ -429,6 +430,7 @@ export default function IndexDoctors({
                                         <TableCell muted>{doctor.department_name ?? '—'}</TableCell>
                                         <TableCell muted>{doctor.branch_name ?? '—'}</TableCell>
                                         <TableCell muted>{doctor.specialization ?? '—'}</TableCell>
+                                        <TableCell muted>{doctor.price ?? '0'}</TableCell>
                                         <TableCell muted>{genderLabel(doctor.gender)}</TableCell>
                                         <TableCell muted>{clinicTypeLabel(doctor.clinic_type)}</TableCell>
                                         <TableCell>

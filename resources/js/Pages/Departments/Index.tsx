@@ -19,7 +19,6 @@ interface DepartmentItem {
     id: number;
     name: string;
     room_number: string | null;
-    price: number | string | null;
     category_name: string | null;
 }
 
@@ -122,7 +121,6 @@ export default function IndexDepartments({
                                     <TableHeader>#</TableHeader>
                                     <TableHeader>{t('global.name')}</TableHeader>
                                     <TableHeader>{t('global.room_number')}</TableHeader>
-                                    <TableHeader>{t('global.price')}</TableHeader>
                                     <TableHeader>{t('global.category')}</TableHeader>
                                     <TableHeader align="center">{t('global.actions')}</TableHeader>
                                 </TableRow>
@@ -140,7 +138,6 @@ export default function IndexDepartments({
                                             </Link>
                                         </TableCell>
                                         <TableCell muted>{item.room_number ?? '—'}</TableCell>
-                                        <TableCell muted>{item.price ?? '0'}</TableCell>
                                         <TableCell muted>{item.category_name ?? '—'}</TableCell>
                                         <TableActionsCell>
                                             <TableActionButton kind="view" href={`${urls.show}/${item.id}`} />

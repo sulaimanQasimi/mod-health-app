@@ -340,14 +340,17 @@ class SidebarMenuService
             if ($user->can('show-sections-menu')) {
                 $children[] = $this->item('sections', 'global.sections', null, 'sections.index');
             }
-            if ($user->can('show-floors-menu')) {
-                $children[] = $this->item('floors', 'global.floors', null, 'floors.index');
-            }
-            if ($user->can('show-rooms-menu')) {
-                $children[] = $this->item('rooms', 'global.rooms', null, 'rooms.index');
-            }
-            if ($user->can('show-beds-menu')) {
-                $children[] = $this->item('beds', 'global.beds', null, 'beds.index');
+            if (
+                $user->can('show-floors-menu')
+                || $user->can('show-rooms-menu')
+                || $user->can('show-beds-menu')
+            ) {
+                $children[] = $this->item(
+                    'facility-layout',
+                    'global.facility_layout',
+                    null,
+                    'facility-layout.index',
+                );
             }
             $children[] = $this->item('militery-types', 'global.militery_types', null, 'militery-types.index');
             if ($user->can('show-add-icu-procedures-menu')) {
@@ -399,6 +402,7 @@ class SidebarMenuService
                 'units.*',
                 'departments.*',
                 'sections.*',
+                'facility-layout.*',
                 'floors.*',
                 'rooms.*',
                 'beds.*',

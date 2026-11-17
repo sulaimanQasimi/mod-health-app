@@ -21,7 +21,6 @@ return new class extends Migration
             $table->tinyInteger('gender')->default('0')->nullable();
             $table->string('nid')->nullable();
             $table->enum('job_type', ['civilian', 'militant', 'retired'])->default('militant');
-            $table->string('job')->nullable();
             $table->string('rank')->nullable();
             $table->string('image')->nullable();
             $table->string('referral_name')->nullable();
@@ -35,7 +34,7 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('relation_id')->nullable();
             $table->unsignedBigInteger('province_id');
-            $table->unsignedBigInteger('id_card')->nullable();
+            $table->string('id_card')->nullable();
             $table->tinyInteger('job_category')->default('0')->nullable();
             $table->unsignedBigInteger('district_id');
             $table->unsignedBigInteger('referred_by')->nullable();

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\PaginatesInertiaIndex;
+use App\Http\Controllers\Concerns\ProvidesFacilityLayoutNav;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Floor;
@@ -16,6 +16,7 @@ use Inertia\Response;
 class RoomController extends Controller
 {
     use PaginatesInertiaIndex;
+    use ProvidesFacilityLayoutNav;
 
     private const FILTER_KEYS = ['search', 'branch_id', 'floor_id', 'department_id', 'per_page'];
 
@@ -23,7 +24,9 @@ class RoomController extends Controller
     {
         $this->authorize('viewAny', Room::class);
 
-        $query = Room::query()->with(['floor:id,name', 'branch:id,name', 'department:id,name']);
+        $query = Room::query()
+            ->with(['floor:id,name', 'branch:id,name', 'department:id,name'])
+            ->withCount(['allBeds as beds_count']);
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%'.$request->search.'%');
@@ -50,11 +53,12 @@ class RoomController extends Controller
                 'floor_name' => $room->floor?->name,
                 'branch_name' => $room->branch?->name,
                 'department_name' => $room->department?->name,
+                'beds_count' => (int) ($room->beds_count ?? 0),
             ]),
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
             'filterOptions' => [
                 'branches' => Branch::query()->orderBy('name')->get(['id', 'name']),
-                'floors' => Floor::query()->orderBy('name')->get(['id', 'name']),
+                'floors' => Floor::query()->orderBy('name')->get(['id', 'name', 'branch_id']),
                 'departments' => Department::query()->orderBy('name')->get(['id', 'name']),
             ],
             'permissions' => array_merge(
@@ -77,6 +81,11 @@ class RoomController extends Controller
                 'edit' => url('/rooms'),
                 'destroy' => url('/rooms'),
             ],
+            'nav' => [
+                'active' => 'rooms',
+                'urls' => $this->facilityNavUrls(),
+                'permissions' => $this->facilityNavPermissions($request->user()),
+            ],
         ]);
     }
 
@@ -88,7 +97,7 @@ class RoomController extends Controller
             'floor:id,name',
             'branch:id,name',
             'department:id,name',
-            'allBeds:id,number,room_id',
+            'allBeds:id,number,room_id,is_occupied',
         ]);
 
         return Inertia::render('Rooms/Show', [
@@ -101,6 +110,7 @@ class RoomController extends Controller
                 'beds' => $room->allBeds->map(fn ($bed) => [
                     'id' => $bed->id,
                     'number' => $bed->number,
+                    'is_occupied' => (bool) $bed->is_occupied,
                 ])->values()->all(),
                 'bed_count' => $room->allBeds->count(),
             ],
@@ -112,6 +122,12 @@ class RoomController extends Controller
                 'index' => route('rooms.index'),
                 'edit' => route('rooms.edit', $room),
                 'destroy' => route('rooms.destroy', $room),
+                'bedShow' => url('/beds'),
+            ],
+            'nav' => [
+                'active' => 'rooms',
+                'urls' => $this->facilityNavUrls(),
+                'permissions' => $this->facilityNavPermissions($request->user()),
             ],
         ]);
     }
@@ -123,6 +139,11 @@ class RoomController extends Controller
         return Inertia::render('Rooms/Create', [
             'formData' => $this->buildFormData(),
             'urls' => $this->formUrls(),
+            'nav' => [
+                'active' => 'rooms',
+                'urls' => $this->facilityNavUrls(),
+                'permissions' => $this->facilityNavPermissions($request->user()),
+            ],
         ]);
     }
 
@@ -145,11 +166,17 @@ class RoomController extends Controller
             'room' => [
                 'id' => $room->id,
                 'name' => $room->name,
+                'branch_id' => (string) $room->branch_id,
                 'floor_id' => (string) $room->floor_id,
                 'department_id' => $room->department_id ? (string) $room->department_id : '',
             ],
             'formData' => $this->buildFormData(),
             'urls' => $this->formUrls($room),
+            'nav' => [
+                'active' => 'rooms',
+                'urls' => $this->facilityNavUrls(),
+                'permissions' => $this->facilityNavPermissions($request->user()),
+            ],
         ]);
     }
 
@@ -181,7 +208,8 @@ class RoomController extends Controller
     private function buildFormData(): array
     {
         return [
-            'floors' => Floor::query()->orderBy('name')->get(['id', 'name']),
+            'branches' => Branch::query()->orderBy('name')->get(['id', 'name']),
+            'floors' => Floor::query()->orderBy('name')->get(['id', 'name', 'branch_id']),
             'departments' => Department::query()->orderBy('name')->get(['id', 'name']),
         ];
     }
@@ -206,6 +234,7 @@ class RoomController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:191',
+            'branch_id' => 'required|exists:branches,id',
             'floor_id' => 'required|exists:floors,id',
             'department_id' => 'nullable|exists:departments,id',
         ]);
@@ -214,11 +243,13 @@ class RoomController extends Controller
             $data['department_id'] = null;
         }
 
-        $data['branch_id'] = $request->user()->branch_id ?? $room?->branch_id;
+        $floor = Floor::query()->findOrFail($data['floor_id']);
 
-        if (! $data['branch_id']) {
-            abort(422, 'Branch ID is required. Please contact administrator.');
+        if ((int) $floor->branch_id !== (int) $data['branch_id']) {
+            abort(422, localize('global.floor_branch_mismatch') ?: 'Selected floor does not belong to the selected branch.');
         }
+
+        $data['branch_id'] = (int) $floor->branch_id;
 
         return $data;
     }

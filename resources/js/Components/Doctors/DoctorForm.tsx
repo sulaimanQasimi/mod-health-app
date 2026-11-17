@@ -26,6 +26,7 @@ export default function DoctorForm({ mode, formData, urls, doctor }: DoctorFormP
         qualification: doctor?.qualification ?? '',
         room_no: doctor?.room_no ?? '',
         clinic_type: doctor?.clinic_type ?? '',
+        price: doctor?.price ?? '',
         join_date: doctor?.join_date ?? '',
         department_id: doctor?.department_id ?? '',
         user_id: doctor?.user_id ?? '',
@@ -228,6 +229,38 @@ export default function DoctorForm({ mode, formData, urls, doctor }: DoctorFormP
                     {errors.department_id && (
                         <p className="mt-1 text-sm text-red-600">{errors.department_id}</p>
                     )}
+                </div>
+
+                <div>
+                    <Label htmlFor="price">{t('global.price')}</Label>
+                    <TextInput
+                        id="price"
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        inputMode="decimal"
+                        value={data.price}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            if (value === '' || value === '.') {
+                                setData('price', value);
+                                return;
+                            }
+                            const parsed = Number(value);
+                            if (Number.isNaN(parsed)) {
+                                setData('price', '');
+                                return;
+                            }
+                            setData('price', parsed < 0 ? '0' : value);
+                        }}
+                        onKeyDown={(event) => {
+                            if (event.key === '-' || event.key === 'e' || event.key === 'E' || event.key === '+') {
+                                event.preventDefault();
+                            }
+                        }}
+                        color={errors.price ? 'failure' : undefined}
+                    />
+                    {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
                 </div>
 
                 <div>

@@ -29,6 +29,7 @@ class Doctor extends Model
         'is_eye_doctor',
         'branch_id',
         'department_id',
+        'price',
         'user_id'
     ];
 
@@ -38,6 +39,7 @@ class Doctor extends Model
         'is_dentist' => 'boolean',
         'is_nephrologist' => 'boolean',
         'is_eye_doctor' => 'boolean',
+        'price' => 'decimal:2',
     ];
 
     public static function boot()

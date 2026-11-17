@@ -4917,4 +4917,13 @@ return [
     'unit_updated_successfully' => 'Unit updated successfully',
     'unit_deleted_successfully' => 'Unit deleted successfully',
     'role_delete_success' => 'Role deleted successfully',
+    'facility_layout' => 'Facility Layout',
+    'facility_layout_subtitle' => 'Manage floors, rooms, and beds in one place.',
+    'available_beds' => 'Available Beds',
+    'available' => 'Available',
+    'select_branch_first' => 'Select branch first',
+    'select_floor_first' => 'Select floor first',
+    'floor_branch_mismatch' => 'Selected floor does not belong to the selected branch.',
+    'room_hierarchy_mismatch' => 'Selected room does not match the selected branch/floor.',
+
 ];

@@ -4122,4 +4122,12 @@ return [
     'name_en' => 'نام (انگلیسی)',
     'name_dr' => 'نام (فارسی)',
     'in_stock'=>'موجود در انبار',
-    ];
+        'facility_layout' => 'چیدمان تسهیلات',
+    'facility_layout_subtitle' => 'مدیریت منزل، اطاق و بستر در یک مکان.',
+    'available_beds' => 'بسترهای آزاد',
+    'available' => 'آزاد',
+    'select_branch_first' => 'ابتدا شعبه را انتخاب کنید',
+    'select_floor_first' => 'ابتدا منزل را انتخاب کنید',
+    'floor_branch_mismatch' => 'منزل انتخاب‌شده متعلق به شعبه انتخاب‌شده نیست.',
+    'room_hierarchy_mismatch' => 'اطاق انتخاب‌شده با شعبه/منزل انتخاب‌شده مطابقت ندارد.',
+];

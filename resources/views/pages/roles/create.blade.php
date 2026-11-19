@@ -47,15 +47,15 @@
                                 </div>
                             </div>
 
+                            <div class="mb-4">
+                                <a href="{{ route('roles.index') }}" class="btn btn-danger">{{ localize('global.back') }}</a>
+                                <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
+                            </div>
+
                             @include('pages.roles.partials.permission_folders', [
                                 'permissionFolders' => $permissionFolders,
                                 'rolePermissionIds' => old('permission', []),
                             ])
-
-                            <a href="{{ route('roles.index') }}"><button type="button"
-                                        class="btn btn-danger">{{ localize('global.back') }}</button>
-                                <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
-                            </a>
                         </form>
                     </div>
                 </div>

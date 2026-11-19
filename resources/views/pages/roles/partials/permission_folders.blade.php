@@ -4,7 +4,7 @@
 
 <div class="col-12 mt-3 mb-3">
     <div class="select-all-container bg-white mb-3">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
             <h5 class="mb-0 text-dark">{{ localize('global.permissions_list') }}</h5>
             <div class="d-flex align-items-center gap-3">
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="toggleAllFolders">
@@ -18,6 +18,19 @@
                 </div>
             </div>
         </div>
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bx bx-search"></i>
+            </span>
+            <input type="text"
+                   id="permissionFilter"
+                   class="form-control"
+                   placeholder="{{ localize('global.search') }}..."
+                   autocomplete="off">
+            <button type="button" class="btn btn-outline-secondary" id="clearPermissionFilter">
+                <i class="bx bx-x"></i>
+            </button>
+        </div>
     </div>
 
     <div id="permission-folders" class="row g-3 align-items-start">
@@ -25,7 +38,9 @@
             @php
                 $folderId = 'folder-' . $index;
             @endphp
-            <div class="col-md-6">
+            <div class="col-md-6 permission-folder-col"
+                 data-folder-col
+                 data-search="{{ strtolower($folder['title']) }}">
                 <div class="permission-folder" data-folder="{{ $folderId }}">
                     <div class="permission-folder-header">
                         <button type="button"
@@ -52,13 +67,18 @@
                          id="{{ $folderId }}-body"
                          hidden>
                         @foreach ($folder['permissions'] as $permission)
-                            <label class="permission-check-item">
+                            @php
+                                $permissionLabel = permission_label($permission);
+                            @endphp
+                            <label class="permission-check-item"
+                                   data-permission-item
+                                   data-search="{{ strtolower($permissionLabel . ' ' . $permission->name . ' ' . ($permission->name_dr ?? '')) }}">
                                 <input type="checkbox"
                                        class="form-check-input permission-checkbox"
                                        name="permission[]"
                                        value="{{ $permission->id }}"
                                        {{ in_array($permission->id, $rolePermissionIds) ? 'checked' : '' }}>
-                                <span class="permission-name">{{ permission_label($permission) }}</span>
+                                <span class="permission-name">{{ $permissionLabel }}</span>
                                 <small class="permission-slug text-muted">{{ $permission->name }}</small>
                             </label>
                         @endforeach
@@ -66,6 +86,9 @@
                 </div>
             </div>
         @endforeach
+    </div>
+    <div id="permissionFilterEmpty" class="text-center text-muted py-4" hidden>
+        {{ localize('global.no_data_found') }}
     </div>
 </div>
 
@@ -313,6 +336,55 @@
                         ? '<i class="bx bx-folder me-1"></i>{{ localize("global.collapse_all") }}'
                         : '<i class="bx bx-folder-open me-1"></i>{{ localize("global.expand_all") }}'
                 );
+            });
+
+            function applyPermissionFilter() {
+                var term = ($('#permissionFilter').val() || '').toString().trim().toLowerCase();
+                var visibleFolders = 0;
+
+                $('#permission-folders [data-folder-col]').each(function() {
+                    var $col = $(this);
+                    var $folder = $col.find('[data-folder]');
+                    var folderTitle = ($col.attr('data-search') || '').toLowerCase();
+                    var folderMatch = !term || folderTitle.indexOf(term) !== -1;
+                    var visibleItems = 0;
+
+                    $col.find('[data-permission-item]').each(function() {
+                        var $item = $(this);
+                        var itemText = ($item.attr('data-search') || '').toLowerCase();
+                        var itemMatch = !term || folderMatch || itemText.indexOf(term) !== -1;
+                        $item.toggle(itemMatch);
+                        if (itemMatch) {
+                            visibleItems++;
+                        }
+                    });
+
+                    var showFolder = !term || folderMatch || visibleItems > 0;
+                    $col.toggle(showFolder);
+
+                    if (showFolder) {
+                        visibleFolders++;
+                        if (term) {
+                            setFolderOpen($folder, true);
+                            if (folderMatch && term) {
+                                $col.find('[data-permission-item]').show();
+                            }
+                        } else {
+                            setFolderOpen($folder, false);
+                            $col.find('[data-permission-item]').show();
+                        }
+                    }
+                });
+
+                $('#permissionFilterEmpty').prop('hidden', visibleFolders > 0);
+            }
+
+            $('#permissionFilter').on('input', applyPermissionFilter);
+
+            $('#clearPermissionFilter').on('click', function() {
+                $('#permissionFilter').val('');
+                applyPermissionFilter();
+                $('#permissionFilter').focus();
             });
 
             $('#permission-folders [data-folder]').each(function() {

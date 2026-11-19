@@ -15,6 +15,82 @@ function localize($message)
     return $localiz_message;
 }
 
+function current_locale(): string
+{
+    return Session()->has('language') ? Session()->get('language') : 'dr';
+}
+
+/**
+ * Return a string translation from lang files when it exists; otherwise fallback.
+ */
+function localize_if_exists(string $message, ?string $fallback = null): ?string
+{
+    $locale = current_locale();
+
+    if (!\Lang::has($message, $locale) && !\Lang::has($message, 'en')) {
+        return $fallback;
+    }
+
+    $value = localize($message);
+
+    return is_string($value) ? $value : $fallback;
+}
+
+/**
+ * Try several global.* keys derived from a permission/module name.
+ * Also supports nested groups (e.g. global.depot.title).
+ */
+function localize_from_key(string $key, ?string $fallback = null): ?string
+{
+    $snake = str_replace(['-', '.'], '_', $key);
+    $kebab = str_replace('_', '-', $snake);
+    $singular = \Illuminate\Support\Str::singular($snake);
+    $plural = \Illuminate\Support\Str::plural($snake);
+
+    $candidates = array_values(array_unique(array_filter([
+        $snake,
+        $plural,
+        $singular,
+        $kebab,
+        $key,
+        $snake . 's',
+        rtrim($snake, 's'),
+    ])));
+
+    foreach ($candidates as $candidate) {
+        foreach ([
+            $candidate,
+            $candidate . '.title',
+            $candidate . '.' . $candidate,
+            $candidate . '.name',
+        ] as $path) {
+            $translated = localize_if_exists('global.' . $path);
+            if ($translated !== null) {
+                return $translated;
+            }
+        }
+    }
+
+    return $fallback;
+}
+
+/**
+ * Locale-aware permission label: lang file first, then DB name_dr/name.
+ */
+function permission_label($permission): string
+{
+    $fromLang = localize_from_key($permission->name);
+    if ($fromLang !== null) {
+        return $fromLang;
+    }
+
+    if (current_locale() === 'en') {
+        return $permission->name ?: ($permission->name_dr ?: '');
+    }
+
+    return $permission->name_dr ?: ($permission->name ?: '');
+}
+
 function multiFileUpload($request,$max_id,$path)
 {
     $rules = [

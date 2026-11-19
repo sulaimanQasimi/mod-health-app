@@ -1494,6 +1494,8 @@ return [
 'export_pdf' => 'PDF ډانلوډ',
 'export_excel' => 'Excel ډانلوډ',
 'select_all' => 'ټول انتخابول',
+'expand_all' => 'ټول خلاصول',
+'collapse_all' => 'ټول تړل',
 'deselect_all' => 'ټول انتخاب لغوه کول',
 'outcome_report' => 'د دواخانه محصول راپور',
 'outcome_reports' => 'د دواخانه محصول راپورونه',

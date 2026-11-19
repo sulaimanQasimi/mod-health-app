@@ -182,9 +182,10 @@ class RoleController extends Controller
             }
 
             $items = collect([$parent])->merge($children)->values();
+            $groupKey = $this->inferPermissionGroupKey($parent->name);
             $folders->push([
                 'key' => 'parent-' . $parent->id,
-                'title' => $parent->name_dr ?: $parent->name,
+                'title' => $this->inferPermissionGroupTitle($groupKey, $items, $parent),
                 'permissions' => $items,
             ]);
             $usedIds = $usedIds->merge($items->pluck('id'));
@@ -215,8 +216,22 @@ class RoleController extends Controller
         return $key ?: $name;
     }
 
-    protected function inferPermissionGroupTitle(string $key, $permissions): string
+    protected function inferPermissionGroupTitle(string $key, $permissions, $parent = null): string
     {
+        // 1) Dynamically resolve from lang/{locale}/global.php
+        $fromLang = localize_from_key($key);
+        if ($fromLang !== null) {
+            return $fromLang;
+        }
+
+        if ($parent) {
+            $fromParentName = localize_from_key($parent->name);
+            if ($fromParentName !== null) {
+                return $fromParentName;
+            }
+        }
+
+        // 2) Prefer menu-style permission label from DB
         $menuPermission = $permissions->first(function ($permission) use ($key) {
             return in_array($permission->name, [
                 "show-{$key}-menu",
@@ -225,10 +240,15 @@ class RoleController extends Controller
             ], true);
         });
 
-        if ($menuPermission && $menuPermission->name_dr) {
-            return $menuPermission->name_dr;
+        if ($menuPermission) {
+            return permission_label($menuPermission);
         }
 
-        return str_replace(['-', '_'], ' ', $key);
+        if ($parent) {
+            return permission_label($parent);
+        }
+
+        // 3) Humanized key as last resort
+        return ucwords(str_replace(['-', '_'], ' ', $key));
     }
 }

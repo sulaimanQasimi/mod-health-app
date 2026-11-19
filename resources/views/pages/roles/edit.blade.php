@@ -95,7 +95,7 @@
                                                                    name="permission[]"
                                                                    value="{{ $permission->id }}"
                                                                    {{ in_array($permission->id, $rolePermissionIds) ? 'checked' : '' }}>
-                                                            <span class="permission-name">{{ $permission->name_dr ?: $permission->name }}</span>
+                                                            <span class="permission-name">{{ permission_label($permission) }}</span>
                                                             <small class="permission-slug text-muted">{{ $permission->name }}</small>
                                                         </label>
                                                     @endforeach

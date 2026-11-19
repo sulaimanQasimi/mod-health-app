@@ -97,14 +97,14 @@
 
     <style>
         .select-all-container {
-            background-color: var(--bs-light, #f8f9fa);
-            border: 1px solid var(--bs-border-color, #dee2e6);
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
             border-radius: 8px;
             padding: 10px 15px;
         }
 
         .permission-folder {
-            border: 1px solid var(--bs-border-color, #dee2e6);
+            border: 1px solid #dee2e6;
             border-radius: 10px;
             background: #fff;
             overflow: hidden;
@@ -125,7 +125,7 @@
         }
 
         .permission-folder.is-open .permission-folder-header {
-            border-bottom-color: var(--bs-border-color, #dee2e6);
+            border-bottom-color: #dee2e6;
         }
 
         .permission-folder-toggle {
@@ -138,6 +138,7 @@
             flex: 1;
             text-align: right;
             min-width: 0;
+            color: inherit;
         }
 
         .permission-folder-toggle .folder-icon {
@@ -156,6 +157,7 @@
         .permission-folder-toggle .chevron {
             margin-inline-start: auto;
             transition: transform 0.2s ease;
+            color: #697a8d;
         }
 
         .permission-folder.is-open .permission-folder-toggle .chevron {
@@ -211,28 +213,131 @@
 
         #selectAllPermissions:indeterminate,
         .folder-select-all-checkbox:indeterminate {
-            background-color: var(--bs-primary, #696cff);
-            border-color: var(--bs-primary, #696cff);
+            background-color: #696cff;
+            border-color: #696cff;
         }
 
-        [data-bs-theme="dark"] .permission-folder,
+        /* Dark mode (app uses .dark-style) */
+        .dark-style .select-all-container,
+        .theme-dark .select-all-container,
+        body[data-theme="dark"] .select-all-container,
+        html[data-theme="dark"] .select-all-container,
         [data-bs-theme="dark"] .select-all-container {
-            background-color: var(--bs-dark, #343a40);
-            border-color: var(--bs-border-color-translucent, #495057);
+            background-color: #2b2c40 !important;
+            border-color: #444564 !important;
         }
 
+        .dark-style .select-all-container h5,
+        .theme-dark .select-all-container h5,
+        body[data-theme="dark"] .select-all-container h5,
+        html[data-theme="dark"] .select-all-container h5,
+        [data-bs-theme="dark"] .select-all-container h5,
+        .dark-style .select-all-container .form-check-label,
+        .theme-dark .select-all-container .form-check-label,
+        body[data-theme="dark"] .select-all-container .form-check-label,
+        html[data-theme="dark"] .select-all-container .form-check-label,
+        [data-bs-theme="dark"] .select-all-container .form-check-label {
+            color: #cbcbe2 !important;
+        }
+
+        .dark-style .permission-folder,
+        .theme-dark .permission-folder,
+        body[data-theme="dark"] .permission-folder,
+        html[data-theme="dark"] .permission-folder,
+        [data-bs-theme="dark"] .permission-folder {
+            background-color: #2b2c40 !important;
+            border-color: #444564 !important;
+        }
+
+        .dark-style .permission-folder-header,
+        .theme-dark .permission-folder-header,
+        body[data-theme="dark"] .permission-folder-header,
+        html[data-theme="dark"] .permission-folder-header,
         [data-bs-theme="dark"] .permission-folder-header {
-            background: #2b3035;
+            background: #32334a !important;
+            border-bottom-color: #444564 !important;
         }
 
+        .dark-style .permission-folder-body,
+        .theme-dark .permission-folder-body,
+        body[data-theme="dark"] .permission-folder-body,
+        html[data-theme="dark"] .permission-folder-body,
+        [data-bs-theme="dark"] .permission-folder-body {
+            background-color: #2b2c40 !important;
+        }
+
+        .dark-style .permission-folder-toggle .folder-title,
+        .theme-dark .permission-folder-toggle .folder-title,
+        body[data-theme="dark"] .permission-folder-toggle .folder-title,
+        html[data-theme="dark"] .permission-folder-toggle .folder-title,
         [data-bs-theme="dark"] .permission-folder-toggle .folder-title,
+        .dark-style .permission-check-item .permission-name,
+        .theme-dark .permission-check-item .permission-name,
+        body[data-theme="dark"] .permission-check-item .permission-name,
+        html[data-theme="dark"] .permission-check-item .permission-name,
         [data-bs-theme="dark"] .permission-check-item .permission-name,
-        [data-bs-theme="dark"] .select-all-container h5 {
-            color: var(--bs-light, #f8f9fa) !important;
+        .dark-style .folder-select-all .form-check-label,
+        .theme-dark .folder-select-all .form-check-label,
+        body[data-theme="dark"] .folder-select-all .form-check-label,
+        html[data-theme="dark"] .folder-select-all .form-check-label,
+        [data-bs-theme="dark"] .folder-select-all .form-check-label {
+            color: #cbcbe2 !important;
         }
 
+        .dark-style .permission-folder-toggle .chevron,
+        .theme-dark .permission-folder-toggle .chevron,
+        body[data-theme="dark"] .permission-folder-toggle .chevron,
+        html[data-theme="dark"] .permission-folder-toggle .chevron,
+        [data-bs-theme="dark"] .permission-folder-toggle .chevron,
+        .dark-style .permission-check-item .permission-slug,
+        .theme-dark .permission-check-item .permission-slug,
+        body[data-theme="dark"] .permission-check-item .permission-slug,
+        html[data-theme="dark"] .permission-check-item .permission-slug,
+        [data-bs-theme="dark"] .permission-check-item .permission-slug {
+            color: #a1a1c2 !important;
+        }
+
+        .dark-style .permission-check-item:hover,
+        .theme-dark .permission-check-item:hover,
+        body[data-theme="dark"] .permission-check-item:hover,
+        html[data-theme="dark"] .permission-check-item:hover,
         [data-bs-theme="dark"] .permission-check-item:hover {
-            background: #3a4046;
+            background: #3a3b53 !important;
+        }
+
+        .dark-style #permissionFilter,
+        .theme-dark #permissionFilter,
+        body[data-theme="dark"] #permissionFilter,
+        html[data-theme="dark"] #permissionFilter,
+        [data-bs-theme="dark"] #permissionFilter,
+        .dark-style #permissionFilter + .btn,
+        .dark-style .input-group-text {
+            background-color: #232333 !important;
+            border-color: #444564 !important;
+            color: #cbcbe2 !important;
+        }
+
+        .dark-style #clearPermissionFilter,
+        .theme-dark #clearPermissionFilter,
+        body[data-theme="dark"] #clearPermissionFilter,
+        html[data-theme="dark"] #clearPermissionFilter,
+        [data-bs-theme="dark"] #clearPermissionFilter,
+        .dark-style #toggleAllFolders,
+        .theme-dark #toggleAllFolders,
+        body[data-theme="dark"] #toggleAllFolders,
+        html[data-theme="dark"] #toggleAllFolders,
+        [data-bs-theme="dark"] #toggleAllFolders {
+            background-color: #32334a !important;
+            border-color: #444564 !important;
+            color: #cbcbe2 !important;
+        }
+
+        .dark-style #permissionFilterEmpty,
+        .theme-dark #permissionFilterEmpty,
+        body[data-theme="dark"] #permissionFilterEmpty,
+        html[data-theme="dark"] #permissionFilterEmpty,
+        [data-bs-theme="dark"] #permissionFilterEmpty {
+            color: #a1a1c2 !important;
         }
     </style>
 @endpush

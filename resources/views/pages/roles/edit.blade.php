@@ -64,19 +64,16 @@
                                     @foreach ($permissionFolders as $index => $folder)
                                         @php
                                             $folderId = 'folder-' . $index;
-                                            $folderPermissionIds = $folder['permissions']->pluck('id')->all();
-                                            $checkedCount = count(array_intersect($folderPermissionIds, $rolePermissionIds));
-                                            $isOpen = $checkedCount > 0;
                                         @endphp
                                         <div class="col-md-6">
-                                            <div class="permission-folder {{ $isOpen ? 'is-open' : '' }}" data-folder="{{ $folderId }}">
+                                            <div class="permission-folder" data-folder="{{ $folderId }}">
                                                 <div class="permission-folder-header">
                                                     <button type="button"
                                                             class="permission-folder-toggle"
                                                             data-folder-toggle="{{ $folderId }}"
                                                             aria-controls="{{ $folderId }}-body"
-                                                            aria-expanded="{{ $isOpen ? 'true' : 'false' }}">
-                                                        <i class="bx bx-folder{{ $isOpen ? '-open' : '' }} folder-icon"></i>
+                                                            aria-expanded="false">
+                                                        <i class="bx bx-folder folder-icon"></i>
                                                         <span class="folder-title">{{ $folder['title'] }}</span>
                                                         <span class="badge bg-label-primary folder-count">{{ $folder['permissions']->count() }}</span>
                                                         <i class="bx bx-chevron-down chevron"></i>
@@ -93,7 +90,7 @@
                                                 </div>
                                                 <div class="permission-folder-body"
                                                      id="{{ $folderId }}-body"
-                                                     @if(!$isOpen) hidden @endif>
+                                                     hidden>
                                                     @foreach ($folder['permissions'] as $permission)
                                                         <label class="permission-check-item">
                                                             <input type="checkbox"

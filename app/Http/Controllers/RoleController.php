@@ -218,7 +218,17 @@ class RoleController extends Controller
 
     protected function inferPermissionGroupTitle(string $key, $permissions, $parent = null): string
     {
-        // 1) Dynamically resolve from lang/{locale}/global.php
+        $locale = current_locale();
+
+        // For Dari/Pashto, prefer curated DB labels first (most complete).
+        if ($locale !== 'en') {
+            $dbTitle = $this->folderTitleFromPermissions($permissions, $parent);
+            if ($dbTitle) {
+                return $dbTitle;
+            }
+        }
+
+        // Then try lang/{locale}/global.php dynamically.
         $fromLang = localize_from_key($key);
         if ($fromLang !== null) {
             return $fromLang;
@@ -231,24 +241,53 @@ class RoleController extends Controller
             }
         }
 
-        // 2) Prefer menu-style permission label from DB
-        $menuPermission = $permissions->first(function ($permission) use ($key) {
-            return in_array($permission->name, [
-                "show-{$key}-menu",
-                "{$key}.view",
-                "show-{$key}",
-            ], true);
+        // English (or missing lang): use DB labels before raw keys.
+        $dbTitle = $this->folderTitleFromPermissions($permissions, $parent);
+        if ($dbTitle) {
+            return $dbTitle;
+        }
+
+        return ucwords(str_replace(['-', '_'], ' ', $key));
+    }
+
+    protected function folderTitleFromPermissions($permissions, $parent = null): ?string
+    {
+        $menuPermission = $permissions->first(function ($permission) {
+            return str_ends_with($permission->name, '-menu')
+                || str_ends_with($permission->name, '.view')
+                || str_starts_with($permission->name, 'show-');
         });
 
         if ($menuPermission) {
-            return permission_label($menuPermission);
+            $label = $this->dbPermissionLabel($menuPermission);
+            if ($label) {
+                return $label;
+            }
         }
 
         if ($parent) {
-            return permission_label($parent);
+            $label = $this->dbPermissionLabel($parent);
+            if ($label) {
+                return $label;
+            }
         }
 
-        // 3) Humanized key as last resort
-        return ucwords(str_replace(['-', '_'], ' ', $key));
+        foreach ($permissions as $permission) {
+            $label = $this->dbPermissionLabel($permission);
+            if ($label) {
+                return $label;
+            }
+        }
+
+        return null;
+    }
+
+    protected function dbPermissionLabel($permission): ?string
+    {
+        if (current_locale() === 'en') {
+            return $permission->name ?: ($permission->name_dr ?: null);
+        }
+
+        return $permission->name_dr ?: ($permission->name ?: null);
     }
 }

@@ -75,16 +75,23 @@ function localize_from_key(string $key, ?string $fallback = null): ?string
 }
 
 /**
- * Locale-aware permission label: lang file first, then DB name_dr/name.
+ * Locale-aware permission label: DB name_dr/name first for non-English,
+ * then lang file, then the other DB field.
  */
 function permission_label($permission): string
 {
+    $locale = current_locale();
+
+    if ($locale !== 'en' && !empty($permission->name_dr)) {
+        return $permission->name_dr;
+    }
+
     $fromLang = localize_from_key($permission->name);
     if ($fromLang !== null) {
         return $fromLang;
     }
 
-    if (current_locale() === 'en') {
+    if ($locale === 'en') {
         return $permission->name ?: ($permission->name_dr ?: '');
     }
 

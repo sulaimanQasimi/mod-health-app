@@ -60,7 +60,7 @@
                                     </div>
                                 </div>
 
-                                <div id="permission-folders" class="row g-3">
+                                <div id="permission-folders" class="row g-3 align-items-start">
                                     @foreach ($permissionFolders as $index => $folder)
                                         @php
                                             $folderId = 'folder-' . $index;
@@ -69,9 +69,13 @@
                                             $isOpen = $checkedCount > 0;
                                         @endphp
                                         <div class="col-md-6">
-                                            <div class="permission-folder {{ $isOpen ? 'is-open' : '' }}" data-folder>
+                                            <div class="permission-folder {{ $isOpen ? 'is-open' : '' }}" data-folder="{{ $folderId }}">
                                                 <div class="permission-folder-header">
-                                                    <button type="button" class="permission-folder-toggle" data-folder-toggle aria-expanded="{{ $isOpen ? 'true' : 'false' }}">
+                                                    <button type="button"
+                                                            class="permission-folder-toggle"
+                                                            data-folder-toggle="{{ $folderId }}"
+                                                            aria-controls="{{ $folderId }}-body"
+                                                            aria-expanded="{{ $isOpen ? 'true' : 'false' }}">
                                                         <i class="bx bx-folder{{ $isOpen ? '-open' : '' }} folder-icon"></i>
                                                         <span class="folder-title">{{ $folder['title'] }}</span>
                                                         <span class="badge bg-label-primary folder-count">{{ $folder['permissions']->count() }}</span>
@@ -81,13 +85,15 @@
                                                         <input type="checkbox"
                                                                class="form-check-input folder-select-all-checkbox"
                                                                id="select-all-{{ $folderId }}"
-                                                               data-folder-select-all>
+                                                               data-folder-select-all="{{ $folderId }}">
                                                         <label class="form-check-label" for="select-all-{{ $folderId }}">
                                                             {{ localize('global.select_all') }}
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div class="permission-folder-body" @if(!$isOpen) style="display: none;" @endif>
+                                                <div class="permission-folder-body"
+                                                     id="{{ $folderId }}-body"
+                                                     @if(!$isOpen) hidden @endif>
                                                     @foreach ($folder['permissions'] as $permission)
                                                         <label class="permission-check-item">
                                                             <input type="checkbox"
@@ -134,7 +140,10 @@
             border-radius: 10px;
             background: #fff;
             overflow: hidden;
-            height: 100%;
+        }
+
+        .permission-folder-body[hidden] {
+            display: none !important;
         }
 
         .permission-folder-header {
@@ -264,6 +273,10 @@
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
     <script>
         $(document).ready(function() {
+            function getFolder(folderId) {
+                return $('[data-folder="' + folderId + '"]');
+            }
+
             function updateFolderSelectAll($folder) {
                 var $boxes = $folder.find('.permission-checkbox');
                 var total = $boxes.length;
@@ -280,8 +293,8 @@
             }
 
             function updateGlobalSelectAll() {
-                var total = $('.permission-checkbox').length;
-                var checked = $('.permission-checkbox:checked').length;
+                var total = $('#permission-folders .permission-checkbox').length;
+                var checked = $('#permission-folders .permission-checkbox:checked').length;
 
                 if (checked === 0) {
                     $('#selectAllPermissions').prop({ indeterminate: false, checked: false });
@@ -293,26 +306,40 @@
             }
 
             function setFolderOpen($folder, open) {
+                var folderId = $folder.attr('data-folder');
+                var $body = $('#' + folderId + '-body');
+                var $toggle = $folder.find('[data-folder-toggle]');
+                var $icon = $folder.find('.folder-icon');
+
                 $folder.toggleClass('is-open', open);
-                $folder.find('[data-folder-toggle]').attr('aria-expanded', open ? 'true' : 'false');
-                $folder.find('.folder-icon').toggleClass('bx-folder-open', open).toggleClass('bx-folder', !open);
-                $folder.find('.permission-folder-body').toggle(open);
+                $toggle.attr('aria-expanded', open ? 'true' : 'false');
+                $icon.toggleClass('bx-folder-open', open).toggleClass('bx-folder', !open);
+
+                if (open) {
+                    $body.prop('hidden', false);
+                } else {
+                    $body.prop('hidden', true);
+                }
             }
 
-            $('[data-folder-toggle]').on('click', function() {
-                var $folder = $(this).closest('[data-folder]');
+            $('#permission-folders').on('click', '[data-folder-toggle]', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var folderId = $(this).attr('data-folder-toggle');
+                var $folder = getFolder(folderId);
                 setFolderOpen($folder, !$folder.hasClass('is-open'));
             });
 
-            $('[data-folder-select-all]').on('change', function() {
-                var $folder = $(this).closest('[data-folder]');
+            $('#permission-folders').on('change', '[data-folder-select-all]', function() {
+                var folderId = $(this).attr('data-folder-select-all');
+                var $folder = getFolder(folderId);
                 var checked = $(this).is(':checked');
                 $folder.find('.permission-checkbox').prop('checked', checked);
                 setFolderOpen($folder, true);
                 updateGlobalSelectAll();
             });
 
-            $('.permission-checkbox').on('change', function() {
+            $('#permission-folders').on('change', '.permission-checkbox', function() {
                 var $folder = $(this).closest('[data-folder]');
                 updateFolderSelectAll($folder);
                 updateGlobalSelectAll();
@@ -320,11 +347,12 @@
 
             $('#selectAllPermissions').on('change', function() {
                 var checked = $(this).is(':checked');
-                $('.permission-checkbox').prop('checked', checked);
-                $('[data-folder]').each(function() {
-                    updateFolderSelectAll($(this));
+                $('#permission-folders .permission-checkbox').prop('checked', checked);
+                $('#permission-folders [data-folder]').each(function() {
+                    var $folder = $(this);
+                    updateFolderSelectAll($folder);
                     if (checked) {
-                        setFolderOpen($(this), true);
+                        setFolderOpen($folder, true);
                     }
                 });
             });
@@ -332,7 +360,7 @@
             var allExpanded = false;
             $('#toggleAllFolders').on('click', function() {
                 allExpanded = !allExpanded;
-                $('[data-folder]').each(function() {
+                $('#permission-folders [data-folder]').each(function() {
                     setFolderOpen($(this), allExpanded);
                 });
                 $(this).html(
@@ -342,7 +370,7 @@
                 );
             });
 
-            $('[data-folder]').each(function() {
+            $('#permission-folders [data-folder]').each(function() {
                 updateFolderSelectAll($(this));
             });
             updateGlobalSelectAll();

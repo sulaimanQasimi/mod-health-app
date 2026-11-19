@@ -41,31 +41,71 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-12 mt-3 mb-3">
-                                <div class="row">
 
-                                    <div class="col-md-6">
-                                        <div class="select-all-container bg-white">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h5 class="mb-0 text-dark">{{ localize('global.permissions_list') }}</h5>
-                                                <div class="form-check">
-                                                    <input type="checkbox" class="form-check-input bg-info" id="selectAllPermissions">
-                                                    <label class="form-check-label fw-bold text-primary" for="selectAllPermissions">
-                                                        {{ localize('global.select_all') }}
-                                                    </label>
+                            <div class="col-12 mt-3 mb-3">
+                                <div class="select-all-container bg-white mb-3">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                        <h5 class="mb-0 text-dark">{{ localize('global.permissions_list') }}</h5>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" id="toggleAllFolders">
+                                                <i class="bx bx-folder-open me-1"></i>{{ localize('global.expand_all') }}
+                                            </button>
+                                            <div class="form-check mb-0">
+                                                <input type="checkbox" class="form-check-input bg-info" id="selectAllPermissions">
+                                                <label class="form-check-label fw-bold text-primary" for="selectAllPermissions">
+                                                    {{ localize('global.select_all') }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="permission-folders" class="row g-3">
+                                    @foreach ($permissionFolders as $index => $folder)
+                                        @php
+                                            $folderId = 'folder-' . $index;
+                                            $folderPermissionIds = $folder['permissions']->pluck('id')->all();
+                                            $checkedCount = count(array_intersect($folderPermissionIds, $rolePermissionIds));
+                                            $isOpen = $checkedCount > 0;
+                                        @endphp
+                                        <div class="col-md-6">
+                                            <div class="permission-folder {{ $isOpen ? 'is-open' : '' }}" data-folder>
+                                                <div class="permission-folder-header">
+                                                    <button type="button" class="permission-folder-toggle" data-folder-toggle aria-expanded="{{ $isOpen ? 'true' : 'false' }}">
+                                                        <i class="bx bx-folder{{ $isOpen ? '-open' : '' }} folder-icon"></i>
+                                                        <span class="folder-title">{{ $folder['title'] }}</span>
+                                                        <span class="badge bg-label-primary folder-count">{{ $folder['permissions']->count() }}</span>
+                                                        <i class="bx bx-chevron-down chevron"></i>
+                                                    </button>
+                                                    <div class="form-check folder-select-all mb-0">
+                                                        <input type="checkbox"
+                                                               class="form-check-input folder-select-all-checkbox"
+                                                               id="select-all-{{ $folderId }}"
+                                                               data-folder-select-all>
+                                                        <label class="form-check-label" for="select-all-{{ $folderId }}">
+                                                            {{ localize('global.select_all') }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="permission-folder-body" @if(!$isOpen) style="display: none;" @endif>
+                                                    @foreach ($folder['permissions'] as $permission)
+                                                        <label class="permission-check-item">
+                                                            <input type="checkbox"
+                                                                   class="form-check-input permission-checkbox"
+                                                                   name="permission[]"
+                                                                   value="{{ $permission->id }}"
+                                                                   {{ in_array($permission->id, $rolePermissionIds) ? 'checked' : '' }}>
+                                                            <span class="permission-name">{{ $permission->name_dr ?: $permission->name }}</span>
+                                                            <small class="permission-slug text-muted">{{ $permission->name }}</small>
+                                                        </label>
+                                                    @endforeach
                                                 </div>
                                             </div>
                                         </div>
-                                        <ul id="permissions-tree">
-                                            @foreach ($permissions as $value)
-                                                @include('pages.permissions.sub_permissions', [
-                                                    'permission' => $value,
-                                                ])
-                                            @endforeach
-                                        </ul>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
+
                             <a href="{{ route('roles.index') }}"><button type="button"
                                         class="btn btn-danger">{{ localize('global.back') }}</button>
                                 <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
@@ -82,103 +122,140 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />
 
     <style>
-        .main-folder-icon:before {
-            content: "\eae2";
-            font-family: 'boxicons';
-            color: #696cff;
-        }
-
-        .sub-folder-icon:before {
-            content: "\eae0";
-            font-family: 'boxicons';
-            color: #068a48;
-        }
-
-        .permission-item ul {
-            display: none;
-            list-style-type: none;
-        }
-
-
-        .permission-item.open ul {
-            display: block;
-        }
-
-        li {
-            list-style-type: none;
-        }
-
-        .form-check {
-            padding-right: 0.7em !important;
-        }
-
-        .permission-item {
-            position: relative;
-        }
-
-        .main-folder-icon.open:before {
-            content: "\eae0";
-        }
-
-        /* Select All checkbox styling */
-        #selectAllPermissions {
-            transform: scale(1.2);
-            margin-right: 8px;
-        }
-
-        #selectAllPermissions:indeterminate {
-            background-color: var(--bs-primary, #696cff);
-            border-color: var(--bs-primary, #696cff);
-        }
-
-        /* Dark mode checkbox styling */
-        @media (prefers-color-scheme: dark) {
-            #selectAllPermissions {
-                background-color: var(--bs-dark, #343a40);
-                border-color: var(--bs-border-color, #6c757d);
-            }
-            
-            #selectAllPermissions:checked {
-                background-color: var(--bs-primary, #696cff);
-                border-color: var(--bs-primary, #696cff);
-            }
-        }
-
-        [data-bs-theme="dark"] #selectAllPermissions {
-            background-color: var(--bs-dark, #343a40);
-            border-color: var(--bs-border-color, #6c757d);
-        }
-        
-        [data-bs-theme="dark"] #selectAllPermissions:checked {
-            background-color: var(--bs-primary, #696cff);
-            border-color: var(--bs-primary, #696cff);
-        }
-
         .select-all-container {
             background-color: var(--bs-light, #f8f9fa);
             border: 1px solid var(--bs-border-color, #dee2e6);
             border-radius: 8px;
             padding: 10px 15px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
         }
 
-        /* Dark mode compatibility */
-        @media (prefers-color-scheme: dark) {
-            .select-all-container {
-                background-color: var(--bs-dark, #343a40);
-                border-color: var(--bs-border-color-translucent, #495057);
-            }
+        .permission-folder {
+            border: 1px solid var(--bs-border-color, #dee2e6);
+            border-radius: 10px;
+            background: #fff;
+            overflow: hidden;
+            height: 100%;
         }
 
-        /* Bootstrap dark mode support */
+        .permission-folder-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 10px 12px;
+            background: linear-gradient(180deg, #f8f9ff 0%, #f3f4f8 100%);
+            border-bottom: 1px solid transparent;
+        }
+
+        .permission-folder.is-open .permission-folder-header {
+            border-bottom-color: var(--bs-border-color, #dee2e6);
+        }
+
+        .permission-folder-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 0;
+            background: transparent;
+            padding: 0;
+            flex: 1;
+            text-align: right;
+            min-width: 0;
+        }
+
+        .permission-folder-toggle .folder-icon {
+            color: #696cff;
+            font-size: 1.25rem;
+        }
+
+        .permission-folder-toggle .folder-title {
+            font-weight: 600;
+            color: #566a7f;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .permission-folder-toggle .chevron {
+            margin-inline-start: auto;
+            transition: transform 0.2s ease;
+        }
+
+        .permission-folder.is-open .permission-folder-toggle .chevron {
+            transform: rotate(180deg);
+        }
+
+        .folder-select-all {
+            white-space: nowrap;
+        }
+
+        .permission-folder-body {
+            padding: 8px 12px 12px;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .permission-check-item {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto auto;
+            column-gap: 10px;
+            row-gap: 0;
+            align-items: center;
+            padding: 8px 6px;
+            border-radius: 6px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .permission-check-item:hover {
+            background: #f5f5f9;
+        }
+
+        .permission-check-item .permission-checkbox {
+            grid-row: 1 / span 2;
+            margin-top: 0;
+        }
+
+        .permission-check-item .permission-name {
+            font-size: 0.925rem;
+            color: #566a7f;
+        }
+
+        .permission-check-item .permission-slug {
+            grid-column: 2;
+            font-size: 0.75rem;
+        }
+
+        #selectAllPermissions,
+        .folder-select-all-checkbox {
+            transform: scale(1.1);
+        }
+
+        #selectAllPermissions:indeterminate,
+        .folder-select-all-checkbox:indeterminate {
+            background-color: var(--bs-primary, #696cff);
+            border-color: var(--bs-primary, #696cff);
+        }
+
+        [data-bs-theme="dark"] .permission-folder,
         [data-bs-theme="dark"] .select-all-container {
             background-color: var(--bs-dark, #343a40);
             border-color: var(--bs-border-color-translucent, #495057);
         }
 
+        [data-bs-theme="dark"] .permission-folder-header {
+            background: #2b3035;
+        }
+
+        [data-bs-theme="dark"] .permission-folder-toggle .folder-title,
+        [data-bs-theme="dark"] .permission-check-item .permission-name,
         [data-bs-theme="dark"] .select-all-container h5 {
             color: var(--bs-light, #f8f9fa) !important;
+        }
+
+        [data-bs-theme="dark"] .permission-check-item:hover {
+            background: #3a4046;
         }
     </style>
 @endpush
@@ -187,56 +264,88 @@
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
     <script>
         $(document).ready(function() {
-            // Handle folder icon clicks
-            $('.main-folder-icon').click(function() {
-                var ulElement = $(this).parent().parent().find('ul');
-                ulElement.toggle();
+            function updateFolderSelectAll($folder) {
+                var $boxes = $folder.find('.permission-checkbox');
+                var total = $boxes.length;
+                var checked = $boxes.filter(':checked').length;
+                var $selectAll = $folder.find('[data-folder-select-all]');
 
-                if (!ulElement.is(':visible')) {
-                    ulElement.find('ul').hide();
-                    $(this).removeClass('open'); // Remove 'open' class when closing
+                if (checked === 0) {
+                    $selectAll.prop({ indeterminate: false, checked: false });
+                } else if (checked === total) {
+                    $selectAll.prop({ indeterminate: false, checked: true });
                 } else {
-                    $(this).addClass('open'); // Add 'open' class when opening
-                }
-            });
-
-            // Initialize with folders open
-            $('.main-folder-icon').click();
-
-            // Handle Select All functionality
-            $('#selectAllPermissions').change(function() {
-                var isChecked = $(this).is(':checked');
-                
-                // Select/deselect all permission checkboxes
-                $('input[name="permission[]"]').prop('checked', isChecked);
-                
-                // Update the select all checkbox state based on individual checkboxes
-                updateSelectAllState();
-            });
-
-            // Handle individual checkbox changes
-            $('input[name="permission[]"]').change(function() {
-                updateSelectAllState();
-            });
-
-            // Function to update the select all checkbox state
-            function updateSelectAllState() {
-                var totalCheckboxes = $('input[name="permission[]"]').length;
-                var checkedCheckboxes = $('input[name="permission[]"]:checked').length;
-                
-                if (checkedCheckboxes === 0) {
-                    $('#selectAllPermissions').prop('indeterminate', false);
-                    $('#selectAllPermissions').prop('checked', false);
-                } else if (checkedCheckboxes === totalCheckboxes) {
-                    $('#selectAllPermissions').prop('indeterminate', false);
-                    $('#selectAllPermissions').prop('checked', true);
-                } else {
-                    $('#selectAllPermissions').prop('indeterminate', true);
+                    $selectAll.prop({ indeterminate: true, checked: false });
                 }
             }
 
-            // Initialize select all state on page load
-            updateSelectAllState();
+            function updateGlobalSelectAll() {
+                var total = $('.permission-checkbox').length;
+                var checked = $('.permission-checkbox:checked').length;
+
+                if (checked === 0) {
+                    $('#selectAllPermissions').prop({ indeterminate: false, checked: false });
+                } else if (checked === total) {
+                    $('#selectAllPermissions').prop({ indeterminate: false, checked: true });
+                } else {
+                    $('#selectAllPermissions').prop({ indeterminate: true, checked: false });
+                }
+            }
+
+            function setFolderOpen($folder, open) {
+                $folder.toggleClass('is-open', open);
+                $folder.find('[data-folder-toggle]').attr('aria-expanded', open ? 'true' : 'false');
+                $folder.find('.folder-icon').toggleClass('bx-folder-open', open).toggleClass('bx-folder', !open);
+                $folder.find('.permission-folder-body').toggle(open);
+            }
+
+            $('[data-folder-toggle]').on('click', function() {
+                var $folder = $(this).closest('[data-folder]');
+                setFolderOpen($folder, !$folder.hasClass('is-open'));
+            });
+
+            $('[data-folder-select-all]').on('change', function() {
+                var $folder = $(this).closest('[data-folder]');
+                var checked = $(this).is(':checked');
+                $folder.find('.permission-checkbox').prop('checked', checked);
+                setFolderOpen($folder, true);
+                updateGlobalSelectAll();
+            });
+
+            $('.permission-checkbox').on('change', function() {
+                var $folder = $(this).closest('[data-folder]');
+                updateFolderSelectAll($folder);
+                updateGlobalSelectAll();
+            });
+
+            $('#selectAllPermissions').on('change', function() {
+                var checked = $(this).is(':checked');
+                $('.permission-checkbox').prop('checked', checked);
+                $('[data-folder]').each(function() {
+                    updateFolderSelectAll($(this));
+                    if (checked) {
+                        setFolderOpen($(this), true);
+                    }
+                });
+            });
+
+            var allExpanded = false;
+            $('#toggleAllFolders').on('click', function() {
+                allExpanded = !allExpanded;
+                $('[data-folder]').each(function() {
+                    setFolderOpen($(this), allExpanded);
+                });
+                $(this).html(
+                    allExpanded
+                        ? '<i class="bx bx-folder me-1"></i>{{ localize("global.collapse_all") }}'
+                        : '<i class="bx bx-folder-open me-1"></i>{{ localize("global.expand_all") }}'
+                );
+            });
+
+            $('[data-folder]').each(function() {
+                updateFolderSelectAll($(this));
+            });
+            updateGlobalSelectAll();
         });
     </script>
 @endpush

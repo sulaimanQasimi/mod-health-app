@@ -1514,6 +1514,8 @@ return [
     'export_pdf' => 'دانلودPDF',
     'export_excel' => 'دانلودExcel',
     'select_all' => 'انتخاب همه',
+    'expand_all' => 'باز کردن همه',
+    'collapse_all' => 'بستن همه',
     'deselect_all' => 'لغو انتخاب',
     'outcome_report' => 'گذازش خروجی دواخانه',
     'outcome_reports' => 'گذازش خروجی دواخانه',

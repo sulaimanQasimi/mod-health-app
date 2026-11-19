@@ -1013,6 +1013,8 @@ return [
     'are_you_sure_delete_alternative' => 'Are you sure you want to delete this alternative?',
     'confirm_deletion' => 'Confirm Deletion',
     'select_all' => 'Select All',
+    'expand_all' => 'Expand all',
+    'collapse_all' => 'Collapse all',
     'bulk_mark_delivered' => 'Bulk Mark as Delivered',
     'search_medicine' => 'Search Medicine',
     'loading' => 'Loading',

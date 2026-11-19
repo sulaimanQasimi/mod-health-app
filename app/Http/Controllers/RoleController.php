@@ -109,11 +109,12 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        $permissions = $this->getPermissionTree();
+        $permissionFolders = $this->getPermissionFolders();
         $recipients = Recipient::all();
         $roleRecipients = $role->recipients;
+        $rolePermissionIds = $role->permissions->pluck('id')->toArray();
 
-        return view('pages.roles.edit', compact('role', 'permissions', 'recipients', 'roleRecipients'));
+        return view('pages.roles.edit', compact('role', 'permissionFolders', 'recipients', 'roleRecipients', 'rolePermissionIds'));
     }
 
 
@@ -160,5 +161,74 @@ class RoleController extends Controller
             $tree[] = $permission;
         }
         return collect($tree);
+    }
+
+    /**
+     * Group permissions into folders using parent_id when available,
+     * otherwise by related module name (e.g. users, depot, roles).
+     */
+    public function getPermissionFolders()
+    {
+        $all = Permission::orderBy('id')->get();
+        $byParent = $all->groupBy(fn ($permission) => $permission->parent_id);
+        $folders = collect();
+        $usedIds = collect();
+
+        foreach ($byParent->get(null, collect()) as $parent) {
+            $children = $byParent->get($parent->id, collect());
+
+            if ($children->isEmpty()) {
+                continue;
+            }
+
+            $items = collect([$parent])->merge($children)->values();
+            $folders->push([
+                'key' => 'parent-' . $parent->id,
+                'title' => $parent->name_dr ?: $parent->name,
+                'permissions' => $items,
+            ]);
+            $usedIds = $usedIds->merge($items->pluck('id'));
+        }
+
+        $remaining = $all->whereNotIn('id', $usedIds->unique()->all())->values();
+
+        foreach ($remaining->groupBy(fn ($permission) => $this->inferPermissionGroupKey($permission->name)) as $key => $permissions) {
+            $folders->push([
+                'key' => 'group-' . $key,
+                'title' => $this->inferPermissionGroupTitle($key, $permissions),
+                'permissions' => $permissions->values(),
+            ]);
+        }
+
+        return $folders->sortBy('title', SORT_NATURAL | SORT_FLAG_CASE)->values();
+    }
+
+    protected function inferPermissionGroupKey(string $name): string
+    {
+        if (str_contains($name, '.')) {
+            return explode('.', $name)[0];
+        }
+
+        $key = preg_replace('/^(show|create|edit|delete|manage|deactivate|issue|receive|add|update|view)-/', '', $name);
+        $key = preg_replace('/-menu$/', '', $key);
+
+        return $key ?: $name;
+    }
+
+    protected function inferPermissionGroupTitle(string $key, $permissions): string
+    {
+        $menuPermission = $permissions->first(function ($permission) use ($key) {
+            return in_array($permission->name, [
+                "show-{$key}-menu",
+                "{$key}.view",
+                "show-{$key}",
+            ], true);
+        });
+
+        if ($menuPermission && $menuPermission->name_dr) {
+            return $menuPermission->name_dr;
+        }
+
+        return str_replace(['-', '_'], ' ', $key);
     }
 }

@@ -55,10 +55,10 @@ class RoleController extends Controller
      */
     public function create(Request $request)
     {
-        $permissions = Permission::all();
+        $permissionFolders = $this->getPermissionFolders();
         $recipients = Recipient::all();
 
-        return view('pages.roles.create',compact('permissions', 'recipients'));
+        return view('pages.roles.create', compact('permissionFolders', 'recipients'));
     }
 
     /**

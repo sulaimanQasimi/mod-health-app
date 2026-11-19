@@ -47,22 +47,11 @@
                                 </div>
                             </div>
 
-                            <div class="col-12 mt-3 mb-3">
-                                <div class="row">
+                            @include('pages.roles.partials.permission_folders', [
+                                'permissionFolders' => $permissionFolders,
+                                'rolePermissionIds' => old('permission', []),
+                            ])
 
-                                    <div class="col-md-6">
-                                        <h5>{{ localize('global.permissions_list') }}</h5>
-                                        @foreach ($permissions as $value)
-                                            <div class="d-flex">
-                                                <div class="form-check me-lg-5">
-                                                    {{ Form::checkbox('permission[]', $value->id, false, ['class' => 'form-check-input']) }}
-                                                    {{ $value->name_dr }}
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
                             <a href="{{ route('roles.index') }}"><button type="button"
                                         class="btn btn-danger">{{ localize('global.back') }}</button>
                                 <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>

@@ -370,27 +370,23 @@ class AppointmentController extends Controller
             $query->where('patient_id', $filterPatientId);
         }
 
-        if ($request->ajax()) {
-            $appointments = $query->get()
-                ->map(function ($appointment) {
-                    $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
-                    return $appointment;
-                });
+        $appointments = $query->paginate(25)->withQueryString();
 
-            if ($appointments) {
-                return response()->json([
-                    'data' => $appointments,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Internal Server Error',
-                    'code' => 500,
-                    'data' => [],
-                ]);
-            }
+        $appointments->getCollection()->transform(function ($appointment) {
+            $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
+            return $appointment;
+        });
+
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $appointments->items(),
+                'current_page' => $appointments->currentPage(),
+                'last_page' => $appointments->lastPage(),
+                'per_page' => $appointments->perPage(),
+                'total' => $appointments->total(),
+            ]);
         }
 
-        $appointments = $query->get();
         return view('pages.appointments.doctor_appointments', compact('appointments'));
     }
 

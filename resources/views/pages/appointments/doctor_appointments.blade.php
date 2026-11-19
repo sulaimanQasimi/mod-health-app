@@ -15,45 +15,59 @@
                     <h5 class="mb-0">{{ localize('global.filters') }}</h5>
                 </div>
                 <div class="card-body">
-                    <form id="filterForm" method="GET" class="row g-3">
+                    <form method="GET" action="{{ route('appointments.doctorAppointments') }}" class="row g-3">
                         <div class="col-md-3">
-                            <label for="filter_token_id" class="form-label">{{ localize('global.token_id') }}</label>
+                            <label for="token_id" class="form-label">{{ localize('global.token_id') }}</label>
                             <div class="input-group">
                                 <span class="input-group-text">
                                     <i class="bx bx-hash"></i>
                                 </span>
-                                <input type="text" 
-                                       class="form-control" 
-                                       name="token_id" 
-                                       id="filter_token_id"
+                                <input type="text"
+                                       class="form-control"
+                                       name="token_id"
+                                       id="token_id"
                                        placeholder="{{ localize('global.search_by_token_id') }}"
-                                       value="">
+                                       value="{{ request('token_id') }}">
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label for="filter_patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
+                            <label for="patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
                             <div class="input-group">
                                 <span class="input-group-text">
                                     <i class="bx bx-user"></i>
                                 </span>
-                                <input type="text" 
-                                       class="form-control" 
-                                       name="patient_id" 
-                                       id="filter_patient_id"
+                                <input type="text"
+                                       class="form-control"
+                                       name="patient_id"
+                                       id="patient_id"
                                        placeholder="{{ localize('global.search_by_patient_id') }}"
-                                       value="">
+                                       value="{{ request('patient_id') }}">
                             </div>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" id="applyFilters" class="btn btn-primary w-100">
+                            <button type="submit" class="btn btn-primary w-100">
                                 <i class="bx bx-search me-1"></i>{{ localize('global.search') }}
                             </button>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" id="resetFilters" class="btn btn-secondary w-100">
+                            <a href="{{ route('appointments.doctorAppointments') }}" class="btn btn-secondary w-100">
                                 <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') }}
-                            </button>
+                            </a>
                         </div>
+                        @if(request('token_id') || request('patient_id'))
+                            <div class="col-12">
+                                <small class="text-muted">
+                                    <i class="bx bx-info-circle me-1"></i>
+                                    {{ localize('global.active_filters') }}:
+                                    @if(request('token_id'))
+                                        <span class="badge bg-info">{{ localize('global.token_id') }}: {{ request('token_id') }}</span>
+                                    @endif
+                                    @if(request('patient_id'))
+                                        <span class="badge bg-info">{{ localize('global.patient_id') }}: {{ request('patient_id') }}</span>
+                                    @endif
+                                </small>
+                            </div>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -62,23 +76,65 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">{{ localize('global.patients_list') }}</h5>
                 </div>
-                <div class="card-datatable table-responsive">
-                    <table class="datatables-basic table border-top">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>{{localize('global.id')}}</th>
-                                <th>{{localize('global.card_number')}}</th>
-                                <th>{{localize('global.patient_name')}}</th>
-                                <th>{{localize('global.father_name')}}</th>
-                                <th>{{localize('global.referred_to')}}</th>
-                                <th>{{localize('global.referred_by')}}</th>
-                                <th>{{localize('global.date')}}</th>
-                                <th>{{localize('global.time')}}</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                    </table>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover border-top">
+                            <thead>
+                                <tr>
+                                    <th>{{localize('global.id')}}</th>
+                                    <th>{{localize('global.card_number')}}</th>
+                                    <th>{{localize('global.patient_name')}}</th>
+                                    <th>{{localize('global.father_name')}}</th>
+                                    <th>{{localize('global.referred_to')}}</th>
+                                    <th>{{localize('global.referred_by')}}</th>
+                                    <th>{{localize('global.date')}}</th>
+                                    <th>{{localize('global.time')}}</th>
+                                    <th>{{localize('global.actions')}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($appointments as $appointment)
+                                    <tr>
+                                        <td>{{ $appointment->id }}</td>
+                                        <td>{{ $appointment->patient->id_card ?? '' }}</td>
+                                        <td>{{ $appointment->patient->name ?? '' }}</td>
+                                        <td>{{ $appointment->patient->father_name ?? '' }}</td>
+                                        <td>{{ $appointment->doctor->name ?? '' }}</td>
+                                        <td>
+                                            @if($appointment->referringDoctor)
+                                                <span class="badge bg-info">
+                                                    <i class="bx bx-user me-1"></i>{{ $appointment->referringDoctor->name }}
+                                                </span>
+                                            @else
+                                                <span class="badge bg-secondary">{{ localize('global.direct_appointment') }}</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $appointment->jalali_date ?? '' }}</td>
+                                        <td>{{ $appointment->time ?? '' }}</td>
+                                        <td>
+                                            <a href="{{ url('appointments/show/') }}/{{ $appointment->id }}" class="btn btn-sm btn-icon text-primary">
+                                                <i class="bx bx-expand"></i>
+                                            </a>
+                                            <a href="{{ url('patients/history/') }}/{{ $appointment->patient_id }}" class="btn btn-sm btn-icon item-edit text-primary">
+                                                <i class="bx bx-history"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="text-center">{{ localize('global.no_data_found') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    @if($appointments->hasPages())
+                        <div class="d-flex justify-content-center mt-3">
+                            {{ $appointments->appends(request()->query())->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -89,201 +145,24 @@
 @endsection
 
 @push('custom-css')
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css') }}" />
     <style>
-        .card-datatable table.dataTable thead th {
+        .table thead th {
             text-align: right;
         }
 
-        .card-datatable table.dataTable tbody td {
+        .table tbody td {
             text-align: right;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
         }
     </style>
 @endpush
 
 @push('custom-js')
-    <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
     <script>
-        $(function() {
-            var dt_basic_table = $('.datatables-basic'),
-                dt_basic;
-
-            if (dt_basic_table.length) {
-                // Function to get filter parameters
-                function getFilterParams() {
-                    return {
-                        token_id: $('#filter_token_id').val() || '',
-                        patient_id: $('#filter_patient_id').val() || ''
-                    };
-                }
-
-                dt_basic = dt_basic_table.DataTable({
-                    ajax: {
-                        url: "{{ route('appointments.doctorAppointments') }}",
-                        data: function(d) {
-                            var filters = getFilterParams();
-                            d.token_id = filters.token_id;
-                            d.patient_id = filters.patient_id;
-                        }
-                    },
-                    columns: [{
-                            data: 'id'
-                        },
-
-                        {
-                            data: 'id'
-                        },
-                        {
-                            data: 'patient',
-                            render: function(data) {
-                                return data ? data.id_card : '';
-                            }
-                        },
-                        {
-                            data: 'patient',
-                            render: function(data) {
-                                return data ? data.name : '';
-                            }
-                        },
-                        {
-                            data: 'patient',
-                            render: function(data) {
-                                return data ? data.father_name : '';
-                            }
-                        },
-                        {
-                            data: 'doctor',
-                            render: function(data) {
-                                return data ? data.name : '';
-                            }
-                        },
-                        {
-                            data: 'referring_doctor',
-                            render: function(data, type, full) {
-                                if (full.referring_doctor && full.referring_doctor.name) {
-                                    return '<span class="badge bg-info"><i class="bx bx-user me-1"></i>' + full.referring_doctor.name + '</span>';
-                                } else {
-                                    return '<span class="badge bg-secondary">{{ localize("global.direct_appointment") }}</span>';
-                                }
-                            }
-                        },
-                        {
-                            data: 'jalali_date',
-
-                        },
-                        {
-                            data: 'time'
-                        },
-
-                        {
-                            data: ''
-                        },
-
-
-                    ],
-                    columnDefs: [{
-                            // For Responsive
-                            className: 'control',
-                            orderable: false,
-                            searchable: false,
-                            responsivePriority: 2,
-                            targets: 0,
-                            render: function(data, type, full, meta) {
-                                return '';
-                            }
-                        },
-                        {
-                            // Actions
-                            targets: -1,
-                            title: '{{ localize('global.actions') }}',
-                            orderable: false,
-                            searchable: false,
-                            render: function(data, type, full, meta) {
-                                return (
-                                    `<a href="{{ url('appointments/show/') }}` + `/` + full['id'] +
-                                    `" class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>` +
-                                    `<a href="{{ url('patients/history/') }}` + `/` + full['patient_id'] +
-                                    `" class="btn btn-sm btn-icon item-edit text-primary"><i class="bx bx-history"></i></a>`
-                                );
-                            }
-                        }
-                    ],
-                    order: [
-                        [1, 'desc']
-                    ],
-                    dom: '<"flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-                    displayLength: 25,
-                    lengthMenu: [7, 10, 25, 50, 75, 100],
-                    buttons: [],
-                    responsive: {
-                        details: {
-                            display: $.fn.dataTable.Responsive.display.modal({
-                                header: function(row) {
-                                    var data = row.data();
-                                    return 'Details of ' + data['full_name'];
-                                }
-                            }),
-                            type: 'column',
-                            renderer: function(api, rowIdx, columns) {
-                                var data = $.map(columns, function(col, i) {
-                                    return col.title !==
-                                        '' // ? Do not show row in modal popup if title is blank (for check box)
-                                        ?
-                                        '<tr data-dt-row="' +
-                                        col.rowIndex +
-                                        '" data-dt-column="' +
-                                        col.columnIndex +
-                                        '">' +
-                                        '<td>' +
-                                        col.title +
-                                        ':' +
-                                        '</td> ' +
-                                        '<td>' +
-                                        col.data +
-                                        '</td>' +
-                                        '</tr>' :
-                                        '';
-                                }).join('');
-
-                                return data ? $('<table class="table"/><tbody />').append(data) : false;
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Filter form control to default size
-            // ? setTimeout used for multilingual table initialization
-            setTimeout(() => {
-                $('.dataTables_filter .form-control').removeClass('form-control-sm');
-                $('.dataTables_length .form-select').removeClass('form-select-sm');
-            }, 300);
-
-            // Apply filters button
-            $('#applyFilters').on('click', function() {
-                dt_basic.ajax.reload();
-            });
-
-            // Reset filters button
-            $('#resetFilters').on('click', function() {
-                $('#filter_token_id').val('');
-                $('#filter_patient_id').val('');
-                dt_basic.ajax.reload();
-            });
-
-            // Allow Enter key to apply filters
-            $('#filter_token_id, #filter_patient_id').on('keypress', function(e) {
+        $(document).ready(function() {
+            $('#token_id, #patient_id').on('keypress', function(e) {
                 if (e.which === 13) {
                     e.preventDefault();
-                    dt_basic.ajax.reload();
+                    $(this).closest('form').submit();
                 }
             });
         });

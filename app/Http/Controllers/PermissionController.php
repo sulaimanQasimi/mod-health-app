@@ -25,23 +25,21 @@ class PermissionController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-            $permissions = Permission::all();
+        $permissions = Permission::latest('id')
+            ->paginate(25)
+            ->withQueryString();
 
-            if ($permissions) {
-                return response()->json([
-                    'data' => $permissions,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Internal Server Error',
-                    'code' => 500,
-                    'data' => [],
-                ]);
-            }
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $permissions->items(),
+                'current_page' => $permissions->currentPage(),
+                'last_page' => $permissions->lastPage(),
+                'per_page' => $permissions->perPage(),
+                'total' => $permissions->total(),
+            ]);
         }
 
-        return view('pages.permissions.index');
+        return view('pages.permissions.index', compact('permissions'));
     }
 
     /**

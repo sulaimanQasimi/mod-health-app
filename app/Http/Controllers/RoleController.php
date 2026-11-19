@@ -30,23 +30,22 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-            $roles = Role::with('permissions')->get();
+        $roles = Role::with('permissions')
+            ->latest('id')
+            ->paginate(25)
+            ->withQueryString();
 
-            if ($roles) {
-                return response()->json([
-                    'data' => $roles,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Internal Server Error',
-                    'code' => 500,
-                    'data' => [],
-                ]);
-            }
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $roles->items(),
+                'current_page' => $roles->currentPage(),
+                'last_page' => $roles->lastPage(),
+                'per_page' => $roles->perPage(),
+                'total' => $roles->total(),
+            ]);
         }
 
-        return view('pages.roles.index');
+        return view('pages.roles.index', compact('roles'));
     }
 
     /**

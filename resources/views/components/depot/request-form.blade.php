@@ -57,15 +57,15 @@
                 <i class="bx bx-plus"></i> {{ localize('global.add') ?? 'Add' }}
             </button>
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive depot-request-items-wrap">
             <table class="table table-bordered align-middle" id="request-items-table">
                 <thead>
                     <tr>
-                        <th style="min-width:180px">{{ localize('global.medicine') }}</th>
-                        <th style="min-width:180px" class="tool-col">{{ localize('global.depot.tool') }}</th>
+                        <th style="min-width:260px">{{ localize('global.medicine') }}</th>
+                        <th style="min-width:220px" class="tool-col">{{ localize('global.depot.tool') }}</th>
                         <th style="min-width:100px">{{ localize('global.quantity') }}</th>
                         <th style="min-width:110px" class="text-center">{{ localize('global.available_stock') }}</th>
-                        <th style="min-width:120px">{{ localize('global.unit') }}</th>
+                        <th style="min-width:140px">{{ localize('global.unit') }}</th>
                         <th style="min-width:120px">{{ localize('global.batch_number') }}</th>
                         <th style="width:50px"></th>
                     </tr>
@@ -337,12 +337,36 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function destroySelect2($select) {
+        if (!$select.length || ! $select.hasClass('select2-hidden-accessible')) {
+            return;
+        }
+        try {
+            $select.select2('destroy');
+        } catch (e) {
+            $select.removeClass('select2-hidden-accessible').removeAttr('data-select2-id');
+            $select.next('.select2-container').remove();
+        }
+    }
+
     function initSelect2(scope) {
-        if (!window.jQuery) return;
+        if (!window.jQuery || typeof $.fn.select2 === 'undefined') return;
+
         $(scope).find('select.select2, select.item-medicine, select.item-tool').each(function () {
-            if (!$(this).hasClass('select2-hidden-accessible')) {
-                $(this).addClass('select2').select2({ width: '100%' });
+            const $select = $(this);
+            destroySelect2($select);
+
+            if (!$select.parent().hasClass('position-relative')) {
+                $select.wrap('<div class="position-relative"></div>');
             }
+
+            $select.addClass('select2').select2({
+                width: '100%',
+                placeholder: $select.find('option[value=""]').text() || '--انتخاب--',
+                allowClear: true,
+                // Keep dropdown outside .table-responsive so options are fully visible.
+                dropdownParent: $(document.body),
+            });
         });
     }
 
@@ -375,7 +399,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     tbody.querySelectorAll('.request-item-row').forEach(bindRow);
     tbody.querySelectorAll('.request-item-row').forEach(bindAvailability);
+    // Re-init after global forms-selects.js so table selects use body as dropdown parent.
+    if (window.jQuery) {
+        $(function () {
+            initSelect2(document.getElementById('request-items-table') || document);
+            initSelect2(document.getElementById('requesting-depot-wrap') || document);
+            initSelect2(document.getElementById('pharmacy-wrap') || document);
+            const source = document.getElementById('source_depot_id');
+            if (source) initSelect2(source.parentElement || document);
+        });
+    }
     syncDestinationUi();
     refreshContext();
 });
 </script>
+
+<style>
+    /* Keep selected Select2 text readable in request item rows */
+    #request-items-table .select2-container {
+        min-width: 100%;
+    }
+    #request-items-table .select2-selection__rendered {
+        color: #566a7f !important;
+        line-height: 2.25rem !important;
+        padding-inline: .75rem !important;
+    }
+    #request-items-table .select2-selection--single {
+        min-height: 2.5rem;
+        display: flex;
+        align-items: center;
+    }
+    .select2-container--open .select2-dropdown {
+        z-index: 3000;
+    }
+</style>

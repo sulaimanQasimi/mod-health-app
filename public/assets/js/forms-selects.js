@@ -22,12 +22,25 @@ $(function () {
   if (select2.length) {
     select2.not('.modal .select2, .vue-select2').each(function () {
       var $this = $(this);
-      if (!$this.hasClass('select2-hidden-accessible')) {
-        $this.wrap('<div class="position-relative"></div>').select2({
-          placeholder: '--انتخاب--',
-          dropdownParent: $this.parent()
-        });
+      if ($this.hasClass('select2-hidden-accessible')) {
+        return;
       }
+
+      if (!$this.parent().hasClass('position-relative')) {
+        $this.wrap('<div class="position-relative"></div>');
+      }
+
+      // Inside .table-responsive the menu is clipped if parented to the cell.
+      // Attach to body so options stay fully visible and readable.
+      var dropdownParent = $this.closest('.table-responsive').length
+        ? $(document.body)
+        : $this.parent();
+
+      $this.select2({
+        placeholder: '--انتخاب--',
+        width: '100%',
+        dropdownParent: dropdownParent
+      });
     });
   }
 

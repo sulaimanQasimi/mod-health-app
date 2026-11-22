@@ -147,7 +147,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', localize('global.depot.request_created_successfully.'));
+            ->with('success', localize('global.depot.request_created_successfully'));
     }
 
     public function show(DepotRequest $depotRequest): View
@@ -334,7 +334,7 @@ class DepotRequestController extends Controller
         });
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', localize('global.updated_successfully.'));
+            ->with('success', localize('global.updated_successfully'));
     }
 
     public function submit(DepotRequest $depotRequest): RedirectResponse
@@ -349,7 +349,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', localize('global.depot.request_submitted_for_approval.'));
+            ->with('success', localize('global.depot.request_submitted_for_approval'));
     }
 
     public function approve(DepotRequest $depotRequest): RedirectResponse
@@ -363,7 +363,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', localize('global.depot.request_approved.'));
+            ->with('success', localize('global.depot.request_approved'));
     }
 
     public function reject(Request $request, DepotRequest $depotRequest): RedirectResponse
@@ -381,7 +381,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', localize('global.depot.request_rejected.'));
+            ->with('success', localize('global.depot.request_rejected'));
     }
 
     public function fulfill(DepotRequest $depotRequest): RedirectResponse
@@ -395,7 +395,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest->fresh())
-            ->with('success', localize('global.depot.request_fulfilled_and_transferred.'));
+            ->with('success', localize('global.depot.request_fulfilled_and_transferred'));
     }
 
     public function cancel(DepotRequest $depotRequest): RedirectResponse
@@ -426,7 +426,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', localize('global.depot.request_cancelled.'));
+            ->with('success', localize('global.depot.request_cancelled'));
     }
 
     private function redirectWithValidationToast(ValidationException $e): RedirectResponse

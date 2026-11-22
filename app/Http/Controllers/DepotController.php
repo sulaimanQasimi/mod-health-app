@@ -132,7 +132,7 @@ class DepotController extends Controller
             return $depot;
         });
 
-        $message = localize('global.depot.depot_created_successfully.');
+        $message = localize('global.depot.depot_created_successfully');
         session()->flash('success', $message);
 
         if ($request->ajax()) {
@@ -417,7 +417,7 @@ class DepotController extends Controller
             $depot->syncUsers($data['user_ids'] ?? [], $data['roles'] ?? []);
         });
 
-        $message = localize('global.depot.depot_updated_successfully.');
+        $message = localize('global.depot.depot_updated_successfully');
         session()->flash('success', $message);
 
         if ($request->ajax()) {
@@ -440,6 +440,6 @@ class DepotController extends Controller
 
         return redirect()
             ->route('depots.index')
-            ->with('success', localize('global.depot.depot_deleted_successfully.'));
+            ->with('success', localize('global.depot.depot_deleted_successfully'));
     }
 }

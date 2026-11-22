@@ -140,7 +140,7 @@ class DepotTransactionController extends Controller
         });
 
         return redirect()->route('depots.transactions.index')
-            ->with('success', localize('global.depot.transaction_created_successfully.'));
+            ->with('success', localize('global.depot.transaction_created_successfully'));
     }
 
     public function show(DepotTransaction $depotTransaction): View
@@ -181,7 +181,7 @@ class DepotTransactionController extends Controller
         $this->authorizeDepotTransactionRecord($depotTransaction, DepotRolePermissions::ACTION_TRANSACTION_CREATE);
 
         if ($depotTransaction->status === DepotTransaction::STATUS_CANCELLED) {
-            return redirect()->back()->with('error', localize('global.depot.transaction_already_cancelled.'));
+            return redirect()->back()->with('error', localize('global.depot.transaction_already_cancelled'));
         }
 
         DB::transaction(function () use ($depotTransaction) {
@@ -198,7 +198,7 @@ class DepotTransactionController extends Controller
         });
 
         return redirect()->route('depots.transactions.index')
-            ->with('success', localize('global.depot.transaction_cancelled_successfully.'));
+            ->with('success', localize('global.depot.transaction_cancelled_successfully'));
     }
 
     public function depotToDepot()
@@ -232,7 +232,7 @@ class DepotTransactionController extends Controller
         });
 
         return redirect()->route('depots.transactions.index')
-            ->with('success', localize('global.depot.depot_to_depot_completed_successfully.'));
+            ->with('success', localize('global.depot.depot_to_depot_completed_successfully'));
     }
 
     public function depotToPharmacy()
@@ -276,7 +276,7 @@ class DepotTransactionController extends Controller
         });
 
         return redirect()->route('depots.transactions.index')
-            ->with('success', localize('global.depot.depot_to_pharmacy_completed_successfully.'));
+            ->with('success', localize('global.depot.depot_to_pharmacy_completed_successfully'));
     }
 
     public function stock(Request $request): JsonResponse

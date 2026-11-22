@@ -85,7 +85,7 @@
                             <select class="form-select select2 depot-user-select" name="user_ids[]">
                                 <option value="">Select user</option>
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}" @selected($selectedUserId == $user->id)>{{ $user->name }} {{ $user->last_name }} ({{ $user->email }})</option>
+                                    <option value="{{ $user->id }}" @selected($selectedUserId == $user->id)>{{ trim($user->name.' '.($user->last_name ?? '')) }} ({{ $user->email }})</option>
                                 @endforeach
                             </select>
                         </div>

@@ -7,6 +7,7 @@ use App\Http\Controllers\Concerns\ProvidesDepotFormData;
 use App\Models\Depot;
 use App\Models\DepotRequest;
 use App\Models\DepotTransaction;
+use App\Models\User;
 use App\Services\DepotStockService;
 use App\Support\DepotRolePermissions;
 use App\Support\DepotUi;
@@ -93,11 +94,7 @@ class DepotController extends Controller
             'departments' => collect($options['departments'])->map(fn ($item) => (object) $item),
             'pharmacies' => collect($options['pharmacies'])->map(fn ($item) => (object) $item),
             'depots' => collect($options['depots'])->map(fn ($item) => (object) $item),
-            'users' => collect($options['users'])->map(fn ($item) => (object) [
-                'id' => $item['id'],
-                'name' => $item['full_name'],
-                'email' => $item['email'],
-            ]),
+            'users' => User::query()->orderBy('name')->get(['id', 'name', 'last_name', 'email']),
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
         ]);
@@ -381,11 +378,7 @@ class DepotController extends Controller
             'departments' => collect($options['departments'])->map(fn ($item) => (object) $item),
             'pharmacies' => collect($options['pharmacies'])->map(fn ($item) => (object) $item),
             'depots' => collect($options['depots'])->map(fn ($item) => (object) $item),
-            'users' => collect($options['users'])->map(fn ($item) => (object) [
-                'id' => $item['id'],
-                'name' => $item['full_name'],
-                'email' => $item['email'],
-            ]),
+            'users' => User::query()->orderBy('name')->get(['id', 'name', 'last_name', 'email']),
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
         ]);

@@ -6,9 +6,12 @@ use App\Models\Appointment;
 use App\Models\Hospitalization;
 use App\Models\ICU;
 use App\Models\InvoiceItem;
+use App\Models\Medicine;
 use App\Models\Pharmacy;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
+use App\Models\SaleItem;
+use App\Support\PackQuantity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -16,19 +19,20 @@ use Illuminate\Validation\ValidationException;
 class PharmacyDispenseService
 {
     public function __construct(
-        private readonly StockBatchService $batches,
+        private readonly StockService $stocks,
         private readonly InvoiceService $invoices,
     ) {
     }
 
-    public function deliverItem(PrescriptionItem $item, bool $delivered = true): PrescriptionItem
+    public function deliverItem(PrescriptionItem $item, bool $delivered = true, ?int $packs = null, ?int $units = null): PrescriptionItem
     {
         $item->loadMissing([
             'prescription.appointment',
             'prescription.patient',
             'prescription.pharmacy',
-            'selectedAlternative.medicine:id,name',
-            'medicine:id,name',
+            'selectedAlternative.medicine:id,name,units_per_pack,unit_id',
+            'medicine:id,name,units_per_pack,unit_id',
+            'saleItems',
             'batchAllocations',
         ]);
 
@@ -36,20 +40,52 @@ class PharmacyDispenseService
             return tap($item)->update(['is_delivered' => false]);
         }
 
-        if ($item->is_delivered || $item->batchAllocations->isNotEmpty()) {
+        if ($item->is_delivered || $item->saleItems->isNotEmpty()) {
             if (! $item->is_delivered) {
                 $item->update(['is_delivered' => true]);
             }
 
-            return $item->fresh(['batchAllocations.stockBatch', 'medicine']);
+            return $item->fresh(['saleItems.stock', 'medicine']);
         }
 
-        return DB::transaction(function () use ($item) {
+        return DB::transaction(function () use ($item, $packs, $units) {
             $prescription = $item->prescription;
             $pharmacy = $this->resolvePharmacy($prescription);
+            $medicine = $this->resolveMedicine($item);
+            $unitsPerPack = $medicine->unitsPerPack();
 
-            $quantity = $this->resolveQuantity($item);
-            $allocations = $this->batches->allocatePrescriptionItem($pharmacy, $item, $quantity);
+            // Sales packs default to 1 when not provided.
+            $linePacks = $packs ?? 1;
+            $lineUnits = $units ?? 0;
+
+            if ($packs === null && $units === null) {
+                $requestedUnits = $this->resolveQuantity($item);
+                $split = PackQuantity::fromUnits($requestedUnits, $unitsPerPack);
+                // Prefer packs=1 default when prescription amount is empty/1 unit and pack size is 1.
+                if ($requestedUnits <= 1) {
+                    $linePacks = 1;
+                    $lineUnits = 0;
+                } else {
+                    $linePacks = $split['packs'];
+                    $lineUnits = $split['units'];
+                    if ($linePacks < 1 && $lineUnits < 1) {
+                        $linePacks = 1;
+                        $lineUnits = 0;
+                    }
+                }
+            }
+
+            $qtyUnits = PackQuantity::toUnits($linePacks, $lineUnits, $unitsPerPack);
+
+            $soldLots = $this->stocks->sellFromPharmacy(
+                $pharmacy,
+                $medicine,
+                $qtyUnits,
+                $linePacks,
+                $lineUnits,
+                null,
+                $item
+            );
 
             $invoiceable = $this->resolveInvoiceable($prescription);
             $invoice = $this->invoices->openInvoiceFor($invoiceable, [
@@ -57,35 +93,48 @@ class PharmacyDispenseService
                 'branch_id' => (int) ($prescription->branch_id ?? $invoiceable->getAttribute('branch_id')),
             ]);
 
-            $medicineName = $item->selectedAlternative?->medicine?->name
-                ?? $item->medicine?->name
-                ?? '#'.$item->id;
+            $medicineName = $medicine->name ?? '#'.$item->id;
 
-            foreach ($allocations as $allocation) {
+            foreach ($soldLots as $lot) {
+                $saleItem = SaleItem::query()->create([
+                    'prescription_item_id' => $item->id,
+                    'stock_id' => $lot['stock']->id,
+                    'medicine_id' => $medicine->id,
+                    'batch_number' => $lot['batch_number'],
+                    'packs' => $lot['packs'],
+                    'units' => $lot['units'],
+                    'qty_units' => $lot['qty_units'],
+                    'units_per_pack' => $lot['units_per_pack'],
+                    'unit_sale_price' => $lot['unit_sale_price'],
+                    'pack_price' => $lot['pack_price'],
+                    'amount' => round($lot['unit_sale_price'] * $lot['qty_units'], 2),
+                    'user_id' => auth()->id(),
+                ]);
+
                 $invoiceItem = $this->invoices->addCustomItem(
                     $invoice,
-                    localize('global.pharmacy_medicine').' — '.$medicineName.' ('.$allocation->stockBatch?->batch_code.')',
-                    (float) $allocation->unit_sale_price,
-                    (int) $allocation->quantity,
+                    localize('global.pharmacy_medicine').' — '.$medicineName.' ('.$lot['batch_number'].')',
+                    (float) $lot['unit_sale_price'],
+                    (int) $lot['qty_units'],
                     $item,
                     InvoiceItem::TYPE_PHARMACY_MEDICINE
                 );
 
-                $allocation->forceFill(['invoice_item_id' => $invoiceItem->id])->save();
+                $saleItem->forceFill(['invoice_item_id' => $invoiceItem->id])->save();
             }
 
             $item->update(['is_delivered' => true]);
 
-            return $item->fresh(['batchAllocations.stockBatch', 'medicine']);
+            return $item->fresh(['saleItems.stock', 'medicine']);
         });
     }
 
     public function deliverAll(Prescription $prescription): Prescription
     {
         $prescription->load([
-            'prescriptionItems.selectedAlternative.medicine:id,name',
-            'prescriptionItems.medicine:id,name',
-            'prescriptionItems.batchAllocations',
+            'prescriptionItems.selectedAlternative.medicine:id,name,units_per_pack,unit_id',
+            'prescriptionItems.medicine:id,name,units_per_pack,unit_id',
+            'prescriptionItems.saleItems',
             'appointment',
             'pharmacy',
         ]);
@@ -93,7 +142,6 @@ class PharmacyDispenseService
         foreach ($prescription->prescriptionItems as $item) {
             if ($item->selectedAlternative) {
                 if ($item->selectedAlternative->is_delivered != '1') {
-                    // Alternative delivery still flags the alt row; stock/invoice use the parent item medicine override.
                     $this->deliverItem($item, true);
                     $item->selectedAlternative->update(['is_delivered' => '1']);
                 }
@@ -105,7 +153,19 @@ class PharmacyDispenseService
             }
         }
 
-        return $prescription->fresh(['prescriptionItems.batchAllocations']);
+        return $prescription->fresh(['prescriptionItems.saleItems']);
+    }
+
+    private function resolveMedicine(PrescriptionItem $item): Medicine
+    {
+        $medicine = $item->selectedAlternative?->medicine ?? $item->medicine;
+        if (! $medicine) {
+            throw ValidationException::withMessages([
+                'medicine_id' => 'Medicine is required to dispense.',
+            ]);
+        }
+
+        return $medicine;
     }
 
     private function resolvePharmacy(Prescription $prescription): Pharmacy
@@ -148,7 +208,6 @@ class PharmacyDispenseService
             return ICU::query()->findOrFail($prescription->i_c_u_id);
         }
 
-        // Fallback invoiceable: prescription itself (morphable invoices already support any model).
         return $prescription;
     }
 }

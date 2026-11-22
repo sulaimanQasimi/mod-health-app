@@ -7,11 +7,13 @@ use App\Http\Controllers\Concerns\ManagesDepotAccess;
 use App\Http\Controllers\Concerns\PaginatesInertiaIndex;
 use App\Http\Controllers\Concerns\ProvidesDepotFormData;
 use App\Models\Depot;
-use App\Models\DepotRequest;
-use App\Models\DepotTransaction;
+use App\Models\DepotTransferRequest;
+use App\Models\Stock;
+use App\Models\StockMovement;
 use App\Models\User;
-use App\Services\DepotStockService;
 use App\Support\DepotRolePermissions;
+use App\Support\InventoryNav;
+use App\Support\PackQuantity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,9 +31,7 @@ class DepotController extends Controller
         'search', 'branch_id', 'department_id', 'pharmacy_id', 'parent_depot_id', 'is_active', 'is_base', 'per_page',
     ];
 
-    public function __construct(
-        private readonly DepotStockService $stockService,
-    ) {}
+    private const LOW_STOCK_THRESHOLD = 10;
 
     public function index(Request $request): Response
     {
@@ -78,6 +78,7 @@ class DepotController extends Controller
             'permissions' => $this->depotCrudPermissions(),
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
+            'inventoryNav' => InventoryNav::urls(),
             'urls' => [
                 'index' => route('depots.index'),
                 'create' => route('depots.create'),
@@ -147,56 +148,72 @@ class DepotController extends Controller
 
         $depot->load(['department:id,name', 'branch:id,name', 'pharmacy:id,name', 'parentDepot:id,name', 'activeUsers:id,name,last_name,email']);
 
-        $stockItems = $this->stockService->stockItemsForDepot($depot->id)->take(10)->values()->all();
-
-        $recentTransactions = DepotTransaction::query()
-            ->with(['medicine:id,name', 'tool:id,name', 'fromDepot:id,name', 'toDepot:id,name', 'pharmacy:id,name'])
+        $stocks = Stock::query()
+            ->with('medicine:id,name')
             ->forDepot($depot->id)
-            ->latest('transaction_date')
+            ->where('qty_on_hand', '>', 0)
+            ->orderByDesc('id')
+            ->get();
+
+        $stockPreview = $stocks->take(10)->map(fn (Stock $stock) => $this->transformStockPreview($stock))->values()->all();
+
+        $recentMovements = StockMovement::query()
+            ->with('medicine:id,name')
+            ->where(function ($q) use ($depot) {
+                $q->where(function ($from) use ($depot) {
+                    $from->where('from_location_type', Stock::LOCATION_DEPOT)
+                        ->where('from_location_id', $depot->id);
+                })->orWhere(function ($to) use ($depot) {
+                    $to->where('to_location_type', Stock::LOCATION_DEPOT)
+                        ->where('to_location_id', $depot->id);
+                });
+            })
             ->latest('id')
             ->limit(10)
             ->get()
-            ->map(fn (DepotTransaction $tx) => $this->transformTransactionPreview($tx))
+            ->map(fn (StockMovement $movement) => [
+                'id' => $movement->id,
+                'type' => $movement->type,
+                'batch_number' => $movement->batch_number,
+                'medicine_name' => $movement->medicine?->name,
+                'qty_units' => $movement->qty_units,
+                'created_at' => optional($movement->created_at)?->toDateTimeString(),
+            ])
             ->values()
             ->all();
 
-        $pendingOutgoing = DepotRequest::query()
-            ->with(['items.medicine:id,name', 'items.tool:id,name', 'sourceDepot:id,name'])
-            ->where('requesting_depot_id', $depot->id)
-            ->whereIn('status', [DepotRequest::STATUS_DRAFT, DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED])
-            ->latest('id')
-            ->limit(5)
-            ->get()
-            ->map(fn (DepotRequest $item) => $this->transformRequestPreview($item))
-            ->values()
-            ->all();
-
-        $pendingIncoming = DepotRequest::query()
-            ->with(['items.medicine:id,name', 'items.tool:id,name', 'requestingDepot:id,name'])
+        $pendingTransfers = DepotTransferRequest::query()
+            ->with(['pharmacy:id,name', 'destinationDepot:id,name'])
             ->where('source_depot_id', $depot->id)
-            ->whereIn('status', [DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED])
+            ->whereIn('status', [
+                DepotTransferRequest::STATUS_DRAFT,
+                DepotTransferRequest::STATUS_PENDING,
+                DepotTransferRequest::STATUS_APPROVED,
+            ])
             ->latest('id')
-            ->limit(5)
+            ->limit(10)
             ->get()
-            ->map(fn (DepotRequest $item) => $this->transformRequestPreview($item))
+            ->map(fn (DepotTransferRequest $item) => [
+                'id' => $item->id,
+                'request_number' => $item->request_number,
+                'status' => $item->status,
+                'destination' => $item->pharmacy?->name ?? $item->destinationDepot?->name,
+            ])
             ->values()
             ->all();
-
-        $stockCount = $this->stockService->stockItemsForDepot($depot->id)->count();
-        $totalQuantity = $this->stockService->stockItemsForDepot($depot->id)->sum('available');
 
         return Inertia::render('Depots/Show', [
             'depot' => $this->transformDetail($depot),
             'metrics' => [
-                'stock_items' => $stockCount,
-                'total_quantity' => $totalQuantity,
-                'recent_transactions' => count($recentTransactions),
-                'pending_requests' => count($pendingOutgoing) + count($pendingIncoming),
+                'stock_items' => $stocks->count(),
+                'total_quantity' => (int) $stocks->sum('qty_on_hand'),
+                'recent_transactions' => count($recentMovements),
+                'pending_requests' => count($pendingTransfers),
             ],
-            'stockPreview' => $stockItems,
-            'recentTransactions' => $recentTransactions,
-            'pendingOutgoingRequests' => $pendingOutgoing,
-            'pendingIncomingRequests' => $pendingIncoming,
+            'stockPreview' => $stockPreview,
+            'recentTransactions' => $recentMovements,
+            'pendingOutgoingRequests' => $pendingTransfers,
+            'pendingIncomingRequests' => [],
             'permissions' => array_merge($this->depotCrudPermissions(), [
                 'transaction_create' => $this->userCanDepotAction(
                     DepotRolePermissions::ACTION_TRANSACTION_CREATE,
@@ -217,82 +234,32 @@ class DepotController extends Controller
                 'index' => route('depots.index'),
                 'edit' => route('depots.edit', $depot),
                 'destroy' => route('depots.destroy', $depot),
-                'stock' => route('depots.stock', $depot),
-                'transactionCreate' => route('depots.transactions.create', ['depot_id' => $depot->id]),
-                'requestCreate' => route('depots.requests.create', ['requesting_depot_id' => $depot->id]),
-                'depotToPharmacy' => route('depots.movements.depot-to-pharmacy', array_filter([
-                    'from_depot_id' => $depot->id,
+                'stock' => route('stocks.index', ['location_type' => 'depot', 'location_id' => $depot->id]),
+                'transactionCreate' => route('purchases.create'),
+                'requestCreate' => route('depot-transfers.create', ['source_depot_id' => $depot->id]),
+                'depotToPharmacy' => route('depot-transfers.create', array_filter([
+                    'source_depot_id' => $depot->id,
                     'pharmacy_id' => $depot->pharmacy_id,
                 ])),
             ],
         ]);
     }
 
-    public function stock(Request $request, Depot $depot): Response
+    private function transformStockPreview(Stock $stock): array
     {
-        $this->authorizeDepotRecord($depot, DepotRolePermissions::ACTION_VIEW);
+        $split = PackQuantity::fromUnits((int) $stock->qty_on_hand, (int) $stock->units_per_pack);
 
-        $itemType = $request->get('item_type') ?: null;
-        $search = $request->get('search') ?: null;
-        $stockStatus = $request->get('stock_status') ?: null;
-        $sortBy = $request->get('sort_by', 'name');
-        $sortOrder = $request->get('sort_order', 'asc');
-
-        $stockItems = $this->stockService
-            ->stockItemsForDepot($depot->id, $itemType, $search, includeZero: true)
-            ->when(
-                ! $stockStatus,
-                fn ($items) => $items->where('available', '>', 0),
-            )
-            ->pipe(fn ($items) => $this->stockService->filterAndSortStockItems($items, $stockStatus, (string) $sortBy, (string) $sortOrder))
-            ->map(fn (array $item) => [
-                ...$item,
-                'stock_status' => $this->stockLevelForQuantity((int) $item['available']),
-            ])
-            ->values()
-            ->all();
-
-        $maxQuantity = collect($stockItems)->max('available') ?: 1;
-
-        return Inertia::render('Depots/Stock', [
-            'depot' => [
-                'id' => $depot->id,
-                'name' => $depot->name,
-                'is_active' => (bool) $depot->is_active,
-            ],
-            'stockItems' => $stockItems,
-            'stockStats' => $this->stockService->stockStatsForDepot($depot->id),
-            'maxQuantity' => (int) $maxQuantity,
-            'filters' => [
-                'item_type' => (string) ($itemType ?? ''),
-                'search' => (string) ($search ?? ''),
-                'stock_status' => (string) ($stockStatus ?? ''),
-                'sort_by' => (string) $sortBy,
-                'sort_order' => (string) $sortOrder,
-            ],
-            'filterOptions' => [
-                'stockStatuses' => ['healthy', 'low_stock', 'out_of_stock'],
-                'sortFields' => ['name', 'quantity', 'item_type'],
-            ],
-            'navUrls' => $this->depotNavUrls(),
-            'navPermissions' => $this->depotNavPermissions(),
-            'urls' => [
-                'show' => route('depots.show', $depot),
-                'stock' => route('depots.stock', $depot),
-                'requestCreate' => route('depots.requests.create', ['source_depot_id' => $depot->id]),
-                'transactionCreate' => route('depots.transactions.create', ['depot_id' => $depot->id]),
-            ],
-            'permissions' => [
-                'request_create' => $this->userCanDepotAction(
-                    DepotRolePermissions::ACTION_REQUEST_CREATE,
-                    $depot->id,
-                ),
-                'transaction_create' => $this->userCanDepotAction(
-                    DepotRolePermissions::ACTION_TRANSACTION_CREATE,
-                    $depot->id,
-                ),
-            ],
-        ]);
+        return [
+            'id' => $stock->id,
+            'name' => $stock->medicine?->name,
+            'batch_number' => $stock->batch_number,
+            'available' => $stock->qty_on_hand,
+            'packs' => $split['packs'],
+            'units' => $split['units'],
+            'unit_sale_price' => (float) $stock->unit_sale_price,
+            'pack_price' => (float) $stock->pack_price,
+            'stock_status' => $this->stockLevelForQuantity((int) $stock->qty_on_hand),
+        ];
     }
 
     private function stockLevelForQuantity(int $quantity): string
@@ -301,7 +268,7 @@ class DepotController extends Controller
             return 'out_of_stock';
         }
 
-        if ($quantity <= DepotStockService::LOW_STOCK_THRESHOLD) {
+        if ($quantity <= self::LOW_STOCK_THRESHOLD) {
             return 'low_stock';
         }
 
@@ -424,36 +391,4 @@ class DepotController extends Controller
         ];
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function transformTransactionPreview(DepotTransaction $tx): array
-    {
-        return [
-            'id' => $tx->id,
-            'transaction_number' => $tx->transaction_number,
-            'type' => $tx->type,
-            'status' => $tx->status,
-            'quantity' => $tx->quantity,
-            'item_name' => $tx->medicine?->name ?? $tx->tool?->name,
-            'transaction_date' => $tx->transaction_date?->format('Y-m-d'),
-            'show_url' => route('depots.transactions.show', $tx),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function transformRequestPreview(DepotRequest $request): array
-    {
-        return [
-            'id' => $request->id,
-            'request_number' => $request->request_number,
-            'status' => $request->status,
-            'quantity' => $request->quantity,
-            'item_name' => $request->itemsSummary(),
-            'counterparty_name' => $request->sourceDepot?->name ?? $request->requestingDepot?->name,
-            'show_url' => route('depots.requests.show', $request),
-        ];
-    }
 }

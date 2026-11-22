@@ -1,0 +1,155 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\DepotTransfer\StoreDepotTransferRequest;
+use App\Models\Depot;
+use App\Models\DepotTransferRequest;
+use App\Models\Medicine;
+use App\Models\Pharmacy;
+use App\Services\DepotTransferService;
+use App\Services\StockService;
+use App\Support\InventoryNav;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class DepotTransferController extends Controller
+{
+    public function __construct(
+        private readonly DepotTransferService $transfers,
+        private readonly StockService $stocks,
+    ) {
+    }
+
+    public function index(Request $request): Response
+    {
+        $transfers = DepotTransferRequest::query()
+            ->with(['sourceDepot:id,name', 'pharmacy:id,name', 'destinationDepot:id,name'])
+            ->withCount('items')
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
+            ->latest('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        return Inertia::render('DepotTransfers/Index', [
+            'transfers' => $transfers,
+            'filters' => [
+                'status' => $request->input('status', ''),
+            ],
+            'inventoryNav' => InventoryNav::urls(),
+            'urls' => [
+                'index' => route('depot-transfers.index'),
+                'create' => route('depot-transfers.create'),
+                'show' => route('depot-transfers.show', ['depotTransfer' => '__ID__']),
+            ],
+        ]);
+    }
+
+    public function create(Request $request): Response
+    {
+        return Inertia::render('DepotTransfers/Create', [
+            'formData' => $this->formData(),
+            'defaults' => [
+                'source_depot_id' => $request->input('source_depot_id'),
+                'pharmacy_id' => $request->input('pharmacy_id'),
+            ],
+            'inventoryNav' => InventoryNav::urls(),
+            'urls' => [
+                'store' => route('depot-transfers.store'),
+                'index' => route('depot-transfers.index'),
+                'back' => route('depot-transfers.index'),
+                'availableStock' => route('stocks.available'),
+            ],
+        ]);
+    }
+
+    public function store(StoreDepotTransferRequest $request)
+    {
+        $transfer = $this->transfers->create(
+            $request->safe()->except('items'),
+            $request->validated('items')
+        );
+
+        return redirect()
+            ->route('depot-transfers.show', $transfer)
+            ->with('success', 'Transfer request created.');
+    }
+
+    public function show(DepotTransferRequest $depotTransfer): Response
+    {
+        $depotTransfer->load([
+            'sourceDepot:id,name',
+            'pharmacy:id,name',
+            'destinationDepot:id,name',
+            'items.medicine:id,name,units_per_pack',
+            'items.fromStock',
+            'items.toStock',
+            'creator:id,name',
+        ]);
+
+        return Inertia::render('DepotTransfers/Show', [
+            'transfer' => $depotTransfer,
+            'inventoryNav' => InventoryNav::urls(),
+            'urls' => [
+                'index' => route('depot-transfers.index'),
+                'submit' => route('depot-transfers.submit', $depotTransfer),
+                'approve' => route('depot-transfers.approve', $depotTransfer),
+                'reject' => route('depot-transfers.reject', $depotTransfer),
+                'fulfill' => route('depot-transfers.fulfill', $depotTransfer),
+                'cancel' => route('depot-transfers.cancel', $depotTransfer),
+            ],
+        ]);
+    }
+
+    public function submit(DepotTransferRequest $depotTransfer)
+    {
+        $this->transfers->submit($depotTransfer);
+
+        return back()->with('success', 'Transfer submitted.');
+    }
+
+    public function approve(DepotTransferRequest $depotTransfer)
+    {
+        $this->transfers->approve($depotTransfer);
+
+        return back()->with('success', 'Transfer approved.');
+    }
+
+    public function reject(Request $request, DepotTransferRequest $depotTransfer)
+    {
+        $this->transfers->reject($depotTransfer, $request->input('rejection_reason'));
+
+        return back()->with('success', 'Transfer rejected.');
+    }
+
+    public function fulfill(DepotTransferRequest $depotTransfer)
+    {
+        $this->transfers->fulfill($depotTransfer);
+
+        return back()->with('success', 'Transfer fulfilled — stock moved.');
+    }
+
+    public function cancel(DepotTransferRequest $depotTransfer)
+    {
+        $this->transfers->cancel($depotTransfer);
+
+        return back()->with('success', 'Transfer cancelled.');
+    }
+
+    private function formData(): array
+    {
+        return [
+            'depots' => Depot::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            'pharmacies' => Pharmacy::query()->orderBy('name')->get(['id', 'name']),
+            'medicines' => Medicine::query()
+                ->orderBy('name')
+                ->get(['id', 'name', 'units_per_pack'])
+                ->map(fn (Medicine $m) => [
+                    'id' => $m->id,
+                    'name' => $m->name,
+                    'units_per_pack' => $m->unitsPerPack(),
+                ]),
+        ];
+    }
+}

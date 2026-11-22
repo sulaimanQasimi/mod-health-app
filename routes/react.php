@@ -38,10 +38,13 @@ use App\Http\Controllers\DentalChartController;
 use App\Http\Controllers\DentistRegistrationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DepotController;
-use App\Http\Controllers\DepotMovementController;
 use App\Http\Controllers\DepotReportController;
-use App\Http\Controllers\DepotRequestController;
-use App\Http\Controllers\DepotTransactionController;
+use App\Http\Controllers\DepotTransferController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\StockMovementController;
+use App\Http\Controllers\SupplierController;
+use App\Models\Depot;
 use App\Http\Controllers\DiseaseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\DoctorPerformanceReportController;
@@ -65,11 +68,13 @@ use App\Http\Controllers\ICUController;
 use App\Http\Controllers\ICUSections\DailyProgressController as IcuDailyProgressController;
 use App\Http\Controllers\ICUSections\ProcedureController as IcuProcedureController;
 use App\Http\Controllers\ICUSections\VisitController as IcuVisitController;
-use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LabTypeController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\MedicineCountryController;
+use App\Http\Controllers\MedicineFormulaController;
+use App\Http\Controllers\MedicineGramMlController;
 use App\Http\Controllers\MedicineTypeController;
 use App\Http\Controllers\MedicineUsageTypeController;
 use App\Http\Controllers\MiliteryTypeController;
@@ -85,14 +90,11 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientSections\ForeignCountryReferralController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PharmacyController;
-use App\Http\Controllers\PharmacyFulfillmentController;
-use App\Http\Controllers\PharmacyTransferRequestController;
 use App\Http\Controllers\PhysiotherapyProcedureController;
 use App\Http\Controllers\PhysiotherapyReportController;
 use App\Http\Controllers\PhysiotherapyTypeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PrescriptionController;
-use App\Http\Controllers\PrescriptionStockController;
 use App\Http\Controllers\ProcedureTypeController;
 use App\Http\Controllers\ProstheticCaseController;
 use App\Http\Controllers\ProstheticCatalogController;
@@ -402,61 +404,71 @@ Route::middleware(['auth'])->group(function () {
         Route::match(['put', 'post'], '/{pharmacy}', [PharmacyController::class, 'update'])->name('update');
         Route::delete('/{pharmacy}', [PharmacyController::class, 'destroy'])->name('destroy');
     });
-    Route::get('/prescription-stocks', [PrescriptionStockController::class, 'index'])->name('prescription-stocks.index');
-
-    Route::get('/pharmacy-stock', [PharmacyFulfillmentController::class, 'stock'])->name('pharmacy-stock.index');
-
-    Route::prefix('pharmacy/transfer-requests')->name('pharmacy.transfer-requests.')->group(function () {
-        Route::get('/', [PharmacyTransferRequestController::class, 'index'])->name('index');
-        Route::get('/create', [PharmacyTransferRequestController::class, 'create'])->name('create');
-        Route::post('/', [PharmacyTransferRequestController::class, 'store'])->name('store');
-        Route::get('/{depotRequest}/edit', [PharmacyTransferRequestController::class, 'edit'])->name('edit');
-        Route::put('/{depotRequest}', [PharmacyTransferRequestController::class, 'update'])->name('update');
-        Route::get('/{depotRequest}', [PharmacyTransferRequestController::class, 'show'])->name('show');
-        Route::post('/{depotRequest}/submit', [PharmacyTransferRequestController::class, 'submit'])->name('submit');
-        Route::post('/{depotRequest}/cancel', [PharmacyTransferRequestController::class, 'cancel'])->name('cancel');
+    Route::prefix('purchases')->name('purchases.')->group(function () {
+        Route::get('/', [PurchaseController::class, 'index'])->name('index');
+        Route::get('/create', [PurchaseController::class, 'create'])->name('create');
+        Route::post('/', [PurchaseController::class, 'store'])->name('store');
+        Route::get('/{purchase}', [PurchaseController::class, 'show'])->name('show');
+        Route::post('/{purchase}/receive', [PurchaseController::class, 'receive'])->name('receive');
+        Route::post('/{purchase}/cancel', [PurchaseController::class, 'cancel'])->name('cancel');
     });
 
-    Route::prefix('incomes')->name('incomes.')->group(function () {
-        Route::get('/', [IncomeController::class, 'index'])->name('index');
-        Route::get('/create', [IncomeController::class, 'create'])->name('create');
-        Route::post('/', [IncomeController::class, 'store'])->name('store');
+    Route::prefix('suppliers')->name('suppliers.')->group(function () {
+        Route::get('/', [SupplierController::class, 'index'])->name('index');
+        Route::post('/', [SupplierController::class, 'store'])->name('store');
+        Route::put('/{supplier}', [SupplierController::class, 'update'])->name('update');
+        Route::delete('/{supplier}', [SupplierController::class, 'destroy'])->name('destroy');
     });
 
-    Route::prefix('outcomes')->name('outcomes.')->group(function () {
-        Route::get('/', [OutcomeController::class, 'index'])->name('index');
-        Route::get('/report', [OutcomeController::class, 'report'])->name('report');
+    Route::prefix('stocks')->name('stocks.')->group(function () {
+        Route::get('/', [StockController::class, 'index'])->name('index');
+        Route::get('/available', [StockController::class, 'available'])->name('available');
+        Route::get('/batch/{batchNumber}', [StockController::class, 'batch'])->name('batch');
     });
+
+    Route::get('/stock-movements', [StockMovementController::class, 'index'])->name('stock-movements.index');
+
+    Route::prefix('depot-transfers')->name('depot-transfers.')->group(function () {
+        Route::get('/', [DepotTransferController::class, 'index'])->name('index');
+        Route::get('/create', [DepotTransferController::class, 'create'])->name('create');
+        Route::post('/', [DepotTransferController::class, 'store'])->name('store');
+        Route::get('/{depotTransfer}', [DepotTransferController::class, 'show'])->name('show');
+        Route::post('/{depotTransfer}/submit', [DepotTransferController::class, 'submit'])->name('submit');
+        Route::post('/{depotTransfer}/approve', [DepotTransferController::class, 'approve'])->name('approve');
+        Route::post('/{depotTransfer}/reject', [DepotTransferController::class, 'reject'])->name('reject');
+        Route::post('/{depotTransfer}/fulfill', [DepotTransferController::class, 'fulfill'])->name('fulfill');
+        Route::post('/{depotTransfer}/cancel', [DepotTransferController::class, 'cancel'])->name('cancel');
+    });
+
+    // Compatibility aliases for old menu/deep links
+    Route::redirect('/pharmacy-stock', '/stocks?location_type=pharmacy')->name('pharmacy-stock.index');
+    Route::redirect('/pharmacy/transfer-requests', '/depot-transfers')->name('pharmacy.transfer-requests.index');
+    Route::redirect('/prescription-stocks', '/stocks')->name('prescription-stocks.index');
+    Route::redirect('/incomes', '/purchases')->name('incomes.index');
+    Route::redirect('/outcomes', '/stocks?location_type=pharmacy')->name('outcomes.index');
+    Route::get('/outcomes/report', fn () => redirect()->route('stocks.index', ['location_type' => 'pharmacy']))->name('outcomes.report');
 
     Route::prefix('depots')->name('depots.')->group(function () {
         Route::get('/', [DepotController::class, 'index'])->name('index');
         Route::get('/create', [DepotController::class, 'create'])->name('create');
         Route::post('/', [DepotController::class, 'store'])->name('store');
-        Route::get('/stock/available', [DepotTransactionController::class, 'availableStock'])->name('stock.available');
-        Route::get('/transactions', [DepotTransactionController::class, 'index'])->name('transactions.index');
-        Route::get('/transactions/create', [DepotTransactionController::class, 'create'])->name('transactions.create');
-        Route::post('/transactions', [DepotTransactionController::class, 'store'])->name('transactions.store');
-        Route::get('/transactions/{depotTransaction}', [DepotTransactionController::class, 'show'])->name('transactions.show');
-        Route::patch('/transactions/{depotTransaction}/cancel', [DepotTransactionController::class, 'cancel'])->name('transactions.cancel');
-        Route::get('/requests', [DepotRequestController::class, 'index'])->name('requests.index');
-        Route::get('/requests/create', [DepotRequestController::class, 'create'])->name('requests.create');
-        Route::post('/requests', [DepotRequestController::class, 'store'])->name('requests.store');
-        Route::get('/requests/{depotRequest}/print', [DepotRequestController::class, 'print'])->name('requests.print');
-        Route::get('/requests/{depotRequest}', [DepotRequestController::class, 'show'])->name('requests.show');
-        Route::get('/requests/{depotRequest}/edit', [DepotRequestController::class, 'edit'])->name('requests.edit');
-        Route::put('/requests/{depotRequest}', [DepotRequestController::class, 'update'])->name('requests.update');
-        Route::post('/requests/{depotRequest}/submit', [DepotRequestController::class, 'submit'])->name('requests.submit');
-        Route::post('/requests/{depotRequest}/approve', [DepotRequestController::class, 'approve'])->name('requests.approve');
-        Route::post('/requests/{depotRequest}/reject', [DepotRequestController::class, 'reject'])->name('requests.reject');
-        Route::post('/requests/{depotRequest}/fulfill', [DepotRequestController::class, 'fulfill'])->name('requests.fulfill');
-        Route::post('/requests/{depotRequest}/cancel', [DepotRequestController::class, 'cancel'])->name('requests.cancel');
-        Route::get('/movements/depot-to-depot', [DepotMovementController::class, 'depotToDepot'])->name('movements.depot-to-depot');
-        Route::get('/movements/depot-to-pharmacy', [DepotMovementController::class, 'depotToPharmacy'])->name('movements.depot-to-pharmacy');
+        Route::get('/stock/available', [StockController::class, 'available'])->name('stock.available');
+        Route::redirect('/transactions', '/purchases');
+        Route::redirect('/transactions/create', '/purchases/create');
+        Route::redirect('/requests', '/depot-transfers');
+        Route::redirect('/requests/create', '/depot-transfers/create');
+        Route::redirect('/movements/depot-to-depot', '/depot-transfers/create');
+        Route::redirect('/movements/depot-to-pharmacy', '/depot-transfers/create');
         Route::get('/reports', [DepotReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [DepotReportController::class, 'export'])
             ->middleware('throttle:exports')
             ->name('reports.export');
-        Route::get('/{depot}/stock', [DepotController::class, 'stock'])->name('stock');
+        Route::get('/{depot}/stock', function (Depot $depot) {
+            return redirect()->route('stocks.index', [
+                'location_type' => 'depot',
+                'location_id' => $depot->id,
+            ]);
+        })->name('stock');
         Route::get('/{depot}/edit', [DepotController::class, 'edit'])->name('edit');
         Route::get('/{depot}', [DepotController::class, 'show'])->name('show');
         Route::match(['put', 'post'], '/{depot}', [DepotController::class, 'update'])->name('update');
@@ -911,11 +923,30 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('medicine-types')->name('medicine-types.')->group(function () {
         Route::get('/', [MedicineTypeController::class, 'index'])->name('index');
-        Route::get('/create', [MedicineTypeController::class, 'create'])->name('create');
         Route::post('/', [MedicineTypeController::class, 'store'])->name('store');
-        Route::get('/{medicineType}/edit', [MedicineTypeController::class, 'edit'])->name('edit');
-        Route::match(['put', 'post'], '/{medicineType}', [MedicineTypeController::class, 'update'])->name('update');
-        Route::delete('/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('destroy');
+        Route::put('/{id}', [MedicineTypeController::class, 'update'])->name('update');
+        Route::delete('/{id}', [MedicineTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('medicine-countries')->name('medicine-countries.')->group(function () {
+        Route::get('/', [MedicineCountryController::class, 'index'])->name('index');
+        Route::post('/', [MedicineCountryController::class, 'store'])->name('store');
+        Route::put('/{id}', [MedicineCountryController::class, 'update'])->name('update');
+        Route::delete('/{id}', [MedicineCountryController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('medicine-formulas')->name('medicine-formulas.')->group(function () {
+        Route::get('/', [MedicineFormulaController::class, 'index'])->name('index');
+        Route::post('/', [MedicineFormulaController::class, 'store'])->name('store');
+        Route::put('/{id}', [MedicineFormulaController::class, 'update'])->name('update');
+        Route::delete('/{id}', [MedicineFormulaController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('medicine-gram-mls')->name('medicine-gram-mls.')->group(function () {
+        Route::get('/', [MedicineGramMlController::class, 'index'])->name('index');
+        Route::post('/', [MedicineGramMlController::class, 'store'])->name('store');
+        Route::put('/{id}', [MedicineGramMlController::class, 'update'])->name('update');
+        Route::delete('/{id}', [MedicineGramMlController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('medicines')->name('medicines.')->group(function () {

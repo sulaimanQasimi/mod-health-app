@@ -1,12 +1,11 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Card, Label, TextInput } from 'flowbite-react';
+import { Link, router } from '@inertiajs/react';
+import { Badge, Button, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import DepotNavTabs from '../../Components/Depots/DepotNavTabs';
+import InventoryShell from '../../Components/Inventory/InventoryShell';
+import { InventoryNavUrls } from '../../Components/Inventory/InventoryModuleNav';
 import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
 import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
-import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import TableActionButton from '../../Components/ui/TableActionButton';
@@ -21,7 +20,6 @@ import {
 } from '../../types/depot';
 import { OptionItem } from '../../types/settings';
 import { buildPaginationSummary } from '../../utils/pagination';
-import { SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 const EMPTY_FILTERS: DepotListFilters = {
     search: '',
@@ -41,6 +39,7 @@ export default function IndexDepots({
     permissions,
     navUrls,
     navPermissions,
+    inventoryNav,
     urls,
 }: {
     depots: PaginatedDepots;
@@ -54,6 +53,7 @@ export default function IndexDepots({
     permissions: DepotCrudPermissions;
     navUrls: DepotNavUrls;
     navPermissions?: DepotNavPermissions;
+    inventoryNav: InventoryNavUrls;
     urls: {
         index: string;
         create: string;
@@ -94,26 +94,27 @@ export default function IndexDepots({
         { value: '0', label: t('global.no') },
     ];
 
+    void navUrls;
+    void navPermissions;
+    void summaryLabel;
+
     return (
-        <DashboardLayout>
-            <Head title={t('global.depot.list')} />
-            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide} space-y-4`}>
-                <DepotNavTabs active="index" urls={navUrls} permissions={navPermissions} />
-                <Card className="shadow-sm">
-                    <SettingsPageHeader
-                        title={t('global.depot.list')}
-                        subtitle={summaryLabel}
-                        icon="bx-store"
-                        accent="from-amber-500 to-orange-600"
-                        action={
-                            permissions.create ? (
-                                <Button color="blue" as={Link} href={urls.create}>
-                                    <i className="bx bx-plus me-2 text-lg" />
-                                    {t('global.depot.create')}
-                                </Button>
-                            ) : undefined
-                        }
-                    />
+        <InventoryShell
+            title={t('global.depot.list')}
+            active="depots"
+            urls={inventoryNav}
+            action={
+                permissions.create ? (
+                    <Link
+                        href={urls.create}
+                        className="inline-flex items-center gap-1 rounded-md bg-teal-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-teal-700"
+                    >
+                        <i className="bx bx-plus text-sm" />
+                        {t('global.depot.create')}
+                    </Link>
+                ) : undefined
+            }
+        >
 
                     <form
                         onSubmit={(event: FormEvent) => {
@@ -283,8 +284,6 @@ export default function IndexDepots({
                         <SettingsEmptyState message={t('global.no_data_found')} />
                     )}
                     <SettingsPagination links={depots.links} />
-                </Card>
-            </div>
-        </DashboardLayout>
+        </InventoryShell>
     );
 }

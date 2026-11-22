@@ -26,7 +26,9 @@ export default defineConfig({
             ],
             refresh: true,
         }),
-        inertia(),
+        // Disable Inertia SSR in Vite: cold SSR warmup often times out (>60s)
+        // fetching app.css through the module runner on Herd/Windows.
+        inertia({ ssr: false }),
     ],
     resolve: {
         alias: {

@@ -1,30 +1,27 @@
-import { Head } from '@inertiajs/react';
-import { Card } from 'flowbite-react';
+import InventoryShell from '../../Components/Inventory/InventoryShell';
+import { InventoryNavUrls } from '../../Components/Inventory/InventoryModuleNav';
 import MedicineForm from '../../Components/Medicines/MedicineForm';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
-import { SETTINGS_FORM_WIDTH } from '../../utils/settingsUi';
-import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import MedicineSubNav, { MedicineNavUrls } from '../../Components/Medicines/MedicineSubNav';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SettingsFormUrls } from '../../types/settings';
 
-export default function CreateMedicine({ urls }: { urls: SettingsFormUrls }) {
+export default function CreateMedicine({
+    urls,
+    formData,
+    inventoryNav,
+    medicineNav,
+}: {
+    urls: SettingsFormUrls;
+    formData: any;
+    inventoryNav: InventoryNavUrls;
+    medicineNav: MedicineNavUrls;
+}) {
     const { t } = useTranslation();
+
     return (
-        <DashboardLayout>
-            <Head title={t('global.medicines')} />
-            <div className={`mx-auto ${SETTINGS_FORM_WIDTH}`}>
-                <Card className="shadow-sm">
-                    <SettingsPageHeader
-                        title={t('global.create')}
-                        subtitle={t('global.medicines')}
-                        icon="bx-plus-medical"
-                        accent="from-teal-500 to-cyan-600"
-                        backHref={urls.back}
-                        backLabel={t('global.back')}
-                    />
-                    <MedicineForm mode="create" urls={urls} />
-                </Card>
-            </div>
-        </DashboardLayout>
+        <InventoryShell title={`${t('global.create')} · ${t('global.medicines')}`} active="medicines" urls={inventoryNav}>
+            <MedicineSubNav active="medicines" urls={medicineNav} />
+            <MedicineForm mode="create" urls={urls} formData={formData} />
+        </InventoryShell>
     );
 }

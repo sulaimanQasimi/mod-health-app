@@ -94,4 +94,9 @@ class PrescriptionItem extends Model
     {
         return $this->hasMany(PrescriptionItemBatchAllocation::class);
     }
+
+    public function saleItems()
+    {
+        return $this->hasMany(SaleItem::class);
+    }
 }

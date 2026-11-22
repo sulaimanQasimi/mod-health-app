@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\ManagesDepotAccess;
 use App\Http\Controllers\Concerns\ProvidesDepotFormData;
-use App\Models\DepotRequest;
-use App\Models\DepotTransaction;
-use App\Services\DepotStockService;
+use App\Models\DepotTransferRequest;
+use App\Models\Stock;
+use App\Models\StockMovement;
 use App\Support\DepotRolePermissions;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,10 +18,7 @@ class DepotReportController extends Controller
     use ManagesDepotAccess;
     use ProvidesDepotFormData;
 
-    public function __construct(
-        private readonly DepotStockService $stockService,
-    ) {
-    }
+    private const LOW_STOCK_THRESHOLD = 10;
 
     public function index(): Response
     {
@@ -36,66 +32,85 @@ class DepotReportController extends Controller
             ->when(! $this->isDepotSystemAdmin(), fn ($ids) => $ids->intersect($allowedDepotIds))
             ->values()
             ->all();
-        $stockItems = collect();
 
-        foreach ($activeDepotIds as $depotId) {
-            $stockItems = $stockItems->merge($this->stockService->stockItemsForDepot($depotId));
-        }
+        $stocks = Stock::query()
+            ->where('location_type', Stock::LOCATION_DEPOT)
+            ->when($activeDepotIds !== [], fn ($q) => $q->whereIn('location_id', $activeDepotIds))
+            ->where('qty_on_hand', '>', 0)
+            ->get();
 
-        $transactions = DepotTransaction::query();
-        $requests = DepotRequest::query();
-
-        if (! $this->isDepotSystemAdmin()) {
-            $transactions->where(function ($query) use ($allowedDepotIds) {
-                $query->whereIn('depot_id', $allowedDepotIds)
-                    ->orWhereIn('from_depot_id', $allowedDepotIds)
-                    ->orWhereIn('to_depot_id', $allowedDepotIds);
+        $transfers = DepotTransferRequest::query()
+            ->when(! $this->isDepotSystemAdmin(), function ($q) use ($allowedDepotIds) {
+                $q->whereIn('source_depot_id', $allowedDepotIds);
             });
-            $requests->where(function ($query) use ($allowedDepotIds) {
-                $query->whereIn('requesting_depot_id', $allowedDepotIds)
-                    ->orWhereIn('source_depot_id', $allowedDepotIds);
-            });
-        }
 
-        $requestCounts = (clone $requests)
+        $requestCounts = (clone $transfers)
             ->selectRaw('status, COUNT(*) as count')
             ->groupBy('status')
             ->pluck('count', 'status');
-        $transactionCounts = (clone $transactions)
+
+        $movementCounts = StockMovement::query()
+            ->when(! $this->isDepotSystemAdmin(), function ($q) use ($allowedDepotIds) {
+                $q->where(function ($inner) use ($allowedDepotIds) {
+                    $inner->where(function ($from) use ($allowedDepotIds) {
+                        $from->where('from_location_type', Stock::LOCATION_DEPOT)
+                            ->whereIn('from_location_id', $allowedDepotIds);
+                    })->orWhere(function ($to) use ($allowedDepotIds) {
+                        $to->where('to_location_type', Stock::LOCATION_DEPOT)
+                            ->whereIn('to_location_id', $allowedDepotIds);
+                    });
+                });
+            })
             ->selectRaw('type, COUNT(*) as count')
             ->groupBy('type')
             ->pluck('count', 'type');
+
+        $statuses = [
+            DepotTransferRequest::STATUS_DRAFT,
+            DepotTransferRequest::STATUS_PENDING,
+            DepotTransferRequest::STATUS_APPROVED,
+            DepotTransferRequest::STATUS_FULFILLED,
+            DepotTransferRequest::STATUS_REJECTED,
+            DepotTransferRequest::STATUS_CANCELLED,
+        ];
+
+        $movementTypes = [
+            StockMovement::TYPE_PURCHASE_RECEIVE,
+            StockMovement::TYPE_DEPOT_TO_PHARMACY,
+            StockMovement::TYPE_DEPOT_TO_DEPOT,
+            StockMovement::TYPE_SALE,
+        ];
 
         return Inertia::render('Depots/Reports/Index', [
             'filterOptions' => [
                 'depots' => $options['activeDepots'],
                 'pharmacies' => $options['pharmacies'],
                 'medicines' => $options['medicines'],
-                'tools' => $options['tools'],
-                'transactionTypes' => DepotTransaction::types(),
-                'transactionStatuses' => DepotTransaction::statuses(),
-                'requestStatuses' => DepotRequest::statuses(),
+                'tools' => $options['tools'] ?? [],
+                'transactionTypes' => $movementTypes,
+                'transactionStatuses' => ['completed'],
+                'requestStatuses' => $statuses,
             ],
             'summary' => [
-                'stock_items' => $stockItems->count(),
-                'stock_quantity' => (int) $stockItems->sum('available'),
-                'low_stock' => $stockItems
-                    ->filter(fn ($item) => $item['available'] > 0 && $item['available'] <= DepotStockService::LOW_STOCK_THRESHOLD)
+                'stock_items' => $stocks->count(),
+                'stock_quantity' => (int) $stocks->sum('qty_on_hand'),
+                'low_stock' => $stocks
+                    ->filter(fn (Stock $item) => $item->qty_on_hand > 0 && $item->qty_on_hand <= self::LOW_STOCK_THRESHOLD)
                     ->count(),
-                'pending_requests' => (int) ($requestCounts[DepotRequest::STATUS_PENDING] ?? 0),
-                'fulfilled_requests' => (int) ($requestCounts[DepotRequest::STATUS_FULFILLED] ?? 0),
+                'pending_requests' => (int) ($requestCounts[DepotTransferRequest::STATUS_PENDING] ?? 0),
+                'fulfilled_requests' => (int) ($requestCounts[DepotTransferRequest::STATUS_FULFILLED] ?? 0),
             ],
             'analytics' => [
                 'stock_by_type' => [
-                    ['name' => 'medicine', 'count' => $stockItems->where('item_type', DepotTransaction::ITEM_MEDICINE)->count()],
-                    ['name' => 'tool', 'count' => $stockItems->where('item_type', DepotTransaction::ITEM_TOOL)->count()],
+                    ['name' => 'medicine', 'count' => $stocks->count()],
+                    ['name' => 'tool', 'count' => 0],
                 ],
-                'requests_by_status' => collect(DepotRequest::statuses())
+                'requests_by_status' => collect($statuses)
                     ->map(fn ($status) => ['name' => $status, 'count' => (int) ($requestCounts[$status] ?? 0)])
                     ->values()
                     ->all(),
-                'transactions_by_type' => collect(DepotTransaction::types())
-                    ->map(fn ($type) => ['name' => $type, 'count' => (int) ($transactionCounts[$type] ?? 0)])
+                'transactions_by_type' => collect($movementTypes)
+                    ->map(fn ($type) => ['name' => $type, 'count' => (int) ($movementCounts[$type] ?? 0)])
                     ->values()
                     ->all(),
             ],
@@ -111,19 +126,44 @@ class DepotReportController extends Controller
     {
         $this->authorizeDepotPermission('depot.report.export');
 
-        if (! $this->isDepotSystemAdmin()) {
-            $allowedIds = $this->allowedDepotIdsForAction(DepotRolePermissions::ACTION_REPORT_EXPORT);
-            abort_if($allowedIds === [], 403);
+        $filename = 'depot-stock-'.now()->format('Ymd_His').'.csv';
 
-            foreach (['depot_id', 'requesting_depot_id', 'source_depot_id'] as $filterKey) {
-                if ($request->filled($filterKey) && ! in_array((int) $request->input($filterKey), $allowedIds, true)) {
-                    abort(403);
-                }
+        return response()->streamDownload(function () use ($request) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, [
+                'batch_number',
+                'medicine_id',
+                'location_type',
+                'location_id',
+                'qty_on_hand',
+                'qty_sold',
+                'unit_sale_price',
+                'pack_price',
+                'expiry_date',
+            ]);
+
+            $query = Stock::query()->orderBy('batch_number');
+            if ($request->filled('depot_id')) {
+                $query->forDepot($request->integer('depot_id'));
             }
 
-            $request->merge(['_allowed_depot_ids' => $allowedIds]);
-        }
+            $query->chunk(200, function ($rows) use ($handle) {
+                foreach ($rows as $row) {
+                    fputcsv($handle, [
+                        $row->batch_number,
+                        $row->medicine_id,
+                        $row->location_type,
+                        $row->location_id,
+                        $row->qty_on_hand,
+                        $row->qty_sold,
+                        $row->unit_sale_price,
+                        $row->pack_price,
+                        optional($row->expiry_date)?->format('Y-m-d'),
+                    ]);
+                }
+            });
 
-        return app(\App\Http\Controllers\DepotReportController::class)->export($request);
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
     }
 }

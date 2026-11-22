@@ -1,36 +1,29 @@
-import { Head } from '@inertiajs/react';
-import { Card } from 'flowbite-react';
+import InventoryShell from '../../Components/Inventory/InventoryShell';
+import { InventoryNavUrls } from '../../Components/Inventory/InventoryModuleNav';
 import MedicineForm from '../../Components/Medicines/MedicineForm';
-import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
-import { SETTINGS_FORM_WIDTH } from '../../utils/settingsUi';
-import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import MedicineSubNav, { MedicineNavUrls } from '../../Components/Medicines/MedicineSubNav';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SettingsFormUrls } from '../../types/settings';
 
 export default function EditMedicine({
     medicine,
     urls,
+    formData,
+    inventoryNav,
+    medicineNav,
 }: {
-    medicine: { id: number; name: string };
+    medicine: any;
     urls: SettingsFormUrls;
+    formData: any;
+    inventoryNav: InventoryNavUrls;
+    medicineNav: MedicineNavUrls;
 }) {
     const { t } = useTranslation();
+
     return (
-        <DashboardLayout>
-            <Head title={t('global.edit')} />
-            <div className={`mx-auto ${SETTINGS_FORM_WIDTH}`}>
-                <Card className="shadow-sm">
-                    <SettingsPageHeader
-                        title={t('global.edit')}
-                        subtitle={medicine.name}
-                        icon="bx-edit"
-                        accent="from-teal-500 to-cyan-600"
-                        backHref={urls.back}
-                        backLabel={t('global.back')}
-                    />
-                    <MedicineForm mode="edit" urls={urls} medicine={medicine} />
-                </Card>
-            </div>
-        </DashboardLayout>
+        <InventoryShell title={`${t('global.edit')} · ${medicine.name}`} active="medicines" urls={inventoryNav}>
+            <MedicineSubNav active="medicines" urls={medicineNav} />
+            <MedicineForm mode="edit" urls={urls} medicine={medicine} formData={formData} />
+        </InventoryShell>
     );
 }

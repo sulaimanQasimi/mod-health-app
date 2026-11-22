@@ -2,126 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\Concerns\PaginatesInertiaIndex;
+use App\Http\Controllers\Concerns\ManagesMedicineLookups;
 use App\Models\MedicineType;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Inertia\Response;
 
 class MedicineTypeController extends Controller
 {
-    use PaginatesInertiaIndex;
+    use ManagesMedicineLookups;
 
-    private const FILTER_KEYS = ['search', 'per_page'];
-
-    public function index(Request $request): Response
+    protected function lookupModelClass(): string
     {
-        $this->authorize('viewAny', MedicineType::class);
-
-        $query = MedicineType::query();
-
-        if ($request->filled('search')) {
-            $query->where('type', 'like', '%'.$request->search.'%');
-        }
-
-        $paginator = $this->paginateQuery($query->orderBy('type'), $request);
-
-        return Inertia::render('MedicineTypes/Index', [
-            'medicineTypes' => $this->paginationPayload($paginator, fn (MedicineType $medicineType) => [
-                'id' => $medicineType->id,
-                'type' => $medicineType->type,
-            ]),
-            'filters' => $this->collectFilters($request, self::FILTER_KEYS),
-            'permissions' => $this->settingsPermissions(
-                $request->user(),
-                'create-medicine-types',
-                'edit-medicine-types',
-                'delete-medicine-types',
-            ),
-            'urls' => [
-                'index' => route('medicine-types.index'),
-                'create' => route('medicine-types.create'),
-                'edit' => url('/medicine-types'),
-                'destroy' => url('/medicine-types'),
-            ],
-        ]);
+        return MedicineType::class;
     }
 
-    public function create(Request $request): Response
+    protected function lookupLabelField(): string
     {
-        $this->authorize('create', MedicineType::class);
-
-        return Inertia::render('MedicineTypes/Create', [
-            'urls' => $this->formUrls(),
-        ]);
+        return 'type';
     }
 
-    public function store(Request $request): RedirectResponse
+    protected function lookupRoutePrefix(): string
     {
-        $this->authorize('create', MedicineType::class);
-
-        $data = $request->validate([
-            'type' => 'required|string|max:191',
-        ]);
-
-        MedicineType::create($data);
-
-        return redirect()
-            ->route('medicine-types.index')
-            ->with('success', localize('global.medicine_type_created_successfully.'));
+        return 'medicine-types';
     }
 
-    public function edit(Request $request, MedicineType $medicineType): Response
+    protected function lookupPageTitle(): string
     {
-        $this->authorize('update', $medicineType);
-
-        return Inertia::render('MedicineTypes/Edit', [
-            'medicineType' => [
-                'id' => $medicineType->id,
-                'type' => $medicineType->type,
-            ],
-            'urls' => $this->formUrls($medicineType),
-        ]);
+        return 'Medicine types';
     }
 
-    public function update(Request $request, MedicineType $medicineType): RedirectResponse
+    protected function lookupNavKey(): string
     {
-        $this->authorize('update', $medicineType);
-
-        $data = $request->validate([
-            'type' => 'required|string|max:191',
-        ]);
-
-        $medicineType->update($data);
-
-        return redirect()
-            ->route('medicine-types.index')
-            ->with('success', localize('global.medicine_type_updated_successfully.'));
+        return 'types';
     }
 
-    public function destroy(Request $request, MedicineType $medicineType): RedirectResponse
+    protected function lookupExtraFields(): array
     {
-        $this->authorize('delete', $medicineType);
-
-        $medicineType->delete();
-
-        return redirect()
-            ->route('medicine-types.index')
-            ->with('success', localize('global.medicine_type_deleted_successfully.'));
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function formUrls(?MedicineType $medicineType = null): array
-    {
-        return [
-            'index' => route('medicine-types.index'),
-            'store' => route('medicine-types.store'),
-            'update' => $medicineType ? route('medicine-types.update', $medicineType) : '',
-            'back' => route('medicine-types.index'),
-        ];
+        return [];
     }
 }

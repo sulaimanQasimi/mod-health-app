@@ -239,9 +239,9 @@ trait ManagesDepotAccess
     {
         return [
             'index' => route('depots.index'),
-            'transactions' => route('depots.transactions.index'),
-            'requests' => route('depots.requests.index'),
-            'depotToDepot' => route('depots.requests.create'),
+            'transactions' => route('purchases.index'),
+            'requests' => route('depot-transfers.index'),
+            'depotToDepot' => route('depot-transfers.create'),
             'reports' => route('depots.reports.index'),
             'tools' => route('tools.index'),
         ];

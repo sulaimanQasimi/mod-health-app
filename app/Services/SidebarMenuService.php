@@ -128,57 +128,36 @@ class SidebarMenuService
         }
 
         if ($this->canSeePharmacyStockMenu($user)) {
-            $children = [];
             if ($user->hasRole(['admin', 'super_admin']) || $user->hasActivePharmacyRole(['manager'])) {
-                $children[] = $this->item('pharmacies', 'global.pharmacies', null, 'pharmacies.index');
-                $children[] = $this->item('prescription-stocks', 'global.stock_overview', null, 'prescription-stocks.index');
-            }
-            if ($user->hasRole(['admin', 'super_admin']) || $user->hasActivePharmacyRole(['manager', 'procurement'])) {
-                $children[] = $this->item('pharmacy-transfer-requests', 'global.pharmacy_transfer_requests', null, 'pharmacy.transfer-requests.index');
-                $children[] = $this->item('pharmacy-stock', 'global.pharmacy_stock', null, 'pharmacy-stock.index');
-            }
-            if ($user->hasRole(['admin', 'super_admin']) || $user->hasActivePharmacyRole(['manager'])) {
-                $children[] = $this->item('incomes', 'global.stock_income', null, 'incomes.index');
-                $children[] = $this->item('outcomes', 'global.stock_outcome', null, 'outcomes.index');
-                $children[] = $this->item('outcomes-report', 'global.outcome_reports', null, 'outcomes.report');
-            }
-            if ($children) {
-                $items[] = $this->group('pharmacy-stock', 'global.prescription_stocks', 'bx-package', [
-                    'prescription-stocks.*',
-                    'pharmacy-stock.*',
-                    'pharmacy.transfer-requests.*',
+                $items[] = $this->group('pharmacies', 'global.pharmacies', 'bx-plus-medical', [
                     'pharmacies.*',
-                    'incomes.*',
-                    'outcomes.*',
-                ], $children);
+                ], [
+                    $this->item('pharmacies', 'global.pharmacies', null, 'pharmacies.index'),
+                ]);
             }
         }
 
-        if ($this->canSeeDepotMenu($user)) {
-            $depotChildren = [];
-
-            if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_VIEW)) {
-                $depotChildren[] = $this->item('depots', 'global.depot.list', null, 'depots.index', ['global.depot', 'list']);
-            }
-            if ($this->canSeeDepotRequestsMenu($user)) {
-                $depotChildren[] = $this->item('depot-requests', 'global.depot.requests', null, 'depots.requests.index', ['global.depot', 'requests']);
-            }
-            if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_MOVEMENT_DEPOT_TO_DEPOT)) {
-                $depotChildren[] = $this->item('depot-to-depot', 'global.depot.depot_to_depot', null, 'depots.movements.depot-to-depot', ['global.depot', 'depot_to_depot']);
-            }
-            if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_VIEW)) {
-                $depotChildren[] = $this->item('tools', 'global.depot.tools', null, 'tools.index', ['global.depot', 'tools']);
-            }
-            if ($this->userCanDepotMenuAction($user, DepotRolePermissions::ACTION_REPORT_EXPORT)) {
-                $depotChildren[] = $this->item('depot-reports', 'global.depot.reports', null, 'depots.reports.index', ['global.depot', 'reports']);
-            }
-
-            if ($depotChildren !== []) {
-                $items[] = $this->group('depots', 'global.depot.title', 'bx-store', [
-                    'depots.*',
-                    'tools.*',
-                ], $depotChildren, ['global.depot', 'title']);
-            }
+        if (
+            $this->canSeeDepotMenu($user)
+            || $user->can('show-medicine-menu')
+            || $user->hasActivePharmacyRole(['manager', 'procurement', 'staff'])
+        ) {
+            $items[] = $this->group('inventory', 'global.inventory', 'bx-package', [
+                'medicines.*',
+                'medicine-types.*',
+                'medicine-countries.*',
+                'medicine-formulas.*',
+                'medicine-gram-mls.*',
+                'purchases.*',
+                'suppliers.*',
+                'stocks.*',
+                'stock-movements.*',
+                'depot-transfers.*',
+                'depots.*',
+                'tools.*',
+            ], [
+                $this->item('inventory-home', 'global.inventory', null, 'medicines.index'),
+            ], ['global.inventory']);
         }
 
         if (
@@ -359,12 +338,6 @@ class SidebarMenuService
             if ($user->can('show-operation-types-menu')) {
                 $children[] = $this->item('operation-types', 'global.operation_types', null, 'operation-types.index');
             }
-            if ($user->can('show-medicine-types-menu')) {
-                $children[] = $this->item('medicine-types-settings', 'global.medicine_types', null, 'medicine-types.index');
-            }
-            if ($user->can('show-medicine-menu')) {
-                $children[] = $this->item('medicines', 'global.medicines', null, 'medicines.index');
-            }
             if ($user->can('show-medicine-usage-menu')) {
                 $children[] = $this->item('medicine-usage-types', 'global.medicine_usage_types', null, 'medicine-usage-types.index');
             }
@@ -409,8 +382,6 @@ class SidebarMenuService
                 'militery-types.*',
                 'procedure-types.*',
                 'operation-types.*',
-                'medicine-types.*',
-                'medicines.*',
                 'medicine-usage-types.*',
                 'food-types.*',
                 'diseases.*',

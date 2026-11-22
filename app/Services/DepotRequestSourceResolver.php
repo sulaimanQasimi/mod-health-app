@@ -25,7 +25,7 @@ class DepotRequestSourceResolver
 
         if (empty($data['requesting_depot_id'])) {
             throw ValidationException::withMessages([
-                'requesting_depot_id' => 'Requesting depot is required.',
+                'requesting_depot_id' => localize('global.depot.requesting_depot_required'),
             ]);
         }
 
@@ -34,7 +34,7 @@ class DepotRequestSourceResolver
 
         if (! $requestingDepot || ! $requestingDepot->is_active) {
             throw ValidationException::withMessages([
-                'requesting_depot_id' => 'Requesting depot must be active.',
+                'requesting_depot_id' => localize('global.depot.requesting_depot_must_be_active'),
             ]);
         }
 
@@ -53,7 +53,7 @@ class DepotRequestSourceResolver
         }
 
         throw ValidationException::withMessages([
-            'source_depot_id' => 'A valid source depot could not be determined for this request.',
+            'source_depot_id' => localize('global.depot.source_depot_could_not_be_determined'),
         ]);
     }
 
@@ -143,7 +143,7 @@ class DepotRequestSourceResolver
 
         if (! $sourceDepot || ! $sourceDepot->is_active) {
             throw ValidationException::withMessages([
-                'source_depot_id' => 'Source depot must be active.',
+                'source_depot_id' => localize('global.depot.source_depot_must_be_active'),
             ]);
         }
     }
@@ -158,7 +158,7 @@ class DepotRequestSourceResolver
 
         if (! $sourceDepotId) {
             throw ValidationException::withMessages([
-                'pharmacy_id' => 'No active source depot is linked to this pharmacy.',
+                'pharmacy_id' => localize('global.depot.no_active_source_depot_for_pharmacy'),
             ]);
         }
 
@@ -169,7 +169,7 @@ class DepotRequestSourceResolver
     {
         if ($sourceDepotId === $requestingDepotId) {
             throw ValidationException::withMessages([
-                'source_depot_id' => 'Source depot must differ from requesting depot.',
+                'source_depot_id' => localize('global.depot.source_depot_must_differ'),
             ]);
         }
 
@@ -177,7 +177,7 @@ class DepotRequestSourceResolver
 
         if (! $sourceDepot || ! $sourceDepot->is_active) {
             throw ValidationException::withMessages([
-                'source_depot_id' => 'Source depot must be active.',
+                'source_depot_id' => localize('global.depot.source_depot_must_be_active'),
             ]);
         }
 

@@ -179,7 +179,7 @@
                                 {{ localize('global.new') }}
                             @endif
                             → <x-depot.status-badge :status="$log->to_status" :badge="false" />
-                            @if($log->notes) — {{ $log->notes }} @endif
+                            @if($log->notes) — {{ localize_if_exists($log->notes, $log->notes) }} @endif
                         </span>
                         <span class="text-muted">{{ $log->user?->name ?? '-' }} · {{ $log->created_at?->format('Y-m-d H:i') }}</span>
                     </li>

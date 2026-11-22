@@ -35,7 +35,11 @@ class DepotStockService
 
         if ($available < $quantity) {
             throw ValidationException::withMessages([
-                'quantity' => "Insufficient depot stock. Available quantity is {$available}.",
+                'quantity' => str_replace(
+                    ':available',
+                    (string) $available,
+                    localize('global.depot.insufficient_depot_stock')
+                ),
             ]);
         }
     }

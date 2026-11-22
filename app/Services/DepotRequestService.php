@@ -43,7 +43,7 @@ class DepotRequestService
     {
         if ($request->status !== DepotRequest::STATUS_DRAFT) {
             throw ValidationException::withMessages([
-                'status' => 'Only draft requests can be submitted.',
+                'status' => localize('global.depot.only_draft_can_be_submitted'),
             ]);
         }
 
@@ -51,7 +51,7 @@ class DepotRequestService
 
         if ($request->items_count < 1) {
             throw ValidationException::withMessages([
-                'items' => 'Add at least one transfer line before submitting.',
+                'items' => localize('global.depot.add_at_least_one_transfer_line'),
             ]);
         }
 
@@ -60,35 +60,35 @@ class DepotRequestService
             $pharmacy = $request->pharmacy;
             if (! $pharmacy) {
                 throw ValidationException::withMessages([
-                    'pharmacy_id' => 'Destination pharmacy is required.',
+                    'pharmacy_id' => localize('global.depot.destination_pharmacy_required'),
                 ]);
             }
         } elseif (! $requestingDepot || ! $requestingDepot->is_active) {
             throw ValidationException::withMessages([
-                'requesting_depot_id' => 'Requesting depot must be active.',
+                'requesting_depot_id' => localize('global.depot.requesting_depot_must_be_active'),
             ]);
         }
 
         $sourceDepot = $request->sourceDepot;
         if (! $sourceDepot || ! $sourceDepot->is_active) {
             throw ValidationException::withMessages([
-                'source_depot_id' => 'Source depot must be active.',
+                'source_depot_id' => localize('global.depot.source_depot_must_be_active'),
             ]);
         }
 
-        return $this->transition($request, DepotRequest::STATUS_PENDING, 'Submitted for approval');
+        return $this->transition($request, DepotRequest::STATUS_PENDING, 'global.depot.workflow_note_submitted');
     }
 
     public function approve(DepotRequest $request): DepotRequest
     {
         if ($request->status !== DepotRequest::STATUS_PENDING) {
             throw ValidationException::withMessages([
-                'status' => 'Only pending requests can be approved.',
+                'status' => localize('global.depot.only_pending_can_be_approved'),
             ]);
         }
 
         return DB::transaction(function () use ($request) {
-            $request = $this->transition($request, DepotRequest::STATUS_APPROVED, 'Approved');
+            $request = $this->transition($request, DepotRequest::STATUS_APPROVED, 'global.depot.workflow_note_approved');
 
             $request->update([
                 'approved_by' => Auth::id(),
@@ -103,7 +103,7 @@ class DepotRequestService
     {
         if ($request->status !== DepotRequest::STATUS_PENDING) {
             throw ValidationException::withMessages([
-                'status' => 'Only pending requests can be rejected.',
+                'status' => localize('global.depot.only_pending_can_be_rejected'),
             ]);
         }
 
@@ -118,7 +118,7 @@ class DepotRequestService
     {
         if ($request->status !== DepotRequest::STATUS_APPROVED) {
             throw ValidationException::withMessages([
-                'status' => 'Only approved requests can be fulfilled.',
+                'status' => localize('global.depot.only_approved_can_be_fulfilled'),
             ]);
         }
 
@@ -126,7 +126,7 @@ class DepotRequestService
 
         if ($request->items->isEmpty()) {
             throw ValidationException::withMessages([
-                'items' => 'This request has no transfer lines to fulfill.',
+                'items' => localize('global.depot.no_transfer_lines_to_fulfill'),
             ]);
         }
 
@@ -181,7 +181,7 @@ class DepotRequestService
                 'fulfilled_at' => now(),
             ]);
 
-            return $this->transition($request, DepotRequest::STATUS_FULFILLED, 'Fulfilled with transfers');
+            return $this->transition($request, DepotRequest::STATUS_FULFILLED, 'global.depot.workflow_note_fulfilled');
         });
     }
 
@@ -238,11 +238,11 @@ class DepotRequestService
     {
         if (! in_array($request->status, [DepotRequest::STATUS_DRAFT, DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED], true)) {
             throw ValidationException::withMessages([
-                'status' => 'This request cannot be cancelled.',
+                'status' => localize('global.depot.request_cannot_be_cancelled'),
             ]);
         }
 
-        return $this->transition($request, DepotRequest::STATUS_CANCELLED, 'Cancelled');
+        return $this->transition($request, DepotRequest::STATUS_CANCELLED, 'global.depot.workflow_note_cancelled');
     }
 
     private function transition(DepotRequest $request, string $toStatus, ?string $notes = null): DepotRequest

@@ -66,14 +66,14 @@ trait ValidatesDepotRequestItems
                     if (! $hasMedicine) {
                         $validator->errors()->add(
                             "items.{$index}.medicine_id",
-                            'Each pharmacy request line must specify a medicine.'
+                            localize('global.depot.pharmacy_line_requires_medicine')
                         );
                     }
 
                     if ($hasTool) {
                         $validator->errors()->add(
                             "items.{$index}.tool_id",
-                            'Tools cannot be included in pharmacy requests.'
+                            localize('global.depot.tools_not_allowed_in_pharmacy_requests')
                         );
                     }
 
@@ -83,7 +83,7 @@ trait ValidatesDepotRequestItems
                 if ($hasMedicine === $hasTool) {
                     $validator->errors()->add(
                         "items.{$index}.medicine_id",
-                        'Each line must specify either a medicine or a tool.'
+                        localize('global.depot.line_requires_medicine_or_tool')
                     );
                 }
             }

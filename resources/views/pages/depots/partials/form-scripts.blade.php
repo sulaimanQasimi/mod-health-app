@@ -2,7 +2,7 @@
 <script>
 $(document).ready(function () {
     const select2Options = {
-        placeholder: 'Select user',
+        placeholder: @json(localize('global.select_user')),
         allowClear: true,
         width: '100%'
     };
@@ -84,7 +84,7 @@ $(document).ready(function () {
             .catch(error => {
                 const messages = error.errors
                     ? Object.values(error.errors).flat()
-                    : [error.message || 'Unable to save depot.'];
+                    : [error.message || @json(localize('global.unable_to_save_depot'))];
                 errorBox.html(messages.map(message => `<div>${message}</div>`).join('')).removeClass('d-none');
             })
             .finally(() => {

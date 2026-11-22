@@ -49,7 +49,7 @@
                         <div class="col-md-6">
                             <label class="form-label" for="tool_id">{{ localize('global.depot.tool') }}</label>
                             <select name="tool_id" id="tool_id" class="form-select select2 @error('tool_id') is-invalid @enderror">
-                                <option value="">Select tool</option>
+                                <option value="">{{ localize('global.select_tool') }}</option>
                                 @foreach($tools as $tool)
                                     <option value="{{ $tool->id }}" @selected(old('tool_id') == $tool->id)>{{ $tool->displayName() }}</option>
                                 @endforeach

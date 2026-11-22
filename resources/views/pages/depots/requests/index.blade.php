@@ -27,9 +27,9 @@
             <form method="GET" class="row g-3 align-items-end mb-3">
                 <div class="col-md-3">
                     <select name="destination_type" class="form-select">
-                        <option value="">{{ localize('global.depot.destination_type') ?? 'Destination' }}</option>
-                        <option value="depot" @selected(request('destination_type') === 'depot')>{{ localize('global.depot.depot') ?? 'Depot' }}</option>
-                        <option value="pharmacy" @selected(request('destination_type') === 'pharmacy')>{{ localize('global.pharmacy') ?? 'Pharmacy' }}</option>
+                        <option value="">{{ localize('global.depot.destination_type') }}</option>
+                        <option value="depot" @selected(request('destination_type') === 'depot')>{{ localize('global.depot.depot') }}</option>
+                        <option value="pharmacy" @selected(request('destination_type') === 'pharmacy')>{{ localize('global.pharmacy') }}</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -103,7 +103,7 @@
                         <tr>
                             <th>{{ localize('global.number') }}</th>
                             <th>{{ localize('global.status') }}</th>
-                            <th>{{ localize('global.depot.destination_type') ?? 'Destination' }}</th>
+                            <th>{{ localize('global.depot.destination_type') }}</th>
                             <th>{{ localize('global.depot.requesting_depot') }} / {{ localize('global.pharmacy') }}</th>
                             <th>{{ localize('global.depot.source_depot') }}</th>
                             <th>{{ localize('global.item') }}</th>
@@ -117,7 +117,7 @@
                             <tr>
                                 <td><strong>{{ $item->request_number }}</strong></td>
                                 <td><x-depot.status-badge :status="$item->status" /></td>
-                                <td>{{ $item->isPharmacyRequest() ? (localize('global.pharmacy') ?? 'Pharmacy') : (localize('global.depot.depot') ?? 'Depot') }}</td>
+                                <td>{{ $item->isPharmacyRequest() ? (localize('global.pharmacy')) : (localize('global.depot.depot')) }}</td>
                                 <td>{{ $item->destinationLabel() }}</td>
                                 <td>{{ $item->sourceDepot?->name }}</td>
                                 <td>{{ $item->itemsSummary() }}</td>

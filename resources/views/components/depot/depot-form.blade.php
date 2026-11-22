@@ -76,14 +76,14 @@
     </div>
 
     <div class="col-12">
-        <label class="form-label">Depot Users</label>
+        <label class="form-label">{{ localize('global.depot.users') }}</label>
         <div id="depot-user-container">
             @foreach($selectedUsers as $index => $selectedUserId)
                 <div class="depot-user-item mb-2">
                     <div class="row g-2">
                         <div class="col-md-7">
                             <select class="form-select select2 depot-user-select" name="user_ids[]">
-                                <option value="">Select user</option>
+                                <option value="">{{ localize('global.select_user') }}</option>
                                 @foreach($users as $user)
                                     <option value="{{ $user->id }}" @selected($selectedUserId == $user->id)>{{ trim($user->name.' '.($user->last_name ?? '')) }} ({{ $user->email }})</option>
                                 @endforeach
@@ -106,7 +106,7 @@
             @endforeach
         </div>
         <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add-depot-user">
-            <i class="bx bx-plus"></i> Add user
+            <i class="bx bx-plus"></i> {{ localize('global.add_user') }}
         </button>
         @error('user_ids')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
         @error('roles')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
@@ -114,7 +114,7 @@
 </div>
 
 <div class="d-flex justify-content-end gap-2 mt-4">
-    <a href="{{ route('depots.index') }}" class="btn btn-outline-secondary">Cancel</a>
+    <a href="{{ route('depots.index') }}" class="btn btn-outline-secondary">{{ localize('global.cancel') }}</a>
     <button type="submit" class="btn btn-primary">
         <i class="bx bx-save me-1"></i>{{ $depot ? localize('global.update') : localize('global.add') }}
     </button>

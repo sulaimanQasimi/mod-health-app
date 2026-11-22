@@ -35,8 +35,8 @@
                     <x-depot.status-badge :status="$depotRequest->status" />
                 </div>
                 <div class="col-md-3">
-                    <div class="text-muted small">{{ localize('global.depot.destination_type') ?? 'Destination' }}</div>
-                    {{ $depotRequest->isPharmacyRequest() ? (localize('global.pharmacy') ?? 'Pharmacy') : (localize('global.depot.depot') ?? 'Depot') }}
+                    <div class="text-muted small">{{ localize('global.depot.destination_type') }}</div>
+                    {{ $depotRequest->isPharmacyRequest() ? (localize('global.pharmacy')) : (localize('global.depot.depot')) }}
                 </div>
                 <div class="col-md-3">
                     <div class="text-muted small">{{ localize('global.depot.requesting_depot') }} / {{ localize('global.pharmacy') }}</div>
@@ -52,15 +52,15 @@
                 </div>
                 <div class="col-md-3">
                     <div class="text-muted small">{{ localize('global.quantity') }}</div>
-                    {{ $depotRequest->totalQuantity() }} ({{ $depotRequest->items->count() }} {{ localize('global.lines') ?? 'lines' }})
+                    {{ $depotRequest->totalQuantity() }} ({{ $depotRequest->items->count() }} {{ localize('global.lines') }})
                 </div>
                 <div class="col-md-3">
-                    <div class="text-muted small">{{ localize('global.requested_by') ?? 'Requested By' }}</div>
+                    <div class="text-muted small">{{ localize('global.requested_by') }}</div>
                     {{ trim(($depotRequest->requestedBy->name ?? '') . ' ' . ($depotRequest->requestedBy->last_name ?? '')) ?: '-' }}
                 </div>
                 @if($depotRequest->rejection_reason)
                 <div class="col-12">
-                    <div class="text-muted small">{{ localize('global.rejection_reason') ?? 'Rejection Reason' }}</div>
+                    <div class="text-muted small">{{ localize('global.rejection_reason') }}</div>
                     {{ $depotRequest->rejection_reason }}
                 </div>
                 @endif
@@ -95,37 +95,37 @@
                     <a href="{{ route('depots.requests.edit', $depotRequest) }}" class="btn btn-outline-primary">{{ localize('global.edit') }}</a>
                 @endif
                 @if($permissions['submit'] ?? false)
-                    <form action="{{ route('depots.requests.submit', $depotRequest) }}" method="POST">@csrf<button class="btn btn-primary">{{ localize('global.submit') ?? 'Submit' }}</button></form>
+                    <form action="{{ route('depots.requests.submit', $depotRequest) }}" method="POST">@csrf<button class="btn btn-primary">{{ localize('global.submit') }}</button></form>
                 @endif
                 @if($permissions['approve'] ?? false)
-                    <form action="{{ route('depots.requests.approve', $depotRequest) }}" method="POST">@csrf<button class="btn btn-success">{{ localize('global.approve') ?? 'Approve' }}</button></form>
+                    <form action="{{ route('depots.requests.approve', $depotRequest) }}" method="POST">@csrf<button class="btn btn-success">{{ localize('global.approve') }}</button></form>
                 @endif
                 @if($permissions['reject'] ?? false)
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">{{ localize('global.reject') ?? 'Reject' }}</button>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">{{ localize('global.reject') }}</button>
                 @endif
                 @if($permissions['fulfill'] ?? false)
-                    <form action="{{ route('depots.requests.fulfill', $depotRequest) }}" method="POST">@csrf<button class="btn btn-primary" onclick="return confirm('Fulfill and transfer stock?')">{{ localize('global.fulfill') ?? 'Fulfill' }}</button></form>
+                    <form action="{{ route('depots.requests.fulfill', $depotRequest) }}" method="POST">@csrf<button class="btn btn-primary" onclick="return confirm(@json(localize('global.depot.confirm_fulfill')))">{{ localize('global.fulfill') }}</button></form>
                 @endif
                 @if($permissions['cancel'] ?? false)
-                    <form action="{{ route('depots.requests.cancel', $depotRequest) }}" method="POST">@csrf<button class="btn btn-outline-secondary" onclick="return confirm('Cancel request?')">{{ localize('global.cancel') ?? 'Cancel' }}</button></form>
+                    <form action="{{ route('depots.requests.cancel', $depotRequest) }}" method="POST">@csrf<button class="btn btn-outline-secondary" onclick="return confirm(@json(localize('global.depot.confirm_cancel_request')))">{{ localize('global.cancel') }}</button></form>
                 @endif
             </div>
         </div>
     </div>
 
     <div class="card mb-3">
-        <div class="card-header"><h6 class="mb-0">{{ localize('global.depot.request_items') ?? 'Request Items' }}</h6></div>
+        <div class="card-header"><h6 class="mb-0">{{ localize('global.depot.request_items') }}</h6></div>
         <div class="table-responsive">
             <table class="table table-striped mb-0">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>{{ localize('global.item') }}</th>
-                        <th>{{ localize('global.type') ?? 'Type' }}</th>
+                        <th>{{ localize('global.type') }}</th>
                         <th>{{ localize('global.quantity') }}</th>
                         <th>{{ localize('global.unit') }}</th>
                         <th>{{ localize('global.batch_number') }}</th>
-                        <th>{{ localize('global.transaction') ?? 'Transaction' }}</th>
+                        <th>{{ localize('global.transaction') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -155,7 +155,7 @@
 
     @if($depotRequest->transactions->isNotEmpty())
     <div class="card mb-3">
-        <div class="card-header"><h6 class="mb-0">{{ localize('global.depot.fulfillment_transactions') ?? 'Fulfillment Transactions' }}</h6></div>
+        <div class="card-header"><h6 class="mb-0">{{ localize('global.depot.fulfillment_transactions') }}</h6></div>
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2">
                 @foreach($depotRequest->transactions as $tx)
@@ -167,7 +167,7 @@
     @endif
 
     <div class="card">
-        <div class="card-header"><h6 class="mb-0">{{ localize('global.depot.workflow_timeline') ?? 'Workflow Timeline' }}</h6></div>
+        <div class="card-header"><h6 class="mb-0">{{ localize('global.depot.workflow_timeline') }}</h6></div>
         <div class="card-body">
             <ul class="list-group">
                 @forelse($depotRequest->statusLogs as $log)
@@ -184,7 +184,7 @@
                         <span class="text-muted">{{ $log->user?->name ?? '-' }} · {{ $log->created_at?->format('Y-m-d H:i') }}</span>
                     </li>
                 @empty
-                    <li class="list-group-item text-muted">{{ localize('global.depot.no_status_changes') ?? 'No status changes yet.' }}</li>
+                    <li class="list-group-item text-muted">{{ localize('global.depot.no_status_changes') }}</li>
                 @endforelse
             </ul>
         </div>
@@ -196,14 +196,14 @@
         <form action="{{ route('depots.requests.reject', $depotRequest) }}" method="POST" class="modal-content">
             @csrf
             <div class="modal-header">
-                <h5 class="modal-title">{{ localize('global.reject') ?? 'Reject Request' }}</h5>
+                <h5 class="modal-title">{{ localize('global.reject') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <textarea name="rejection_reason" class="form-control" rows="4" required placeholder="{{ localize('global.reason') ?? 'Reason' }}"></textarea>
+                <textarea name="rejection_reason" class="form-control" rows="4" required placeholder="{{ localize('global.reason') }}"></textarea>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-danger">{{ localize('global.reject') ?? 'Reject' }}</button>
+                <button type="submit" class="btn btn-danger">{{ localize('global.reject') }}</button>
             </div>
         </form>
     </div>

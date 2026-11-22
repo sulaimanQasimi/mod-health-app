@@ -4641,7 +4641,18 @@ return [
         'depot_not_found_in_database' => 'دیپو در پایگاه داده یافت نشد',
         'depots' => 'دیپو‌ها',
         'depots_title' => 'مدیریت دیپو',
+        'users' => 'کاربران دیپو',
+        'confirm_fulfill' => 'این درخواست تکمیل و موجودی منتقل شود؟',
+        'confirm_cancel_request' => 'این درخواست دیپو لغو شود؟',
+        'select_tool' => 'انتخاب ابزار',
     ],
+
+    'available' => 'موجودی',
+    'select_pharmacy' => 'انتخاب دواخانه',
+    'select_tool' => 'انتخاب ابزار',
+    'descending' => 'نزولی',
+    'unable_to_save_depot' => 'ذخیره دیپو ممکن نشد.',
+    'remove' => 'حذف',
 
     "transaction_date" => "تاریخ انتقال",
     "expiry_date" => "تاریخ انقضا",

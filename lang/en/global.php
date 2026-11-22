@@ -4568,7 +4568,16 @@ return [
         'depot_not_found_in_database' => 'Depot not found in database',
         'depots' => 'Depots',
         'depots_title' => 'Depot Management',
+        'users' => 'Depot Users',
+        'confirm_fulfill' => 'Fulfill this request and transfer stock?',
+        'confirm_cancel_request' => 'Cancel this depot request?',
+        'select_tool' => 'Select tool',
     ],
+
+    'available' => 'Available',
+    'select_pharmacy' => 'Select pharmacy',
+    'select_tool' => 'Select tool',
+    'unable_to_save_depot' => 'Unable to save depot.',
 
     'depot.depot_to_pharmacy_movement' => 'Depot to Pharmacy Movement',
     'depot.source_depot' => 'Source Depot',

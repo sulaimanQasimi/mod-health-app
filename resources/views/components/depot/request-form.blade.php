@@ -1,9 +1,9 @@
 <div class="row g-3">
     <div class="col-md-4">
-        <label class="form-label" for="destination_type">{{ localize('global.depot.destination_type') ?? 'Destination Type' }}</label>
+        <label class="form-label" for="destination_type">{{ localize('global.depot.destination_type') }}</label>
         <select name="destination_type" id="destination_type" class="form-select @error('destination_type') is-invalid @enderror" @if($viewContext === 'pharmacy') disabled @endif>
-            <option value="depot" @selected($destinationType === 'depot')>{{ localize('global.depot.depot') ?? 'Depot' }}</option>
-            <option value="pharmacy" @selected($destinationType === 'pharmacy')>{{ localize('global.pharmacy') ?? 'Pharmacy' }}</option>
+            <option value="depot" @selected($destinationType === 'depot')>{{ localize('global.depot.depot') }}</option>
+            <option value="pharmacy" @selected($destinationType === 'pharmacy')>{{ localize('global.pharmacy') }}</option>
         </select>
         @if($viewContext === 'pharmacy')
             <input type="hidden" name="destination_type" value="pharmacy">
@@ -13,7 +13,7 @@
     <div class="col-md-4" id="requesting-depot-wrap" @if($isPharmacyDestination) style="display:none" @endif>
         <label class="form-label" for="requesting_depot_id">{{ localize('global.depot.requesting_depot') }}</label>
         <select name="requesting_depot_id" id="requesting_depot_id" class="form-select select2 @error('requesting_depot_id') is-invalid @enderror" @if($lockRequestingDepot) disabled @endif>
-            <option value="">{{ localize('global.select') ?? 'Select' }}</option>
+            <option value="">{{ localize('global.select') }}</option>
             @foreach($depots as $depot)
                 <option value="{{ $depot->id }}" @selected(old('requesting_depot_id', $defaults['requesting_depot_id'] ?? '') == $depot->id)>{{ $depot->name }}</option>
             @endforeach
@@ -27,7 +27,7 @@
     <div class="col-md-4" id="pharmacy-wrap" @if(! $isPharmacyDestination) style="display:none" @endif>
         <label class="form-label" for="pharmacy_id">{{ localize('global.pharmacy') }}</label>
         <select name="pharmacy_id" id="pharmacy_id" class="form-select select2 @error('pharmacy_id') is-invalid @enderror">
-            <option value="">{{ localize('global.select') ?? 'Select' }}</option>
+            <option value="">{{ localize('global.select') }}</option>
             @foreach($pharmacyChoices as $pharmacy)
                 <option value="{{ $pharmacy->id }}" @selected(old('pharmacy_id', $defaults['pharmacy_id'] ?? '') == $pharmacy->id)>{{ $pharmacy->name }}</option>
             @endforeach
@@ -38,7 +38,7 @@
     <div class="col-md-4">
         <label class="form-label" for="source_depot_id">{{ localize('global.depot.source_depot') }}</label>
         <select name="source_depot_id" id="source_depot_id" class="form-select select2 @error('source_depot_id') is-invalid @enderror">
-            <option value="">{{ localize('global.select') ?? 'Select' }}</option>
+            <option value="">{{ localize('global.select') }}</option>
             @foreach($sourceOptions as $option)
                 <option value="{{ $option['id'] }}" @selected(old('source_depot_id', $defaults['source_depot_id'] ?? '') == $option['id'])>{{ $option['name'] }}</option>
             @endforeach
@@ -52,9 +52,9 @@
 
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <label class="form-label mb-0">{{ localize('global.depot.request_items') ?? 'Request Items' }}</label>
+            <label class="form-label mb-0">{{ localize('global.depot.request_items') }}</label>
             <button type="button" class="btn btn-sm btn-outline-primary" id="add-request-item">
-                <i class="bx bx-plus"></i> {{ localize('global.add') ?? 'Add' }}
+                <i class="bx bx-plus"></i> {{ localize('global.add') }}
             </button>
         </div>
         <div class="table-responsive depot-request-items-wrap">
@@ -83,7 +83,7 @@
                             </td>
                             <td class="tool-col">
                                 <select name="items[{{ $index }}][tool_id]" class="form-select select2 item-tool">
-                                    <option value="">{{ localize('global.select') ?? 'Select' }}</option>
+                                    <option value="">{{ localize('global.select') }}</option>
                                     @foreach($tools as $tool)
                                         <option value="{{ $tool->id }}" @selected(($item['tool_id'] ?? '') == $tool->id)>{{ $tool->displayName() }}</option>
                                     @endforeach
@@ -105,7 +105,7 @@
                                 <input type="text" name="items[{{ $index }}][batch_number]" value="{{ $item['batch_number'] ?? '' }}" class="form-control">
                             </td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-danger remove-request-item" title="Remove"><i class="bx bx-trash"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-request-item" title="{{ localize('global.remove') }}"><i class="bx bx-trash"></i></button>
                             </td>
                         </tr>
                     @endforeach
@@ -134,7 +134,7 @@
         </td>
         <td class="tool-col">
             <select name="items[__INDEX__][tool_id]" class="form-select item-tool">
-                <option value="">{{ localize('global.select') ?? 'Select' }}</option>
+                <option value="">{{ localize('global.select') }}</option>
                 @foreach($tools as $tool)
                     <option value="{{ $tool->id }}">{{ $tool->displayName() }}</option>
                 @endforeach
@@ -156,7 +156,7 @@
             <input type="text" name="items[__INDEX__][batch_number]" value="" class="form-control">
         </td>
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-outline-danger remove-request-item" title="Remove"><i class="bx bx-trash"></i></button>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-request-item" title="{{ localize('global.remove') }}"><i class="bx bx-trash"></i></button>
         </td>
     </tr>
 </template>

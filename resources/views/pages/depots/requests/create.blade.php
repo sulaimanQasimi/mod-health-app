@@ -47,8 +47,8 @@
                     :user-pharmacies="$userPharmacies ?? null"
                 />
                 <div class="d-flex justify-content-end gap-2 mt-3">
-                    <button type="submit" name="submit_now" value="0" class="btn btn-outline-secondary">{{ localize('global.save_draft') ?? 'Save Draft' }}</button>
-                    <button type="submit" name="submit_now" value="1" class="btn btn-primary">{{ localize('global.save_and_submit') ?? 'Save & Submit' }}</button>
+                    <button type="submit" name="submit_now" value="0" class="btn btn-outline-secondary">{{ localize('global.save_draft') }}</button>
+                    <button type="submit" name="submit_now" value="1" class="btn btn-primary">{{ localize('global.save_and_submit') }}</button>
                 </div>
             </form>
         </div>

@@ -48,7 +48,7 @@
                     :user-pharmacies="$userPharmacies ?? null"
                 />
                 <div class="d-flex justify-content-end gap-2 mt-3">
-                    <button type="submit" class="btn btn-primary">{{ localize('global.update') ?? 'Update' }}</button>
+                    <button type="submit" class="btn btn-primary">{{ localize('global.update') }}</button>
                 </div>
             </form>
         </div>

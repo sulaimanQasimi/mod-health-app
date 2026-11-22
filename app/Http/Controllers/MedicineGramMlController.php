@@ -26,7 +26,7 @@ class MedicineGramMlController extends Controller
 
     protected function lookupPageTitle(): string
     {
-        return 'Gram / ml';
+        return 'global.medicine_gram_ml';
     }
 
     protected function lookupNavKey(): string

@@ -68,12 +68,12 @@ export default function MedicineForm({ mode, urls, medicine, formData }: Medicin
 
             <div className="grid gap-2 sm:grid-cols-2">
                 <div>
-                    <Label className="text-xs">Medicine type</Label>
+                    <Label className="text-xs">{t('global.medicine_type')}</Label>
                     <SearchableSelect
                         value={data.medicine_type_id}
                         onChange={(v) => setData('medicine_type_id', v)}
                         options={[
-                            { value: '', label: 'Select type' },
+                            { value: '', label: t('global.select_type') },
                             ...formData.types.map((item) => ({
                                 value: String(item.id),
                                 label: item.type ?? item.name ?? String(item.id),
@@ -82,12 +82,12 @@ export default function MedicineForm({ mode, urls, medicine, formData }: Medicin
                     />
                 </div>
                 <div>
-                    <Label className="text-xs">Country</Label>
+                    <Label className="text-xs">{t('global.country')}</Label>
                     <SearchableSelect
                         value={data.medicine_country_id}
                         onChange={(v) => setData('medicine_country_id', v)}
                         options={[
-                            { value: '', label: 'Select country' },
+                            { value: '', label: t('global.select_country') },
                             ...formData.countries.map((item) => ({
                                 value: String(item.id),
                                 label: item.name ?? String(item.id),
@@ -96,12 +96,12 @@ export default function MedicineForm({ mode, urls, medicine, formData }: Medicin
                     />
                 </div>
                 <div>
-                    <Label className="text-xs">Formula</Label>
+                    <Label className="text-xs">{t('global.formula')}</Label>
                     <SearchableSelect
                         value={data.medicine_formula_id}
                         onChange={(v) => setData('medicine_formula_id', v)}
                         options={[
-                            { value: '', label: 'Select formula' },
+                            { value: '', label: t('global.select_formula') },
                             ...formData.formulas.map((item) => ({
                                 value: String(item.id),
                                 label: item.name ?? String(item.id),
@@ -110,12 +110,12 @@ export default function MedicineForm({ mode, urls, medicine, formData }: Medicin
                     />
                 </div>
                 <div>
-                    <Label className="text-xs">Gram / ml</Label>
+                    <Label className="text-xs">{t('global.medicine_gram_ml')}</Label>
                     <SearchableSelect
                         value={data.medicine_gram_ml_id}
                         onChange={(v) => setData('medicine_gram_ml_id', v)}
                         options={[
-                            { value: '', label: 'Select gram/ml' },
+                            { value: '', label: t('global.select_gram_ml') },
                             ...formData.gramMls.map((item) => ({
                                 value: String(item.id),
                                 label: item.name ?? String(item.id),
@@ -124,12 +124,12 @@ export default function MedicineForm({ mode, urls, medicine, formData }: Medicin
                     />
                 </div>
                 <div>
-                    <Label className="text-xs">Unit</Label>
+                    <Label className="text-xs">{t('global.unit')}</Label>
                     <SearchableSelect
                         value={data.unit_id}
                         onChange={(v) => setData('unit_id', v)}
                         options={[
-                            { value: '', label: 'Select unit' },
+                            { value: '', label: t('global.select_unit') },
                             ...formData.units.map((item) => ({
                                 value: String(item.id),
                                 label: item.symbol ? `${item.name} (${item.symbol})` : (item.name ?? String(item.id)),
@@ -138,7 +138,7 @@ export default function MedicineForm({ mode, urls, medicine, formData }: Medicin
                     />
                 </div>
                 <div>
-                    <Label className="text-xs">Units per pack</Label>
+                    <Label className="text-xs">{t('global.units_per_pack')}</Label>
                     <TextInput
                         sizing="sm"
                         type="number"

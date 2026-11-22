@@ -26,7 +26,7 @@ class MedicineCountryController extends Controller
 
     protected function lookupPageTitle(): string
     {
-        return 'Medicine countries';
+        return 'global.medicine_countries';
     }
 
     protected function lookupNavKey(): string

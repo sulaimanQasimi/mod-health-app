@@ -44,7 +44,8 @@ trait ManagesMedicineLookups
         $rows = $query->orderBy($label)->paginate(20)->withQueryString();
 
         return Inertia::render('Medicines/Lookups/Index', [
-            'title' => $this->lookupPageTitle(),
+            'title' => __($this->lookupPageTitle()),
+            'titleKey' => $this->lookupPageTitle(),
             'navKey' => $this->lookupNavKey(),
             'labelField' => $label,
             'hasActive' => $hasActive,
@@ -82,7 +83,7 @@ trait ManagesMedicineLookups
         $this->authorize('viewAny', Medicine::class);
         $this->lookupModelClass()::query()->create($this->validatedLookup($request));
 
-        return back()->with('success', $this->lookupPageTitle().' created.');
+        return back()->with('success', __('global.created_successfully'));
     }
 
     public function update(Request $request, int $id): RedirectResponse
@@ -91,7 +92,7 @@ trait ManagesMedicineLookups
         $row = $this->lookupModelClass()::query()->findOrFail($id);
         $row->update($this->validatedLookup($request, $row->id));
 
-        return back()->with('success', $this->lookupPageTitle().' updated.');
+        return back()->with('success', __('global.updated_successfully'));
     }
 
     public function destroy(int $id): RedirectResponse
@@ -99,7 +100,7 @@ trait ManagesMedicineLookups
         $this->authorize('viewAny', Medicine::class);
         $this->lookupModelClass()::query()->findOrFail($id)->delete();
 
-        return back()->with('success', $this->lookupPageTitle().' deleted.');
+        return back()->with('success', __('global.deleted_successfully'));
     }
 
     private function validatedLookup(Request $request, ?int $ignoreId = null): array

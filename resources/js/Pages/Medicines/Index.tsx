@@ -120,7 +120,7 @@ export default function IndexMedicines({
                     value={filters.medicine_type_id || ''}
                     onChange={(value) => setFilters({ ...filters, medicine_type_id: value })}
                     options={[
-                        { value: '', label: 'All types' },
+                        { value: '', label: t('global.all_types') },
                         ...filterOptions.types.map((item) => ({ value: String(item.id), label: item.type })),
                     ]}
                 />
@@ -128,7 +128,7 @@ export default function IndexMedicines({
                     value={filters.medicine_country_id || ''}
                     onChange={(value) => setFilters({ ...filters, medicine_country_id: value })}
                     options={[
-                        { value: '', label: 'All countries' },
+                        { value: '', label: t('global.all_countries') },
                         ...filterOptions.countries.map((item) => ({ value: String(item.id), label: item.name })),
                     ]}
                 />
@@ -169,10 +169,10 @@ export default function IndexMedicines({
                         <TableRow variant="header">
                             <TableHeader>#</TableHeader>
                             <TableHeader>{t('global.name')}</TableHeader>
-                            <TableHeader>Type</TableHeader>
-                            <TableHeader>Country</TableHeader>
-                            <TableHeader>Formula</TableHeader>
-                            <TableHeader>Gram/ml</TableHeader>
+                            <TableHeader>{t('global.type')}</TableHeader>
+                            <TableHeader>{t('global.country')}</TableHeader>
+                            <TableHeader>{t('global.formula')}</TableHeader>
+                            <TableHeader>{t('global.medicine_gram_ml')}</TableHeader>
                             <TableHeader align="center">{t('global.actions')}</TableHeader>
                         </TableRow>
                     </TableHead>

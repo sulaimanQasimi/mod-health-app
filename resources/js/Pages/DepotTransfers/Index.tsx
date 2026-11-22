@@ -6,6 +6,8 @@ import { InventoryNavUrls } from '../../Components/Inventory/InventoryModuleNav'
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
+import { useTranslation } from '../../hooks/useTranslation';
+import { inventoryStatusLabel } from '../../utils/inventoryLabels';
 
 type TransferRow = {
     id: number;
@@ -28,6 +30,7 @@ export default function DepotTransfersIndex({
     inventoryNav: InventoryNavUrls;
     urls: { index: string; create: string; show: string };
 }) {
+    const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
 
     const apply = (e?: FormEvent) => {
@@ -39,7 +42,7 @@ export default function DepotTransfersIndex({
 
     return (
         <InventoryShell
-            title="Transfers"
+            title={t('global.transfers')}
             active="transfers"
             urls={inventoryNav}
             action={
@@ -48,7 +51,7 @@ export default function DepotTransfersIndex({
                     className="inline-flex items-center gap-1 rounded-md bg-violet-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-violet-700"
                 >
                     <i className="bx bx-plus text-sm" />
-                    New transfer
+                    {t('global.new_transfer')}
                 </Link>
             }
         >
@@ -58,13 +61,13 @@ export default function DepotTransfersIndex({
                         value={filters.status}
                         onChange={(v) => setFilters({ status: v })}
                         options={[
-                            { value: '', label: 'All status' },
-                            { value: 'draft', label: 'Draft' },
-                            { value: 'pending', label: 'Pending' },
-                            { value: 'approved', label: 'Approved' },
-                            { value: 'fulfilled', label: 'Fulfilled' },
-                            { value: 'rejected', label: 'Rejected' },
-                            { value: 'cancelled', label: 'Cancelled' },
+                            { value: '', label: t('global.all_status') },
+                            { value: 'draft', label: t('global.draft') },
+                            { value: 'pending', label: t('global.pending') },
+                            { value: 'approved', label: t('global.approved') },
+                            { value: 'fulfilled', label: t('global.fulfilled') },
+                            { value: 'rejected', label: t('global.rejected') },
+                            { value: 'cancelled', label: t('global.cancelled') },
                         ]}
                     />
                 </div>
@@ -76,11 +79,11 @@ export default function DepotTransfersIndex({
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableHeader>Request #</TableHeader>
-                        <TableHeader>From</TableHeader>
-                        <TableHeader>To</TableHeader>
-                        <TableHeader>Items</TableHeader>
-                        <TableHeader>Status</TableHeader>
+                        <TableHeader>{t('global.request_number')}</TableHeader>
+                        <TableHeader>{t('global.from')}</TableHeader>
+                        <TableHeader>{t('global.to')}</TableHeader>
+                        <TableHeader>{t('global.items_count')}</TableHeader>
+                        <TableHeader>{t('global.status')}</TableHeader>
                         <TableHeader />
                     </TableRow>
                 </TableHead>
@@ -89,7 +92,7 @@ export default function DepotTransfersIndex({
                         <TableRow>
                             <TableCell colSpan={6} className="py-6 text-center text-sm text-gray-500">
                                 <i className="bx bx-git-pull-request text-2xl text-gray-300" />
-                                <div>No transfers yet</div>
+                                <div>{t('global.no_transfers_yet')}</div>
                             </TableCell>
                         </TableRow>
                     ) : (
@@ -103,13 +106,14 @@ export default function DepotTransfersIndex({
                                 <TableCell className="py-1.5 text-sm">{row.items_count}</TableCell>
                                 <TableCell className="py-1.5">
                                     <Badge color="purple" size="xs">
-                                        {row.status}
+                                        {inventoryStatusLabel(t, row.status)}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="py-1.5">
                                     <Link
                                         href={urls.show.replace('__ID__', String(row.id))}
                                         className="inline-flex h-7 w-7 items-center justify-center rounded-md text-violet-600 hover:bg-violet-50"
+                                        title={t('global.open')}
                                     >
                                         <i className="bx bx-show" />
                                     </Link>

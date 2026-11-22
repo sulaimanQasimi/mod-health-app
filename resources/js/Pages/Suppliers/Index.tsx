@@ -5,6 +5,7 @@ import InventoryShell from '../../Components/Inventory/InventoryShell';
 import { InventoryNavUrls } from '../../Components/Inventory/InventoryModuleNav';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
+import { useTranslation } from '../../hooks/useTranslation';
 
 type SupplierRow = {
     id: number;
@@ -27,6 +28,7 @@ export default function SuppliersIndex({
     inventoryNav: InventoryNavUrls;
     urls: { index: string; store: string; update: string; destroy: string };
 }) {
+    const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
     const [editingId, setEditingId] = useState<number | null>(null);
     const form = useForm({
@@ -74,33 +76,33 @@ export default function SuppliersIndex({
     };
 
     return (
-        <InventoryShell title="Suppliers" active="suppliers" urls={inventoryNav}>
+        <InventoryShell title={t('global.suppliers')} active="suppliers" urls={inventoryNav}>
             <div className="grid gap-3 lg:grid-cols-[280px_1fr]">
                 <form onSubmit={submit} className="space-y-2 rounded-md border border-gray-100 p-2 dark:border-gray-700">
                     <div className="mb-1 flex items-center gap-1.5 text-sm font-semibold">
                         <i className={`bx ${editingId ? 'bx-edit' : 'bx-plus-circle'} text-teal-600`} />
-                        {editingId ? 'Edit supplier' : 'Add supplier'}
+                        {editingId ? t('global.edit_supplier') : t('global.add_supplier')}
                     </div>
                     <div>
-                        <Label className="text-xs">Name *</Label>
+                        <Label className="text-xs">{t('global.name')} *</Label>
                         <TextInput sizing="sm" value={form.data.name} onChange={(e) => form.setData('name', e.target.value)} required />
                     </div>
                     <div>
-                        <Label className="text-xs">Phone</Label>
+                        <Label className="text-xs">{t('global.phone')}</Label>
                         <TextInput sizing="sm" value={form.data.phone} onChange={(e) => form.setData('phone', e.target.value)} />
                     </div>
                     <div>
-                        <Label className="text-xs">Email</Label>
+                        <Label className="text-xs">{t('global.email')}</Label>
                         <TextInput sizing="sm" type="email" value={form.data.email} onChange={(e) => form.setData('email', e.target.value)} />
                     </div>
                     <div>
-                        <Label className="text-xs">Address</Label>
+                        <Label className="text-xs">{t('global.address')}</Label>
                         <Textarea rows={2} value={form.data.address} onChange={(e) => form.setData('address', e.target.value)} />
                     </div>
                     <div className="flex gap-1.5">
                         <Button type="submit" size="xs" color="success" disabled={form.processing}>
                             <i className="bx bx-save me-1" />
-                            Save
+                            {t('global.save')}
                         </Button>
                         {editingId && (
                             <Button
@@ -112,7 +114,7 @@ export default function SuppliersIndex({
                                     form.reset();
                                 }}
                             >
-                                Cancel
+                                {t('global.cancel')}
                             </Button>
                         )}
                     </div>
@@ -125,7 +127,7 @@ export default function SuppliersIndex({
                             className="flex-1"
                             value={filters.search}
                             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                            placeholder="Search supplier"
+                            placeholder={t('global.search_supplier')}
                         />
                         <Button type="submit" size="xs" color="light">
                             <i className="bx bx-search" />
@@ -135,10 +137,10 @@ export default function SuppliersIndex({
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableHeader>Name</TableHeader>
-                                <TableHeader>Phone</TableHeader>
-                                <TableHeader>Purchases</TableHeader>
-                                <TableHeader>Status</TableHeader>
+                                <TableHeader>{t('global.name')}</TableHeader>
+                                <TableHeader>{t('global.phone')}</TableHeader>
+                                <TableHeader>{t('global.purchases')}</TableHeader>
+                                <TableHeader>{t('global.status')}</TableHeader>
                                 <TableHeader />
                             </TableRow>
                         </TableHead>
@@ -147,7 +149,7 @@ export default function SuppliersIndex({
                                 <TableRow>
                                     <TableCell colSpan={5} className="py-6 text-center text-sm text-gray-500">
                                         <i className="bx bx-buildings text-2xl text-gray-300" />
-                                        <div>No suppliers yet</div>
+                                        <div>{t('global.no_suppliers_yet')}</div>
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -158,7 +160,7 @@ export default function SuppliersIndex({
                                         <TableCell className="py-1.5 text-sm">{row.purchases_count}</TableCell>
                                         <TableCell className="py-1.5">
                                             <Badge color={row.is_active ? 'success' : 'gray'} size="xs">
-                                                {row.is_active ? 'Active' : 'Inactive'}
+                                                {row.is_active ? t('global.active') : t('global.inactive')}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="py-1.5">
@@ -167,7 +169,7 @@ export default function SuppliersIndex({
                                                     type="button"
                                                     className="inline-flex h-7 w-7 items-center justify-center rounded-md text-amber-600 hover:bg-amber-50"
                                                     onClick={() => startEdit(row)}
-                                                    title="Edit"
+                                                    title={t('global.edit')}
                                                 >
                                                     <i className="bx bx-edit" />
                                                 </button>
@@ -175,11 +177,11 @@ export default function SuppliersIndex({
                                                     type="button"
                                                     className="inline-flex h-7 w-7 items-center justify-center rounded-md text-red-600 hover:bg-red-50"
                                                     onClick={() => {
-                                                        if (confirm('Delete this supplier?')) {
+                                                        if (confirm(t('global.delete_supplier_confirm'))) {
                                                             router.delete(urls.destroy.replace('__ID__', String(row.id)));
                                                         }
                                                     }}
-                                                    title="Delete"
+                                                    title={t('global.delete')}
                                                 >
                                                     <i className="bx bx-trash" />
                                                 </button>

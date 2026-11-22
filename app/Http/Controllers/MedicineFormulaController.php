@@ -26,7 +26,7 @@ class MedicineFormulaController extends Controller
 
     protected function lookupPageTitle(): string
     {
-        return 'Medicine formulas';
+        return 'global.medicine_formulas';
     }
 
     protected function lookupNavKey(): string

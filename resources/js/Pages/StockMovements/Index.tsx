@@ -6,6 +6,8 @@ import { InventoryNavUrls } from '../../Components/Inventory/InventoryModuleNav'
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import SettingsPagination from '../../Components/Settings/SettingsPagination';
+import { useTranslation } from '../../hooks/useTranslation';
+import { inventoryMovementTypeLabel } from '../../utils/inventoryLabels';
 
 type MovementRow = {
     id: number;
@@ -38,6 +40,7 @@ export default function StockMovementsIndex({
     inventoryNav: InventoryNavUrls;
     urls: { index: string };
 }) {
+    const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
 
     const apply = (e?: FormEvent) => {
@@ -48,46 +51,46 @@ export default function StockMovementsIndex({
     };
 
     return (
-        <InventoryShell title="Stock movements" active="movements" urls={inventoryNav}>
+        <InventoryShell title={t('global.stock_movements')} active="movements" urls={inventoryNav}>
             <form onSubmit={apply} className="mb-2 flex flex-wrap gap-2">
                 <TextInput
                     sizing="sm"
                     className="min-w-[180px] flex-1"
                     value={filters.search}
                     onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                    placeholder="Batch / medicine"
+                    placeholder={t('global.search_batch_medicine')}
                 />
                 <div className="min-w-[180px]">
                     <SearchableSelect
                         value={filters.type}
                         onChange={(v) => setFilters({ ...filters, type: v })}
                         options={[
-                            { value: '', label: 'All types' },
-                            { value: 'purchase_receive', label: 'Purchase receive' },
-                            { value: 'depot_to_pharmacy', label: 'Depot → Pharmacy' },
-                            { value: 'depot_to_depot', label: 'Depot → Depot' },
-                            { value: 'sale', label: 'Sale' },
-                            { value: 'adjustment', label: 'Adjustment' },
+                            { value: '', label: t('global.all_types') },
+                            { value: 'purchase_receive', label: t('global.purchase_receive') },
+                            { value: 'depot_to_pharmacy', label: t('global.depot.depot_to_pharmacy') },
+                            { value: 'depot_to_depot', label: t('global.depot.depot_to_depot') },
+                            { value: 'sale', label: t('global.movement_sale') },
+                            { value: 'adjustment', label: t('global.movement_adjustment') },
                         ]}
                     />
                 </div>
                 <Button type="submit" size="xs" color="light" className="h-9">
                     <i className="bx bx-filter-alt me-1" />
-                    Filter
+                    {t('global.filter')}
                 </Button>
             </form>
 
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableHeader>When</TableHeader>
-                        <TableHeader>Type</TableHeader>
-                        <TableHeader>Medicine</TableHeader>
-                        <TableHeader>Batch</TableHeader>
-                        <TableHeader>From</TableHeader>
-                        <TableHeader>To</TableHeader>
-                        <TableHeader>Qty</TableHeader>
-                        <TableHeader>User</TableHeader>
+                        <TableHeader>{t('global.when')}</TableHeader>
+                        <TableHeader>{t('global.type')}</TableHeader>
+                        <TableHeader>{t('global.medicine')}</TableHeader>
+                        <TableHeader>{t('global.batch_number')}</TableHeader>
+                        <TableHeader>{t('global.from')}</TableHeader>
+                        <TableHeader>{t('global.to')}</TableHeader>
+                        <TableHeader>{t('global.quantity')}</TableHeader>
+                        <TableHeader>{t('global.user')}</TableHeader>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -95,7 +98,7 @@ export default function StockMovementsIndex({
                         <TableRow>
                             <TableCell colSpan={8} className="py-6 text-center text-sm text-gray-500">
                                 <i className="bx bx-transfer-alt text-2xl text-gray-300" />
-                                <div>No movements yet</div>
+                                <div>{t('global.no_movements_yet')}</div>
                             </TableCell>
                         </TableRow>
                     ) : (
@@ -105,7 +108,7 @@ export default function StockMovementsIndex({
                                 <TableCell className="py-1.5">
                                     <Badge color="info" size="xs">
                                         <i className={`bx ${TYPE_ICON[row.type] ?? 'bx-radio-circle'} me-0.5`} />
-                                        {row.type.replace(/_/g, ' ')}
+                                        {inventoryMovementTypeLabel(t, row.type)}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="py-1.5 text-sm">{row.medicine?.name}</TableCell>

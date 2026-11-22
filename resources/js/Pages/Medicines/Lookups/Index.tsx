@@ -6,11 +6,14 @@ import { InventoryNavUrls } from '../../../Components/Inventory/InventoryModuleN
 import MedicineSubNav, { MedicineNavKey, MedicineNavUrls } from '../../../Components/Medicines/MedicineSubNav';
 import SettingsPagination from '../../../Components/Settings/SettingsPagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../Components/ui/Table';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { medicineFieldLabel } from '../../../utils/inventoryLabels';
 
 type Row = Record<string, any> & { id: number };
 
 export default function MedicineLookupsIndex({
     title,
+    titleKey,
     navKey,
     labelField,
     hasActive,
@@ -22,6 +25,7 @@ export default function MedicineLookupsIndex({
     urls,
 }: {
     title: string;
+    titleKey?: string;
     navKey: MedicineNavKey;
     labelField: string;
     hasActive: boolean;
@@ -32,6 +36,8 @@ export default function MedicineLookupsIndex({
     medicineNav: MedicineNavUrls;
     urls: { index: string; store: string; update: string; destroy: string };
 }) {
+    const { t } = useTranslation();
+    const pageTitle = titleKey ? t(titleKey) : title;
     const [filters, setFilters] = useState(serverFilters);
     const [editingId, setEditingId] = useState<number | null>(null);
     const form = useForm<Record<string, any>>({
@@ -75,17 +81,17 @@ export default function MedicineLookupsIndex({
     };
 
     return (
-        <InventoryShell title={title} active="medicines" urls={inventoryNav}>
+        <InventoryShell title={pageTitle} active="medicines" urls={inventoryNav}>
             <MedicineSubNav active={navKey} urls={medicineNav} />
 
             <div className="grid gap-3 lg:grid-cols-[260px_1fr]">
                 <form onSubmit={submit} className="space-y-2 rounded-md border border-gray-100 p-2 dark:border-gray-700">
                     <div className="flex items-center gap-1 text-sm font-semibold">
                         <i className={`bx ${editingId ? 'bx-edit' : 'bx-plus-circle'} text-teal-600`} />
-                        {editingId ? 'Edit' : 'Add'}
+                        {editingId ? t('global.edit') : t('global.add')}
                     </div>
                     <div>
-                        <Label className="text-xs capitalize">{labelField.replace(/_/g, ' ')} *</Label>
+                        <Label className="text-xs">{medicineFieldLabel(t, labelField)} *</Label>
                         <TextInput
                             sizing="sm"
                             value={form.data[labelField] ?? ''}
@@ -95,7 +101,7 @@ export default function MedicineLookupsIndex({
                     </div>
                     {extraFields.includes('gram') && (
                         <div>
-                            <Label className="text-xs">Gram</Label>
+                            <Label className="text-xs">{t('global.gram')}</Label>
                             <TextInput
                                 sizing="sm"
                                 type="number"
@@ -107,7 +113,7 @@ export default function MedicineLookupsIndex({
                     )}
                     {extraFields.includes('ml') && (
                         <div>
-                            <Label className="text-xs">ml</Label>
+                            <Label className="text-xs">{t('global.ml')}</Label>
                             <TextInput
                                 sizing="sm"
                                 type="number"
@@ -120,7 +126,7 @@ export default function MedicineLookupsIndex({
                     <div className="flex gap-1.5">
                         <Button type="submit" size="xs" color="success" disabled={form.processing}>
                             <i className="bx bx-save me-1" />
-                            Save
+                            {t('global.save')}
                         </Button>
                         {editingId && (
                             <Button
@@ -132,7 +138,7 @@ export default function MedicineLookupsIndex({
                                     form.reset();
                                 }}
                             >
-                                Cancel
+                                {t('global.cancel')}
                             </Button>
                         )}
                     </div>
@@ -145,7 +151,7 @@ export default function MedicineLookupsIndex({
                             className="flex-1"
                             value={filters.search}
                             onChange={(e) => setFilters({ search: e.target.value })}
-                            placeholder={`Search ${title.toLowerCase()}`}
+                            placeholder={`${t('global.search')} ${pageTitle}`}
                         />
                         <Button type="submit" size="xs" color="light">
                             <i className="bx bx-search" />
@@ -155,13 +161,11 @@ export default function MedicineLookupsIndex({
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableHeader className="capitalize">{labelField.replace(/_/g, ' ')}</TableHeader>
+                                <TableHeader>{medicineFieldLabel(t, labelField)}</TableHeader>
                                 {extraFields.map((field) => (
-                                    <TableHeader key={field} className="capitalize">
-                                        {field}
-                                    </TableHeader>
+                                    <TableHeader key={field}>{medicineFieldLabel(t, field)}</TableHeader>
                                 ))}
-                                {hasActive && <TableHeader>Status</TableHeader>}
+                                {hasActive && <TableHeader>{t('global.status')}</TableHeader>}
                                 <TableHeader />
                             </TableRow>
                         </TableHead>
@@ -169,7 +173,7 @@ export default function MedicineLookupsIndex({
                             {rows.data.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={3 + extraFields.length} className="py-6 text-center text-sm text-gray-500">
-                                        No records yet
+                                        {t('global.no_records_yet')}
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -184,7 +188,7 @@ export default function MedicineLookupsIndex({
                                         {hasActive && (
                                             <TableCell className="py-1.5">
                                                 <Badge color={row.is_active ? 'success' : 'gray'} size="xs">
-                                                    {row.is_active ? 'Active' : 'Inactive'}
+                                                    {row.is_active ? t('global.active') : t('global.inactive')}
                                                 </Badge>
                                             </TableCell>
                                         )}
@@ -194,6 +198,7 @@ export default function MedicineLookupsIndex({
                                                     type="button"
                                                     className="inline-flex h-7 w-7 items-center justify-center rounded-md text-amber-600 hover:bg-amber-50"
                                                     onClick={() => startEdit(row)}
+                                                    title={t('global.edit')}
                                                 >
                                                     <i className="bx bx-edit" />
                                                 </button>
@@ -201,10 +206,11 @@ export default function MedicineLookupsIndex({
                                                     type="button"
                                                     className="inline-flex h-7 w-7 items-center justify-center rounded-md text-red-600 hover:bg-red-50"
                                                     onClick={() => {
-                                                        if (confirm('Delete this record?')) {
+                                                        if (confirm(t('global.delete_record_confirm'))) {
                                                             router.delete(urls.destroy.replace('__ID__', String(row.id)));
                                                         }
                                                     }}
+                                                    title={t('global.delete')}
                                                 >
                                                     <i className="bx bx-trash" />
                                                 </button>

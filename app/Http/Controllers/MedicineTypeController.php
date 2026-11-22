@@ -26,7 +26,7 @@ class MedicineTypeController extends Controller
 
     protected function lookupPageTitle(): string
     {
-        return 'Medicine types';
+        return 'global.medicine_types';
     }
 
     protected function lookupNavKey(): string

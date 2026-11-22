@@ -6,25 +6,30 @@
         @include('components.toast')
     @endif
 
+    <x-depot.nav-tabs active="transactions" :urls="$navUrls ?? []" :permissions="$navPermissions ?? null" />
+
     <div class="card mb-3">
         <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center">
             <h5 class="mb-0">{{ localize('global.depot.depot_transactions') }}</h5>
             <div class="d-flex flex-wrap gap-2">
-                @can('depot.report.export')
+                @if($navPermissions['reports'] ?? true)
                 <a href="{{ route('depots.reports.index') }}" class="btn btn-outline-secondary">
                     <i class="bx bx-export me-1"></i>{{ localize('global.depot.reports') }}
                 </a>
-                @endcan
-                <a href="{{ route('depots.movements.depot_to_depot') }}" class="btn btn-outline-primary">
+                @endif
+                @if($navPermissions['requests'] ?? true)
+                <a href="{{ route('depots.requests.create') }}" class="btn btn-outline-primary">
                     <i class="bx bx-transfer me-1"></i>{{ localize('global.depot.depot_to_depot') }}
                 </a>
-                <a href="{{ route('depots.movements.depot_to_pharmacy') }}" class="btn btn-outline-primary">
+                <a href="{{ route('depots.requests.create', ['destination' => 'pharmacy']) }}" class="btn btn-outline-primary">
                     <i class="bx bx-clinic me-1"></i>{{ localize('global.depot.depot_to_pharmacy') }}
                 </a>
+                @endif
+                @if($permissions['create'] ?? true)
                 <a href="{{ route('depots.transactions.create') }}" class="btn btn-primary">
                     <i class="bx bx-plus me-1"></i>{{ localize('global.depot.new') }}
                 </a>
-           
+                @endif
             </div>
         </div>
         <div class="card-body">
@@ -34,7 +39,7 @@
                 </div>
                 <div class="col-md-2">
                     <select name="depot_id" class="form-select select2">
-                        <option value="">All depots</option>
+                        <option value="">{{ localize('global.depot.depots') }}</option>
                         @foreach($depots as $depot)
                             <option value="{{ $depot->id }}" @selected(request('depot_id') == $depot->id)>{{ $depot->name }}</option>
                         @endforeach
@@ -42,7 +47,7 @@
                 </div>
                 <div class="col-md-2">
                     <select name="pharmacy_id" class="form-select select2">
-                        <option value="">All pharmacies</option>
+                        <option value="">{{ localize('global.pharmacy') }}</option>
                         @foreach($pharmacies as $pharmacy)
                             <option value="{{ $pharmacy->id }}" @selected(request('pharmacy_id') == $pharmacy->id)>{{ $pharmacy->name }}</option>
                         @endforeach
@@ -57,7 +62,7 @@
                 </div>
                 <div class="col-md-2">
                     <select name="medicine_id" class="form-select select2">
-                        <option value="">All medicines</option>
+                        <option value="">{{ localize('global.medicine') }}</option>
                         @foreach($medicines as $medicine)
                             <option value="{{ $medicine->id }}" @selected(request('medicine_id') == $medicine->id)>{{ $medicine->name }}</option>
                         @endforeach
@@ -65,7 +70,7 @@
                 </div>
                 <div class="col-md-2">
                     <select name="tool_id" class="form-select select2">
-                        <option value="">All tools</option>
+                        <option value="">{{ localize('global.depot.tool') }}</option>
                         @foreach($tools as $tool)
                             <option value="{{ $tool->id }}" @selected(request('tool_id') == $tool->id)>{{ $tool->displayName() }}</option>
                         @endforeach
@@ -74,16 +79,23 @@
                 <div class="col-md-1">
                     <select name="type" class="form-select">
                         <option value="">{{ localize('global.type') }}</option>
-                        @foreach($types as $type)
-                            <option value="{{ $type }}" @selected(request('type') === $type)>{{ str_replace('_', ' ', $type) }}</option>
+                        @foreach($typeOptions as $value => $label)
+                            <option value="{{ $value }}" @selected(request('type') === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-md-1">
                     <select name="status" class="form-select">
                         <option value="">{{ localize('global.status') }}</option>
-                        @foreach($statuses as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                        @foreach($statusOptions as $value => $label)
+                            <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <select name="per_page" class="form-select" title="{{ localize('global.per_page') }}">
+                        @foreach([10, 15, 25, 50] as $size)
+                            <option value="{{ $size }}" @selected((int) request('per_page', 15) === $size)>{{ $size }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -125,18 +137,16 @@
                     @forelse($transactions as $transaction)
                         <tr>
                             <td>{{ $transaction->transaction_number }}</td>
-                            <td>{{ str_replace('_', ' ', $transaction->type) }}</td>
+                            <td><x-depot.type-label :type="$transaction->type" /></td>
                             <td>{{ $transaction->fromDepot?->name ?? $transaction->depot?->name ?? '-' }}</td>
                             <td>{{ $transaction->toDepot?->name ?? $transaction->pharmacy?->name ?? '-' }}</td>
                             <td>{{ $transaction->medicine?->name ?? '-' }}</td>
                             <td>{{ $transaction->tool?->displayName() ?? '-' }}</td>
                             <td>{{ number_format($transaction->quantity) }} {{ $transaction->unit?->symbol ?? $transaction->unit?->name }}</td>
                             <td>
-                                <span class="badge bg-{{ $transaction->status === 'completed' ? 'success' : ($transaction->status === 'cancelled' ? 'danger' : 'warning') }}">
-                                    {{ ucfirst($transaction->status) }}
-                                </span>
+                                <x-depot.status-badge :status="$transaction->status" type="transaction" />
                                 @if($transaction->depotRequest)
-                                    <a href="{{ route('depots.requests.show', $transaction->depotRequest) }}" class="badge bg-info text-decoration-none">Request</a>
+                                    <a href="{{ route('depots.requests.show', $transaction->depotRequest) }}" class="badge bg-info text-decoration-none">{{ localize('global.depot.request') }}</a>
                                 @endif
                             </td>
                             <td>{{ $transaction->createdBy?->name ?? '-' }}</td>
@@ -145,7 +155,7 @@
                                 <a class="btn btn-sm btn-primary" href="{{ route('depots.transactions.show', $transaction) }}">
                                     <i class="bx bx-show-alt"></i>
                                 </a>
-                                @if($transaction->status !== 'cancelled')
+                                @if(($permissions['cancel'] ?? true) && $transaction->status !== 'cancelled')
                                     <form action="{{ route('depots.transactions.cancel', $transaction) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('PATCH')

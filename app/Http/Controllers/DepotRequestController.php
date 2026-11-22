@@ -55,7 +55,11 @@ class DepotRequestController extends Controller
         return view('pages.depots.requests.index', array_merge($this->bladeFormOptions(), [
             'requests' => $requests,
             'statuses' => DepotRequest::statuses(),
+            'statusOptions' => depot_label_options(DepotRequest::statuses()),
             'permissions' => $this->depotRequestPermissions(),
+            'viewContext' => $this->isPharmacyRequestContext() ? 'pharmacy' : 'depot',
+            'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
         ]));
     }
 
@@ -105,6 +109,8 @@ class DepotRequestController extends Controller
             'userPharmacies' => $user?->activePharmacies ?? collect(),
             'depotRequest' => null,
             'formItems' => old('items', [['medicine_id' => '', 'tool_id' => '', 'unit_id' => '', 'quantity' => 1, 'batch_number' => '']]),
+            'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
         ]));
     }
 
@@ -166,11 +172,19 @@ class DepotRequestController extends Controller
             'statusLogs.user',
         ]);
 
+        $permissions = $this->requestActionPermissions($depotRequest);
+
         return view('pages.depots.requests.show', [
             'depotRequest' => $depotRequest,
-            'permissions' => $this->requestActionPermissions($depotRequest),
+            'permissions' => $permissions,
+            'awaitingSourceProcessing' => in_array($depotRequest->status, [DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED], true),
+            'canProcessRequest' => ($permissions['approve'] ?? false) || ($permissions['reject'] ?? false) || ($permissions['fulfill'] ?? false),
             'workflowSteps' => DepotRequest::WORKFLOW_STEPS,
             'context' => DepotRequestContext::forRequest($depotRequest),
+            'viewContext' => $this->isPharmacyRequestContext() ? 'pharmacy' : 'depot',
+            'currentRank' => $depotRequest->workflowRank(),
+            'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
         ]);
     }
 
@@ -287,6 +301,8 @@ class DepotRequestController extends Controller
             'viewContext' => $this->isPharmacyRequestContext() ? 'pharmacy' : 'depot',
             'userPharmacies' => $user?->activePharmacies ?? collect(),
             'formItems' => $formItems,
+            'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
         ]));
     }
 

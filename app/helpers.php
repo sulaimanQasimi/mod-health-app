@@ -236,4 +236,42 @@ function safe_sort_column(mixed $column, array $allowed, string $default): strin
     return in_array($column, $allowed, true) ? $column : $default;
 }
 
-?>
+/**
+ * Localized label for a depot request/transaction status.
+ */
+if (! function_exists('depot_request_status_label')) {
+    function depot_request_status_label(string $status): string
+    {
+        return \App\Support\DepotUi::requestStatusLabel($status);
+    }
+}
+
+/**
+ * Localized label for a depot transaction type.
+ */
+if (! function_exists('depot_type_label')) {
+    function depot_type_label(string $type): string
+    {
+        return \App\Support\DepotUi::typeLabel($type);
+    }
+}
+
+/**
+ * Build a value => label map for <select> options.
+ *
+ * @param  iterable<string>  $values
+ * @param  'status'|'type'  $kind
+ * @return array<string, string>
+ */
+if (! function_exists('depot_label_options')) {
+    function depot_label_options(iterable $values, string $kind = 'status'): array
+    {
+        $options = [];
+
+        foreach ($values as $value) {
+            $options[$value] = $kind === 'type' ? depot_type_label($value) : depot_request_status_label($value);
+        }
+
+        return $options;
+    }
+}

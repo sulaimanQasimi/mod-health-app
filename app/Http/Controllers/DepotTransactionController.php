@@ -2,31 +2,48 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ManagesDepotAccess;
+use App\Http\Controllers\Concerns\ProvidesDepotFormData;
 use App\Http\Requests\Depot\StoreDepotToDepotRequest;
 use App\Http\Requests\Depot\StoreDepotToPharmacyRequest;
 use App\Http\Requests\Depot\StoreDepotTransactionRequest;
 use App\Models\Depot;
-use App\Models\DepotRequest;
 use App\Models\DepotTransaction;
 use App\Models\Medicine;
 use App\Models\Pharmacy;
 use App\Models\PharmacyFulfillment;
 use App\Models\Tool;
 use App\Models\Unit;
+use App\Models\User;
 use App\Services\DepotStockService;
+use App\Support\DepotRolePermissions;
+use Carbon\Carbon;
+use Hekmatinasser\Verta\Facades\Verta;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class DepotTransactionController extends Controller
 {
+    use ManagesDepotAccess;
+    use ProvidesDepotFormData;
+
+    private const FILTER_KEYS = [
+        'search', 'depot_id', 'pharmacy_id', 'medicine_id', 'tool_id', 'item_type', 'type', 'status', 'date_from', 'date_to', 'per_page',
+    ];
+
     public function __construct(
         private readonly DepotStockService $stockService
     ) {
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
+        $this->authorizeDepotPermission('depot.transaction.view');
+
         $query = DepotTransaction::with([
             'depot',
             'fromDepot',
@@ -39,73 +56,67 @@ class DepotTransactionController extends Controller
             'depotRequest',
         ]);
 
-        if ($request->filled('depot_id')) {
-            $query->forDepot((int) $request->depot_id);
-        }
-        if ($request->filled('pharmacy_id')) {
-            $query->where('pharmacy_id', $request->pharmacy_id);
-        }
-        if ($request->filled('medicine_id')) {
-            $query->where('medicine_id', $request->medicine_id);
-        }
-        if ($request->filled('tool_id')) {
-            $query->where('tool_id', $request->tool_id);
-        }
-        if ($request->filled('item_type')) {
-            if ($request->item_type === DepotTransaction::ITEM_MEDICINE) {
-                $query->whereNotNull('medicine_id');
-            } elseif ($request->item_type === DepotTransaction::ITEM_TOOL) {
-                $query->whereNotNull('tool_id');
-            }
-        }
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->filled('date_from')) {
-            $query->whereDate('transaction_date', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('transaction_date', '<=', $request->date_to);
-        }
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('transaction_number', 'like', "%{$search}%")
-                    ->orWhere('batch_number', 'like', "%{$search}%")
-                    ->orWhereHas('medicine', fn ($medicine) => $medicine->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('tool', fn ($tool) => $tool->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('fromDepot', fn ($depot) => $depot->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('toDepot', fn ($depot) => $depot->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('pharmacy', fn ($pharmacy) => $pharmacy->where('name', 'like', "%{$search}%"));
-            });
+        $this->applyTransactionFilters($query, $request);
+        $this->scopeTransactionsToUserDepots($query, $request->user());
+
+        $perPage = (int) $request->get('per_page', 15);
+        if (! in_array($perPage, [10, 15, 25, 50], true)) {
+            $perPage = 15;
         }
 
-        $transactions = $query->latest('transaction_date')->latest('id')->paginate(15)->appends($request->query());
+        $transactions = $query->latest('transaction_date')->latest('id')->paginate($perPage)->appends($request->query());
 
         return view('pages.depots.transactions.index', array_merge($this->formData(), [
             'transactions' => $transactions,
             'types' => DepotTransaction::types(),
             'statuses' => DepotTransaction::statuses(),
+            'typeOptions' => depot_label_options(DepotTransaction::types(), 'type'),
+            'statusOptions' => depot_label_options(DepotTransaction::statuses()),
+            'filters' => collect(self::FILTER_KEYS)
+                ->mapWithKeys(fn (string $key) => [$key => (string) $request->query($key, '')])
+                ->all(),
+            'permissions' => $this->depotTransactionPermissions(),
+            'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
         ]));
     }
 
-    public function create()
+    public function create(Request $request): View
     {
+        $this->authorizeDepotPermission('depot.transaction.create');
+
+        $hintedDepotId = $this->validatedTransactionDepotHint($request);
+
+        $depotPreview = $this->transactionDepotPreview($hintedDepotId, $request->user());
+
         return view('pages.depots.transactions.create', array_merge($this->formData(), [
-            'types' => [
+            'depot' => $depotPreview,
+            'defaults' => [
+                'type' => DepotTransaction::TYPE_ADJUSTMENT,
+            ],
+            'formData' => $this->depotFormOptions(),
+            'types' => $createTypes = [
                 DepotTransaction::TYPE_STOCK_IN,
                 DepotTransaction::TYPE_STOCK_OUT,
                 DepotTransaction::TYPE_ADJUSTMENT,
             ],
+            'typeOptions' => depot_label_options($createTypes, 'type'),
+            'selectedDepotId' => old('depot_id', $request->input('depot_id', $depotPreview['id'] ?? '')),
+            'permissions' => $this->depotTransactionPermissions(),
+            'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
         ]));
     }
 
-    public function store(StoreDepotTransactionRequest $request)
+    public function store(StoreDepotTransactionRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        $depotId = (int) $data['depot_id'];
+
+        $this->authorizeDepotPermission('depot.transaction.create', $depotId);
+        $this->authorizeDepotMembership($depotId);
+        session()->forget('depot_transaction_depot_hint');
+
         $itemType = ! empty($data['medicine_id'])
             ? DepotTransaction::ITEM_MEDICINE
             : DepotTransaction::ITEM_TOOL;
@@ -132,8 +143,10 @@ class DepotTransactionController extends Controller
             ->with('success', localize('global.depot.transaction_created_successfully.'));
     }
 
-    public function show(DepotTransaction $depotTransaction)
+    public function show(DepotTransaction $depotTransaction): View
     {
+        $this->authorizeDepotTransactionRecord($depotTransaction, DepotRolePermissions::ACTION_TRANSACTION_VIEW);
+
         $depotTransaction->load([
             'depot',
             'fromDepot',
@@ -148,16 +161,25 @@ class DepotTransactionController extends Controller
             'depotRequest',
         ]);
 
-        return view('pages.depots.transactions.show', compact('depotTransaction'));
+        $depotId = $depotTransaction->primaryDepotId();
+
+        return view('pages.depots.transactions.show', [
+            'depotTransaction' => $depotTransaction,
+            'permissions' => $this->depotTransactionPermissions($depotId),
+            'navUrls' => $this->depotNavUrls(),
+            'navPermissions' => $this->depotNavPermissions(),
+        ]);
     }
 
-    public function destroy(DepotTransaction $depotTransaction)
+    public function destroy(DepotTransaction $depotTransaction): RedirectResponse
     {
         return $this->cancel($depotTransaction);
     }
 
-    public function cancel(DepotTransaction $depotTransaction)
+    public function cancel(DepotTransaction $depotTransaction): RedirectResponse
     {
+        $this->authorizeDepotTransactionRecord($depotTransaction, DepotRolePermissions::ACTION_TRANSACTION_CREATE);
+
         if ($depotTransaction->status === DepotTransaction::STATUS_CANCELLED) {
             return redirect()->back()->with('error', localize('global.depot.transaction_already_cancelled.'));
         }
@@ -257,7 +279,7 @@ class DepotTransactionController extends Controller
             ->with('success', localize('global.depot.depot_to_pharmacy_completed_successfully.'));
     }
 
-    public function stock(Request $request)
+    public function stock(Request $request): JsonResponse
     {
         $request->validate([
             'depot_id' => ['required', 'exists:depots,id'],
@@ -265,6 +287,8 @@ class DepotTransactionController extends Controller
             'medicine_id' => ['nullable', 'exists:medicines,id'],
             'tool_id' => ['nullable', 'exists:tools,id'],
         ]);
+
+        $this->authorizeDepotStockView((int) $request->depot_id);
 
         $itemType = $request->get('item_type');
         if (! $itemType) {
@@ -277,6 +301,7 @@ class DepotTransactionController extends Controller
             $request->validate(['tool_id' => ['required', 'exists:tools,id']]);
 
             return response()->json([
+                'success' => true,
                 'available_stock' => $this->stockService->availableToolStock((int) $request->depot_id, (int) $request->tool_id),
                 'item_type' => DepotTransaction::ITEM_TOOL,
             ]);
@@ -285,9 +310,102 @@ class DepotTransactionController extends Controller
         $request->validate(['medicine_id' => ['required', 'exists:medicines,id']]);
 
         return response()->json([
+            'success' => true,
             'available_stock' => $this->stockService->availableMedicineStock((int) $request->depot_id, (int) $request->medicine_id),
             'item_type' => DepotTransaction::ITEM_MEDICINE,
         ]);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<DepotTransaction>  $query
+     */
+    private function applyTransactionFilters($query, Request $request): void
+    {
+        if ($request->filled('depot_id')) {
+            $query->forDepot((int) $request->depot_id);
+        }
+        if ($request->filled('pharmacy_id')) {
+            $query->where('pharmacy_id', $request->pharmacy_id);
+        }
+        if ($request->filled('medicine_id')) {
+            $query->where('medicine_id', $request->medicine_id);
+        }
+        if ($request->filled('tool_id')) {
+            $query->where('tool_id', $request->tool_id);
+        }
+        if ($request->filled('item_type')) {
+            if ($request->item_type === DepotTransaction::ITEM_MEDICINE) {
+                $query->whereNotNull('medicine_id');
+            } elseif ($request->item_type === DepotTransaction::ITEM_TOOL) {
+                $query->whereNotNull('tool_id');
+            }
+        }
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('date_from') && ($from = $this->parseFilterDate((string) $request->date_from))) {
+            $query->whereDate('transaction_date', '>=', $from);
+        }
+        if ($request->filled('date_to') && ($to = $this->parseFilterDate((string) $request->date_to))) {
+            $query->whereDate('transaction_date', '<=', $to);
+        }
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('transaction_number', 'like', "%{$search}%")
+                    ->orWhere('batch_number', 'like', "%{$search}%")
+                    ->orWhereHas('medicine', fn ($medicine) => $medicine->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('tool', fn ($tool) => $tool->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('fromDepot', fn ($depot) => $depot->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('toDepot', fn ($depot) => $depot->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('pharmacy', fn ($pharmacy) => $pharmacy->where('name', 'like', "%{$search}%"));
+            });
+        }
+    }
+
+    /**
+     * Accepts Jalali (Verta) or Gregorian input and returns a Gregorian date.
+     */
+    private function parseFilterDate(string $value): ?Carbon
+    {
+        $value = trim($value);
+
+        try {
+            if (preg_match('/^(19|20)\d{2}[-\/]/', $value)) {
+                return Carbon::parse($value);
+            }
+
+            return Carbon::instance(Verta::parse($value)->datetime());
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<DepotTransaction>  $query
+     */
+    private function scopeTransactionsToUserDepots($query, ?User $user = null): void
+    {
+        if ($this->isDepotSystemAdmin($user)) {
+            return;
+        }
+
+        $allowedIds = $this->allowedDepotIds($user);
+
+        if (empty($allowedIds)) {
+            $query->whereRaw('1 = 0');
+
+            return;
+        }
+
+        $query->where(function ($scoped) use ($allowedIds) {
+            $scoped->whereIn('depot_id', $allowedIds)
+                ->orWhereIn('from_depot_id', $allowedIds)
+                ->orWhereIn('to_depot_id', $allowedIds);
+        });
     }
 
     private function formData(): array

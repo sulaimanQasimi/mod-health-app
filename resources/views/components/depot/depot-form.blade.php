@@ -1,12 +1,3 @@
-@php
-    $selectedUsers = collect(old('user_ids', $depot ? $depot->activeUsers->pluck('id')->all() : []))->values();
-    $selectedRoles = collect(old('roles', $depot ? $depot->activeUsers->pluck('pivot.role')->all() : []))->values();
-    if ($selectedUsers->isEmpty()) {
-        $selectedUsers = collect(['']);
-        $selectedRoles = collect(['staff']);
-    }
-@endphp
-
 <div class="row g-3">
     <div class="col-md-4">
         <label for="name" class="form-label">{{ localize('global.depot.name') }}</label>
@@ -100,7 +91,7 @@
                         </div>
                         <div class="col-md-3">
                             <select class="form-select depot-role-select" name="roles[]">
-                                @foreach(['staff', 'manager', 'procurement', 'viewer'] as $role)
+                                @foreach($roleOptions as $role)
                                     <option value="{{ $role }}" @selected(($selectedRoles[$index] ?? 'staff') === $role)>{{ ucfirst($role) }}</option>
                                 @endforeach
                             </select>

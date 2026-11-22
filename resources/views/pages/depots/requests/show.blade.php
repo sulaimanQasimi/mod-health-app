@@ -2,6 +2,9 @@
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
+    @if(($viewContext ?? 'depot') !== 'pharmacy')
+        <x-depot.nav-tabs active="requests" :urls="$navUrls ?? []" :permissions="$navPermissions ?? null" />
+    @endif
     @if (Session::has('success') || Session::has('error'))
         @include('components.toast')
     @endif
@@ -20,7 +23,7 @@
             <h5 class="mb-0">{{ $depotRequest->request_number }}</h5>
             <div class="d-flex gap-2">
                 <a href="{{ route('depots.requests.print', $depotRequest) }}" class="btn btn-outline-primary btn-sm" target="_blank">
-                    <i class="bx bx-printer"></i> {{ localize('global.print') ?? 'Print' }}
+                    <i class="bx bx-printer"></i> {{ localize('global.depot.print_form_14') }}
                 </a>
                 <a href="{{ route('depots.requests.index') }}" class="btn btn-outline-secondary btn-sm">{{ localize('global.back') }}</a>
             </div>
@@ -29,7 +32,7 @@
             <div class="row g-3">
                 <div class="col-md-3">
                     <div class="text-muted small">{{ localize('global.status') }}</div>
-                    <span class="badge bg-primary">{{ ucfirst($depotRequest->status) }}</span>
+                    <x-depot.status-badge :status="$depotRequest->status" />
                 </div>
                 <div class="col-md-3">
                     <div class="text-muted small">{{ localize('global.depot.destination_type') ?? 'Destination' }}</div>
@@ -55,12 +58,6 @@
                     <div class="text-muted small">{{ localize('global.requested_by') ?? 'Requested By' }}</div>
                     {{ trim(($depotRequest->requestedBy->name ?? '') . ' ' . ($depotRequest->requestedBy->last_name ?? '')) ?: '-' }}
                 </div>
-                @if($context['branch_name'] ?? null)
-                <div class="col-md-3">
-                    <div class="text-muted small">{{ localize('global.branch') ?? 'Branch' }}</div>
-                    {{ $context['branch_name'] }}
-                </div>
-                @endif
                 @if($depotRequest->rejection_reason)
                 <div class="col-12">
                     <div class="text-muted small">{{ localize('global.rejection_reason') ?? 'Rejection Reason' }}</div>
@@ -74,6 +71,24 @@
                 </div>
                 @endif
             </div>
+
+            <div class="mt-4">
+                <x-depot.workflow-stepper
+                    :steps="$workflowSteps ?? []"
+                    :current-rank="(int) ($currentRank ?? $depotRequest->workflowRank())"
+                    :status="$depotRequest->status"
+                />
+            </div>
+
+            <div class="mt-3">
+                <x-depot.request-context :context="$context ?? []" />
+            </div>
+
+            @if($awaitingSourceProcessing && ! $canProcessRequest && $depotRequest->sourceDepot?->name)
+                <div class="alert alert-info mt-3 mb-0">
+                    {{ str_replace(':depot', $depotRequest->sourceDepot->name, localize('global.depot.request_processing_by_source')) }}
+                </div>
+            @endif
 
             <div class="d-flex flex-wrap gap-2 mt-4">
                 @if($permissions['edit'] ?? false)
@@ -157,7 +172,15 @@
             <ul class="list-group">
                 @forelse($depotRequest->statusLogs as $log)
                     <li class="list-group-item d-flex justify-content-between">
-                        <span>{{ ucfirst($log->from_status ?? 'new') }} → {{ ucfirst($log->to_status) }} @if($log->notes) — {{ $log->notes }} @endif</span>
+                        <span>
+                            @if($log->from_status)
+                                <x-depot.status-badge :status="$log->from_status" :badge="false" />
+                            @else
+                                {{ localize('global.new') }}
+                            @endif
+                            → <x-depot.status-badge :status="$log->to_status" :badge="false" />
+                            @if($log->notes) — {{ $log->notes }} @endif
+                        </span>
                         <span class="text-muted">{{ $log->user?->name ?? '-' }} · {{ $log->created_at?->format('Y-m-d H:i') }}</span>
                     </li>
                 @empty

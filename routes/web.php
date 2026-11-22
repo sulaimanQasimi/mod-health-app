@@ -1473,7 +1473,7 @@ Route::prefix('depots')->middleware(['auth'])->name('depots.')->group(function (
     Route::get('/edit/{depot}', [DepotController::class, 'edit'])->middleware('permission:depot.update')->name('edit');
     Route::put('/update/{depot}', [DepotController::class, 'update'])->middleware('permission:depot.update')->name('update');
     Route::delete('/destroy/{depot}', [DepotController::class, 'destroy'])->middleware('permission:depot.delete')->name('destroy');
-    Route::get('{depot}/stock', [DepotController::class, 'stock'])->middleware('permission:depot.view')->name('stock.index');
+    Route::get('{depot}/stock', [DepotController::class, 'stock'])->middleware('permission:depot.view')->name('stock');
 
     Route::get('reports', [DepotReportController::class, 'index'])
         ->middleware('permission:depot.report.export')

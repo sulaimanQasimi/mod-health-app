@@ -1,12 +1,12 @@
 @extends('layouts.master')
 
 @section('content')
-<div class="content-wrapper">
+<div class="container-xxl flex-grow-1 container-p-y">
     @if (Session::has('success') || Session::has('error'))
         @include('components.toast')
     @endif
     @if ($errors->any())
-        <div class="alert alert-danger m-3">
+        <div class="alert alert-danger">
             <ul class="mb-0">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -14,38 +14,43 @@
             </ul>
         </div>
     @endif
-    <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="row mb-4">
-            <div class="col-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{{ route('home') }}">{{ localize('global.dashboard') }}</a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="{{ route('depots.requests.index') }}">{{ localize('global.depot.requests') }}</a>
-                        </li>
-                        <li class="breadcrumb-item active">{{ localize('global.depot.new_request') }}</li>
-                    </ol>
-                </nav>
-                <h2 class="h4 mb-0">{{ localize('global.depot.new_request') }}</h2>
+    @if(($viewContext ?? 'depot') !== 'pharmacy')
+        <x-depot.nav-tabs active="requests" :urls="$navUrls ?? []" :permissions="$navPermissions ?? null" />
+    @endif
+
+    <div class="card mb-3">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <h5 class="mb-1">{{ localize('global.depot.new_request') }}</h5>
+                <small class="text-muted">{{ localize('global.depot.requests') }}</small>
             </div>
+            <a href="{{ route('depots.requests.index') }}" class="btn btn-outline-secondary">
+                <i class="bx bx-arrow-back me-1"></i>{{ localize('global.back') }}
+            </a>
         </div>
-        <div class="card">
-            <div class="card-header d-flex justify-content-between">
-                <div class="fw-bold">{{ localize('global.depot.new_request') }}</div>
-                <a href="{{ route('depots.requests.index') }}" class="btn btn-outline-secondary btn-sm">{{ localize('global.back') }}</a>
-            </div>
-            <div class="card-body">
-                <form action="{{ route('depots.requests.store') }}" method="POST">
-                    @csrf
-                    @include('pages.depots.requests.partials.form')
-                    <div class="d-flex justify-content-end gap-2 mt-3">
-                        <button type="submit" name="submit_now" value="0" class="btn btn-outline-primary">{{ localize('global.save_draft') ?? 'Save Draft' }}</button>
-                        <button type="submit" name="submit_now" value="1" class="btn btn-primary">{{ localize('global.save_and_submit') ?? 'Save & Submit' }}</button>
-                    </div>
-                </form>
-            </div>
+        <div class="card-body">
+            <form action="{{ route('depots.requests.store') }}" method="POST">
+                @csrf
+                <x-depot.request-form
+                    :defaults="$defaults"
+                    :depots="$depots"
+                    :pharmacies="$pharmacies"
+                    :medicines="$medicines"
+                    :tools="$tools"
+                    :units="$units"
+                    :form-items="$formItems"
+                    :source-depot-options="$sourceDepotOptions"
+                    :view-context="$viewContext"
+                    :lock-requesting-depot="$lockRequestingDepot"
+                    :depot-request="$depotRequest"
+                    :form-data="$formData"
+                    :user-pharmacies="$userPharmacies ?? null"
+                />
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    <button type="submit" name="submit_now" value="0" class="btn btn-outline-secondary">{{ localize('global.save_draft') ?? 'Save Draft' }}</button>
+                    <button type="submit" name="submit_now" value="1" class="btn btn-primary">{{ localize('global.save_and_submit') ?? 'Save & Submit' }}</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

@@ -1,21 +1,3 @@
-@php
-    $defaults = $defaults ?? [
-        'destination_type' => 'depot',
-        'requesting_depot_id' => '',
-        'pharmacy_id' => '',
-        'source_depot_id' => '',
-    ];
-    $destinationType = old('destination_type', $defaults['destination_type'] ?? 'depot');
-    $isPharmacyDestination = $destinationType === 'pharmacy';
-    $viewContext = $viewContext ?? 'depot';
-    $lockRequestingDepot = $lockRequestingDepot ?? false;
-    $formItems = $formItems ?? [['medicine_id' => '', 'tool_id' => '', 'unit_id' => '', 'quantity' => 1, 'batch_number' => '']];
-    $pharmacyChoices = ($viewContext === 'pharmacy' && isset($userPharmacies) && count($userPharmacies))
-        ? $userPharmacies
-        : ($pharmacies ?? collect());
-    $notesValue = old('notes', $depotRequest->notes ?? '');
-@endphp
-
 <div class="row g-3">
     <div class="col-md-4">
         <label class="form-label" for="destination_type">{{ localize('global.depot.destination_type') ?? 'Destination Type' }}</label>
@@ -57,18 +39,15 @@
         <label class="form-label" for="source_depot_id">{{ localize('global.depot.source_depot') }}</label>
         <select name="source_depot_id" id="source_depot_id" class="form-select select2 @error('source_depot_id') is-invalid @enderror">
             <option value="">{{ localize('global.select') ?? 'Select' }}</option>
-            @php $sourceOptions = $sourceDepotOptions ?? []; @endphp
-            @if(count($sourceOptions))
-                @foreach($sourceOptions as $option)
-                    <option value="{{ $option['id'] }}" @selected(old('source_depot_id', $defaults['source_depot_id'] ?? '') == $option['id'])>{{ $option['name'] }}</option>
-                @endforeach
-            @else
-                @foreach($depots as $depot)
-                    <option value="{{ $depot->id }}" @selected(old('source_depot_id', $defaults['source_depot_id'] ?? '') == $depot->id)>{{ $depot->name }}</option>
-                @endforeach
-            @endif
+            @foreach($sourceOptions as $option)
+                <option value="{{ $option['id'] }}" @selected(old('source_depot_id', $defaults['source_depot_id'] ?? '') == $option['id'])>{{ $option['name'] }}</option>
+            @endforeach
         </select>
         @error('source_depot_id')<small class="text-danger">{{ $message }}</small>@enderror
+    </div>
+
+    <div class="col-12" id="depot-request-context">
+        <x-depot.request-context :context="$initialContext" />
     </div>
 
     <div class="col-12">
@@ -85,6 +64,7 @@
                         <th style="min-width:180px">{{ localize('global.medicine') }}</th>
                         <th style="min-width:180px" class="tool-col">{{ localize('global.depot.tool') }}</th>
                         <th style="min-width:100px">{{ localize('global.quantity') }}</th>
+                        <th style="min-width:110px" class="text-center">{{ localize('global.available_stock') }}</th>
                         <th style="min-width:120px">{{ localize('global.unit') }}</th>
                         <th style="min-width:120px">{{ localize('global.batch_number') }}</th>
                         <th style="width:50px"></th>
@@ -105,13 +85,14 @@
                                 <select name="items[{{ $index }}][tool_id]" class="form-select select2 item-tool">
                                     <option value="">{{ localize('global.select') ?? 'Select' }}</option>
                                     @foreach($tools as $tool)
-                                        <option value="{{ $tool->id }}" @selected(($item['tool_id'] ?? '') == $tool->id)>{{ method_exists($tool, 'displayName') ? $tool->displayName() : $tool->name }}</option>
+                                        <option value="{{ $tool->id }}" @selected(($item['tool_id'] ?? '') == $tool->id)>{{ $tool->displayName() }}</option>
                                     @endforeach
                                 </select>
                             </td>
                             <td>
-                                <input type="number" min="1" name="items[{{ $index }}][quantity]" value="{{ $item['quantity'] ?? 1 }}" class="form-control" required>
+                                <input type="number" min="1" name="items[{{ $index }}][quantity]" value="{{ $item['quantity'] ?? 1 }}" class="form-control item-quantity" required>
                             </td>
+                            <td class="text-center item-available"><span class="available-value text-muted">—</span></td>
                             <td>
                                 <select name="items[{{ $index }}][unit_id]" class="form-select select2">
                                     <option value="">{{ localize('global.select_unit') }}</option>
@@ -155,13 +136,14 @@
             <select name="items[__INDEX__][tool_id]" class="form-select item-tool">
                 <option value="">{{ localize('global.select') ?? 'Select' }}</option>
                 @foreach($tools as $tool)
-                    <option value="{{ $tool->id }}">{{ method_exists($tool, 'displayName') ? $tool->displayName() : $tool->name }}</option>
+                    <option value="{{ $tool->id }}">{{ $tool->displayName() }}</option>
                 @endforeach
             </select>
         </td>
         <td>
-            <input type="number" min="1" name="items[__INDEX__][quantity]" value="1" class="form-control" required>
+            <input type="number" min="1" name="items[__INDEX__][quantity]" value="1" class="form-control item-quantity" required>
         </td>
+        <td class="text-center item-available"><span class="available-value text-muted">—</span></td>
         <td>
             <select name="items[__INDEX__][unit_id]" class="form-select">
                 <option value="">{{ localize('global.select_unit') }}</option>
@@ -187,10 +169,126 @@ document.addEventListener('DOMContentLoaded', function () {
     const requestingDepot = document.getElementById('requesting_depot_id');
     const sourceDepot = document.getElementById('source_depot_id');
     const pharmacySelect = document.getElementById('pharmacy_id');
-    const parentMap = @json($depots->mapWithKeys(fn($d) => [$d->id => $d->parent_depot_id])->all());
+    const parentMap = @json($parentMap);
     const tbody = document.querySelector('#request-items-table tbody');
     const template = document.getElementById('request-item-template');
-    let nextIndex = {{ count($formItems) }};
+    let nextIndex = {{ $nextIndex }};
+    const stockUrl = @json(route('depots.stock.available'));
+    const contextDepots = @json($contextDepots);
+    const contextPharmacies = @json($contextPharmacyNames);
+    const contextUserName = @json($contextUserName);
+    const contextRoot = document.getElementById('depot-request-context');
+    const stockCache = {};
+
+    // ---- Request context panel (port of resolveDepotRequestContext) ----
+    function refreshContext() {
+        if (!contextRoot) return;
+        const isPharmacy = (destination?.value || 'depot') === 'pharmacy';
+        let depot = null;
+        let label = null;
+        if (isPharmacy) {
+            const pharmacyId = pharmacySelect?.value;
+            depot = contextDepots.find(d => String(d.pharmacy_id || '') === String(pharmacyId || '')) || null;
+            label = (pharmacyId && contextPharmacies[pharmacyId]) || depot?.name || null;
+        } else {
+            const depotId = requestingDepot?.value
+                || document.querySelector('input[type="hidden"][name="requesting_depot_id"]')?.value;
+            depot = contextDepots.find(d => String(d.id) === String(depotId || '')) || null;
+            label = depot?.name || null;
+        }
+        const values = [depot?.branch_name, depot?.department_name, contextUserName, label];
+        contextRoot.querySelectorAll('dd').forEach((dd, i) => {
+            dd.textContent = values[i] || '—';
+        });
+    }
+
+    // ---- Available stock per line (port of useAvailableStock) ----
+    function setAvailable(row, value, loading) {
+        const cell = row.querySelector('.available-value');
+        if (!cell) return;
+        row.dataset.available = value === null || value === undefined ? '' : String(value);
+        if (loading) {
+            cell.textContent = '…';
+            cell.className = 'available-value text-muted';
+            return;
+        }
+        if (value === null || value === undefined) {
+            cell.textContent = '—';
+            cell.className = 'available-value text-muted';
+            return;
+        }
+        const qty = parseInt(row.querySelector('.item-quantity')?.value || '0', 10);
+        cell.textContent = Number(value).toLocaleString();
+        cell.className = 'available-value fw-semibold ' + (qty > value ? 'text-danger' : 'text-success');
+    }
+
+    async function loadAvailable(row) {
+        const depotId = sourceDepot?.value;
+        const medicineId = row.querySelector('.item-medicine')?.value;
+        const toolId = row.querySelector('.item-tool')?.value;
+        const kind = toolId ? 'tool' : 'medicine';
+        const itemId = toolId || medicineId;
+
+        if (!depotId || !itemId) {
+            setAvailable(row, null);
+            return;
+        }
+
+        const params = new URLSearchParams({ depot_id: depotId, item_type: kind });
+        params.set(kind === 'tool' ? 'tool_id' : 'medicine_id', itemId);
+        const key = params.toString();
+
+        if (Object.prototype.hasOwnProperty.call(stockCache, key)) {
+            setAvailable(row, stockCache[key]);
+            return;
+        }
+
+        setAvailable(row, null, true);
+        try {
+            const response = await fetch(stockUrl + '?' + key, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
+            });
+            if (!response.ok) {
+                setAvailable(row, null);
+                return;
+            }
+            const payload = await response.json();
+            const available = payload.available_stock ?? null;
+            stockCache[key] = available;
+            // Ignore stale responses if the selection changed meanwhile.
+            const currentItem = row.querySelector('.item-tool')?.value || row.querySelector('.item-medicine')?.value;
+            if (sourceDepot?.value === depotId && currentItem === itemId) {
+                setAvailable(row, available);
+            }
+        } catch (e) {
+            setAvailable(row, null);
+        }
+    }
+
+    function onChange(el, handler) {
+        if (!el) return;
+        if (window.jQuery) {
+            $(el).on('change', handler);
+        } else {
+            el.addEventListener('change', handler);
+        }
+    }
+
+    function bindAvailability(row) {
+        const reload = () => loadAvailable(row);
+        onChange(row.querySelector('.item-medicine'), reload);
+        onChange(row.querySelector('.item-tool'), reload);
+        row.querySelector('.item-quantity')?.addEventListener('input', function () {
+            const raw = row.dataset.available;
+            setAvailable(row, raw === '' || raw === undefined ? null : parseInt(raw, 10));
+        });
+        reload();
+    }
+
+    function reloadAllAvailable() {
+        tbody.querySelectorAll('.request-item-row').forEach(loadAvailable);
+    }
 
     function syncDestinationUi() {
         const isPharmacy = (destination?.value || 'depot') === 'pharmacy';
@@ -249,12 +347,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     destination?.addEventListener('change', syncDestinationUi);
+    onChange(destination, refreshContext);
+    onChange(requestingDepot, refreshContext);
+    onChange(pharmacySelect, refreshContext);
+    onChange(sourceDepot, reloadAllAvailable);
 
     requestingDepot?.addEventListener('change', function () {
         const parentId = parentMap[this.value];
         if (parentId && sourceDepot) {
             sourceDepot.value = parentId;
             if (window.jQuery) $('#source_depot_id').val(parentId).trigger('change.select2');
+            reloadAllAvailable();
         }
     });
 
@@ -266,10 +369,13 @@ document.addEventListener('DOMContentLoaded', function () {
         tbody.appendChild(row);
         bindRow(row);
         initSelect2(row);
+        bindAvailability(row);
         syncDestinationUi();
     });
 
     tbody.querySelectorAll('.request-item-row').forEach(bindRow);
+    tbody.querySelectorAll('.request-item-row').forEach(bindAvailability);
     syncDestinationUi();
+    refreshContext();
 });
 </script>

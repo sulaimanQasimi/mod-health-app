@@ -132,16 +132,19 @@ class DepotController extends Controller
             return $depot;
         });
 
+        $message = localize('global.depot.depot_created_successfully.');
+        session()->flash('success', $message);
+
         if ($request->ajax()) {
             return response()->json([
-                'message' => localize('global.depot.depot_created_successfully.'),
+                'message' => $message,
                 'redirect' => route('depots.show', $depot),
             ]);
         }
 
         return redirect()
             ->route('depots.show', $depot)
-            ->with('success', localize('global.depot.depot_created_successfully.'));
+            ->with('success', $message);
     }
 
     public function show(Depot $depot): View
@@ -414,16 +417,19 @@ class DepotController extends Controller
             $depot->syncUsers($data['user_ids'] ?? [], $data['roles'] ?? []);
         });
 
+        $message = localize('global.depot.depot_updated_successfully.');
+        session()->flash('success', $message);
+
         if ($request->ajax()) {
             return response()->json([
-                'message' => localize('global.depot.depot_updated_successfully.'),
+                'message' => $message,
                 'redirect' => route('depots.show', $depot),
             ]);
         }
 
         return redirect()
             ->route('depots.show', $depot)
-            ->with('success', localize('global.depot.depot_updated_successfully.'));
+            ->with('success', $message);
     }
 
     public function destroy(Depot $depot): RedirectResponse

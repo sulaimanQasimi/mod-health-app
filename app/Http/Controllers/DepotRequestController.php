@@ -345,7 +345,7 @@ class DepotRequestController extends Controller
         try {
             $this->requestService->submit($depotRequest);
         } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors());
+            return $this->redirectWithValidationToast($e);
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
@@ -359,7 +359,7 @@ class DepotRequestController extends Controller
         try {
             $this->requestService->approve($depotRequest);
         } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors());
+            return $this->redirectWithValidationToast($e);
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
@@ -377,7 +377,7 @@ class DepotRequestController extends Controller
         try {
             $this->requestService->reject($depotRequest, $data['rejection_reason']);
         } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors());
+            return $this->redirectWithValidationToast($e);
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
@@ -391,7 +391,7 @@ class DepotRequestController extends Controller
         try {
             $this->requestService->fulfill($depotRequest);
         } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors());
+            return $this->redirectWithValidationToast($e);
         }
 
         return redirect()->route('depots.requests.show', $depotRequest->fresh())
@@ -422,11 +422,20 @@ class DepotRequestController extends Controller
         try {
             $this->requestService->cancel($depotRequest);
         } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors());
+            return $this->redirectWithValidationToast($e);
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
             ->with('success', localize('global.depot.request_cancelled.'));
+    }
+
+    private function redirectWithValidationToast(ValidationException $e): RedirectResponse
+    {
+        $message = collect($e->errors())->flatten()->filter()->implode(' ');
+
+        return redirect()->back()
+            ->withErrors($e->errors())
+            ->with('error', $message !== '' ? $message : localize('global.notification_error'));
     }
 
     private function authorizeNewDepotRequestData(array $data): void

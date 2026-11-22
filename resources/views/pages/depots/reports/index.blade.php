@@ -2,6 +2,10 @@
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
+    @if (Session::has('success') || Session::has('error'))
+        @include('components.toast')
+    @endif
+
     <x-depot.nav-tabs active="reports" :urls="$navUrls ?? []" :permissions="$navPermissions ?? null" />
 
     <div class="row g-3 mb-3">

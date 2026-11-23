@@ -41,7 +41,7 @@
                                     value="{{ old('from', request('from')) }}"
                                     placeholder="{{ localize('global.from') }}"
                                     class="form-control datepicker_dari" />
-                                <span class="input-group-text bg-light">
+                                <span class="input-group-text">
                                     <i class="bx bx-right-arrow-alt"></i>
                                 </span>
                                 <input autocomplete="off" type="text" name="to"
@@ -162,7 +162,7 @@
                             <label class="form-label fw-semibold">{{ localize('global.completed_at') }}</label>
                             <div class="input-group input-daterange">
                                 <input autocomplete="off" type="text" name="completed_at_from" value="{{ request('completed_at_from') }}" placeholder="{{ localize('global.from') }}" class="form-control datepicker_dari" />
-                                <span class="input-group-text bg-light">...</span>
+                                <span class="input-group-text">...</span>
                                 <input autocomplete="off" type="text" name="completed_at_to" value="{{ request('completed_at_to') }}" placeholder="{{ localize('global.to') }}" class="form-control datepicker_dari" />
                             </div>
                         </div>
@@ -179,7 +179,7 @@
                             <label class="form-label fw-semibold">{{ localize('global.assigned_at') }}</label>
                             <div class="input-group input-daterange">
                                 <input autocomplete="off" type="text" name="assigned_at_from" value="{{ request('assigned_at_from') }}" placeholder="{{ localize('global.from') }}" class="form-control datepicker_dari" />
-                                <span class="input-group-text bg-light">...</span>
+                                <span class="input-group-text">...</span>
                                 <input autocomplete="off" type="text" name="assigned_at_to" value="{{ request('assigned_at_to') }}" placeholder="{{ localize('global.to') }}" class="form-control datepicker_dari" />
                             </div>
                         </div>
@@ -305,7 +305,7 @@
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0 table-bordered" id="print_excel_table">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th class="text-center" style="width: 50px;">#</th>
                                     <th>{{ localize('global.ref_no') }}</th>
@@ -380,7 +380,7 @@
                     </div>
 
                     @if(is_a($items, 'Illuminate\Pagination\LengthAwarePaginator') && $items->hasPages())
-                        <div class="card-footer border-top bg-light">
+                        <div class="card-footer border-top">
                             <div class="d-flex justify-content-between align-items-center flex-wrap">
                                 <div class="text-muted small mb-2 mb-md-0">
                                     <i class="bx bx-info-circle me-1"></i>
@@ -393,7 +393,7 @@
                             </div>
                         </div>
                     @elseif(is_a($items, 'Illuminate\Pagination\LengthAwarePaginator'))
-                        <div class="card-footer border-top bg-light">
+                        <div class="card-footer border-top">
                             <div class="text-muted small">
                                 <i class="bx bx-info-circle me-1"></i>
                                 {{ localize('global.showing') }} {{ $items->total() }} {{ localize('global.results') }}
@@ -479,6 +479,48 @@
 .table-hover tbody tr:hover { background-color: rgba(105, 108, 255, 0.05); }
 .table thead th { font-weight: 600; font-size: 0.75rem; padding: 0.6rem; }
 .table tbody td { padding: 0.5rem; vertical-align: middle; font-size: 0.875rem; }
+
+/* Dark mode (app uses .dark-style) */
+.dark-style .bg-label-primary,
+.theme-dark .bg-label-primary,
+html[data-theme="dark"] .bg-label-primary,
+[data-bs-theme="dark"] .bg-label-primary {
+    background: rgba(105, 108, 255, 0.15);
+    border-color: rgba(105, 108, 255, 0.25);
+}
+
+.dark-style .bg-label-info,
+.theme-dark .bg-label-info,
+html[data-theme="dark"] .bg-label-info,
+[data-bs-theme="dark"] .bg-label-info {
+    background: rgba(3, 195, 236, 0.15);
+    border-color: rgba(3, 195, 236, 0.25);
+}
+
+.dark-style .bg-label-secondary,
+.theme-dark .bg-label-secondary,
+html[data-theme="dark"] .bg-label-secondary,
+[data-bs-theme="dark"] .bg-label-secondary {
+    background-color: rgba(133, 146, 163, 0.2);
+    color: #a1acb8;
+}
+
+.dark-style .table thead th,
+.theme-dark .table thead th,
+html[data-theme="dark"] .table thead th,
+[data-bs-theme="dark"] .table thead th {
+    background-color: #32334a;
+    color: #cbcbe2;
+    border-color: #444564;
+}
+
+.dark-style .table-hover tbody tr:hover,
+.theme-dark .table-hover tbody tr:hover,
+html[data-theme="dark"] .table-hover tbody tr:hover,
+[data-bs-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(105, 108, 255, 0.12);
+}
+
 @media print {
     .card-header, .btn, .card-footer, .card.mb-4 { display: none !important; }
     .card { border: none !important; box-shadow: none !important; }

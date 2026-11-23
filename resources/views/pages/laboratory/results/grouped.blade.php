@@ -443,26 +443,6 @@
         font-display: swap;
     }
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'ModFont', 'Arial', sans-serif;
-        font-size: 12px;
-        line-height: 1.4;
-        color: #333;
-        margin: 0;
-        padding: 20px;
-        background: white;
-        direction: rtl;
-        text-align: right;
-    }
-
-
-
     /* Status and Priority Badges */
     .status-badge, .priority-badge {
         padding: 4px 8px;
@@ -516,10 +496,11 @@
 
     /* Test Card Styles */
     .test-card {
-        border: 1px solid #dee2e6;
+        border: 1px solid #d9dee3;
         border-radius: 0.5rem;
         transition: all 0.2s ease-in-out;
         box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        background-color: #fff;
     }
 
     .test-card:hover {
@@ -538,7 +519,7 @@
 
     .test-card h6 {
         font-weight: 600;
-        color: #212529;
+        color: #566a7f;
     }
 
     .test-card .row {
@@ -546,30 +527,32 @@
     }
 
     /* Accordion Styles */
-    .accordion-button {
+    .accordion .accordion-button {
         background-color: #f8f9fa;
-        border: 1px solid #000;
+        border: 1px solid #d9dee3;
         font-weight: 500;
-        color: #000;
+        color: #566a7f;
     }
 
-    .accordion-button:not(.collapsed) {
-        background-color: #e7f3ff;
-        border-color: #000;
-        color: #000;
+    .accordion .accordion-button:not(.collapsed) {
+        background-color: rgba(105, 108, 255, 0.08);
+        border-color: #d9dee3;
+        color: #566a7f;
+        box-shadow: none;
     }
 
-    .accordion-button:focus {
-        box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.25);
+    .accordion .accordion-button:focus {
+        box-shadow: 0 0 0 0.25rem rgba(105, 108, 255, 0.25);
     }
 
-    .accordion-item {
-        border: 1px solid #000;
+    .accordion .accordion-item {
+        border: 1px solid #d9dee3;
         border-radius: 0.375rem;
         margin-bottom: 0.5rem;
+        background-color: #fff;
     }
 
-    .accordion-body {
+    .accordion .accordion-body {
         background-color: transparent;
     }
 
@@ -586,53 +569,9 @@
         margin: 0;
     }
 
-    /* Statistics Cards */
-    .card {
-        border: 1px solid #000;
-    }
-
-    .card-header {
-        background-color: #000;
-        color: white;
-        border-bottom: 1px solid #000;
-    }
-
     /* Filter Section */
     .card.shadow-sm {
-        border: 1px solid #000;
         border-radius: 0.75rem;
-    }
-
-    .card-header {
-        background-color: #f8f9fa;
-        color: #000;
-    }
-
-    .form-control, .form-select {
-        border: 1px solid #000;
-        border-radius: 0.375rem;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: #000;
-        box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
-    }
-
-    .btn {
-        border: 1px solid #000;
-        border-radius: 0.375rem;
-        font-weight: 500;
-    }
-
-    .btn-primary {
-        background-color: #000;
-        border-color: #000;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background-color: #333;
-        border-color: #333;
     }
 
     /* Persian Date Picker Styles */
@@ -655,8 +594,8 @@
     .pagination-simple .page-link {
         border-radius: 0.375rem;
         margin: 0 2px;
-        border: 1px solid #000;
-        color: #000;
+        border: 1px solid #d9dee3;
+        color: #566a7f;
         background-color: #fff;
         transition: all 0.2s ease;
         min-width: 38px;
@@ -667,21 +606,174 @@
 
     .pagination-simple .page-link:hover {
         background-color: #f8f9fa;
-        border-color: #000;
-        color: #000;
+        border-color: #d9dee3;
+        color: #566a7f;
     }
 
     .pagination-simple .page-item.active .page-link {
-        background-color: #000;
-        border-color: #000;
-        color: white;
+        background-color: #696cff;
+        border-color: #696cff;
+        color: #fff;
     }
 
     .pagination-simple .page-item.disabled .page-link {
-        color: #6c757d;
+        color: #a1acb8;
         background-color: #fff;
-        border-color: #dee2e6;
+        border-color: #d9dee3;
         cursor: not-allowed;
+    }
+
+    /* Dark mode (app uses .dark-style) */
+    .dark-style .status-completed,
+    .theme-dark .status-completed,
+    html[data-theme="dark"] .status-completed,
+    [data-bs-theme="dark"] .status-completed {
+        background-color: rgba(25, 135, 84, 0.2);
+        color: #71dd37;
+        border-color: rgba(25, 135, 84, 0.35);
+    }
+
+    .dark-style .status-in-progress,
+    .theme-dark .status-in-progress,
+    html[data-theme="dark"] .status-in-progress,
+    [data-bs-theme="dark"] .status-in-progress,
+    .dark-style .priority-urgent,
+    .theme-dark .priority-urgent,
+    html[data-theme="dark"] .priority-urgent,
+    [data-bs-theme="dark"] .priority-urgent {
+        background-color: rgba(255, 193, 7, 0.2);
+        color: #ffab00;
+        border-color: rgba(255, 193, 7, 0.35);
+    }
+
+    .dark-style .status-cancelled,
+    .theme-dark .status-cancelled,
+    html[data-theme="dark"] .status-cancelled,
+    [data-bs-theme="dark"] .status-cancelled,
+    .dark-style .priority-stat,
+    .theme-dark .priority-stat,
+    html[data-theme="dark"] .priority-stat,
+    [data-bs-theme="dark"] .priority-stat {
+        background-color: rgba(220, 53, 69, 0.2);
+        color: #ff3e1d;
+        border-color: rgba(220, 53, 69, 0.35);
+    }
+
+    .dark-style .status-pending,
+    .theme-dark .status-pending,
+    html[data-theme="dark"] .status-pending,
+    [data-bs-theme="dark"] .status-pending {
+        background-color: rgba(133, 146, 163, 0.2);
+        color: #a1acb8;
+        border-color: rgba(133, 146, 163, 0.35);
+    }
+
+    .dark-style .priority-normal,
+    .theme-dark .priority-normal,
+    html[data-theme="dark"] .priority-normal,
+    [data-bs-theme="dark"] .priority-normal {
+        background-color: rgba(3, 195, 236, 0.2);
+        color: #03c3ec;
+        border-color: rgba(3, 195, 236, 0.35);
+    }
+
+    html.dark-style .test-card,
+    .dark-style .test-card,
+    .theme-dark .test-card,
+    html[data-theme="dark"] .test-card,
+    [data-bs-theme="dark"] .test-card,
+    html.dark-style .accordion .accordion-item,
+    .dark-style .accordion .accordion-item,
+    .theme-dark .accordion .accordion-item,
+    html[data-theme="dark"] .accordion .accordion-item,
+    [data-bs-theme="dark"] .accordion .accordion-item {
+        background-color: #2b2c40 !important;
+        border-color: #444564 !important;
+        color: #cbcbe2 !important;
+        --bs-accordion-bg: #2b2c40;
+        --bs-accordion-color: #cbcbe2;
+        --bs-accordion-border-color: #444564;
+        --bs-accordion-btn-bg: #32334a;
+        --bs-accordion-btn-color: #cbcbe2;
+        --bs-accordion-active-bg: rgba(105, 108, 255, 0.16);
+        --bs-accordion-active-color: #cbcbe2;
+    }
+
+    html.dark-style .test-card h6,
+    .dark-style .test-card h6,
+    .theme-dark .test-card h6,
+    html[data-theme="dark"] .test-card h6,
+    [data-bs-theme="dark"] .test-card h6 {
+        color: #cbcbe2 !important;
+    }
+
+    html.dark-style .accordion .accordion-button,
+    .dark-style .accordion .accordion-button,
+    .theme-dark .accordion .accordion-button,
+    html[data-theme="dark"] .accordion .accordion-button,
+    [data-bs-theme="dark"] .accordion .accordion-button {
+        background-color: #32334a !important;
+        border-color: #444564 !important;
+        color: #cbcbe2 !important;
+    }
+
+    html.dark-style .accordion .accordion-button:not(.collapsed),
+    .dark-style .accordion .accordion-button:not(.collapsed),
+    .theme-dark .accordion .accordion-button:not(.collapsed),
+    html[data-theme="dark"] .accordion .accordion-button:not(.collapsed),
+    [data-bs-theme="dark"] .accordion .accordion-button:not(.collapsed) {
+        background-color: rgba(105, 108, 255, 0.16) !important;
+        border-color: #444564 !important;
+        color: #cbcbe2 !important;
+    }
+
+    html.dark-style .accordion .accordion-body,
+    .dark-style .accordion .accordion-body,
+    .theme-dark .accordion .accordion-body,
+    html[data-theme="dark"] .accordion .accordion-body,
+    [data-bs-theme="dark"] .accordion .accordion-body,
+    html.dark-style .accordion .accordion-collapse,
+    .dark-style .accordion .accordion-collapse,
+    .theme-dark .accordion .accordion-collapse,
+    html[data-theme="dark"] .accordion .accordion-collapse,
+    [data-bs-theme="dark"] .accordion .accordion-collapse {
+        background-color: #2b2c40 !important;
+    }
+
+    .dark-style .pagination-simple .page-link,
+    .theme-dark .pagination-simple .page-link,
+    html[data-theme="dark"] .pagination-simple .page-link,
+    [data-bs-theme="dark"] .pagination-simple .page-link {
+        background-color: #2b2c40;
+        border-color: #444564;
+        color: #cbcbe2;
+    }
+
+    .dark-style .pagination-simple .page-link:hover,
+    .theme-dark .pagination-simple .page-link:hover,
+    html[data-theme="dark"] .pagination-simple .page-link:hover,
+    [data-bs-theme="dark"] .pagination-simple .page-link:hover {
+        background-color: #32334a;
+        border-color: #444564;
+        color: #cbcbe2;
+    }
+
+    .dark-style .pagination-simple .page-item.active .page-link,
+    .theme-dark .pagination-simple .page-item.active .page-link,
+    html[data-theme="dark"] .pagination-simple .page-item.active .page-link,
+    [data-bs-theme="dark"] .pagination-simple .page-item.active .page-link {
+        background-color: #696cff;
+        border-color: #696cff;
+        color: #fff;
+    }
+
+    .dark-style .pagination-simple .page-item.disabled .page-link,
+    .theme-dark .pagination-simple .page-item.disabled .page-link,
+    html[data-theme="dark"] .pagination-simple .page-item.disabled .page-link,
+    [data-bs-theme="dark"] .pagination-simple .page-item.disabled .page-link {
+        background-color: #2b2c40;
+        border-color: #444564;
+        color: #7a7b9a;
     }
 
     /* Responsive adjustments */

@@ -120,7 +120,7 @@
                                     @endphp
                                     <div class="accordion-item mb-3">
                                         <!-- Top Header Section with Accept All Button -->
-                                        <div class="accordion-top-header p-3 border-bottom bg-light">
+                                        <div class="accordion-top-header p-3 border-bottom">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar avatar-md me-3">
@@ -186,7 +186,7 @@
                                             <div class="accordion-body p-0">
                                                 <div class="table-responsive">
                                                     <table class="table table-hover mb-0">
-                                                        <thead class="table-light">
+                                                        <thead>
                                                             <tr>
                                                                 <th class="text-center">{{ localize('global.test_name') }}</th>
                                                                 <th class="text-center">{{ localize('global.test_type') }}</th>
@@ -215,7 +215,7 @@
                                                                     @endif
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    <code class="bg-light px-2 py-1 rounded">{{ $registration->ref_no }}</code>
+                                                                    <code class="ref-no-code px-2 py-1 rounded">{{ $registration->ref_no }}</code>
                                                                 </td>
                                                                 <td class="text-center">
                                                                     @php
@@ -489,9 +489,9 @@
     }
     
     .table tbody tr:hover {
-        background-color: #f8f9fa;
+        background-color: rgba(105, 108, 255, 0.06);
         transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     
     .loading-overlay {
@@ -564,52 +564,59 @@
         padding: 0.375rem 0.75rem;
     }
 
+    .ref-no-code {
+        background-color: #f5f5f9;
+        color: #5e5873;
+    }
+
     /* Accordion Styling */
-    .accordion-item {
+    #patientsAccordion .accordion-item {
         border: 1px solid #e3e6f0;
         border-radius: 0.5rem;
         overflow: hidden;
+        background-color: #fff;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         transition: all 0.3s ease;
     }
 
-    .accordion-item:hover {
+    #patientsAccordion .accordion-item:hover {
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         transform: translateY(-2px);
     }
 
     /* Accordion Top Header */
-    .accordion-top-header {
+    #patientsAccordion .accordion-top-header {
         background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
         border-top-left-radius: 0.5rem;
         border-top-right-radius: 0.5rem;
+        border-bottom: 1px solid #e3e6f0;
     }
 
-    .accordion-top-header h6 {
+    #patientsAccordion .accordion-top-header h6 {
         color: #5e5873;
         font-weight: 600;
         font-size: 1.1rem;
         margin-bottom: 0.25rem;
     }
 
-    .accordion-top-header .badge {
+    #patientsAccordion .accordion-top-header .badge {
         font-size: 0.875rem;
         padding: 0.5rem 0.75rem;
     }
 
-    .accordion-top-header .btn {
+    #patientsAccordion .accordion-top-header .btn {
         font-weight: 500;
         padding: 0.5rem 1rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         transition: all 0.3s ease;
     }
 
-    .accordion-top-header .btn:hover {
+    #patientsAccordion .accordion-top-header .btn:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
-    .accordion-button {
+    #patientsAccordion .accordion-button {
         background-color: #fff;
         padding: 0.875rem 1.5rem;
         font-weight: 500;
@@ -618,63 +625,239 @@
         color: #5e5873;
     }
 
-    .accordion-button:not(.collapsed) {
+    #patientsAccordion .accordion-button:not(.collapsed) {
         background-color: #f8f9fa;
         color: #5e5873;
         box-shadow: none;
     }
 
-    .accordion-button:focus {
+    #patientsAccordion .accordion-button:focus {
         box-shadow: none;
         border-color: transparent;
     }
 
-    .accordion-button::after {
+    #patientsAccordion .accordion-button::after {
         background-size: 1.25rem;
         transition: transform 0.3s ease;
     }
 
-    .accordion-button:not(.collapsed)::after {
+    #patientsAccordion .accordion-button:not(.collapsed)::after {
         transform: rotate(180deg);
     }
 
-    .accordion-body {
+    #patientsAccordion .accordion-body {
         padding: 0;
+        background-color: transparent;
     }
 
-    .accordion-body .table {
+    #patientsAccordion .accordion-body .table {
         margin-bottom: 0;
+        --bs-table-bg: transparent;
+        --bs-table-color: inherit;
+        background-color: transparent;
     }
 
-    .accordion-body .table thead th {
+    #patientsAccordion .accordion-body .table thead th {
         background-color: #f8f9fa;
+        color: #5e5873;
         font-size: 0.875rem;
         padding: 0.75rem 0.5rem;
     }
 
-    .accordion-body .table tbody td {
+    #patientsAccordion .accordion-body .table tbody td {
         padding: 0.875rem 0.5rem;
+        background-color: transparent;
     }
 
     /* Patient Header Styling */
-    .accordion-button h6 {
+    #patientsAccordion .accordion-button h6 {
         color: #5e5873;
         font-weight: 600;
         font-size: 1.1rem;
     }
 
-    .accordion-button small {
+    #patientsAccordion .accordion-button small {
         font-size: 0.875rem;
     }
 
-    .accordion-button .badge {
+    #patientsAccordion .accordion-button .badge {
         font-size: 0.875rem;
         padding: 0.5rem 0.75rem;
     }
 
     /* Smooth Collapse Animation */
-    .accordion-collapse {
+    #patientsAccordion .accordion-collapse {
         transition: height 0.35s ease;
+        background-color: transparent;
+    }
+
+    /* Dark mode (app uses .dark-style) */
+    html.dark-style .loading-overlay,
+    .dark-style .loading-overlay,
+    .theme-dark .loading-overlay,
+    html[data-theme="dark"] .loading-overlay,
+    [data-bs-theme="dark"] .loading-overlay {
+        background: rgba(35, 35, 51, 0.85) !important;
+    }
+
+    html.dark-style #patientsAccordion .table tbody tr:hover,
+    .dark-style #patientsAccordion .table tbody tr:hover,
+    .theme-dark #patientsAccordion .table tbody tr:hover,
+    html[data-theme="dark"] #patientsAccordion .table tbody tr:hover,
+    [data-bs-theme="dark"] #patientsAccordion .table tbody tr:hover {
+        background-color: rgba(105, 108, 255, 0.12) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    html.dark-style #patientsAccordion .table th,
+    .dark-style #patientsAccordion .table th,
+    .theme-dark #patientsAccordion .table th,
+    html[data-theme="dark"] #patientsAccordion .table th,
+    [data-bs-theme="dark"] #patientsAccordion .table th {
+        border-bottom-color: #444564 !important;
+    }
+
+    html.dark-style #patientsAccordion .ref-no-code,
+    .dark-style #patientsAccordion .ref-no-code,
+    .theme-dark #patientsAccordion .ref-no-code,
+    html[data-theme="dark"] #patientsAccordion .ref-no-code,
+    [data-bs-theme="dark"] #patientsAccordion .ref-no-code {
+        background-color: #3a3b53 !important;
+        color: #cbcbe2 !important;
+    }
+
+    html.dark-style #patientsAccordion .accordion-item,
+    .dark-style #patientsAccordion .accordion-item,
+    .theme-dark #patientsAccordion .accordion-item,
+    html[data-theme="dark"] #patientsAccordion .accordion-item,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-item {
+        background-color: #2b2c40 !important;
+        border-color: #444564 !important;
+        color: #cbcbe2 !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+        --bs-accordion-bg: #2b2c40;
+        --bs-accordion-color: #cbcbe2;
+        --bs-accordion-border-color: #444564;
+        --bs-accordion-btn-bg: #2b2c40;
+        --bs-accordion-btn-color: #cbcbe2;
+        --bs-accordion-active-bg: #32334a;
+        --bs-accordion-active-color: #cbcbe2;
+    }
+
+    html.dark-style #patientsAccordion .accordion-item:hover,
+    .dark-style #patientsAccordion .accordion-item:hover,
+    .theme-dark #patientsAccordion .accordion-item:hover,
+    html[data-theme="dark"] #patientsAccordion .accordion-item:hover,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    html.dark-style #patientsAccordion .accordion-top-header,
+    .dark-style #patientsAccordion .accordion-top-header,
+    .theme-dark #patientsAccordion .accordion-top-header,
+    html[data-theme="dark"] #patientsAccordion .accordion-top-header,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-top-header {
+        background: linear-gradient(135deg, #32334a 0%, #2b2c40 100%) !important;
+        border-bottom-color: #444564 !important;
+        color: #cbcbe2 !important;
+    }
+
+    html.dark-style #patientsAccordion .accordion-top-header h6,
+    .dark-style #patientsAccordion .accordion-top-header h6,
+    .theme-dark #patientsAccordion .accordion-top-header h6,
+    html[data-theme="dark"] #patientsAccordion .accordion-top-header h6,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-top-header h6,
+    html.dark-style #patientsAccordion .accordion-top-header small,
+    .dark-style #patientsAccordion .accordion-top-header small,
+    .theme-dark #patientsAccordion .accordion-top-header small,
+    html[data-theme="dark"] #patientsAccordion .accordion-top-header small,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-top-header small {
+        color: #cbcbe2 !important;
+    }
+
+    html.dark-style #patientsAccordion .accordion-button,
+    .dark-style #patientsAccordion .accordion-button,
+    .theme-dark #patientsAccordion .accordion-button,
+    html[data-theme="dark"] #patientsAccordion .accordion-button,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-button {
+        background-color: #2b2c40 !important;
+        color: #cbcbe2 !important;
+        box-shadow: none !important;
+    }
+
+    html.dark-style #patientsAccordion .accordion-button:not(.collapsed),
+    .dark-style #patientsAccordion .accordion-button:not(.collapsed),
+    .theme-dark #patientsAccordion .accordion-button:not(.collapsed),
+    html[data-theme="dark"] #patientsAccordion .accordion-button:not(.collapsed),
+    [data-bs-theme="dark"] #patientsAccordion .accordion-button:not(.collapsed) {
+        background-color: #32334a !important;
+        color: #cbcbe2 !important;
+        box-shadow: none !important;
+    }
+
+    html.dark-style #patientsAccordion .accordion-button h6,
+    .dark-style #patientsAccordion .accordion-button h6,
+    .theme-dark #patientsAccordion .accordion-button h6,
+    html[data-theme="dark"] #patientsAccordion .accordion-button h6,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-button h6,
+    html.dark-style #patientsAccordion .accordion-button span,
+    .dark-style #patientsAccordion .accordion-button span,
+    .theme-dark #patientsAccordion .accordion-button span,
+    html[data-theme="dark"] #patientsAccordion .accordion-button span,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-button span {
+        color: #cbcbe2 !important;
+    }
+
+    html.dark-style #patientsAccordion .accordion-collapse,
+    .dark-style #patientsAccordion .accordion-collapse,
+    .theme-dark #patientsAccordion .accordion-collapse,
+    html[data-theme="dark"] #patientsAccordion .accordion-collapse,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-collapse,
+    html.dark-style #patientsAccordion .accordion-body,
+    .dark-style #patientsAccordion .accordion-body,
+    .theme-dark #patientsAccordion .accordion-body,
+    html[data-theme="dark"] #patientsAccordion .accordion-body,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-body {
+        background-color: #2b2c40 !important;
+    }
+
+    html.dark-style #patientsAccordion .accordion-body .table,
+    .dark-style #patientsAccordion .accordion-body .table,
+    .theme-dark #patientsAccordion .accordion-body .table,
+    html[data-theme="dark"] #patientsAccordion .accordion-body .table,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-body .table {
+        --bs-table-bg: #2b2c40 !important;
+        --bs-table-color: #a3a4cc !important;
+        --bs-table-border-color: #444564 !important;
+        --bs-table-striped-bg: #32334a !important;
+        --bs-table-hover-bg: rgba(105, 108, 255, 0.12) !important;
+        background-color: #2b2c40 !important;
+        color: #a3a4cc !important;
+    }
+
+    html.dark-style #patientsAccordion .accordion-body .table thead th,
+    .dark-style #patientsAccordion .accordion-body .table thead th,
+    .theme-dark #patientsAccordion .accordion-body .table thead th,
+    html[data-theme="dark"] #patientsAccordion .accordion-body .table thead th,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-body .table thead th {
+        background-color: #32334a !important;
+        color: #cbcbe2 !important;
+        border-color: #444564 !important;
+    }
+
+    html.dark-style #patientsAccordion .accordion-body .table tbody td,
+    .dark-style #patientsAccordion .accordion-body .table tbody td,
+    .theme-dark #patientsAccordion .accordion-body .table tbody td,
+    html[data-theme="dark"] #patientsAccordion .accordion-body .table tbody td,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-body .table tbody td,
+    html.dark-style #patientsAccordion .accordion-body .table tbody tr,
+    .dark-style #patientsAccordion .accordion-body .table tbody tr,
+    .theme-dark #patientsAccordion .accordion-body .table tbody tr,
+    html[data-theme="dark"] #patientsAccordion .accordion-body .table tbody tr,
+    [data-bs-theme="dark"] #patientsAccordion .accordion-body .table tbody tr {
+        background-color: #2b2c40 !important;
+        border-color: #444564 !important;
+        color: #a3a4cc !important;
     }
 
 </style>

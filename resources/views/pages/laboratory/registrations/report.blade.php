@@ -41,7 +41,7 @@
                                     value="{{ old('from', request('from')) }}"
                                     placeholder="{{ localize('global.from') }}"
                                     class="form-control datepicker_dari" />
-                                <span class="input-group-text bg-light">
+                                <span class="input-group-text">
                                     <i class="bx bx-right-arrow-alt"></i>
                                 </span>
                                 <input autocomplete="off" type="text" name="to" 
@@ -209,7 +209,7 @@
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0" id="print_excel_table">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th class="text-center" style="width: 80px;">
                                         <i class="bx bx-hash me-1"></i>{{ localize('global.number') }}
@@ -254,7 +254,7 @@
                     
                     <!-- Pagination -->
                     @if(is_a($items, 'Illuminate\Pagination\LengthAwarePaginator') && $items->hasPages())
-                        <div class="card-footer border-top bg-light">
+                        <div class="card-footer border-top">
                             <div class="d-flex justify-content-between align-items-center flex-wrap">
                                 <div class="text-muted small mb-2 mb-md-0">
                                     <i class="bx bx-info-circle me-1"></i>
@@ -267,7 +267,7 @@
                             </div>
                         </div>
                     @elseif(is_a($items, 'Illuminate\Pagination\LengthAwarePaginator'))
-                        <div class="card-footer border-top bg-light">
+                        <div class="card-footer border-top">
                             <div class="text-muted small">
                                 <i class="bx bx-info-circle me-1"></i>
                                 {{ localize('global.showing') }} {{ $items->total() }} {{ localize('global.results') }}
@@ -424,25 +424,62 @@
     height: 5rem;
 }
 
-/* Dark mode specific adjustments */
+/* Dark mode specific adjustments (app uses .dark-style) */
+.dark-style .bg-label-primary,
+.theme-dark .bg-label-primary,
+html[data-theme="dark"] .bg-label-primary,
 [data-bs-theme="dark"] .bg-label-primary {
-    background: rgba(13, 110, 253, 0.1);
-    border-color: rgba(13, 110, 253, 0.2);
+    background: rgba(105, 108, 255, 0.15);
+    border-color: rgba(105, 108, 255, 0.25);
 }
 
+.dark-style .bg-label-success,
+.theme-dark .bg-label-success,
+html[data-theme="dark"] .bg-label-success,
 [data-bs-theme="dark"] .bg-label-success {
-    background: rgba(25, 135, 84, 0.1);
-    border-color: rgba(25, 135, 84, 0.2);
+    background: rgba(25, 135, 84, 0.15);
+    border-color: rgba(25, 135, 84, 0.25);
 }
 
+.dark-style .bg-label-info,
+.theme-dark .bg-label-info,
+html[data-theme="dark"] .bg-label-info,
 [data-bs-theme="dark"] .bg-label-info {
-    background: rgba(13, 202, 240, 0.1);
-    border-color: rgba(13, 202, 240, 0.2);
+    background: rgba(3, 195, 236, 0.15);
+    border-color: rgba(3, 195, 236, 0.25);
 }
 
+.dark-style .bg-label-warning,
+.theme-dark .bg-label-warning,
+html[data-theme="dark"] .bg-label-warning,
 [data-bs-theme="dark"] .bg-label-warning {
-    background: rgba(255, 193, 7, 0.1);
-    border-color: rgba(255, 193, 7, 0.2);
+    background: rgba(255, 171, 0, 0.15);
+    border-color: rgba(255, 171, 0, 0.25);
+}
+
+.dark-style .input-group-text,
+.theme-dark .input-group-text,
+html[data-theme="dark"] .input-group-text,
+[data-bs-theme="dark"] .input-group-text {
+    background-color: #32334a;
+    border-color: #444564;
+    color: #cbcbe2;
+}
+
+.dark-style .card-body .content-left span,
+.theme-dark .card-body .content-left span,
+html[data-theme="dark"] .card-body .content-left span,
+[data-bs-theme="dark"] .card-body .content-left span {
+    color: #a3a4cc;
+}
+
+.dark-style #print_excel_table thead th,
+.theme-dark #print_excel_table thead th,
+html[data-theme="dark"] #print_excel_table thead th,
+[data-bs-theme="dark"] #print_excel_table thead th {
+    background-color: #32334a;
+    color: #cbcbe2;
+    border-color: #444564;
 }
 
 /* Statistics Card Content */
@@ -522,7 +559,7 @@
 
 /* Input Group Enhancements */
 .input-group-text {
-    background-color: #f8f9fa;
+    background-color: #f5f5f9;
     border-color: #d9dee3;
 }
 

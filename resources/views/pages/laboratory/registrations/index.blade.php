@@ -43,7 +43,7 @@
 
             <div class="card-datatable table-responsive p-3">
                 <table class="table table-bordered table-striped">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
                             <th>#</th>
                             <th>{{ localize('global.patient') }}</th>

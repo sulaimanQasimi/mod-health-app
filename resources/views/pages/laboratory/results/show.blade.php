@@ -207,7 +207,7 @@
                         {{-- Parametered test - show parameter table --}}
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="resultTable">
-                                <thead class="table-light">
+                                <thead>
                                     <tr>
                                         <th>{{ localize('global.parameter_name') }}</th>
                                         <th>{{ localize('global.result') }}</th>
@@ -281,33 +281,80 @@
     }
     
     .ck-editor__editable_inline {
-        border: 1px solid #d1d5db;
+        border: 1px solid #d9dee3;
         border-radius: 0.375rem;
     }
     
     .ck-editor__editable:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #696cff;
+        box-shadow: 0 0 0 3px rgba(105, 108, 255, 0.15);
     }
     
     .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
-        border-color: #d1d5db;
+        border-color: #d9dee3;
     }
     
     .ck.ck-editor__main > .ck-editor__editable.ck-focused {
-        border-color: #3b82f6;
+        border-color: #696cff;
     }
     
     /* Result input field styling */
     #resultTable input.form-control {
-        color: #000 !important;
-        border-color: #d1d5db;
+        color: #566a7f;
+        border-color: #d9dee3;
     }
     
     #resultTable input.form-control:focus {
-        color: #000 !important;
-        border-color: #6c757d;
-        box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+        color: #566a7f;
+        border-color: #696cff;
+        box-shadow: 0 0 0 0.2rem rgba(105, 108, 255, 0.25);
+    }
+
+    #resultTable thead th {
+        background-color: #f8f9fa;
+        color: #566a7f;
+        border-color: #d9dee3;
+    }
+
+    /* Dark mode (app uses .dark-style) */
+    .dark-style #resultTable input.form-control,
+    .theme-dark #resultTable input.form-control,
+    html[data-theme="dark"] #resultTable input.form-control,
+    [data-bs-theme="dark"] #resultTable input.form-control {
+        color: #cbcbe2;
+        background-color: #2b2c40;
+        border-color: #444564;
+    }
+
+    .dark-style #resultTable input.form-control:focus,
+    .theme-dark #resultTable input.form-control:focus,
+    html[data-theme="dark"] #resultTable input.form-control:focus,
+    [data-bs-theme="dark"] #resultTable input.form-control:focus {
+        color: #cbcbe2;
+        background-color: #2b2c40;
+        border-color: #696cff;
+    }
+
+    .dark-style #resultTable thead th,
+    .theme-dark #resultTable thead th,
+    html[data-theme="dark"] #resultTable thead th,
+    [data-bs-theme="dark"] #resultTable thead th {
+        background-color: #32334a;
+        color: #cbcbe2;
+        border-color: #444564;
+    }
+
+    .dark-style .ck-editor__editable_inline,
+    .theme-dark .ck-editor__editable_inline,
+    html[data-theme="dark"] .ck-editor__editable_inline,
+    [data-bs-theme="dark"] .ck-editor__editable_inline,
+    .dark-style .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused),
+    .theme-dark .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused),
+    html[data-theme="dark"] .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused),
+    [data-bs-theme="dark"] .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+        background-color: #2b2c40;
+        border-color: #444564;
+        color: #cbcbe2;
     }
 </style>
 @endsection

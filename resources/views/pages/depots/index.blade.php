@@ -12,17 +12,6 @@
         <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
             <h5 class="mb-0">{{ localize('global.depot.title') }}</h5>
             <div class="d-flex flex-wrap gap-2">
-                <a class="btn btn-outline-secondary" href="{{ route('depots.transactions.index') }}">
-                    <i class="bx bx-list-ul me-1"></i>{{ localize('global.depot.transactions') }}
-                </a>
-                @if($navPermissions['requests'] ?? true)
-                    <a class="btn btn-outline-secondary" href="{{ route('depots.requests.create') }}">
-                        <i class="bx bx-transfer me-1"></i>{{ localize('global.depot.depot_transfer') }}
-                    </a>
-                    <a class="btn btn-outline-danger" href="{{ route('depots.requests.create', ['destination' => 'pharmacy']) }}">
-                        <i class="bx bx-clinic me-1"></i>{{ localize('global.depot.pharmacy_transfer') }}
-                    </a>
-                @endif
                 @if($permissions['create'] ?? true)
                     <a class="btn btn-primary" href="{{ route('depots.create') }}">
                         <i class="bx bx-plus me-1"></i>{{ localize('global.depot.create') }}

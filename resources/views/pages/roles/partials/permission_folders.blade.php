@@ -5,7 +5,7 @@
         ?? $rolePermissionIds
         ?? old(rtrim($permissionInputName, '[]'), []);
     $rolePermissionIds = $selectedPermissionIds;
-
+@endphp
 
 <div class="col-12 mt-3 mb-3">
     <div class="select-all-container bg-white mb-3">

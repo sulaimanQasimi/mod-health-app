@@ -92,7 +92,7 @@
                         <div class="col-md-3">
                             <select class="form-select depot-role-select" name="roles[]">
                                 @foreach($roleOptions as $role)
-                                    <option value="{{ $role }}" @selected(($selectedRoles[$index] ?? 'staff') === $role)>{{ ucfirst($role) }}</option>
+                                    <option value="{{ $role }}" @selected(($selectedRoles[$index] ?? 'staff') === $role)>{{ localize('global.'.$role) }}</option>
                                 @endforeach
                             </select>
                         </div>

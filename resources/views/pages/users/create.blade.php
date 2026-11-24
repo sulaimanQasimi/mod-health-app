@@ -172,46 +172,36 @@
                                 <h5 class="card-title mb-0">{{ localize('global.access_control') }}</h5>
                             </div>
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6 mb-4">
-                                        <h6 class="fw-semibold mb-3">{{ localize('global.roles') }}</h6>
-                                        <div class="form-check mb-2">
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                                        <h6 class="fw-semibold mb-0">{{ localize('global.roles') }}</h6>
+                                        <div class="form-check mb-0">
                                             <input type="checkbox" class="form-check-input" id="select_all_roles">
                                             <label class="form-check-label fw-bold" for="select_all_roles">
                                                 {{ localize('global.select_all') }}
                                             </label>
                                         </div>
-                                        <div class="d-flex flex-column gap-2">
-                                            @foreach ($roles as $value)
-                                                <div class="form-check">
-                                                    {{ Form::checkbox('roles[]', $value->id, false, ['class' => 'form-check-input role-checkbox', 'id' => 'role_'.$value->id]) }}
-                                                    <label class="form-check-label" for="role_{{ $value->id }}">
-                                                        {{ $value->name_dr }}
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                        </div>
                                     </div>
-                                    <div class="col-md-6 mb-4">
-                                        <h6 class="fw-semibold mb-3">{{ localize('global.permissions') }}</h6>
-                                        <div class="form-check mb-2">
-                                            <input type="checkbox" class="form-check-input" id="select_all_permissions">
-                                            <label class="form-check-label fw-bold" for="select_all_permissions">
-                                                {{ localize('global.select_all') }}
-                                            </label>
-                                        </div>
-                                        <div class="d-flex flex-column gap-2" style="max-height: 300px; overflow-y: auto;">
-                                            @foreach ($permissions as $value)
-                                                <div class="form-check">
-                                                    {{ Form::checkbox('permissions[]', $value->id, false, ['class' => 'form-check-input permission-checkbox', 'id' => 'perm_'.$value->id]) }}
-                                                    <label class="form-check-label" for="perm_{{ $value->id }}">
-                                                        {{ $value->name_dr }}
+                                    <div class="row g-2 user-roles-grid">
+                                        @foreach ($roles as $value)
+                                            <div class="col-md-4 col-sm-6">
+                                                <div class="form-check user-role-item">
+                                                    {{ Form::checkbox('roles[]', $value->id, in_array($value->id, old('roles', [])), ['class' => 'form-check-input role-checkbox', 'id' => 'role_'.$value->id]) }}
+                                                    <label class="form-check-label" for="role_{{ $value->id }}">
+                                                        {{ $value->name_dr ?: $value->name }}
                                                     </label>
                                                 </div>
-                                            @endforeach
-                                        </div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
+
+                                @include('pages.roles.partials.permission_folders', [
+                                    'permissionFolders' => $permissionFolders,
+                                    'permissionInputName' => 'permissions[]',
+                                    'folderIdPrefix' => 'user-perm-folder',
+                                    'selectedPermissionIds' => old('permissions', []),
+                                ])
                             </div>
                         </div>
 
@@ -226,6 +216,43 @@
         </div>
     </div>
 @endsection
+
+@push('custom-css')
+<style>
+    .user-roles-grid {
+        max-height: 220px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 12px;
+        background: #fff;
+    }
+
+    .user-role-item {
+        padding: 8px 10px;
+        border-radius: 6px;
+        margin: 0;
+        background: #f8f9fa;
+    }
+
+    .user-role-item:hover {
+        background: #f5f5f9;
+    }
+
+    .dark-style .user-roles-grid,
+    .theme-dark .user-roles-grid,
+    [data-bs-theme="dark"] .user-roles-grid {
+        background: #2b2c40;
+        border-color: #444564;
+    }
+
+    .dark-style .user-role-item,
+    .theme-dark .user-role-item,
+    [data-bs-theme="dark"] .user-role-item {
+        background: #32334a;
+    }
+</style>
+@endpush
 
 @push('custom-js')
     <script>
@@ -242,41 +269,18 @@
         $(document).ready(function() {
             $('.select2').select2();
 
-            // Select All functionality for roles
-            $('#select_all_roles').on('change', function() {
-                var isChecked = $(this).is(':checked');
-                $('.role-checkbox').prop('checked', isChecked);
-            });
-
-            // Update Select All checkbox based on individual role checkboxes
-            $('.role-checkbox').on('change', function() {
+            function syncSelectAllRoles() {
                 var totalRoles = $('.role-checkbox').length;
                 var checkedRoles = $('.role-checkbox:checked').length;
-                
-                if (checkedRoles === totalRoles) {
-                    $('#select_all_roles').prop('checked', true);
-                } else {
-                    $('#select_all_roles').prop('checked', false);
-                }
+                $('#select_all_roles').prop('checked', totalRoles > 0 && checkedRoles === totalRoles);
+            }
+
+            $('#select_all_roles').on('change', function() {
+                $('.role-checkbox').prop('checked', $(this).is(':checked'));
             });
 
-            // Select All functionality for permissions
-            $('#select_all_permissions').on('change', function() {
-                var isChecked = $(this).is(':checked');
-                $('.permission-checkbox').prop('checked', isChecked);
-            });
-
-            // Update Select All checkbox based on individual permission checkboxes
-            $('.permission-checkbox').on('change', function() {
-                var totalPermissions = $('.permission-checkbox').length;
-                var checkedPermissions = $('.permission-checkbox:checked').length;
-                
-                if (checkedPermissions === totalPermissions) {
-                    $('#select_all_permissions').prop('checked', true);
-                } else {
-                    $('#select_all_permissions').prop('checked', false);
-                }
-            });
+            $('.role-checkbox').on('change', syncSelectAllRoles);
+            syncSelectAllRoles();
 
             $('#branch_id').on('change', function() {
                 var branchID = $(this).val();

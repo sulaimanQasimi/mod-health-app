@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsPermissionFolders;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Department;
-use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Section;
 use Illuminate\Http\Request;
@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    use BuildsPermissionFolders;
 
     public function __construct()
     {
@@ -93,8 +94,16 @@ class UserController extends Controller
         $departments = Department::all();
         $sections = Section::all();
         $categories = Category::all();
-        $permissions = Permission::all();
-        return view('pages.users.create',compact('roles','branches','departments','sections','categories', 'permissions'));
+        $permissionFolders = $this->getPermissionFolders();
+
+        return view('pages.users.create', compact(
+            'roles',
+            'branches',
+            'departments',
+            'sections',
+            'categories',
+            'permissionFolders'
+        ));
     }
 
     /**
@@ -150,15 +159,24 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-
         $roles = Role::all();
         $branches = Branch::all();
         $departments = Department::all();
         $sections = Section::all();
-        $permissions = Permission::all();
         $categories = Category::all();
+        $permissionFolders = $this->getPermissionFolders();
+        $selectedPermissionIds = $user->permissions->pluck('id')->toArray();
 
-        return view('pages.users.edit',compact('user','roles','branches','departments','sections','permissions','categories'));
+        return view('pages.users.edit', compact(
+            'user',
+            'roles',
+            'branches',
+            'departments',
+            'sections',
+            'categories',
+            'permissionFolders',
+            'selectedPermissionIds'
+        ));
     }
 
     /**

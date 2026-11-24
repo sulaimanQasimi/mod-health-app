@@ -1,6 +1,11 @@
 @php
-    $rolePermissionIds = $rolePermissionIds ?? old('permission', []);
-@endphp
+    $permissionInputName = $permissionInputName ?? 'permission[]';
+    $folderIdPrefix = $folderIdPrefix ?? 'folder';
+    $selectedPermissionIds = $selectedPermissionIds
+        ?? $rolePermissionIds
+        ?? old(rtrim($permissionInputName, '[]'), []);
+    $rolePermissionIds = $selectedPermissionIds;
+
 
 <div class="col-12 mt-3 mb-3">
     <div class="select-all-container bg-white mb-3">
@@ -36,7 +41,7 @@
     <div id="permission-folders" class="row g-3 align-items-start">
         @foreach ($permissionFolders as $index => $folder)
             @php
-                $folderId = 'folder-' . $index;
+                $folderId = $folderIdPrefix . '-' . $index;
             @endphp
             <div class="col-md-6 permission-folder-col"
                  data-folder-col
@@ -75,9 +80,9 @@
                                    data-search="{{ strtolower($permissionLabel . ' ' . $permission->name . ' ' . ($permission->name_dr ?? '')) }}">
                                 <input type="checkbox"
                                        class="form-check-input permission-checkbox"
-                                       name="permission[]"
+                                       name="{{ $permissionInputName }}"
                                        value="{{ $permission->id }}"
-                                       {{ in_array($permission->id, $rolePermissionIds) ? 'checked' : '' }}>
+                                       {{ in_array($permission->id, $selectedPermissionIds) ? 'checked' : '' }}>
                                 <span class="permission-name">{{ $permissionLabel }}</span>
                                 <small class="permission-slug text-muted">{{ $permission->name }}</small>
                             </label>

@@ -4546,7 +4546,7 @@ return [
         'request_status_cancelled' => 'لغو شده',
         'request_status_completed' => 'تکمیل شده',
         'title' => 'مدیریت دیپو',
-        'tools'=>'اسباب',
+        'tool'=>'اسباب',
         'list' => 'لیست دیپو‌ها',
         'create' => 'افزودن دیپو',
         'edit' => 'ویرایش دیپو',

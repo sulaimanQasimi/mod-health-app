@@ -294,7 +294,13 @@
         <!-- Footer -->
         <div class="footer">
             <div class="footer-info">
-                <span class="bold">تحویل دهنده:</span> {{ $user->name ?? 'نامشخص' }}
+                <span class="bold">تحویل دهنده:</span>
+                @php
+                    $delivererName = $user
+                        ? trim(($user->name ?? '') . ' ' . ($user->last_name ?? ''))
+                        : '';
+                @endphp
+                {{ $delivererName !== '' ? $delivererName : 'نامشخص' }}
             </div>
             @if($pharmacy)
                 <div class="footer-info">

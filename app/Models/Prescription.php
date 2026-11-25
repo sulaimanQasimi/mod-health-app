@@ -71,6 +71,11 @@ class Prescription extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
     public function scopeVisibleToClinicType(Builder $query, ?string $viewerClinicType): Builder
     {
         if (!$viewerClinicType || $viewerClinicType === 'both') {

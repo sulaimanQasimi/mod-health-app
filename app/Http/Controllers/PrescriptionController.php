@@ -211,19 +211,20 @@ class PrescriptionController extends Controller
         // Load prescription with all necessary relationships
         $prescription->load([
             'patient',
-            'doctor', 
+            'doctor',
             'pharmacy',
+            'updater',
             'prescriptionItems.medicine',
             'prescriptionItems.medicineType',
             'prescriptionItems.usageType',
-            'prescriptionItems.selectedAlternative.medicine'
+            'prescriptionItems.selectedAlternative.medicine',
         ]);
 
         // Get pharmacy info (from prescription or user's active pharmacy)
         $pharmacy = $prescription->pharmacy ?? auth()->user()->activePharmacies()->first();
-        
-        // Get user info
-        $user = auth()->user();
+
+        // Deliverer = person who approved/processed the prescription (updated_by), not the printer
+        $user = $prescription->updater;
 
         return view('pages.prescriptions.thermal_receipt', compact('prescription', 'pharmacy', 'user'));
     }

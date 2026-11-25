@@ -4553,7 +4553,7 @@ return [
         'view' => 'مشاهده دیپو',
         'search' => 'جستجو',
         'reset' => 'بازنشانی',
-        'transactions' => 'انتقالات',
+        'transactions' => 'موجودی دیپو',
         'depot_transactions' => 'انتقالات دیپو',
         'depot_to_depot' => 'انتقال دیپو به دیپو',
         'depot_to_pharmacy' => 'انتقال دیپو به دواخانه',

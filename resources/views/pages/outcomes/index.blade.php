@@ -42,17 +42,19 @@
                         <form method="GET" action="{{ route('outcomes.index') }}" class="row g-3">
                             <div class="col-md-3">
                                 <label for="medicine_id" class="form-label">{{ localize('global.medicine') }}</label>
-                                <select class="form-select" id="medicine_id" name="medicine_id"
-                                        data-placeholder="{{ localize('global.all_medicines') ?: localize('global.search_by_medicine') }}">
-                                    <option value="">{{ localize('global.all_medicines') ?: localize('global.all') }}</option>
-                                    @if(!empty($selectedMedicine))
-                                        <option value="{{ $selectedMedicine->id }}" selected>{{ $selectedMedicine->name }}</option>
-                                    @endif
+                                <select class="form-select select2" id="medicine_id" name="medicine_id"
+                                        data-placeholder="{{ localize('global.all_medicines') }}">
+                                    <option value="">{{ localize('global.all_medicines') }}</option>
+                                    @foreach (($medicines ?? []) as $medicine)
+                                        <option value="{{ $medicine->id }}" {{ (string) request('medicine_id') === (string) $medicine->id ? 'selected' : '' }}>
+                                            {{ $medicine->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-2">
                                 <label for="pharmacy_id" class="form-label">{{ localize('global.pharmacy') }}</label>
-                                <select class="form-select" id="pharmacy_id" name="pharmacy_id"
+                                <select class="form-select select2" id="pharmacy_id" name="pharmacy_id"
                                         data-placeholder="{{ localize('global.all_pharmacies') }}">
                                     <option value="">{{ localize('global.all_pharmacies') }}</option>
                                     @foreach (($pharmacies ?? []) as $pharmacy)
@@ -63,11 +65,11 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label for="pharmacy_user_id" class="form-label">{{ localize('global.pharmacy_user') ?: localize('global.updated_by') }}</label>
-                                <select class="form-select" id="pharmacy_user_id" name="pharmacy_user_id"
-                                        data-placeholder="{{ localize('global.select') }}"
+                                <label for="pharmacy_user_id" class="form-label">{{ localize('global.pharmacy_user') }}</label>
+                                <select class="form-select select2" id="pharmacy_user_id" name="pharmacy_user_id"
+                                        data-placeholder="{{ localize('global.all') }}"
                                         @if(empty($selectedPharmacyId)) disabled @endif>
-                                    <option value="">{{ localize('global.all') ?: localize('global.select') }}</option>
+                                    <option value="">{{ localize('global.all') }}</option>
                                     @foreach (($pharmacyUsers ?? []) as $pharmacyUser)
                                         <option value="{{ $pharmacyUser['id'] }}" {{ (string) request('pharmacy_user_id') === (string) $pharmacyUser['id'] ? 'selected' : '' }}>
                                             {{ $pharmacyUser['name'] }}
@@ -81,16 +83,16 @@
                                 <div class="input-group input-daterange">
                                     <input type="text" autocomplete="off" name="date_from"
                                         placeholder="{{ localize('global.from') }}"
-                                        class="form-control form-control datepicker_dari pdp-el persian-date" 
+                                        class="form-control form-control datepicker_dari pdp-el persian-date"
                                         value="{{ $dateFrom ?? request('date_from') }}" />
                                     <span class="input-group-text">...</span>
                                     <input type="text" autocomplete="off" name="date_to"
                                         placeholder="{{ localize('global.to') }}"
-                                        class="form-control form-control datepicker_dari pdp-el persian-date" 
+                                        class="form-control form-control datepicker_dari pdp-el persian-date"
                                         value="{{ $dateTo ?? request('date_to') }}" />
                                 </div>
                                 @if(!empty($usingDefaultDates))
-                                    <small class="text-muted">{{ localize('global.showing_current_month_by_default') ?: 'پیش‌فرض: ماه جاری (برای سرعت بیشتر)' }}</small>
+                                    <small class="text-muted">{{ localize('global.showing_current_month_by_default') }}</small>
                                 @endif
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
@@ -98,7 +100,7 @@
                                     <input class="form-check-input" type="checkbox" name="all_dates" value="1" id="all_dates"
                                         {{ request('all_dates') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="all_dates">
-                                        {{ localize('global.all_dates') ?: 'همه تاریخ‌ها' }}
+                                        {{ localize('global.all_dates') }}
                                     </label>
                                 </div>
                             </div>
@@ -128,9 +130,9 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div>
                                 <span class="text-muted">
-                                    {{ localize('global.showing') }} {{ $outcomes->firstItem() ?? 0 }} 
-                                    {{ localize('global.to') }} {{ $outcomes->lastItem() ?? 0 }} 
-                                    {{ localize('global.of') }} {{ $outcomes->total() }} 
+                                    {{ localize('global.showing') }} {{ $outcomes->firstItem() ?? 0 }}
+                                    {{ localize('global.to') }} {{ $outcomes->lastItem() ?? 0 }}
+                                    {{ localize('global.of') }} {{ $outcomes->total() }}
                                     {{ localize('global.results') }}
                                 </span>
                             </div>
@@ -184,11 +186,11 @@
                                 @endforelse
                             </tbody>
                         </table>
-                        
+
                         <!-- Enhanced Pagination -->
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <div class="text-muted">
-                                {{ localize('global.page') }} {{ $outcomes->currentPage() }} 
+                                {{ localize('global.page') }} {{ $outcomes->currentPage() }}
                                 {{ localize('global.of') }} {{ $outcomes->lastPage() }}
                             </div>
                             <div>
@@ -214,39 +216,34 @@
             window.location.href = url.toString();
         }
 
-        (function ($) {
-            if (!$ || !$.fn.select2) {
-                console.error('Select2 is not available on outcomes page');
-                return;
-            }
+        $(function () {
+            var pharmacyUsersUrl = @json(route('outcomes.pharmacy-users', ['pharmacy' => '__PHARMACY_ID__']));
+            var allUsersLabel = @json(localize('global.all'));
+            var selectedPharmacyUserId = @json((string) request('pharmacy_user_id', ''));
+            var $pharmacySelect = $('#pharmacy_id');
+            var $userSelect = $('#pharmacy_user_id');
 
-            const pharmacyUsersUrl = @json(route('outcomes.pharmacy-users', ['pharmacy' => '__PHARMACY_ID__']));
-            const medicineSearchUrl = @json(route('outcomes.search-medicines'));
-            const selectedPharmacyUserId = @json((string) request('pharmacy_user_id', ''));
-            const $pharmacySelect = $('#pharmacy_id');
-            const $userSelect = $('#pharmacy_user_id');
-            const $medicineSelect = $('#medicine_id');
-
-            function initSelect2($el, extraOptions) {
-                if (!$el.length) {
+            function reinitSelect2($el, disabled) {
+                if (!$el.length || !$.fn.select2) {
                     return;
                 }
                 if ($el.hasClass('select2-hidden-accessible')) {
                     $el.select2('destroy');
                 }
-                $el.select2($.extend(true, {
-                    width: '100%',
+                $el.prop('disabled', !!disabled);
+                if (!$el.parent().hasClass('position-relative')) {
+                    $el.wrap('<div class="position-relative"></div>');
+                }
+                $el.select2({
+                    placeholder: $el.data('placeholder') || '',
                     allowClear: true,
-                    placeholder: $el.data('placeholder') || ''
-                }, extraOptions || {}));
+                    width: '100%'
+                });
             }
 
             function resetPharmacyUsers(disabled) {
-                $userSelect.empty().append(
-                    $('<option>', { value: '', text: @json(localize('global.all') ?: localize('global.select')) })
-                );
-                $userSelect.prop('disabled', !!disabled);
-                initSelect2($userSelect);
+                $userSelect.empty().append($('<option>', { value: '', text: allUsersLabel }));
+                reinitSelect2($userSelect, disabled);
             }
 
             function loadPharmacyUsers(pharmacyId, preferredUserId) {
@@ -258,62 +255,43 @@
                 $userSelect.prop('disabled', true);
                 $.get(pharmacyUsersUrl.replace('__PHARMACY_ID__', pharmacyId))
                     .done(function (users) {
-                        $userSelect.empty().append(
-                            $('<option>', { value: '', text: @json(localize('global.all') ?: localize('global.select')) })
-                        );
+                        $userSelect.empty().append($('<option>', { value: '', text: allUsersLabel }));
                         (users || []).forEach(function (user) {
                             $userSelect.append(
                                 $('<option>', { value: user.id, text: user.name || ('User #' + user.id) })
                             );
                         });
-                        $userSelect.prop('disabled', false);
                         if (preferredUserId) {
                             $userSelect.val(String(preferredUserId));
                         }
-                        initSelect2($userSelect);
+                        reinitSelect2($userSelect, false);
                     })
                     .fail(function () {
                         resetPharmacyUsers(false);
                     });
             }
 
-            initSelect2($medicineSelect, {
-                minimumInputLength: 0,
-                ajax: {
-                    url: medicineSearchUrl,
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return { q: params.term || '' };
-                    },
-                    processResults: function (data) {
-                        return { results: (data && data.results) ? data.results : [] };
-                    },
-                    cache: true
-                }
-            });
+            // Ensure medicine/pharmacy Select2 use placeholders (forms-selects may already init them)
+            reinitSelect2($('#medicine_id'), false);
+            reinitSelect2($pharmacySelect, false);
+            reinitSelect2($userSelect, !$pharmacySelect.val());
 
-            initSelect2($pharmacySelect);
-            initSelect2($userSelect);
-
-            $pharmacySelect.on('change', function () {
+            $pharmacySelect.off('change.outcomesUsers').on('change.outcomesUsers', function () {
                 loadPharmacyUsers($(this).val(), '');
             });
 
-            const initialPharmacyId = $pharmacySelect.val() || @json((string) ($selectedPharmacyId ?? ''));
+            var initialPharmacyId = $pharmacySelect.val() || @json((string) ($selectedPharmacyId ?? ''));
             if (initialPharmacyId) {
                 if (!$pharmacySelect.val()) {
                     $pharmacySelect.val(String(initialPharmacyId)).trigger('change.select2');
                 }
-                // Reload users when none are pre-rendered, otherwise keep server-rendered options
                 if ($userSelect.find('option').length <= 1) {
                     loadPharmacyUsers(initialPharmacyId, selectedPharmacyUserId);
                 } else {
-                    $userSelect.prop('disabled', false);
-                    initSelect2($userSelect);
+                    reinitSelect2($userSelect, false);
                 }
             }
-        })(window.jQuery);
+        });
     </script>
 @endpush
 

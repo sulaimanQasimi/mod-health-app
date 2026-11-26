@@ -244,17 +244,22 @@ class OutcomeController extends Controller
             $pharmacyUsers = $this->getActivePharmacyUsers($selectedPharmacyId);
         }
 
-        // Only load the currently selected medicine (full list is fetched via AJAX Select2)
+        // Light payload: only id + name for Select2 (no heavy relations)
+        $medicines = Medicine::query()
+            ->whereNull('deleted_at')
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
         $selectedMedicine = null;
         if ($request->filled('medicine_id')) {
-            $selectedMedicine = Medicine::query()
-                ->where('id', (int) $request->medicine_id)
-                ->first(['id', 'name']);
+            $selectedMedicine = $medicines->firstWhere('id', (int) $request->medicine_id)
+                ?: Medicine::query()->where('id', (int) $request->medicine_id)->first(['id', 'name']);
         }
 
         return view('pages.outcomes.index', compact(
             'outcomes',
             'pharmacies',
+            'medicines',
             'selectedMedicine',
             'pharmacyUsers',
             'selectedPharmacyId',
@@ -266,7 +271,7 @@ class OutcomeController extends Controller
     }
 
     /**
-     * Lightweight medicine search for Select2 (keeps /outcomes page light).
+     * Lightweight medicine search for Select2 AJAX (optional / fallback).
      */
     public function searchMedicines(Request $request)
     {
@@ -281,7 +286,7 @@ class OutcomeController extends Controller
             $query->where('name', 'like', '%' . $term . '%');
         }
 
-        $medicines = $query->limit(30)->get()->map(fn ($medicine) => [
+        $medicines = $query->limit(50)->get()->map(fn ($medicine) => [
             'id' => $medicine->id,
             'text' => $medicine->name,
         ]);

@@ -7,6 +7,7 @@
     <style>
         body, body * {
             font-family: persian_font, DejaVu Sans, sans-serif !important;
+            font-weight: normal !important;
         }
 
         body {
@@ -46,7 +47,7 @@
             color: #333;
             margin: 0;
             font-size: 24px;
-            font-weight: bold;
+            font-weight: normal;
         }
         
         .header p {
@@ -73,7 +74,7 @@
         }
         
         .report-info td:first-child {
-            font-weight: bold;
+            font-weight: normal;
             width: 120px;
         }
         
@@ -92,7 +93,7 @@
         
         th {
             background-color: #f2f2f2;
-            font-weight: bold;
+            font-weight: normal;
             color: #333;
         }
         
@@ -105,7 +106,7 @@
             border-radius: 3px;
             font-size: 9px;
             color: white;
-            font-weight: bold;
+            font-weight: normal;
         }
         
         .badge-primary { background-color: #007bff; }

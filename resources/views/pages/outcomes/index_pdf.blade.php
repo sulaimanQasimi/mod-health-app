@@ -4,6 +4,7 @@
     <style type="text/css">
         body, body * {
             font-family: persian_font, DejaVu Sans, sans-serif !important;
+            font-weight: normal !important;
         }
         .header {
             width: 100%;

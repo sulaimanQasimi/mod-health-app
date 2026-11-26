@@ -959,6 +959,7 @@ return [
 'icu_day' => 'د ICU ورځ',
 'created_by' => 'ثبت شوی د لخوا',
 'processed_by' => 'پروسس شوی د لخوا',
+'updated_by' => 'تکمیل شوی د لخوا',
 'select_pharmacy_first_for_user' => 'لومړی دواخانه وټاکئ',
 'registered_by' => 'ثبت شوی د لخوا',
 'add_daily_progress' => 'د ICU ورځنی پرمختګ اضافه کول',

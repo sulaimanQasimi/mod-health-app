@@ -339,7 +339,7 @@
     ]
   },
   "resources/js/Pages/Example.tsx": {
-    "file": "assets/Example-cEBNwmXo.js",
+    "file": "assets/Example-BP0ZuMYF.js",
     "name": "Example",
     "src": "resources/js/Pages/Example.tsx",
     "isDynamicEntry": true,
@@ -353,7 +353,7 @@
     ]
   },
   "resources/js/Pages/Layout.tsx": {
-    "file": "assets/Layout-D9q3tjEX.js",
+    "file": "assets/Layout-BesPVl6e.js",
     "name": "Layout",
     "src": "resources/js/Pages/Layout.tsx",
     "isDynamicEntry": true,
@@ -367,7 +367,7 @@
     ]
   },
   "resources/js/Pages/Welcome.tsx": {
-    "file": "assets/Welcome-Bty6vN6-.js",
+    "file": "assets/Welcome-Dtzuizxi.js",
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.tsx",
     "isDynamicEntry": true,
@@ -390,7 +390,7 @@
     ]
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-ez2cTmu6.js",
+    "file": "assets/app-DixfdZQd.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,

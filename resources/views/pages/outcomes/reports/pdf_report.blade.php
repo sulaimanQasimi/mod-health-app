@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ localize('global.outcome_report') }}</title>
     <style>
-        @font-face {
-            font-family: 'B Nazanin';
-            src: url('{{ asset("persian_font.ttf") }}') format('opentype');
+        body, body * {
+            font-family: persian_font, DejaVu Sans, sans-serif !important;
         }
-        
+
         body {
-            font-family: 'B Nazanin', Arial, sans-serif;
             direction: rtl;
             text-align: right;
             margin: 0;

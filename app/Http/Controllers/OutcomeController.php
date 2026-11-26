@@ -336,6 +336,37 @@ class OutcomeController extends Controller
     }
 
     /**
+     * Create an mPDF instance using the same Persian app font (mod_font.ttf).
+     */
+    private function createAppFontMpdf(array $options = []): Mpdf
+    {
+        $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new \Mpdf\Config\FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        $config = array_merge([
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'directionality' => 'rtl',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'fontDir' => array_merge($fontDirs, [
+                public_path('assets/fonts'),
+            ]),
+            'fontdata' => $fontData + [
+                'persian_font' => [
+                    'R' => 'mod_font.ttf',
+                ],
+            ],
+            'default_font' => 'persian_font',
+        ], $options);
+
+        return new Mpdf($config);
+    }
+
+    /**
      * Export outcomes index (medicine usage statistics) to PDF or Excel.
      */
     public function exportIndexReport(Request $request)
@@ -346,7 +377,7 @@ class OutcomeController extends Controller
 
         if ($request->get('type') === 'pdf') {
             $html = view('pages.outcomes.index_pdf', compact('items'))->render();
-            $mpdf = new Mpdf(['format' => 'A4-L']);
+            $mpdf = $this->createAppFontMpdf();
             $mpdf->WriteHTML($html);
             $mpdf->Output('outcomes_usage_report.pdf', 'D');
             return null;
@@ -518,7 +549,7 @@ class OutcomeController extends Controller
         $html = view('pages.outcomes.reports.pdf_report', ['items' => $items])->render();
         
         if ($request->type == 'pdf') {
-            $mpdf = new \Mpdf\Mpdf(['format' => 'A4-L']);
+            $mpdf = $this->createAppFontMpdf();
             $mpdf->WriteHTML($html);
             $mpdf->Output('outcome_report.pdf', 'D');
         } else {

@@ -3,7 +3,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
         body, body * {
-            font-family: DejaVu Sans, Arial, sans-serif !important;
+            font-family: persian_font, DejaVu Sans, sans-serif !important;
         }
         .header {
             width: 100%;

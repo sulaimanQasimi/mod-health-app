@@ -174,7 +174,7 @@
                                         <td>
                                             <span class="badge bg-primary">{{ $row->usage_count ?? 0 }}</span>
                                         </td>
-                                        <td>{{ $row->updated_by_name ? trim($row->updated_by_name) : '—' }}</td>
+                                        <td>{{ !empty($row->updated_by_name ?? null) ? trim($row->updated_by_name) : '—' }}</td>
                                         <td>
                                             @if(!empty($row->prescription_updated_at))
                                                 {{ \Hekmatinasser\Verta\Facades\Verta::instance($row->prescription_updated_at)->format('Y/m/d H:i') }}

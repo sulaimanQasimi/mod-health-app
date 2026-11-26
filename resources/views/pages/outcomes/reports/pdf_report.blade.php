@@ -25,6 +25,24 @@
             border-bottom: 2px solid #333;
             padding-bottom: 20px;
         }
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        .header-table td {
+            border: none;
+            vertical-align: middle;
+            padding: 4px;
+        }
+
+        .logo-image {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
         
         .header h1 {
             color: #333;
@@ -129,8 +147,20 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ localize('global.outcome_report') }}</h1>
-        <p>{{ localize('global.generated_on') }}: {{ now()->format('Y/m/d H:i:s') }}</p>
+        <table class="header-table">
+            <tr>
+                <td style="width: 15%; text-align: right;">
+                    <img src="{{ public_path('images/logos/لوگو قومنداني.JPG') }}" alt="Logo" class="logo-image">
+                </td>
+                <td style="width: 70%; text-align: center;">
+                    <h1>{{ localize('global.outcome_report') }}</h1>
+                    <p>{{ localize('global.generated_on') }}: {{ now()->format('Y/m/d H:i:s') }}</p>
+                </td>
+                <td style="width: 15%; text-align: left;">
+                    <img src="{{ public_path('images/logos/لوگوی جدید وزارت دفاع ملی.png') }}" alt="Logo" class="logo-image">
+                </td>
+            </tr>
+        </table>
     </div>
     
     <div class="report-info">

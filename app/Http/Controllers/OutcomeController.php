@@ -246,15 +246,19 @@ class OutcomeController extends Controller
             $pharmacyUsers = $this->getActivePharmacyUsers($selectedPharmacyId);
         }
 
-        $medicines = Medicine::query()
-            ->whereNull('deleted_at')
-            ->orderBy('name')
-            ->get(['id', 'name']);
+        // Only load the currently selected medicine (full list is fetched via AJAX Select2)
+        $selectedMedicine = null;
+        if ($request->filled('medicine_id')) {
+            $selectedMedicine = Medicine::query()
+                ->whereNull('deleted_at')
+                ->where('id', (int) $request->medicine_id)
+                ->first(['id', 'name']);
+        }
 
         return view('pages.outcomes.index', compact(
             'outcomes',
             'pharmacies',
-            'medicines',
+            'selectedMedicine',
             'pharmacyUsers',
             'selectedPharmacyId',
             'userPharmacies',
@@ -262,6 +266,30 @@ class OutcomeController extends Controller
             'dateTo',
             'usingDefaultDates'
         ));
+    }
+
+    /**
+     * Lightweight medicine search for Select2 (keeps /outcomes page light).
+     */
+    public function searchMedicines(Request $request)
+    {
+        $term = trim((string) $request->get('q', $request->get('term', '')));
+
+        $query = Medicine::query()
+            ->whereNull('deleted_at')
+            ->orderBy('name')
+            ->select(['id', 'name']);
+
+        if ($term !== '') {
+            $query->where('name', 'like', '%' . $term . '%');
+        }
+
+        $medicines = $query->limit(30)->get()->map(fn ($medicine) => [
+            'id' => $medicine->id,
+            'text' => $medicine->name,
+        ]);
+
+        return response()->json(['results' => $medicines]);
     }
 
     /**
@@ -377,6 +405,7 @@ class OutcomeController extends Controller
             ->leftJoin('users as d', 'o.doctor_id', '=', 'd.id')
             ->leftJoin('users as c', 'o.created_by', '=', 'c.id')
             ->leftJoin('pharmacies as ph', 'o.pharmacy_id', '=', 'ph.id')
+            ->whereNull('o.deleted_at')
             ->select(
                 'o.id',
                 'o.amount',
@@ -392,48 +421,62 @@ class OutcomeController extends Controller
                 'ph.name as pharmacy_name'
             );
 
-        // Get current user's pharmacy for filtering
         $user = Auth::user();
-        $userPharmacy = $user->activePharmacies()->first();
+        $userPharmacies = $user->activePharmacies;
 
-        // Filter by pharmacy if user has one (and is not admin)
-        if ($userPharmacy && !$user->hasRole('admin')) {
-            $query->where('o.pharmacy_id', $userPharmacy->id);
+        if ($userPharmacies->isNotEmpty() && !$user->hasRole(['admin', 'super_admin'])) {
+            $query->whereIn('o.pharmacy_id', $userPharmacies->pluck('id'));
         }
 
-        // Filter by medicine name
         if ($request->filled('medicine_name')) {
             $query->where('m.name', 'like', '%' . $request->medicine_name . '%');
         }
 
-        // Filter by patient name
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
         }
 
-        // Filter by outcome type
         if ($request->filled('outcome_type')) {
             $query->where('o.outcome_type', $request->outcome_type);
         }
 
-        // Filter by pharmacy (for admin users)
-        if ($request->filled('pharmacy_id') && $user->hasRole('admin')) {
-            $query->where('o.pharmacy_id', $request->pharmacy_id);
+        if ($request->filled('pharmacy_id')) {
+            $pharmacyId = (int) $request->pharmacy_id;
+            $canFilterPharmacy = $user->hasRole(['admin', 'super_admin'])
+                || $userPharmacies->isEmpty()
+                || $userPharmacies->pluck('id')->contains($pharmacyId);
+            if ($canFilterPharmacy) {
+                $query->where('o.pharmacy_id', $pharmacyId);
+            }
         }
 
-        // Filter by date range - Convert Persian to Gregorian
-        if ($request->filled('from') && $request->filled('to')) {
-            
-            // Convert Persian dates to Gregorian
-            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->from)->datetime();
-            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->to)->datetime();
-
-            $query->whereDate('o.outcome_date', '>=', $fromDate)->whereDate('o.outcome_date', '<=', $toDate);
+        // Bound the search: require/default a date window so we never dump the whole table
+        $from = $request->input('from');
+        $to = $request->input('to');
+        if (!$request->filled('from') || !$request->filled('to')) {
+            $start = \Hekmatinasser\Verta\Facades\Verta::now()->startMonth();
+            $end = \Hekmatinasser\Verta\Facades\Verta::now()->endMonth();
+            $from = $from ?: $start->format('Y/m/d');
+            $to = $to ?: $end->format('Y/m/d');
         }
 
-        $items = $query->orderBy('o.outcome_date', 'desc')->get();
-        
-        return view('pages.outcomes.reports.report', ['items' => $items]);
+        $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($from)->datetime();
+        $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($to)->datetime();
+        $query->where('o.outcome_date', '>=', $fromDate->format('Y-m-d 00:00:00'))
+            ->where('o.outcome_date', '<=', $toDate->format('Y-m-d 23:59:59'));
+
+        $limit = 500;
+        $items = $query->orderBy('o.outcome_date', 'desc')->limit($limit + 1)->get();
+        $truncated = $items->count() > $limit;
+        if ($truncated) {
+            $items = $items->take($limit);
+        }
+
+        return view('pages.outcomes.reports.report', [
+            'items' => $items,
+            'truncated' => $truncated,
+            'limit' => $limit,
+        ]);
     }
 
     /**

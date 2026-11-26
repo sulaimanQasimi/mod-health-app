@@ -10,6 +10,11 @@
             </button>
         </div>
     </div>
+    @if(!empty($truncated))
+        <div class="alert alert-warning mb-0 rounded-0">
+            {{ localize('global.results_limited') ?: ('نمایش محدود به ' . ($limit ?? 500) . ' رکورد. لطفاً بازه تاریخ را کوچک‌تر کنید.') }}
+        </div>
+    @endif
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>

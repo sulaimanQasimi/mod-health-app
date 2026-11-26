@@ -42,14 +42,12 @@
                         <form method="GET" action="{{ route('outcomes.index') }}" class="row g-3">
                             <div class="col-md-3">
                                 <label for="medicine_id" class="form-label">{{ localize('global.medicine') }}</label>
-                                <select class="form-select select2" id="medicine_id" name="medicine_id"
+                                <select class="form-select" id="medicine_id" name="medicine_id"
                                         data-placeholder="{{ localize('global.all_medicines') ?: localize('global.search_by_medicine') }}">
                                     <option value="">{{ localize('global.all_medicines') ?: localize('global.all') }}</option>
-                                    @foreach (($medicines ?? []) as $medicine)
-                                        <option value="{{ $medicine->id }}" {{ (string) request('medicine_id') === (string) $medicine->id ? 'selected' : '' }}>
-                                            {{ $medicine->name }}
-                                        </option>
-                                    @endforeach
+                                    @if(!empty($selectedMedicine))
+                                        <option value="{{ $selectedMedicine->id }}" selected>{{ $selectedMedicine->name }}</option>
+                                    @endif
                                 </select>
                             </div>
                             @if($pharmacies && $pharmacies->count() > 0)
@@ -227,19 +225,35 @@
             const $pharmacySelect = jQuery('#pharmacy_id');
             const $userSelect = jQuery('#pharmacy_user_id');
 
-            function initSelect2(selector) {
+            function initSelect2(selector, extraOptions) {
                 jQuery(selector).each(function () {
                     const $el = jQuery(this);
                     if ($el.hasClass('select2-hidden-accessible')) {
                         $el.select2('destroy');
                     }
-                    $el.select2({
+                    $el.select2(Object.assign({
                         width: '100%',
                         allowClear: true,
                         placeholder: $el.data('placeholder') || ''
-                    });
+                    }, extraOptions || {}));
                 });
             }
+
+            initSelect2('#medicine_id', {
+                minimumInputLength: 1,
+                ajax: {
+                    url: @json(route('outcomes.search-medicines')),
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return { q: params.term || '' };
+                    },
+                    processResults: function (data) {
+                        return { results: (data && data.results) ? data.results : [] };
+                    },
+                    cache: true
+                }
+            });
 
             function resetPharmacyUsers(disabled) {
                 $userSelect.empty().append(
@@ -274,7 +288,7 @@
                     });
             }
 
-            initSelect2('#medicine_id, #pharmacy_id, #pharmacy_user_id');
+            initSelect2('#pharmacy_id, #pharmacy_user_id');
 
             if ($pharmacySelect.length) {
                 $pharmacySelect.on('change', function () {

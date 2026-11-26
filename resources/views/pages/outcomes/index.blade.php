@@ -15,10 +15,12 @@
                         <div>
                             <form action="{{ route('outcomes.export-index-report') }}" method="POST" class="d-inline">
                                 @csrf
+                                <input type="hidden" name="medicine_id" value="{{ request('medicine_id') }}">
                                 <input type="hidden" name="search" value="{{ request('search') }}">
                                 <input type="hidden" name="pharmacy_id" value="{{ request('pharmacy_id') }}">
-                                <input type="hidden" name="date_from" value="{{ request('date_from') }}">
-                                <input type="hidden" name="date_to" value="{{ request('date_to') }}">
+                                <input type="hidden" name="date_from" value="{{ $dateFrom ?? request('date_from') }}">
+                                <input type="hidden" name="date_to" value="{{ $dateTo ?? request('date_to') }}">
+                                <input type="hidden" name="all_dates" value="{{ request('all_dates') ? 1 : 0 }}">
                                 <input type="hidden" name="sort_by" value="{{ request('sort_by', 'usage_count') }}">
                                 <input type="hidden" name="sort_order" value="{{ request('sort_order', 'desc') }}">
                                 <button type="submit" name="type" value="excel" class="btn btn-success btn-sm">
@@ -38,14 +40,22 @@
                     <div class="card-body border-bottom">
                         <form method="GET" action="{{ route('outcomes.index') }}" class="row g-3">
                             <div class="col-md-3">
-                                <label for="search" class="form-label">{{ localize('global.search') }}</label>
-                                <input type="text" class="form-control" id="search" name="search" 
-                                       value="{{ request('search') }}" placeholder="{{ localize('global.search_by_medicine') }}">
+                                <label for="medicine_id" class="form-label">{{ localize('global.medicine') }}</label>
+                                <select class="form-select select2" id="medicine_id" name="medicine_id"
+                                        data-placeholder="{{ localize('global.all_medicines') ?: localize('global.search_by_medicine') }}">
+                                    <option value="">{{ localize('global.all_medicines') ?: localize('global.all') }}</option>
+                                    @foreach (($medicines ?? []) as $medicine)
+                                        <option value="{{ $medicine->id }}" {{ (string) request('medicine_id') === (string) $medicine->id ? 'selected' : '' }}>
+                                            {{ $medicine->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                             @if($pharmacies)
                             <div class="col-md-2">
                                 <label for="pharmacy_id" class="form-label">{{ localize('global.pharmacy') }}</label>
-                                <select class="form-select" id="pharmacy_id" name="pharmacy_id">
+                                <select class="form-select select2" id="pharmacy_id" name="pharmacy_id"
+                                        data-placeholder="{{ localize('global.all_pharmacies') }}">
                                     <option value="">{{ localize('global.all_pharmacies') }}</option>
                                     @foreach ($pharmacies as $pharmacy)
                                         <option value="{{ $pharmacy->id }}" {{ request('pharmacy_id') == $pharmacy->id ? 'selected' : '' }}>
@@ -61,12 +71,24 @@
                                     <input type="text" autocomplete="off" name="date_from"
                                         placeholder="{{ localize('global.from') }}"
                                         class="form-control form-control datepicker_dari pdp-el persian-date" 
-                                        value="{{ request('date_from') }}" />
+                                        value="{{ $dateFrom ?? request('date_from') }}" />
                                     <span class="input-group-text">...</span>
                                     <input type="text" autocomplete="off" name="date_to"
                                         placeholder="{{ localize('global.to') }}"
                                         class="form-control form-control datepicker_dari pdp-el persian-date" 
-                                        value="{{ request('date_to') }}" />
+                                        value="{{ $dateTo ?? request('date_to') }}" />
+                                </div>
+                                @if(!empty($usingDefaultDates))
+                                    <small class="text-muted">{{ localize('global.showing_current_month_by_default') ?: 'پیش‌فرض: ماه جاری (برای سرعت بیشتر)' }}</small>
+                                @endif
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="all_dates" value="1" id="all_dates"
+                                        {{ request('all_dates') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="all_dates">
+                                        {{ localize('global.all_dates') ?: 'همه تاریخ‌ها' }}
+                                    </label>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -107,7 +129,6 @@
                                     <option value="usage_count" {{ request('sort_by', 'usage_count') == 'usage_count' ? 'selected' : '' }}>{{ localize('global.usage_count') }}</option>
                                     <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>{{ localize('global.medicine') }}</option>
                                     <option value="pharmacy_name" {{ request('sort_by') == 'pharmacy_name' ? 'selected' : '' }}>{{ localize('global.pharmacy') }}</option>
-                                    <option value="updated_by_name" {{ request('sort_by') == 'updated_by_name' ? 'selected' : '' }}>{{ localize('global.updated_by') }}</option>
                                     <option value="prescription_updated_at" {{ request('sort_by') == 'prescription_updated_at' ? 'selected' : '' }}>{{ localize('global.prescription_completed_date') }}</option>
                                     <option value="id" {{ request('sort_by') == 'id' ? 'selected' : '' }}>{{ localize('global.id') }}</option>
                                 </select>
@@ -178,6 +199,24 @@
             url.searchParams.set('sort_order', sortOrder);
             window.location.href = url.toString();
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!(window.jQuery && jQuery.fn.select2)) {
+                return;
+            }
+
+            jQuery('#medicine_id, #pharmacy_id').each(function () {
+                const $el = jQuery(this);
+                if ($el.hasClass('select2-hidden-accessible')) {
+                    $el.select2('destroy');
+                }
+                $el.select2({
+                    width: '100%',
+                    allowClear: true,
+                    placeholder: $el.data('placeholder') || ''
+                });
+            });
+        });
     </script>
 @endsection
 @push('custom-css')
@@ -185,6 +224,9 @@
         .persian-date {
             direction: rtl;
             text-align: right;
+        }
+        .select2-container {
+            width: 100% !important;
         }
     </style>
 @endpush

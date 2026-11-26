@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Medicine;
 use App\Models\Pharmacy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,9 +15,45 @@ use Mpdf\Mpdf;
 class OutcomeController extends Controller
 {
     /**
-     * Build the index query (usage per medicine/pharmacy from completed prescriptions) for index and export.
+     * Resolve date filters for the outcomes index.
+     * Defaults to the current Jalali month when no dates are provided,
+     * which keeps the heavy prescription aggregation bounded.
+     *
+     * @return array{0: ?string, 1: ?string, 2: bool} [date_from, date_to, using_defaults]
      */
-    private function buildIndexQuery(Request $request)
+    private function resolveIndexDateFilters(Request $request): array
+    {
+        $hasExplicitDates = $request->filled('date_from') || $request->filled('date_to');
+        $clearDates = $request->boolean('all_dates');
+
+        if ($clearDates) {
+            return [null, null, false];
+        }
+
+        if ($hasExplicitDates) {
+            return [
+                $request->input('date_from'),
+                $request->input('date_to'),
+                false,
+            ];
+        }
+
+        $start = \Hekmatinasser\Verta\Facades\Verta::now()->startMonth();
+        $end = \Hekmatinasser\Verta\Facades\Verta::now()->endMonth();
+
+        return [
+            $start->format('Y/m/d'),
+            $end->format('Y/m/d'),
+            true,
+        ];
+    }
+
+    /**
+     * Build the index query (usage per medicine/pharmacy from completed prescriptions) for index and export.
+     * Intentionally avoids GROUP_CONCAT over users — that was scanning every completed
+     * prescription item and made /outcomes extremely slow.
+     */
+    private function buildIndexQuery(Request $request, ?string $dateFrom = null, ?string $dateTo = null)
     {
         $user = Auth::user();
         $userPharmacies = $user->activePharmacies;
@@ -25,10 +62,10 @@ class OutcomeController extends Controller
             ->leftJoin('prescription_alternative_items as pai', function ($join) {
                 $join->on('pai.prescription_item_id', '=', 'pi.id')
                     ->on('pai.prescription_id', '=', 'pi.prescription_id')
-                    ->whereRaw('(pai.is_selected = 1 AND pai.deleted_at IS NULL)');
+                    ->whereNull('pai.deleted_at')
+                    ->where('pai.is_selected', 1);
             })
             ->join('prescriptions as p', 'pi.prescription_id', '=', 'p.id')
-            ->leftJoin('users as updater', 'p.updated_by', '=', 'updater.id')
             ->leftJoin('pharmacies as ph', 'p.pharmacy_id', '=', 'ph.id')
             ->whereNull('pi.deleted_at')
             ->whereNull('p.deleted_at')
@@ -42,13 +79,13 @@ class OutcomeController extends Controller
         if ($request->filled('pharmacy_id') && ($user->hasRole('admin') || $userPharmacies->isEmpty())) {
             $usageSubquery->where('p.pharmacy_id', $request->pharmacy_id);
         }
-        if ($request->filled('date_from')) {
-            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_from)->datetime();
-            $usageSubquery->whereDate('p.created_at', '>=', $fromDate);
+        if (!empty($dateFrom)) {
+            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($dateFrom)->datetime();
+            $usageSubquery->where('p.created_at', '>=', $fromDate->format('Y-m-d 00:00:00'));
         }
-        if ($request->filled('date_to')) {
-            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_to)->datetime();
-            $usageSubquery->whereDate('p.created_at', '<=', $toDate);
+        if (!empty($dateTo)) {
+            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($dateTo)->datetime();
+            $usageSubquery->where('p.created_at', '<=', $toDate->format('Y-m-d 23:59:59'));
         }
 
         $usageSubquery->select(
@@ -56,7 +93,6 @@ class OutcomeController extends Controller
             'p.pharmacy_id',
             DB::raw('MAX(ph.name) as pharmacy_name'),
             DB::raw('COUNT(*) as usage_count'),
-            DB::raw("SUBSTRING_INDEX(GROUP_CONCAT(TRIM(CONCAT(COALESCE(updater.name,''), ' ', COALESCE(updater.last_name,''))) ORDER BY p.updated_at DESC SEPARATOR '\t'), '\t', 1) as updated_by_name"),
             DB::raw('MAX(p.updated_at) as prescription_updated_at')
         )->groupBy(DB::raw('COALESCE(pai.medicine_id, pi.medicine_id)'), 'p.pharmacy_id');
 
@@ -72,11 +108,13 @@ class OutcomeController extends Controller
                 'u.pharmacy_id',
                 'u.pharmacy_name',
                 'u.usage_count',
-                'u.updated_by_name',
                 'u.prescription_updated_at'
             );
 
-        if ($request->filled('search')) {
+        if ($request->filled('medicine_id')) {
+            $query->where('m.id', (int) $request->medicine_id);
+        } elseif ($request->filled('search')) {
+            // Legacy free-text search fallback
             $query->where('m.name', 'like', '%' . $request->search . '%');
         }
 
@@ -87,13 +125,73 @@ class OutcomeController extends Controller
             'name' => 'm.name',
             'pharmacy_name' => 'u.pharmacy_name',
             'usage_count' => 'u.usage_count',
-            'updated_by_name' => 'u.updated_by_name',
             'prescription_updated_at' => 'u.prescription_updated_at',
         ];
+        // updated_by_name is hydrated after pagination; fall back to usage_count when sorting by it
         $sortColumn = $validSortColumns[$sortBy] ?? 'u.usage_count';
         $query->orderBy($sortColumn, $sortOrder);
 
         return $query;
+    }
+
+    /**
+     * Hydrate updated_by_name only for the current result set (page/export rows),
+     * instead of computing it across every completed prescription in SQL.
+     *
+     * @param  \Illuminate\Support\Collection<int, object>  $rows
+     * @return \Illuminate\Support\Collection<int, object>
+     */
+    private function attachUpdatedByNames($rows)
+    {
+        $collection = collect($rows);
+        if ($collection->isEmpty()) {
+            return $collection;
+        }
+
+        $pharmacyIds = $collection->pluck('pharmacy_id')->filter()->unique()->values();
+        $medicineIds = $collection->pluck('id')->filter()->unique()->values();
+        $updatedAts = $collection->pluck('prescription_updated_at')->filter()->unique()->values();
+
+        if ($pharmacyIds->isEmpty() || $medicineIds->isEmpty() || $updatedAts->isEmpty()) {
+            return $collection->map(function ($row) {
+                $row->updated_by_name = $row->updated_by_name ?? null;
+                return $row;
+            });
+        }
+
+        $latestUpdaters = DB::table('prescription_items as pi')
+            ->leftJoin('prescription_alternative_items as pai', function ($join) {
+                $join->on('pai.prescription_item_id', '=', 'pi.id')
+                    ->on('pai.prescription_id', '=', 'pi.prescription_id')
+                    ->whereNull('pai.deleted_at')
+                    ->where('pai.is_selected', 1);
+            })
+            ->join('prescriptions as p', 'pi.prescription_id', '=', 'p.id')
+            ->leftJoin('users as updater', 'p.updated_by', '=', 'updater.id')
+            ->whereNull('pi.deleted_at')
+            ->whereNull('p.deleted_at')
+            ->where('p.is_completed', 1)
+            ->whereIn('p.pharmacy_id', $pharmacyIds)
+            ->where(function ($q) use ($medicineIds) {
+                $q->whereIn('pi.medicine_id', $medicineIds)
+                    ->orWhereIn('pai.medicine_id', $medicineIds);
+            })
+            ->whereIn('p.updated_at', $updatedAts)
+            ->select(
+                DB::raw('COALESCE(pai.medicine_id, pi.medicine_id) as medicine_id'),
+                'p.pharmacy_id',
+                'p.updated_at',
+                DB::raw("TRIM(CONCAT(COALESCE(updater.name, ''), ' ', COALESCE(updater.last_name, ''))) as updated_by_name")
+            )
+            ->get()
+            ->groupBy(fn ($row) => $row->pharmacy_id . ':' . $row->medicine_id . ':' . $row->updated_at);
+
+        return $collection->map(function ($row) use ($latestUpdaters) {
+            $key = $row->pharmacy_id . ':' . $row->id . ':' . $row->prescription_updated_at;
+            $match = $latestUpdaters->get($key)?->first();
+            $row->updated_by_name = $match ? trim((string) $match->updated_by_name) : null;
+            return $row;
+        });
     }
 
     public function index(Request $request)
@@ -101,15 +199,39 @@ class OutcomeController extends Controller
         $user = Auth::user();
         $userPharmacies = $user->activePharmacies;
 
-        $query = $this->buildIndexQuery($request);
-        $perPage = $request->get('per_page', 15);
-        $outcomes = $query->paginate($perPage);
+        [$dateFrom, $dateTo, $usingDefaultDates] = $this->resolveIndexDateFilters($request);
+
+        $query = $this->buildIndexQuery($request, $dateFrom, $dateTo);
+        $perPage = min(100, max(10, (int) $request->get('per_page', 15)));
+        $outcomes = $query->paginate($perPage)->appends(array_merge(
+            $request->query(),
+            [
+                'date_from' => $dateFrom,
+                'date_to' => $dateTo,
+            ]
+        ));
+
+        $hydrated = $this->attachUpdatedByNames($outcomes->getCollection());
+        $outcomes->setCollection($hydrated);
 
         $pharmacies = ($userPharmacies->isEmpty() || $user->hasRole('admin'))
-            ? Pharmacy::orderBy('name')->get()
+            ? Pharmacy::orderBy('name')->get(['id', 'name'])
             : null;
 
-        return view('pages.outcomes.index', compact('outcomes', 'pharmacies', 'userPharmacies'));
+        $medicines = Medicine::query()
+            ->whereNull('deleted_at')
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return view('pages.outcomes.index', compact(
+            'outcomes',
+            'pharmacies',
+            'medicines',
+            'userPharmacies',
+            'dateFrom',
+            'dateTo',
+            'usingDefaultDates'
+        ));
     }
 
     /**
@@ -117,8 +239,9 @@ class OutcomeController extends Controller
      */
     public function exportIndexReport(Request $request)
     {
-        $query = $this->buildIndexQuery($request);
-        $items = $query->get();
+        [$dateFrom, $dateTo] = $this->resolveIndexDateFilters($request);
+        $query = $this->buildIndexQuery($request, $dateFrom, $dateTo);
+        $items = $this->attachUpdatedByNames($query->get());
 
         if ($request->get('type') === 'pdf') {
             $html = view('pages.outcomes.index_pdf', compact('items'))->render();

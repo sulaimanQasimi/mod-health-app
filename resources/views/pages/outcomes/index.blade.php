@@ -17,7 +17,8 @@
                                 @csrf
                                 <input type="hidden" name="medicine_id" value="{{ request('medicine_id') }}">
                                 <input type="hidden" name="search" value="{{ request('search') }}">
-                                <input type="hidden" name="pharmacy_id" value="{{ request('pharmacy_id') }}">
+                                <input type="hidden" name="pharmacy_id" value="{{ request('pharmacy_id') ?: ($selectedPharmacyId ?? '') }}">
+                                <input type="hidden" name="pharmacy_user_id" value="{{ request('pharmacy_user_id') }}">
                                 <input type="hidden" name="date_from" value="{{ $dateFrom ?? request('date_from') }}">
                                 <input type="hidden" name="date_to" value="{{ $dateTo ?? request('date_to') }}">
                                 <input type="hidden" name="all_dates" value="{{ request('all_dates') ? 1 : 0 }}">
@@ -51,20 +52,36 @@
                                     @endforeach
                                 </select>
                             </div>
-                            @if($pharmacies)
+                            @if($pharmacies && $pharmacies->count() > 0)
                             <div class="col-md-2">
                                 <label for="pharmacy_id" class="form-label">{{ localize('global.pharmacy') }}</label>
                                 <select class="form-select select2" id="pharmacy_id" name="pharmacy_id"
                                         data-placeholder="{{ localize('global.all_pharmacies') }}">
                                     <option value="">{{ localize('global.all_pharmacies') }}</option>
                                     @foreach ($pharmacies as $pharmacy)
-                                        <option value="{{ $pharmacy->id }}" {{ request('pharmacy_id') == $pharmacy->id ? 'selected' : '' }}>
+                                        <option value="{{ $pharmacy->id }}" {{ (string) ($selectedPharmacyId ?? request('pharmacy_id')) === (string) $pharmacy->id ? 'selected' : '' }}>
                                             {{ $pharmacy->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
+                            @elseif(!empty($selectedPharmacyId))
+                                <input type="hidden" name="pharmacy_id" value="{{ $selectedPharmacyId }}">
                             @endif
+                            <div class="col-md-2">
+                                <label for="pharmacy_user_id" class="form-label">{{ localize('global.pharmacy_user') ?: localize('global.updated_by') }}</label>
+                                <select class="form-select select2" id="pharmacy_user_id" name="pharmacy_user_id"
+                                        data-placeholder="{{ localize('global.select') }}"
+                                        @if(empty($selectedPharmacyId)) disabled @endif>
+                                    <option value="">{{ localize('global.all') ?: localize('global.select') }}</option>
+                                    @foreach (($pharmacyUsers ?? []) as $pharmacyUser)
+                                        <option value="{{ $pharmacyUser['id'] }}" {{ (string) request('pharmacy_user_id') === (string) $pharmacyUser['id'] ? 'selected' : '' }}>
+                                            {{ $pharmacyUser['name'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">{{ localize('global.select_pharmacy_first_for_user') }}</small>
+                            </div>
                             <div class="col-md-3">
                                 <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                 <div class="input-group input-daterange">
@@ -205,17 +222,73 @@
                 return;
             }
 
-            jQuery('#medicine_id, #pharmacy_id').each(function () {
-                const $el = jQuery(this);
-                if ($el.hasClass('select2-hidden-accessible')) {
-                    $el.select2('destroy');
-                }
-                $el.select2({
-                    width: '100%',
-                    allowClear: true,
-                    placeholder: $el.data('placeholder') || ''
+            const pharmacyUsersUrl = @json(route('outcomes.pharmacy-users', ['pharmacy' => '__PHARMACY_ID__']));
+            const selectedPharmacyUserId = @json((string) request('pharmacy_user_id', ''));
+            const $pharmacySelect = jQuery('#pharmacy_id');
+            const $userSelect = jQuery('#pharmacy_user_id');
+
+            function initSelect2(selector) {
+                jQuery(selector).each(function () {
+                    const $el = jQuery(this);
+                    if ($el.hasClass('select2-hidden-accessible')) {
+                        $el.select2('destroy');
+                    }
+                    $el.select2({
+                        width: '100%',
+                        allowClear: true,
+                        placeholder: $el.data('placeholder') || ''
+                    });
                 });
-            });
+            }
+
+            function resetPharmacyUsers(disabled) {
+                $userSelect.empty().append(
+                    jQuery('<option>', { value: '', text: @json(localize('global.all') ?: localize('global.select')) })
+                );
+                $userSelect.prop('disabled', !!disabled);
+                initSelect2('#pharmacy_user_id');
+            }
+
+            function loadPharmacyUsers(pharmacyId, preferredUserId) {
+                if (!pharmacyId) {
+                    resetPharmacyUsers(true);
+                    return;
+                }
+
+                $userSelect.prop('disabled', true);
+                jQuery.get(pharmacyUsersUrl.replace('__PHARMACY_ID__', pharmacyId))
+                    .done(function (users) {
+                        resetPharmacyUsers(false);
+                        (users || []).forEach(function (user) {
+                            $userSelect.append(
+                                jQuery('<option>', { value: user.id, text: user.name || ('User #' + user.id) })
+                            );
+                        });
+                        if (preferredUserId) {
+                            $userSelect.val(String(preferredUserId)).trigger('change');
+                        }
+                        initSelect2('#pharmacy_user_id');
+                    })
+                    .fail(function () {
+                        resetPharmacyUsers(false);
+                    });
+            }
+
+            initSelect2('#medicine_id, #pharmacy_id, #pharmacy_user_id');
+
+            if ($pharmacySelect.length) {
+                $pharmacySelect.on('change', function () {
+                    loadPharmacyUsers(jQuery(this).val(), '');
+                });
+            }
+
+            const initialPharmacyId = $pharmacySelect.length
+                ? $pharmacySelect.val()
+                : @json((string) ($selectedPharmacyId ?? ''));
+
+            if (initialPharmacyId && $userSelect.find('option').length <= 1) {
+                loadPharmacyUsers(initialPharmacyId, selectedPharmacyUserId);
+            }
         });
     </script>
 @endsection

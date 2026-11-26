@@ -72,13 +72,26 @@ class OutcomeController extends Controller
             ->where('p.is_completed', 1)
             ->whereNotNull('p.pharmacy_id');
 
-        // If user has no pharmacy, show all pharmacies; otherwise restrict to user's pharmacies
-        if ($userPharmacies->isNotEmpty()) {
+        // If user has pharmacies, restrict to those; admins / users without pharmacy see all
+        if ($userPharmacies->isNotEmpty() && !$user->hasRole(['admin', 'super_admin'])) {
             $usageSubquery->whereIn('p.pharmacy_id', $userPharmacies->pluck('id'));
         }
-        if ($request->filled('pharmacy_id') && ($user->hasRole('admin') || $userPharmacies->isEmpty())) {
-            $usageSubquery->where('p.pharmacy_id', $request->pharmacy_id);
+
+        if ($request->filled('pharmacy_id')) {
+            $pharmacyId = (int) $request->pharmacy_id;
+            $canFilterPharmacy = $user->hasRole(['admin', 'super_admin'])
+                || $userPharmacies->isEmpty()
+                || $userPharmacies->pluck('id')->contains($pharmacyId);
+
+            if ($canFilterPharmacy) {
+                $usageSubquery->where('p.pharmacy_id', $pharmacyId);
+            }
         }
+
+        if ($request->filled('pharmacy_user_id')) {
+            $usageSubquery->where('p.updated_by', (int) $request->pharmacy_user_id);
+        }
+
         if (!empty($dateFrom)) {
             $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($dateFrom)->datetime();
             $usageSubquery->where('p.created_at', '>=', $fromDate->format('Y-m-d 00:00:00'));
@@ -214,9 +227,24 @@ class OutcomeController extends Controller
         $hydrated = $this->attachUpdatedByNames($outcomes->getCollection());
         $outcomes->setCollection($hydrated);
 
-        $pharmacies = ($userPharmacies->isEmpty() || $user->hasRole('admin'))
-            ? Pharmacy::orderBy('name')->get(['id', 'name'])
-            : null;
+        $canSeeAllPharmacies = $user->hasRole(['admin', 'super_admin']) || $userPharmacies->isEmpty();
+        if ($canSeeAllPharmacies) {
+            $pharmacies = Pharmacy::orderBy('name')->get(['id', 'name']);
+        } elseif ($userPharmacies->count() > 1) {
+            $pharmacies = $userPharmacies->sortBy('name')->values();
+        } else {
+            $pharmacies = null;
+        }
+
+        // Single-pharmacy users: auto-scope user filter to their pharmacy
+        $selectedPharmacyId = $request->filled('pharmacy_id')
+            ? (int) $request->pharmacy_id
+            : ($userPharmacies->count() === 1 ? (int) $userPharmacies->first()->id : null);
+
+        $pharmacyUsers = collect();
+        if ($selectedPharmacyId) {
+            $pharmacyUsers = $this->getActivePharmacyUsers($selectedPharmacyId);
+        }
 
         $medicines = Medicine::query()
             ->whereNull('deleted_at')
@@ -227,11 +255,54 @@ class OutcomeController extends Controller
             'outcomes',
             'pharmacies',
             'medicines',
+            'pharmacyUsers',
+            'selectedPharmacyId',
             'userPharmacies',
             'dateFrom',
             'dateTo',
             'usingDefaultDates'
         ));
+    }
+
+    /**
+     * JSON list of active users for a pharmacy (used by outcomes filters).
+     */
+    public function pharmacyUsers(Pharmacy $pharmacy)
+    {
+        $user = Auth::user();
+        $userPharmacies = $user->activePharmacies;
+
+        $allowed = $user->hasRole(['admin', 'super_admin'])
+            || $userPharmacies->isEmpty()
+            || $userPharmacies->pluck('id')->contains($pharmacy->id);
+
+        if (!$allowed) {
+            abort(403);
+        }
+
+        return response()->json($this->getActivePharmacyUsers($pharmacy->id));
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, array{id:int,name:string}>
+     */
+    private function getActivePharmacyUsers(int $pharmacyId)
+    {
+        $pharmacy = Pharmacy::find($pharmacyId);
+        if (!$pharmacy) {
+            return collect();
+        }
+
+        return $pharmacy->activeUsers()
+            ->orderBy('name')
+            ->get(['users.id', 'users.name', 'users.last_name'])
+            ->map(function ($pharmacyUser) {
+                return [
+                    'id' => $pharmacyUser->id,
+                    'name' => trim($pharmacyUser->name . ' ' . ($pharmacyUser->last_name ?? '')),
+                ];
+            })
+            ->values();
     }
 
     /**

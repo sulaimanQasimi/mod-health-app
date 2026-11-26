@@ -22,9 +22,7 @@
                     aria-expanded="false" aria-controls="bloodClinicalCollapse{{ $sectionId }}">
                 <i class="bx bx-donate-blood me-2 text-danger"></i>
                 {{ localize('global.blood_bank') }}
-                @if ($totalCount > 0)
-                    <span class="badge bg-danger ms-2">{{ $totalCount }}</span>
-                @endif
+                <span class="badge bg-danger ms-2 accordion-count-badge">{{ $records->count() }}</span>
             </button>
         </h2>
         <div id="bloodClinicalCollapse{{ $sectionId }}" class="accordion-collapse collapse"

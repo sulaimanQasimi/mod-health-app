@@ -146,8 +146,8 @@
                                                 <span class="badge bg-primary">{{ registration.ref_no || '—' }}</span>
                                             </td>
                                             <td>
-                                                <span v-if="registration.testable && registration.testable.patient">
-                                                    {{ registration.testable.patient.first_name }} {{ registration.testable.patient.last_name }}
+                                                <span v-if="getRegistrationPatientName(registration)">
+                                                    {{ getRegistrationPatientName(registration) }}
                                                 </span>
                                                 <span v-else>—</span>
                                             </td>
@@ -244,8 +244,8 @@
                                         <div class="text-body small mb-1">{{ localize('global.patient') }}</div>
                                         <div class="fw-bold">
                                             <i class="bx bx-user me-1 text-primary"></i>
-                                            <span v-if="selectedRegistration.testable && selectedRegistration.testable.patient">
-                                                {{ selectedRegistration.testable.patient.first_name }} {{ selectedRegistration.testable.patient.last_name }}
+                                            <span v-if="getRegistrationPatientName(selectedRegistration)">
+                                                {{ getRegistrationPatientName(selectedRegistration) }}
                                             </span>
                                             <span v-else>—</span>
                                         </div>
@@ -802,11 +802,23 @@ export default {
     },
     methods: {
         syncAccordionBadge() {
-            const total = this.testRegistrations.length;
-            const completed = this.testRegistrations.filter(
-                (registration) => registration.status === 'completed'
-            ).length;
-            syncVueAccordionBadge(this, { total, completed });
+            syncVueAccordionBadge(this, { total: this.testRegistrations.length });
+        },
+
+        getRegistrationPatientName(registration) {
+            const patient =
+                registration?.testable?.patient ||
+                registration?.patient ||
+                this.appointment?.patient ||
+                null;
+
+            if (!patient) {
+                return '';
+            }
+
+            const first = patient.name || patient.first_name || '';
+            const last = patient.last_name || '';
+            return `${first} ${last}`.trim();
         },
 
         bindAccordionRefresh() {

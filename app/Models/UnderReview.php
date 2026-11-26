@@ -126,4 +126,12 @@ class UnderReview extends Model
     {
         return $this->hasMany(BloodBank::class, 'under_review_id');
     }
+
+    /**
+     * Lab test registrations attached to this under-review stay (morph).
+     */
+    public function patientTestRegistrations()
+    {
+        return $this->morphMany(PatientTestRegistration::class, 'testable');
+    }
 }

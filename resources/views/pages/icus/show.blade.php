@@ -424,7 +424,7 @@
                                     aria-controls="consultationsCollapse">
                                     <i class="bx bx-chat me-2"></i>
                                     {{ localize('global.consultations') }}
-                                    <span class="badge bg-primary ms-2">{{ count($icu->consultations) }}</span>
+                                    <span class="badge bg-primary ms-2 accordion-count-badge">{{ count($icu->consultations) }}</span>
                                 </button>
                             </h2>
                             <div id="consultationsCollapse" class="accordion-collapse collapse"
@@ -682,7 +682,7 @@
                                     aria-controls="prescriptionCollapse">
                                     <i class="bx bx-notepad me-2"></i>
                                     {{ localize('global.prescription') }}
-                                    <span class="badge bg-primary ms-2">{{ count($icu->prescription) }}</span>
+                                    <span class="badge bg-primary ms-2 accordion-count-badge">{{ count($icu->prescription) }}</span>
                                 </button>
                             </h2>
                             <div id="prescriptionCollapse" class="accordion-collapse collapse"

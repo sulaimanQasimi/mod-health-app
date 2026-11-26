@@ -329,6 +329,7 @@
 
 <script>
 import Multiselect from 'vue-multiselect'
+import { syncVueAccordionBadge } from '../utils/accordion-counter.js'
 
 export default {
     name: 'ConsultationSection',
@@ -464,6 +465,7 @@ export default {
                 console.log('Consultations response:', data);
                 if (data.success) {
                     this.consultations = data.data;
+                    syncVueAccordionBadge(this, { total: this.consultations.length });
                     console.log('Loaded consultations:', this.consultations);
                 } else {
                     console.error('Failed to load consultations:', data.message);

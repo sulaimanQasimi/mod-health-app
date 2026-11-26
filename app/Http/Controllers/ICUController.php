@@ -305,6 +305,7 @@ class ICUController extends Controller
             'bloodBanks.patient',
             'bloodBanks.department',
             'bloodBanks.tests',
+            'patientTestRegistrations',
         ]);
 
         return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types','rooms','beds','relations','medicineUsageTypes'));

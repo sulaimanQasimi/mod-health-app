@@ -727,6 +727,7 @@
 
 <script>
 import Multiselect from 'vue-multiselect'
+import { syncVueAccordionBadge } from '../utils/accordion-counter.js'
 
 export default {
     components: {
@@ -781,15 +782,53 @@ export default {
     mounted() {
         this.loadAllLabTypes();
         this.loadTestRegistrations();
+        this.bindAccordionRefresh();
+    },
+    beforeUnmount() {
+        this.unbindAccordionRefresh();
     },
     watch: {
         showCreateModal(newVal) {
             if (!newVal) {
                 this.resetForm();
             }
+        },
+        testRegistrations: {
+            deep: true,
+            handler() {
+                this.syncAccordionBadge();
+            }
         }
     },
     methods: {
+        syncAccordionBadge() {
+            const total = this.testRegistrations.length;
+            const completed = this.testRegistrations.filter(
+                (registration) => registration.status === 'completed'
+            ).length;
+            syncVueAccordionBadge(this, { total, completed });
+        },
+
+        bindAccordionRefresh() {
+            const root = this.$el?.nodeType === 1 ? this.$el : this.$el?.parentElement;
+            const collapse = root?.closest?.('.accordion-item')?.querySelector('.accordion-collapse');
+            if (!collapse) {
+                return;
+            }
+            this._onLabAccordionShown = () => this.loadTestRegistrations();
+            collapse.addEventListener('shown.bs.collapse', this._onLabAccordionShown);
+        },
+
+        unbindAccordionRefresh() {
+            if (!this._onLabAccordionShown) {
+                return;
+            }
+            const root = this.$el?.nodeType === 1 ? this.$el : this.$el?.parentElement;
+            const collapse = root?.closest?.('.accordion-item')?.querySelector('.accordion-collapse');
+            collapse?.removeEventListener('shown.bs.collapse', this._onLabAccordionShown);
+            this._onLabAccordionShown = null;
+        },
+
         async loadAllLabTypes() {
             try {
                 const response = await fetch('/lab-test-registration-ajax/all-lab-types', {
@@ -829,6 +868,7 @@ export default {
                 
                 if (data.success) {
                     this.testRegistrations = data.data;
+                    this.syncAccordionBadge();
                 } else {
                     this.showError(data.message);
                 }

@@ -155,6 +155,14 @@ class Hospitalization extends Model
         return $this->morphMany(PatientTestRegistration::class, 'testable');
     }
 
+    /**
+     * Alias used by the shared lab-test-registration accordion badge.
+     */
+    public function patientTestRegistrations()
+    {
+        return $this->morphMany(PatientTestRegistration::class, 'testable');
+    }
+
     public function icu()
     {
         return $this->hasMany(ICU::class);

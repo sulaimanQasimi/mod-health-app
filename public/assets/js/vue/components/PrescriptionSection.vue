@@ -396,6 +396,7 @@
 
 <script>
 import Multiselect from 'vue-multiselect'
+import { syncVueAccordionBadge } from '../utils/accordion-counter.js'
 
 export default {
     name: 'PrescriptionSection',
@@ -546,6 +547,7 @@ export default {
                 const data = await response.json();
                 if (data.success) {
                     this.prescriptions = data.data;
+                    syncVueAccordionBadge(this, { total: this.prescriptions.length });
                 }
             } catch (error) {
                 console.error('Error loading prescriptions:', error);

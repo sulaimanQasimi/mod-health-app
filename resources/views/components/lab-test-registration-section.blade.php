@@ -18,7 +18,15 @@
                 aria-controls="{{ $collapseId }}">
                 <i class="bx bx-test-tube me-2"></i>
                 {{ localize('global.lab_test_registrations') }}
-                <span class="badge bg-primary ms-2">{{ count($entity->patientTestRegistrations ?? []) }}</span>
+                @php
+                    $labRegs = collect($entity->patientTestRegistrations ?? []);
+                    $labTotal = $labRegs->count();
+                    $labCompleted = $labRegs->where('status', 'completed')->count();
+                    $labBadgeClass = $labTotal > 0 && $labCompleted >= $labTotal
+                        ? 'bg-success'
+                        : ($labCompleted > 0 ? 'bg-warning text-dark' : 'bg-primary');
+                @endphp
+                <span class="badge {{ $labBadgeClass }} ms-2 accordion-count-badge">{{ $labCompleted }}/{{ $labTotal }}</span>
             </button>
         </h2>
         <div id="{{ $collapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $headerId }}"

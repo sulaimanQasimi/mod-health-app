@@ -13,20 +13,21 @@
     "file": "assets/AdviceSection-CLfLkI1n.css",
     "src": "_AdviceSection-CLfLkI1n.css"
   },
-  "_ConsultationSection-BDVCI-jw.js": {
-    "file": "assets/ConsultationSection-BDVCI-jw.js",
+  "_ConsultationSection-DuTCETlf.js": {
+    "file": "assets/ConsultationSection-DuTCETlf.js",
     "name": "ConsultationSection",
     "imports": [
       "_vue-multiselect.esm-_lojsyio.js",
+      "_accordion-counter-DkvP5R95.js",
       "__plugin-vue_export-helper-beOoQdwu.js"
     ],
     "css": [
-      "assets/ConsultationSection-Dix3BxDs.css"
+      "assets/ConsultationSection-Zd5kYSvc.css"
     ]
   },
-  "_ConsultationSection-Dix3BxDs.css": {
-    "file": "assets/ConsultationSection-Dix3BxDs.css",
-    "src": "_ConsultationSection-Dix3BxDs.css"
+  "_ConsultationSection-Zd5kYSvc.css": {
+    "file": "assets/ConsultationSection-Zd5kYSvc.css",
+    "src": "_ConsultationSection-Zd5kYSvc.css"
   },
   "_PrescriptionShowApp-CqLsQG9M.js": {
     "file": "assets/PrescriptionShowApp-CqLsQG9M.js",
@@ -51,6 +52,10 @@
   "__plugin-vue_export-helper-beOoQdwu.js": {
     "file": "assets/_plugin-vue_export-helper-beOoQdwu.js",
     "name": "_plugin-vue_export-helper"
+  },
+  "_accordion-counter-DkvP5R95.js": {
+    "file": "assets/accordion-counter-DkvP5R95.js",
+    "name": "accordion-counter"
   },
   "_index-BetwS6Uc.js": {
     "file": "assets/index-BetwS6Uc.js",
@@ -113,29 +118,31 @@
     ]
   },
   "public/assets/js/vue/appointment-prescription-app.js": {
-    "file": "assets/appointment-prescription-app-BpF3hXIZ.js",
+    "file": "assets/appointment-prescription-app-BgKYaTAd.js",
     "name": "appointment-prescription-app",
     "src": "public/assets/js/vue/appointment-prescription-app.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-beOoQdwu.js",
-      "_vue-multiselect.esm-_lojsyio.js"
+      "_vue-multiselect.esm-_lojsyio.js",
+      "_accordion-counter-DkvP5R95.js"
     ],
     "css": [
-      "assets/appointment-prescription-app-BvTX3fir.css",
+      "assets/appointment-prescription-app-gwqkBKfr.css",
       "assets/vue-multiselect-DIn9qltL.css"
     ]
   },
   "public/assets/js/vue/consultation-app.js": {
-    "file": "assets/consultation-app-CFfaoLzF.js",
+    "file": "assets/consultation-app-qDe2AI61.js",
     "name": "consultation-app",
     "src": "public/assets/js/vue/consultation-app.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-beOoQdwu.js",
-      "_ConsultationSection-BDVCI-jw.js",
+      "_ConsultationSection-DuTCETlf.js",
       "_vue-multiselect.esm-_lojsyio.js",
-      "_sweetalert2.esm.all-DzlfzZPw.js"
+      "_sweetalert2.esm.all-DzlfzZPw.js",
+      "_accordion-counter-DkvP5R95.js"
     ],
     "css": [
       "assets/vue-multiselect-DIn9qltL.css"
@@ -193,15 +200,16 @@
     ]
   },
   "public/assets/js/vue/icu-consultation-app.js": {
-    "file": "assets/icu-consultation-app-DbTyfxBe.js",
+    "file": "assets/icu-consultation-app-BLnsFGxL.js",
     "name": "icu-consultation-app",
     "src": "public/assets/js/vue/icu-consultation-app.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-beOoQdwu.js",
-      "_ConsultationSection-BDVCI-jw.js",
+      "_ConsultationSection-DuTCETlf.js",
       "_vue-multiselect.esm-_lojsyio.js",
-      "_sweetalert2.esm.all-DzlfzZPw.js"
+      "_sweetalert2.esm.all-DzlfzZPw.js",
+      "_accordion-counter-DkvP5R95.js"
     ],
     "css": [
       "assets/vue-multiselect-DIn9qltL.css"
@@ -223,17 +231,18 @@
     ]
   },
   "public/assets/js/vue/lab-test-registration-section.js": {
-    "file": "assets/lab-test-registration-section-Cr_UwgTT.js",
+    "file": "assets/lab-test-registration-section-DexnLNgk.js",
     "name": "lab-test-registration-section",
     "src": "public/assets/js/vue/lab-test-registration-section.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-beOoQdwu.js",
       "_vue-multiselect.esm-_lojsyio.js",
+      "_accordion-counter-DkvP5R95.js",
       "_sweetalert2.esm.all-DzlfzZPw.js"
     ],
     "css": [
-      "assets/lab-test-registration-section-mmbjkO7b.css",
+      "assets/lab-test-registration-section-BlEIk7Od.css",
       "assets/vue-multiselect-DIn9qltL.css"
     ]
   },
@@ -330,7 +339,7 @@
     ]
   },
   "resources/js/Pages/Example.tsx": {
-    "file": "assets/Example-BP0ZuMYF.js",
+    "file": "assets/Example-cEBNwmXo.js",
     "name": "Example",
     "src": "resources/js/Pages/Example.tsx",
     "isDynamicEntry": true,
@@ -344,7 +353,7 @@
     ]
   },
   "resources/js/Pages/Layout.tsx": {
-    "file": "assets/Layout-BesPVl6e.js",
+    "file": "assets/Layout-D9q3tjEX.js",
     "name": "Layout",
     "src": "resources/js/Pages/Layout.tsx",
     "isDynamicEntry": true,
@@ -358,7 +367,7 @@
     ]
   },
   "resources/js/Pages/Welcome.tsx": {
-    "file": "assets/Welcome-Dtzuizxi.js",
+    "file": "assets/Welcome-Bty6vN6-.js",
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.tsx",
     "isDynamicEntry": true,
@@ -381,7 +390,7 @@
     ]
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-DixfdZQd.js",
+    "file": "assets/app-ez2cTmu6.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,

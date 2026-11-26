@@ -60,6 +60,15 @@ class ICU extends Model
         return $this->hasMany(Lab::class);
     }
 
+    /**
+     * Lab test registrations attached to this ICU stay (morph).
+     * Separate from legacy labs() which points at the old Lab model.
+     */
+    public function patientTestRegistrations()
+    {
+        return $this->morphMany(PatientTestRegistration::class, 'testable');
+    }
+
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);

@@ -50,25 +50,21 @@
                                     @endif
                                 </select>
                             </div>
-                            @if($pharmacies && $pharmacies->count() > 0)
                             <div class="col-md-2">
                                 <label for="pharmacy_id" class="form-label">{{ localize('global.pharmacy') }}</label>
-                                <select class="form-select select2" id="pharmacy_id" name="pharmacy_id"
+                                <select class="form-select" id="pharmacy_id" name="pharmacy_id"
                                         data-placeholder="{{ localize('global.all_pharmacies') }}">
                                     <option value="">{{ localize('global.all_pharmacies') }}</option>
-                                    @foreach ($pharmacies as $pharmacy)
+                                    @foreach (($pharmacies ?? []) as $pharmacy)
                                         <option value="{{ $pharmacy->id }}" {{ (string) ($selectedPharmacyId ?? request('pharmacy_id')) === (string) $pharmacy->id ? 'selected' : '' }}>
                                             {{ $pharmacy->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
-                            @elseif(!empty($selectedPharmacyId))
-                                <input type="hidden" name="pharmacy_id" value="{{ $selectedPharmacyId }}">
-                            @endif
                             <div class="col-md-2">
                                 <label for="pharmacy_user_id" class="form-label">{{ localize('global.pharmacy_user') ?: localize('global.updated_by') }}</label>
-                                <select class="form-select select2" id="pharmacy_user_id" name="pharmacy_user_id"
+                                <select class="form-select" id="pharmacy_user_id" name="pharmacy_user_id"
                                         data-placeholder="{{ localize('global.select') }}"
                                         @if(empty($selectedPharmacyId)) disabled @endif>
                                     <option value="">{{ localize('global.all') ?: localize('global.select') }}</option>
@@ -205,6 +201,9 @@
         </div>
     </div>
 
+@endsection
+
+@push('custom-js')
     <script>
         function updateSort() {
             const sortBy = document.getElementById('sort_by').value;
@@ -215,34 +214,73 @@
             window.location.href = url.toString();
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            if (!(window.jQuery && jQuery.fn.select2)) {
+        (function ($) {
+            if (!$ || !$.fn.select2) {
+                console.error('Select2 is not available on outcomes page');
                 return;
             }
 
             const pharmacyUsersUrl = @json(route('outcomes.pharmacy-users', ['pharmacy' => '__PHARMACY_ID__']));
+            const medicineSearchUrl = @json(route('outcomes.search-medicines'));
             const selectedPharmacyUserId = @json((string) request('pharmacy_user_id', ''));
-            const $pharmacySelect = jQuery('#pharmacy_id');
-            const $userSelect = jQuery('#pharmacy_user_id');
+            const $pharmacySelect = $('#pharmacy_id');
+            const $userSelect = $('#pharmacy_user_id');
+            const $medicineSelect = $('#medicine_id');
 
-            function initSelect2(selector, extraOptions) {
-                jQuery(selector).each(function () {
-                    const $el = jQuery(this);
-                    if ($el.hasClass('select2-hidden-accessible')) {
-                        $el.select2('destroy');
-                    }
-                    $el.select2(Object.assign({
-                        width: '100%',
-                        allowClear: true,
-                        placeholder: $el.data('placeholder') || ''
-                    }, extraOptions || {}));
-                });
+            function initSelect2($el, extraOptions) {
+                if (!$el.length) {
+                    return;
+                }
+                if ($el.hasClass('select2-hidden-accessible')) {
+                    $el.select2('destroy');
+                }
+                $el.select2($.extend(true, {
+                    width: '100%',
+                    allowClear: true,
+                    placeholder: $el.data('placeholder') || ''
+                }, extraOptions || {}));
             }
 
-            initSelect2('#medicine_id', {
-                minimumInputLength: 1,
+            function resetPharmacyUsers(disabled) {
+                $userSelect.empty().append(
+                    $('<option>', { value: '', text: @json(localize('global.all') ?: localize('global.select')) })
+                );
+                $userSelect.prop('disabled', !!disabled);
+                initSelect2($userSelect);
+            }
+
+            function loadPharmacyUsers(pharmacyId, preferredUserId) {
+                if (!pharmacyId) {
+                    resetPharmacyUsers(true);
+                    return;
+                }
+
+                $userSelect.prop('disabled', true);
+                $.get(pharmacyUsersUrl.replace('__PHARMACY_ID__', pharmacyId))
+                    .done(function (users) {
+                        $userSelect.empty().append(
+                            $('<option>', { value: '', text: @json(localize('global.all') ?: localize('global.select')) })
+                        );
+                        (users || []).forEach(function (user) {
+                            $userSelect.append(
+                                $('<option>', { value: user.id, text: user.name || ('User #' + user.id) })
+                            );
+                        });
+                        $userSelect.prop('disabled', false);
+                        if (preferredUserId) {
+                            $userSelect.val(String(preferredUserId));
+                        }
+                        initSelect2($userSelect);
+                    })
+                    .fail(function () {
+                        resetPharmacyUsers(false);
+                    });
+            }
+
+            initSelect2($medicineSelect, {
+                minimumInputLength: 0,
                 ajax: {
-                    url: @json(route('outcomes.search-medicines')),
+                    url: medicineSearchUrl,
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
@@ -255,57 +293,30 @@
                 }
             });
 
-            function resetPharmacyUsers(disabled) {
-                $userSelect.empty().append(
-                    jQuery('<option>', { value: '', text: @json(localize('global.all') ?: localize('global.select')) })
-                );
-                $userSelect.prop('disabled', !!disabled);
-                initSelect2('#pharmacy_user_id');
-            }
+            initSelect2($pharmacySelect);
+            initSelect2($userSelect);
 
-            function loadPharmacyUsers(pharmacyId, preferredUserId) {
-                if (!pharmacyId) {
-                    resetPharmacyUsers(true);
-                    return;
+            $pharmacySelect.on('change', function () {
+                loadPharmacyUsers($(this).val(), '');
+            });
+
+            const initialPharmacyId = $pharmacySelect.val() || @json((string) ($selectedPharmacyId ?? ''));
+            if (initialPharmacyId) {
+                if (!$pharmacySelect.val()) {
+                    $pharmacySelect.val(String(initialPharmacyId)).trigger('change.select2');
                 }
-
-                $userSelect.prop('disabled', true);
-                jQuery.get(pharmacyUsersUrl.replace('__PHARMACY_ID__', pharmacyId))
-                    .done(function (users) {
-                        resetPharmacyUsers(false);
-                        (users || []).forEach(function (user) {
-                            $userSelect.append(
-                                jQuery('<option>', { value: user.id, text: user.name || ('User #' + user.id) })
-                            );
-                        });
-                        if (preferredUserId) {
-                            $userSelect.val(String(preferredUserId)).trigger('change');
-                        }
-                        initSelect2('#pharmacy_user_id');
-                    })
-                    .fail(function () {
-                        resetPharmacyUsers(false);
-                    });
+                // Reload users when none are pre-rendered, otherwise keep server-rendered options
+                if ($userSelect.find('option').length <= 1) {
+                    loadPharmacyUsers(initialPharmacyId, selectedPharmacyUserId);
+                } else {
+                    $userSelect.prop('disabled', false);
+                    initSelect2($userSelect);
+                }
             }
-
-            initSelect2('#pharmacy_id, #pharmacy_user_id');
-
-            if ($pharmacySelect.length) {
-                $pharmacySelect.on('change', function () {
-                    loadPharmacyUsers(jQuery(this).val(), '');
-                });
-            }
-
-            const initialPharmacyId = $pharmacySelect.length
-                ? $pharmacySelect.val()
-                : @json((string) ($selectedPharmacyId ?? ''));
-
-            if (initialPharmacyId && $userSelect.find('option').length <= 1) {
-                loadPharmacyUsers(initialPharmacyId, selectedPharmacyUserId);
-            }
-        });
+        })(window.jQuery);
     </script>
-@endsection
+@endpush
+
 @push('custom-css')
     <style>
         .persian-date {

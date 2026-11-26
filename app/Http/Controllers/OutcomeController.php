@@ -230,16 +230,14 @@ class OutcomeController extends Controller
         $canSeeAllPharmacies = $user->hasRole(['admin', 'super_admin']) || $userPharmacies->isEmpty();
         if ($canSeeAllPharmacies) {
             $pharmacies = Pharmacy::orderBy('name')->get(['id', 'name']);
-        } elseif ($userPharmacies->count() > 1) {
-            $pharmacies = $userPharmacies->sortBy('name')->values();
         } else {
-            $pharmacies = null;
+            // Always expose the user's pharmacies in the filter (even if only one)
+            $pharmacies = $userPharmacies->sortBy('name')->values();
         }
 
-        // Single-pharmacy users: auto-scope user filter to their pharmacy
         $selectedPharmacyId = $request->filled('pharmacy_id')
             ? (int) $request->pharmacy_id
-            : ($userPharmacies->count() === 1 ? (int) $userPharmacies->first()->id : null);
+            : ($pharmacies && $pharmacies->count() === 1 ? (int) $pharmacies->first()->id : null);
 
         $pharmacyUsers = collect();
         if ($selectedPharmacyId) {
@@ -250,7 +248,6 @@ class OutcomeController extends Controller
         $selectedMedicine = null;
         if ($request->filled('medicine_id')) {
             $selectedMedicine = Medicine::query()
-                ->whereNull('deleted_at')
                 ->where('id', (int) $request->medicine_id)
                 ->first(['id', 'name']);
         }

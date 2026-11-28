@@ -7,9 +7,10 @@ use App\Http\Controllers\Concerns\AuthorizesPharmacyStockAccess;
 use App\Http\Controllers\Concerns\PaginatesInertiaIndex;
 use App\Models\Medicine;
 use App\Models\Pharmacy;
-use App\Models\StockBatch;
+use App\Models\Stock;
+use App\Support\InventoryNav;
+use App\Support\PackQuantity;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,8 +20,10 @@ class PharmacyFulfillmentController extends Controller
     use PaginatesInertiaIndex;
 
     private const STOCK_FILTER_KEYS = [
-        'search', 'medicine_id', 'pharmacy_id', 'stock_status', 'sort_by', 'sort_order', 'per_page',
+        'search', 'medicine_id', 'pharmacy_id', 'stock_status', 'batch_number', 'per_page',
     ];
+
+    private const LOW_STOCK_THRESHOLD = 10;
 
     public function stock(Request $request): Response
     {
@@ -32,131 +35,102 @@ class PharmacyFulfillmentController extends Controller
             $request->filled('pharmacy_id') ? (int) $request->pharmacy_id : null,
         );
 
-        $stockStats = [
+        $emptyStats = [
             'total_items' => 0,
             'total_stock' => 0,
-            'total_income' => 0,
-            'total_outcome' => 0,
+            'total_batches' => 0,
             'total_low_stock' => 0,
             'total_out_of_stock' => 0,
         ];
 
-        if (empty($allowedPharmacyIds)) {
+        if ($allowedPharmacyIds === []) {
             return Inertia::render('PharmacyFulfillments/Stock', $this->stockPagePayload(
                 $request,
                 $user,
                 new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15),
-                $stockStats,
+                $emptyStats,
+                collect(),
             ));
         }
 
-        $pharmacyMorph = DB::getPdo()->quote((new Pharmacy)->getMorphClass());
-
-        $baseQuery = DB::table(DB::raw("(SELECT owner_id as pharmacy_id, medicine_id,
-                SUM(qty_on_hand) as stock,
-                AVG(purchase_price) as avg_purchase_price,
-                AVG(sale_price) as avg_sale_price
-            FROM stock_batches
-            WHERE deleted_at IS NULL
-              AND owner_type = {$pharmacyMorph}
-              AND medicine_id IS NOT NULL
-            GROUP BY owner_id, medicine_id) as sb"))
-            ->join('medicines as m', 'm.id', '=', 'sb.medicine_id')
-            ->join('pharmacies as p', 'p.id', '=', 'sb.pharmacy_id')
-            ->leftJoin(DB::raw("(SELECT sb2.owner_id as pharmacy_id, sb2.medicine_id, COALESCE(SUM(a.quantity), 0) as total
-                FROM prescription_item_batch_allocations a
-                JOIN stock_batches sb2 ON sb2.id = a.stock_batch_id
-                WHERE sb2.owner_type = {$pharmacyMorph}
-                  AND sb2.deleted_at IS NULL
-                GROUP BY sb2.owner_id, sb2.medicine_id) as ot"), function ($join) {
-                $join->on('ot.pharmacy_id', '=', 'sb.pharmacy_id')->on('ot.medicine_id', '=', 'sb.medicine_id');
-            })
-            ->whereIn('sb.pharmacy_id', $allowedPharmacyIds)
-            ->whereNull('m.deleted_at')
-            ->whereNull('p.deleted_at');
-
-        $stockSql = 'COALESCE(sb.stock, 0)';
+        $query = Stock::query()
+            ->with(['medicine:id,name'])
+            ->where('location_type', Stock::LOCATION_PHARMACY)
+            ->whereIn('location_id', $allowedPharmacyIds);
 
         if ($request->filled('search')) {
-            $search = $request->search;
-            $baseQuery->where(function ($query) use ($search) {
-                $query->where('m.name', 'like', "%{$search}%")
-                    ->orWhere('p.name', 'like', "%{$search}%");
+            $search = (string) $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('batch_number', 'like', "%{$search}%")
+                    ->orWhereHas('medicine', fn ($m) => $m->where('name', 'like', "%{$search}%"));
             });
         }
 
         if ($request->filled('medicine_id')) {
-            $baseQuery->where('m.id', (int) $request->medicine_id);
+            $query->where('medicine_id', (int) $request->medicine_id);
+        }
+
+        if ($request->filled('batch_number')) {
+            $query->where('batch_number', 'like', '%'.$request->string('batch_number').'%');
         }
 
         if ($request->stock_status === 'out_of_stock') {
-            $baseQuery->whereRaw("{$stockSql} <= 0");
+            $query->where('qty_on_hand', '<=', 0)->where('qty_sold', '>', 0);
         } elseif ($request->stock_status === 'low_stock') {
-            $baseQuery->whereRaw("{$stockSql} > 0 AND {$stockSql} <= 10");
+            $query->where('qty_on_hand', '>', 0)
+                ->where('qty_on_hand', '<=', self::LOW_STOCK_THRESHOLD);
+        } elseif ($request->stock_status === 'in_stock') {
+            $query->where('qty_on_hand', '>', self::LOW_STOCK_THRESHOLD);
+        } else {
+            $query->where(function ($q) {
+                $q->where('qty_on_hand', '>', 0)->orWhere('qty_sold', '>', 0);
+            });
         }
 
-        $ownerType = (new Pharmacy)->getMorphClass();
-        $stockStats['total_income'] = (int) StockBatch::query()
-            ->where('owner_type', $ownerType)
-            ->whereIn('owner_id', $allowedPharmacyIds)
-            ->whereNotNull('medicine_id')
-            ->sum(DB::raw('qty_on_hand'));
-        $stockStats['total_outcome'] = (int) DB::table('prescription_item_batch_allocations as a')
-            ->join('stock_batches as sb', 'sb.id', '=', 'a.stock_batch_id')
-            ->where('sb.owner_type', $ownerType)
-            ->whereIn('sb.owner_id', $allowedPharmacyIds)
-            ->sum('a.quantity');
+        $statsBase = Stock::query()
+            ->where('location_type', Stock::LOCATION_PHARMACY)
+            ->whereIn('location_id', $allowedPharmacyIds);
 
-        $statsResult = (clone $baseQuery)->selectRaw("
-            COUNT(*) as total_items,
-            COALESCE(SUM({$stockSql}), 0) as total_stock,
-            SUM(CASE WHEN {$stockSql} > 0 AND {$stockSql} <= 10 THEN 1 ELSE 0 END) as total_low_stock,
-            SUM(CASE WHEN {$stockSql} <= 0 THEN 1 ELSE 0 END) as total_out_of_stock
-        ")->first();
+        $stockStats = [
+            'total_items' => (int) (clone $statsBase)
+                ->where('qty_on_hand', '>', 0)
+                ->selectRaw('count(distinct medicine_id) as aggregate')
+                ->value('aggregate'),
+            'total_stock' => (int) (clone $statsBase)->sum('qty_on_hand'),
+            'total_batches' => (int) (clone $statsBase)->where('qty_on_hand', '>', 0)->count(),
+            'total_low_stock' => (int) (clone $statsBase)
+                ->where('qty_on_hand', '>', 0)
+                ->where('qty_on_hand', '<=', self::LOW_STOCK_THRESHOLD)
+                ->count(),
+            'total_out_of_stock' => (int) (clone $statsBase)
+                ->where('qty_on_hand', '<=', 0)
+                ->where('qty_sold', '>', 0)
+                ->count(),
+        ];
 
-        if ($statsResult) {
-            $stockStats['total_items'] = (int) $statsResult->total_items;
-            $stockStats['total_stock'] = (int) $statsResult->total_stock;
-            $stockStats['total_low_stock'] = (int) $statsResult->total_low_stock;
-            $stockStats['total_out_of_stock'] = (int) $statsResult->total_out_of_stock;
-        }
-
-        $query = (clone $baseQuery)->select(
-            'm.id as medicine_id',
-            'm.name as medicine_name',
-            'p.id as pharmacy_id',
-            'p.name as pharmacy_name',
-            DB::raw('COALESCE(sb.stock, 0) + COALESCE(ot.total, 0) as income'),
-            DB::raw('COALESCE(ot.total, 0) as outcome'),
-            DB::raw("{$stockSql} as stock"),
-            DB::raw('COALESCE(sb.avg_purchase_price, 0) as purchase_price'),
-            DB::raw('COALESCE(sb.avg_sale_price, 0) as sale_price'),
+        $paginator = $this->paginateQuery(
+            $query->orderByDesc('qty_on_hand')->orderBy('batch_number'),
+            $request,
+            20,
         );
 
-        $sortBy = $request->get('sort_by', 'medicine');
-        $sortOrder = strtolower($request->get('sort_order', 'asc')) === 'desc' ? 'desc' : 'asc';
-        $sortableColumns = [
-            'medicine' => 'm.name',
-            'pharmacy' => 'p.name',
-            'income' => 'income',
-            'outcome' => 'outcome',
-            'stock' => 'stock',
-        ];
-        $sortColumn = $sortableColumns[$sortBy] ?? 'm.name';
-        $query->orderBy($sortColumn, $sortOrder)->orderBy('m.name')->orderBy('p.name');
-
-        $perPage = (int) $request->get('per_page', 15);
-        $paginator = $query->paginate($perPage > 0 ? $perPage : 15)->withQueryString();
+        $pharmacies = Pharmacy::query()
+            ->whereIn('id', $allowedPharmacyIds)
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->keyBy('id');
 
         return Inertia::render('PharmacyFulfillments/Stock', $this->stockPagePayload(
             $request,
             $user,
             $paginator,
             $stockStats,
+            $pharmacies,
         ));
     }
 
     /**
+     * @param  \Illuminate\Support\Collection<int|string, Pharmacy>  $pharmacies
      * @return array<string, mixed>
      */
     private function stockPagePayload(
@@ -164,46 +138,69 @@ class PharmacyFulfillmentController extends Controller
         \App\Models\User $user,
         \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginator,
         array $stockStats,
+        $pharmacies,
     ): array {
+        $pharmacyIds = $pharmacies->keys()->map(fn ($id) => (int) $id)->all();
+
+        $medicineIds = $pharmacyIds === []
+            ? []
+            : Stock::query()
+                ->where('location_type', Stock::LOCATION_PHARMACY)
+                ->whereIn('location_id', $pharmacyIds)
+                ->distinct()
+                ->pluck('medicine_id')
+                ->filter()
+                ->all();
+
         return [
-            'stockItems' => [
-                'data' => collect($paginator->items())->map(fn ($item) => [
-                    'medicine_id' => $item->medicine_id,
-                    'medicine_name' => $item->medicine_name,
-                    'pharmacy_id' => $item->pharmacy_id,
-                    'pharmacy_name' => $item->pharmacy_name,
-                    'income' => (int) $item->income,
-                    'outcome' => (int) $item->outcome,
-                    'stock' => (int) $item->stock,
-                    'purchase_price' => (float) ($item->purchase_price ?? 0),
-                    'sale_price' => (float) ($item->sale_price ?? 0),
-                ])->values()->all(),
-                'links' => method_exists($paginator, 'linkCollection') ? $paginator->linkCollection()->toArray() : [],
-                'meta' => [
-                    'current_page' => $paginator->currentPage(),
-                    'last_page' => $paginator->lastPage(),
-                    'per_page' => $paginator->perPage(),
-                    'total' => $paginator->total(),
-                    'from' => $paginator->firstItem(),
-                    'to' => $paginator->lastItem(),
-                ],
-            ],
+            'stockItems' => $this->paginationPayload($paginator, function (Stock $stock) use ($pharmacies) {
+                $split = PackQuantity::fromUnits((int) $stock->qty_on_hand, (int) $stock->units_per_pack);
+                $qty = (int) $stock->qty_on_hand;
+                $status = $qty <= 0
+                    ? 'out_of_stock'
+                    : ($qty <= self::LOW_STOCK_THRESHOLD ? 'low_stock' : 'in_stock');
+
+                return [
+                    'id' => $stock->id,
+                    'medicine_id' => $stock->medicine_id,
+                    'medicine_name' => $stock->medicine?->name,
+                    'pharmacy_id' => $stock->location_id,
+                    'pharmacy_name' => $pharmacies->get($stock->location_id)?->name,
+                    'batch_number' => $stock->batch_number,
+                    'qty_on_hand' => $qty,
+                    'qty_sold' => (int) $stock->qty_sold,
+                    'packs' => $split['packs'],
+                    'units' => $split['units'],
+                    'units_per_pack' => (int) $stock->units_per_pack,
+                    'expiry_date' => optional($stock->expiry_date)?->format('Y-m-d'),
+                    'unit_sale_price' => (float) $stock->unit_sale_price,
+                    'pack_price' => (float) $stock->pack_price,
+                    'stock_status' => $status,
+                ];
+            }),
             'stockStats' => $stockStats,
             'filters' => $this->collectFilters($request, self::STOCK_FILTER_KEYS),
             'filterOptions' => [
                 'pharmacies' => $this->isPharmacyAdmin($user)
                     ? Pharmacy::query()->orderBy('name')->get(['id', 'name'])
-                    : $user->activePharmacies->map(fn (Pharmacy $pharmacy) => ['id' => $pharmacy->id, 'name' => $pharmacy->name])->values()->all(),
-                'medicines' => Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(['id', 'name']),
-                'stockStatuses' => ['out_of_stock', 'low_stock'],
+                    : $user->activePharmacies->map(fn (Pharmacy $pharmacy) => [
+                        'id' => $pharmacy->id,
+                        'name' => $pharmacy->name,
+                    ])->values()->all(),
+                'medicines' => $medicineIds === []
+                    ? []
+                    : Medicine::query()->whereIn('id', $medicineIds)->orderBy('name')->get(['id', 'name']),
+                'stockStatuses' => ['in_stock', 'low_stock', 'out_of_stock'],
             ],
             'userPharmacies' => $user->activePharmacies->map(fn (Pharmacy $pharmacy) => [
                 'id' => $pharmacy->id,
                 'name' => $pharmacy->name,
             ])->values()->all(),
+            'inventoryNav' => InventoryNav::urls(),
             'urls' => [
-                'index' => route('pharmacy-stock.index'),
-                'requests' => route('depots.requests.index'),
+                'index' => route('pharmacy-fulfillments.stock'),
+                'transfers' => route('depot-transfers.index'),
+                'stocks' => route('stocks.index', ['location_type' => 'pharmacy']),
                 'outcomes' => route('outcomes.index'),
             ],
         ];

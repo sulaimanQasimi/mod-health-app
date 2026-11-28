@@ -83,13 +83,8 @@ class DepotTransferService
     {
         $this->assertStatus($request, [DepotTransferRequest::STATUS_PENDING]);
 
-        $request->update([
-            'status' => DepotTransferRequest::STATUS_APPROVED,
-            'approved_by' => auth()->id(),
-            'approved_at' => now(),
-        ]);
-
-        return $request->fresh(['items.medicine']);
+        // Approve + move stock in one step (depot ↓ / pharmacy ↑).
+        return $this->fulfill($request);
     }
 
     public function reject(DepotTransferRequest $request, ?string $reason = null): DepotTransferRequest

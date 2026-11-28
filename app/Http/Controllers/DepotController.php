@@ -28,7 +28,7 @@ class DepotController extends Controller
     use ProvidesDepotFormData;
 
     private const FILTER_KEYS = [
-        'search', 'branch_id', 'department_id', 'pharmacy_id', 'parent_depot_id', 'is_active', 'is_base', 'per_page',
+        'search', 'parent_depot_id', 'is_active', 'is_base', 'per_page',
     ];
 
     private const LOW_STOCK_THRESHOLD = 10;
@@ -37,21 +37,12 @@ class DepotController extends Controller
     {
         $this->authorizeDepotPermission('depot.view');
 
-        $query = Depot::query()->with(['department:id,name', 'branch:id,name', 'pharmacy:id,name', 'parentDepot:id,name', 'activeUsers:id']);
+        $query = Depot::query()->with(['parentDepot:id,name', 'activeUsers:id']);
 
         $this->scopeQueryToUserDepots($query, $request->user());
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%'.$request->search.'%');
-        }
-        if ($request->filled('branch_id')) {
-            $query->where('branch_id', $request->branch_id);
-        }
-        if ($request->filled('department_id')) {
-            $query->where('department_id', $request->department_id);
-        }
-        if ($request->filled('pharmacy_id')) {
-            $query->where('pharmacy_id', $request->pharmacy_id);
         }
         if ($request->filled('parent_depot_id')) {
             $query->where('parent_depot_id', $request->parent_depot_id);
@@ -70,9 +61,6 @@ class DepotController extends Controller
             'depots' => $this->paginationPayload($paginator, fn (Depot $depot) => $this->transformListItem($depot)),
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
             'filterOptions' => [
-                'branches' => $options['branches'],
-                'departments' => $options['departments'],
-                'pharmacies' => $options['pharmacies'],
                 'parentDepots' => $options['depots'],
             ],
             'permissions' => $this->depotCrudPermissions(),
@@ -85,7 +73,6 @@ class DepotController extends Controller
                 'show' => url('/depots'),
                 'edit' => url('/depots'),
                 'destroy' => url('/depots'),
-                'stock' => url('/depots'),
             ],
         ]);
     }
@@ -114,9 +101,6 @@ class DepotController extends Controller
             'address' => 'nullable|string|max:255',
             'is_active' => 'nullable|boolean',
             'is_base' => 'nullable|boolean',
-            'department_id' => 'nullable|exists:departments,id',
-            'branch_id' => 'nullable|exists:branches,id',
-            'pharmacy_id' => 'nullable|exists:pharmacies,id',
             'parent_depot_id' => 'nullable|exists:depots,id',
             'user_ids' => 'nullable|array',
             'user_ids.*' => 'nullable|exists:users,id',
@@ -146,7 +130,7 @@ class DepotController extends Controller
     {
         $this->authorizeDepotRecord($depot, DepotRolePermissions::ACTION_VIEW);
 
-        $depot->load(['department:id,name', 'branch:id,name', 'pharmacy:id,name', 'parentDepot:id,name', 'activeUsers:id,name,last_name,email']);
+        $depot->load(['parentDepot:id,name', 'activeUsers:id,name,last_name,email']);
 
         $stocks = Stock::query()
             ->with('medicine:id,name')
@@ -226,10 +210,11 @@ class DepotController extends Controller
                 'movement_pharmacy' => $this->userCanDepotAction(
                     DepotRolePermissions::ACTION_MOVEMENT_DEPOT_TO_PHARMACY,
                     $depot->id,
-                ) && (bool) $depot->pharmacy_id,
+                ),
             ]),
             'navUrls' => $this->depotNavUrls(),
             'navPermissions' => $this->depotNavPermissions(),
+            'inventoryNav' => InventoryNav::urls(),
             'urls' => [
                 'index' => route('depots.index'),
                 'edit' => route('depots.edit', $depot),
@@ -237,10 +222,7 @@ class DepotController extends Controller
                 'stock' => route('stocks.index', ['location_type' => 'depot', 'location_id' => $depot->id]),
                 'transactionCreate' => route('purchases.create'),
                 'requestCreate' => route('depot-transfers.create', ['source_depot_id' => $depot->id]),
-                'depotToPharmacy' => route('depot-transfers.create', array_filter([
-                    'source_depot_id' => $depot->id,
-                    'pharmacy_id' => $depot->pharmacy_id,
-                ])),
+                'depotToPharmacy' => route('depot-transfers.create', ['source_depot_id' => $depot->id]),
             ],
         ]);
     }
@@ -303,9 +285,6 @@ class DepotController extends Controller
             'address' => 'nullable|string|max:255',
             'is_active' => 'nullable|boolean',
             'is_base' => 'nullable|boolean',
-            'department_id' => 'nullable|exists:departments,id',
-            'branch_id' => 'nullable|exists:branches,id',
-            'pharmacy_id' => 'nullable|exists:pharmacies,id',
             'parent_depot_id' => 'nullable|exists:depots,id|not_in:'.$depot->id,
             'user_ids' => 'nullable|array',
             'user_ids.*' => 'nullable|exists:users,id',
@@ -349,9 +328,6 @@ class DepotController extends Controller
             'id' => $depot->id,
             'name' => $depot->name,
             'address' => $depot->address,
-            'branch_name' => $depot->branch?->name,
-            'department_name' => $depot->department?->name,
-            'pharmacy_name' => $depot->pharmacy?->name,
             'parent_depot_name' => $depot->parentDepot?->name,
             'is_active' => (bool) $depot->is_active,
             'is_base' => (bool) $depot->is_base,
@@ -368,13 +344,7 @@ class DepotController extends Controller
             'id' => $depot->id,
             'name' => $depot->name,
             'address' => $depot->address,
-            'branch_id' => $depot->branch_id,
-            'department_id' => $depot->department_id,
-            'pharmacy_id' => $depot->pharmacy_id,
             'parent_depot_id' => $depot->parent_depot_id,
-            'branch_name' => $depot->branch?->name,
-            'department_name' => $depot->department?->name,
-            'pharmacy_name' => $depot->pharmacy?->name,
             'parent_depot_name' => $depot->parentDepot?->name,
             'is_active' => (bool) $depot->is_active,
             'is_base' => (bool) $depot->is_base,
@@ -390,5 +360,4 @@ class DepotController extends Controller
             ])->values()->all(),
         ];
     }
-
 }

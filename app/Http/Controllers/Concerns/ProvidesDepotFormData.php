@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Concerns;
 
-use App\Models\Branch;
-use App\Models\Department;
 use App\Models\Depot;
 use App\Models\Medicine;
 use App\Models\Pharmacy;
@@ -39,18 +37,9 @@ trait ProvidesDepotFormData
         }
 
         $activeDepotsQuery = (clone $depotsQuery)
-            ->where('is_active', true)
-            ->with(['branch:id,name', 'department:id,name', 'pharmacy:id,name']);
+            ->where('is_active', true);
 
         return [
-            'branches' => Branch::query()->orderBy('name')->get(['id', 'name'])->map(fn ($item) => [
-                'id' => $item->id,
-                'name' => $item->name,
-            ])->values()->all(),
-            'departments' => Department::query()->orderBy('name')->get(['id', 'name'])->map(fn ($item) => [
-                'id' => $item->id,
-                'name' => $item->name,
-            ])->values()->all(),
             'pharmacies' => Pharmacy::query()->orderBy('name')->get(['id', 'name'])->map(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
@@ -59,16 +48,10 @@ trait ProvidesDepotFormData
                 'id' => $item->id,
                 'name' => $item->name,
             ])->values()->all(),
-            'activeDepots' => $activeDepotsQuery->get(['id', 'name', 'pharmacy_id', 'parent_depot_id', 'branch_id', 'department_id'])->map(fn ($item) => [
+            'activeDepots' => $activeDepotsQuery->get(['id', 'name', 'parent_depot_id'])->map(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
-                'pharmacy_id' => $item->pharmacy_id,
                 'parent_depot_id' => $item->parent_depot_id,
-                'branch_id' => $item->branch_id,
-                'department_id' => $item->department_id,
-                'branch_name' => $item->branch?->name,
-                'department_name' => $item->department?->name,
-                'pharmacy_name' => $item->pharmacy?->name,
             ])->values()->all(),
             'medicines' => Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(['id', 'name'])->map(fn ($item) => [
                 'id' => $item->id,

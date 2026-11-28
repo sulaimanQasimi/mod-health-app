@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Medicine;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
+use App\Models\Stock;
+use App\Models\StockBatch;
 use App\Models\Supplier;
 use App\Support\PackQuantity;
 use Illuminate\Support\Facades\DB;
@@ -14,13 +16,14 @@ class PurchaseService
 {
     public function __construct(
         private readonly StockService $stocks,
+        private readonly StockBatchService $batchCodes,
     ) {
     }
 
     public function create(array $data, array $items): Purchase
     {
         return DB::transaction(function () use ($data, $items) {
-            $this->assertUniqueBatchNumbers(array_column($items, 'batch_number'));
+            $items = $this->ensureBatchNumbers($items);
 
             $supplierMeta = $this->resolveSupplier($data);
 
@@ -48,7 +51,7 @@ class PurchaseService
         }
 
         return DB::transaction(function () use ($purchase, $data, $items) {
-            $this->assertUniqueBatchNumbers(array_column($items, 'batch_number'), $purchase->id);
+            $items = $this->ensureBatchNumbers($items, $purchase->id);
 
             $supplierMeta = $this->resolveSupplier($data, $purchase);
 
@@ -136,6 +139,10 @@ class PurchaseService
             $packs = (int) ($row['packs'] ?? 0);
             $units = (int) ($row['units'] ?? 0);
             $qtyUnits = PackQuantity::toUnits($packs, $units, $unitsPerPack);
+            $unitSale = (float) ($row['unit_sale_price'] ?? 0);
+            $packPrice = $unitsPerPack > 1
+                ? (float) ($row['pack_price'] ?? ($unitSale > 0 ? $unitSale * $unitsPerPack : 0))
+                : ($unitSale > 0 ? $unitSale * $unitsPerPack : (float) ($row['pack_price'] ?? 0));
 
             PurchaseItem::query()->create([
                 'purchase_id' => $purchase->id,
@@ -146,11 +153,31 @@ class PurchaseService
                 'units' => $units,
                 'qty_units' => $qtyUnits,
                 'units_per_pack' => $unitsPerPack,
-                'purchase_price' => $row['purchase_price'] ?? 0,
-                'unit_sale_price' => $row['unit_sale_price'] ?? 0,
-                'pack_price' => $row['pack_price'] ?? 0,
+                'purchase_price' => 0,
+                'unit_sale_price' => $unitSale,
+                'pack_price' => $packPrice,
             ]);
         }
+    }
+
+    /**
+     * Always auto-assign standard lot codes (BT-YYYYMMDD-####), ignoring any client input.
+     *
+     * @param  array<int, array<string, mixed>>  $items
+     * @return array<int, array<string, mixed>>
+     */
+    private function ensureBatchNumbers(array $items, ?int $ignorePurchaseId = null): array
+    {
+        $nextSeq = $this->batchCodes->nextBatchSequence();
+
+        foreach ($items as $index => $_row) {
+            $items[$index]['batch_number'] = $this->batchCodes->formatBatchCode($nextSeq);
+            $nextSeq++;
+        }
+
+        $this->assertUniqueBatchNumbers(array_column($items, 'batch_number'), $ignorePurchaseId);
+
+        return $items;
     }
 
     /**
@@ -158,7 +185,7 @@ class PurchaseService
      */
     private function assertUniqueBatchNumbers(array $batchNumbers, ?int $ignorePurchaseId = null): void
     {
-        $normalized = array_map(fn ($b) => trim((string) $b), $batchNumbers);
+        $normalized = array_values(array_filter(array_map(fn ($b) => trim((string) $b), $batchNumbers)));
         if (count($normalized) !== count(array_unique($normalized))) {
             throw ValidationException::withMessages(['batch_number' => 'Batch numbers must be unique on the purchase.']);
         }
@@ -170,14 +197,26 @@ class PurchaseService
 
     private function assertBatchNotUsedElsewhere(string $batchNumber, ?int $ignorePurchaseId = null): void
     {
-        $query = PurchaseItem::query()->where('batch_number', $batchNumber);
+        $purchaseQuery = PurchaseItem::query()->where('batch_number', $batchNumber);
         if ($ignorePurchaseId) {
-            $query->where('purchase_id', '!=', $ignorePurchaseId);
+            $purchaseQuery->where('purchase_id', '!=', $ignorePurchaseId);
         }
 
-        if ($query->exists()) {
+        if ($purchaseQuery->exists()) {
             throw ValidationException::withMessages([
                 'batch_number' => "Batch number [{$batchNumber}] is already used on another purchase.",
+            ]);
+        }
+
+        if (Stock::query()->where('batch_number', $batchNumber)->exists()) {
+            throw ValidationException::withMessages([
+                'batch_number' => "Batch number [{$batchNumber}] already exists in stock.",
+            ]);
+        }
+
+        if (StockBatch::query()->withTrashed()->where('batch_code', $batchNumber)->exists()) {
+            throw ValidationException::withMessages([
+                'batch_number' => "Batch number [{$batchNumber}] already exists as a stock lot.",
             ]);
         }
     }

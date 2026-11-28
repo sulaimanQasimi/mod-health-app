@@ -101,11 +101,29 @@ class StockController extends Controller
             'medicine_id' => ['required', 'integer', 'exists:medicines,id'],
         ]);
 
+        $locationType = $request->string('location_type')->toString();
+        $locationId = $request->integer('location_id');
+        $medicineId = $request->integer('medicine_id');
+
+        $batches = $this->stocks->batchesForLocation($locationType, $locationId, $medicineId);
+
         return response()->json([
-            'available' => $this->stocks->availableForLocation(
+            'available' => $this->stocks->availableForLocation($locationType, $locationId, $medicineId),
+            'batches' => $batches,
+        ]);
+    }
+
+    public function medicines(Request $request)
+    {
+        $request->validate([
+            'location_type' => ['required', 'in:depot,pharmacy'],
+            'location_id' => ['required', 'integer'],
+        ]);
+
+        return response()->json([
+            'medicines' => $this->stocks->medicinesForLocation(
                 $request->string('location_type')->toString(),
                 $request->integer('location_id'),
-                $request->integer('medicine_id')
             ),
         ]);
     }

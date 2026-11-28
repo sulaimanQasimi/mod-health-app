@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DepotTransfer\StoreDepotTransferRequest;
 use App\Models\Depot;
 use App\Models\DepotTransferRequest;
-use App\Models\Medicine;
 use App\Models\Pharmacy;
+use App\Models\Stock;
 use App\Services\DepotTransferService;
 use App\Services\StockService;
 use App\Support\InventoryNav;
@@ -48,10 +48,14 @@ class DepotTransferController extends Controller
 
     public function create(Request $request): Response
     {
+        $sourceDepotId = $request->filled('source_depot_id')
+            ? (int) $request->input('source_depot_id')
+            : null;
+
         return Inertia::render('DepotTransfers/Create', [
-            'formData' => $this->formData(),
+            'formData' => $this->formData($sourceDepotId),
             'defaults' => [
-                'source_depot_id' => $request->input('source_depot_id'),
+                'source_depot_id' => $sourceDepotId,
                 'pharmacy_id' => $request->input('pharmacy_id'),
             ],
             'inventoryNav' => InventoryNav::urls(),
@@ -60,6 +64,7 @@ class DepotTransferController extends Controller
                 'index' => route('depot-transfers.index'),
                 'back' => route('depot-transfers.index'),
                 'availableStock' => route('stocks.available'),
+                'stockMedicines' => route('stocks.medicines'),
             ],
         ]);
     }
@@ -113,7 +118,7 @@ class DepotTransferController extends Controller
     {
         $this->transfers->approve($depotTransfer);
 
-        return back()->with('success', 'Transfer approved.');
+        return back()->with('success', 'Transfer approved and stock moved to destination.');
     }
 
     public function reject(Request $request, DepotTransferRequest $depotTransfer)
@@ -127,7 +132,7 @@ class DepotTransferController extends Controller
     {
         $this->transfers->fulfill($depotTransfer);
 
-        return back()->with('success', 'Transfer fulfilled — stock moved.');
+        return back()->with('success', 'Transfer fulfilled — depot stock deducted and destination increased.');
     }
 
     public function cancel(DepotTransferRequest $depotTransfer)
@@ -137,19 +142,19 @@ class DepotTransferController extends Controller
         return back()->with('success', 'Transfer cancelled.');
     }
 
-    private function formData(): array
+    /**
+     * @return array{depots: mixed, pharmacies: mixed, medicines: list<array{id: int, name: string, units_per_pack: int, total_qty: int}>}
+     */
+    private function formData(?int $sourceDepotId = null): array
     {
+        $medicines = $sourceDepotId
+            ? $this->stocks->medicinesForLocation(Stock::LOCATION_DEPOT, $sourceDepotId)
+            : [];
+
         return [
             'depots' => Depot::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'pharmacies' => Pharmacy::query()->orderBy('name')->get(['id', 'name']),
-            'medicines' => Medicine::query()
-                ->orderBy('name')
-                ->get(['id', 'name', 'units_per_pack'])
-                ->map(fn (Medicine $m) => [
-                    'id' => $m->id,
-                    'name' => $m->name,
-                    'units_per_pack' => $m->unitsPerPack(),
-                ]),
+            'medicines' => $medicines,
         ];
     }
 }

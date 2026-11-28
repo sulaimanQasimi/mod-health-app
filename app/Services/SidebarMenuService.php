@@ -128,12 +128,59 @@ class SidebarMenuService
         }
 
         if ($this->canSeePharmacyStockMenu($user)) {
-            if ($user->hasRole(['admin', 'super_admin']) || $user->hasActivePharmacyRole(['manager'])) {
+            $pharmacyChildren = [];
+
+            if (
+                $user->hasRole(['admin', 'super_admin'])
+                || $user->can('show-pharmacy-menu')
+                || $user->can('pharmacy.index')
+                || $user->hasActivePharmacyRole(['manager'])
+            ) {
+                $pharmacyChildren[] = $this->item('pharmacies', 'global.pharmacies', null, 'pharmacies.index');
+            }
+
+            if (
+                $user->hasRole(['admin', 'super_admin'])
+                || $user->hasActivePharmacyRole(['manager'])
+            ) {
+                $pharmacyChildren[] = $this->item('prescription-stocks', 'global.pharmacy_management', null, 'prescription-stocks.index');
+            }
+
+            if (
+                $user->hasRole(['admin', 'super_admin'])
+                || $user->hasActivePharmacyRole(['manager', 'procurement'])
+            ) {
+                $pharmacyChildren[] = $this->item('pharmacy-fulfillments', 'global.pharmacy_fulfillments', null, 'pharmacy-fulfillments.index');
+                $pharmacyChildren[] = $this->item('pharmacy-fulfillments-stock', 'global.pharmacy_stock', null, 'pharmacy-fulfillments.stock');
+            }
+
+            if (
+                $user->hasRole(['admin', 'super_admin'])
+                || $user->hasActivePharmacyRole(['manager'])
+            ) {
+                $pharmacyChildren[] = $this->item('incomes', 'global.medicine_purchases', null, 'incomes.index');
+                $pharmacyChildren[] = $this->item('outcomes', 'global.pharmacy_outcomes', null, 'outcomes.index');
+                $pharmacyChildren[] = $this->item('outcomes-report', 'global.pharmacy_outcomes_report', null, 'outcomes.report');
+            }
+
+            if (
+                $user->hasRole(['admin', 'super_admin'])
+                || $user->can('show-medicine-menu')
+                || $user->hasActivePharmacyRole(['manager', 'procurement', 'staff'])
+            ) {
+                $pharmacyChildren[] = $this->item('medicine-types', 'global.medicine_types', null, 'medicine-types.index');
+            }
+
+            if ($pharmacyChildren !== []) {
                 $items[] = $this->group('pharmacies', 'global.pharmacies', 'bx-plus-medical', [
                     'pharmacies.*',
-                ], [
-                    $this->item('pharmacies', 'global.pharmacies', null, 'pharmacies.index'),
-                ]);
+                    'prescription-stocks.*',
+                    'pharmacy-fulfillments.*',
+                    'pharmacy-stock.*',
+                    'incomes.*',
+                    'outcomes.*',
+                    'medicine-types.*',
+                ], $pharmacyChildren);
             }
         }
 
@@ -432,7 +479,9 @@ class SidebarMenuService
     private function canSeePharmacyStockMenu(User $user): bool
     {
         return $user->hasRole(['admin', 'super_admin'])
-            || $user->hasActivePharmacyRole(['manager', 'procurement']);
+            || $user->can('show-pharmacy-menu')
+            || $user->can('pharmacy.index')
+            || $user->hasActivePharmacyRole(['manager', 'procurement', 'staff']);
     }
 
     private function canSeeDepotMenu(User $user): bool

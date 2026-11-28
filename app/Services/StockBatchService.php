@@ -10,6 +10,8 @@ use App\Models\PharmacyFulfillment;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use App\Models\PrescriptionItemBatchAllocation;
+use App\Models\PurchaseItem;
+use App\Models\Stock;
 use App\Models\StockBatch;
 use App\Models\Unit;
 use Illuminate\Database\Eloquent\Model;
@@ -352,21 +354,49 @@ class StockBatchService
         return $query->get();
     }
 
+    /**
+     * Standard lot code: BT-YYYYMMDD-#### (global daily sequence).
+     */
     public function nextBatchCode(?Model $owner = null): string
     {
-        $prefix = 'BT-'.now()->format('Ymd');
-        $sequence = random_int(1000, 9999);
+        return $this->formatBatchCode($this->nextBatchSequence($owner));
+    }
+
+    public function formatBatchCode(int $sequence): string
+    {
+        return sprintf('BT-%s-%04d', now()->format('Ymd'), max(1, $sequence));
+    }
+
+    /**
+     * Next sequence for today across stock lots / purchase items.
+     */
+    public function nextBatchSequence(?Model $owner = null): int
+    {
+        $prefix = 'BT-'.now()->format('Ymd').'-';
+        $max = 0;
+
+        $codes = [
+            StockBatch::query()->withTrashed()->where('batch_code', 'like', $prefix.'%')->orderByDesc('batch_code')->value('batch_code'),
+            Stock::query()->where('batch_number', 'like', $prefix.'%')->orderByDesc('batch_number')->value('batch_number'),
+            PurchaseItem::query()->where('batch_number', 'like', $prefix.'%')->orderByDesc('batch_number')->value('batch_number'),
+        ];
 
         if ($owner) {
-            $count = StockBatch::query()
+            $codes[] = StockBatch::query()
                 ->forOwner($owner)
-                ->where('batch_code', 'like', $prefix.'%')
                 ->withTrashed()
-                ->count();
-            $sequence = $count + 1;
+                ->where('batch_code', 'like', $prefix.'%')
+                ->orderByDesc('batch_code')
+                ->value('batch_code');
         }
 
-        return sprintf('%s-%04d', $prefix, $sequence);
+        foreach ($codes as $code) {
+            if ($code && preg_match('/-(\d+)$/', (string) $code, $m)) {
+                $max = max($max, (int) $m[1]);
+            }
+        }
+
+        return $max + 1;
     }
 
     private function normalizeBatchCode(?string $raw, ?Model $owner = null): string

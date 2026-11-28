@@ -380,14 +380,6 @@ class PharmacyFulfillmentController extends Controller
         $user = Auth::user();
         $userPharmacies = $user->activePharmacies;
         $isAdmin = $user->hasRole(['admin', 'super_admin']);
-        $stockStats = [
-            'total_items' => 0,
-            'total_stock' => 0,
-            'total_income' => 0,
-            'total_outcome' => 0,
-            'total_low_stock' => 0,
-            'total_out_of_stock' => 0,
-        ];
 
         // Always scope to ONE pharmacy on stock — scanning all pharmacies 504s on production.
         $pharmacies = $isAdmin
@@ -402,15 +394,13 @@ class PharmacyFulfillmentController extends Controller
             abort(403);
         }
 
-        $medicines = Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(['id', 'name']);
-
         if (!$selectedPharmacyId) {
             $stockItems = new \Illuminate\Pagination\Paginator([], 15);
+            $medicines = collect();
             return view('pages.pharmacy_fulfillments.stock', compact(
                 'stockItems',
                 'pharmacies',
                 'userPharmacies',
-                'stockStats',
                 'medicines',
                 'selectedPharmacyId'
             ));
@@ -418,8 +408,26 @@ class PharmacyFulfillmentController extends Controller
 
         $pharmacyId = (int) $selectedPharmacyId;
 
-        // One CTE pass: income + completed-prescription outcome for a single pharmacy.
-        $stockSql = 'COALESCE(ft.total, 0) - COALESCE(ot.total, 0)';
+        // Only medicines already used by this pharmacy (not the full medicines table).
+        $medicineIds = DB::table('pharmacy_fulfillments')
+            ->where('pharmacy_id', $pharmacyId)
+            ->whereNull('deleted_at')
+            ->distinct()
+            ->pluck('medicine_id');
+
+        if ($request->filled('medicine_id')) {
+            $medicineIds = $medicineIds->push((int) $request->medicine_id)->unique()->values();
+        }
+
+        $medicines = $medicineIds->isEmpty()
+            ? collect()
+            : Medicine::query()
+                ->whereNull('deleted_at')
+                ->whereIn('id', $medicineIds)
+                ->orderBy('name')
+                ->get(['id', 'name']);
+
+        // Single CTE for one pharmacy (no second stats pass — view does not use stockStats).
         $cte = "
             WITH ft AS (
                 SELECT pharmacy_id, medicine_id, SUM(CAST(amount AS UNSIGNED)) AS total
@@ -431,15 +439,16 @@ class PharmacyFulfillmentController extends Controller
                 SELECT p.pharmacy_id,
                        COALESCE(pai.medicine_id, pi.medicine_id) AS medicine_id,
                        SUM(COALESCE(COALESCE(pai.amount, pi.amount), 0)) AS total
-                FROM prescription_items pi
+                FROM prescriptions p
+                INNER JOIN prescription_items pi
+                    ON pi.prescription_id = p.id
+                    AND pi.deleted_at IS NULL
                 LEFT JOIN prescription_alternative_items pai
                     ON pai.prescription_item_id = pi.id
                     AND pai.prescription_id = pi.prescription_id
                     AND pai.is_selected = 1
                     AND pai.deleted_at IS NULL
-                INNER JOIN prescriptions p ON pi.prescription_id = p.id
-                WHERE pi.deleted_at IS NULL
-                  AND p.deleted_at IS NULL
+                WHERE p.deleted_at IS NULL
                   AND p.is_completed = 1
                   AND p.pharmacy_id = {$pharmacyId}
                 GROUP BY p.pharmacy_id, COALESCE(pai.medicine_id, pi.medicine_id)
@@ -452,14 +461,13 @@ class PharmacyFulfillmentController extends Controller
             SELECT
                 m.id AS medicine_id,
                 m.name AS medicine_name,
-                ph.id AS pharmacy_id,
-                ph.name AS pharmacy_name,
+                {$pharmacyId} AS pharmacy_id,
+                (SELECT name FROM pharmacies WHERE id = {$pharmacyId} LIMIT 1) AS pharmacy_name,
                 COALESCE(ft.total, 0) AS income,
                 COALESCE(ot.total, 0) AS outcome,
-                ({$stockSql}) AS stock
+                COALESCE(ft.total, 0) - COALESCE(ot.total, 0) AS stock
             FROM pairs u
             INNER JOIN medicines m ON m.id = u.medicine_id AND m.deleted_at IS NULL
-            INNER JOIN pharmacies ph ON ph.id = u.pharmacy_id AND ph.deleted_at IS NULL
             LEFT JOIN ft ON ft.pharmacy_id = u.pharmacy_id AND ft.medicine_id = u.medicine_id
             LEFT JOIN ot ON ot.pharmacy_id = u.pharmacy_id AND ot.medicine_id = u.medicine_id
         ";
@@ -467,11 +475,7 @@ class PharmacyFulfillmentController extends Controller
         $baseQuery = DB::table(DB::raw("({$cte}) as stock_rows"));
 
         if ($request->filled('search')) {
-            $search = $request->search;
-            $baseQuery->where(function ($q) use ($search) {
-                $q->where('medicine_name', 'like', '%' . $search . '%')
-                    ->orWhere('pharmacy_name', 'like', '%' . $search . '%');
-            });
+            $baseQuery->where('medicine_name', 'like', '%' . $request->search . '%');
         }
         if ($request->filled('medicine_id')) {
             $baseQuery->where('medicine_id', (int) $request->medicine_id);
@@ -482,24 +486,6 @@ class PharmacyFulfillmentController extends Controller
             $baseQuery->where('stock', '<=', 0);
         } elseif ($stockStatus === 'low_stock') {
             $baseQuery->where('stock', '>', 0)->where('stock', '<=', 10);
-        }
-
-        $stockStatsResult = (clone $baseQuery)->selectRaw("
-            COUNT(*) as total_items,
-            COALESCE(SUM(income), 0) as total_income,
-            COALESCE(SUM(outcome), 0) as total_outcome,
-            COALESCE(SUM(stock), 0) as total_stock,
-            SUM(CASE WHEN stock > 0 AND stock <= 10 THEN 1 ELSE 0 END) as total_low_stock,
-            SUM(CASE WHEN stock <= 0 THEN 1 ELSE 0 END) as total_out_of_stock
-        ")->first();
-
-        if ($stockStatsResult) {
-            $stockStats['total_items'] = (int) $stockStatsResult->total_items;
-            $stockStats['total_income'] = (int) $stockStatsResult->total_income;
-            $stockStats['total_outcome'] = (int) $stockStatsResult->total_outcome;
-            $stockStats['total_stock'] = (int) $stockStatsResult->total_stock;
-            $stockStats['total_low_stock'] = (int) $stockStatsResult->total_low_stock;
-            $stockStats['total_out_of_stock'] = (int) $stockStatsResult->total_out_of_stock;
         }
 
         $sortBy = $request->get('sort_by', 'medicine');
@@ -514,7 +500,7 @@ class PharmacyFulfillmentController extends Controller
         $sortColumn = $sortableColumns[$sortBy] ?? 'medicine_name';
 
         $perPage = min(50, max(10, (int) $request->get('per_page', 15)));
-        $stockItems = (clone $baseQuery)
+        $stockItems = $baseQuery
             ->orderBy($sortColumn, $sortOrder)
             ->orderBy('medicine_name')
             ->simplePaginate($perPage)
@@ -524,7 +510,6 @@ class PharmacyFulfillmentController extends Controller
             'stockItems',
             'pharmacies',
             'userPharmacies',
-            'stockStats',
             'medicines',
             'selectedPharmacyId'
         ));

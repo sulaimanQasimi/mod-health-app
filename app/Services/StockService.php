@@ -33,6 +33,78 @@ class StockService
         return $this->availableForLocation(Stock::LOCATION_PHARMACY, $pharmacyId, $medicineId);
     }
 
+    public function availableForBatch(
+        string $locationType,
+        int $locationId,
+        int $medicineId,
+        string $batchNumber,
+    ): int {
+        return (int) Stock::query()
+            ->forLocation($locationType, $locationId)
+            ->where('medicine_id', $medicineId)
+            ->where('batch_number', $batchNumber)
+            ->sum('qty_on_hand');
+    }
+
+    /**
+     * Medicines with on-hand stock at a location.
+     *
+     * @return list<array{id: int, name: string, units_per_pack: int, total_qty: int}>
+     */
+    public function medicinesForLocation(string $locationType, int $locationId): array
+    {
+        return Stock::query()
+            ->forLocation($locationType, $locationId)
+            ->where('qty_on_hand', '>', 0)
+            ->with('medicine:id,name,units_per_pack')
+            ->get()
+            ->groupBy('medicine_id')
+            ->map(function ($rows) {
+                /** @var Stock $first */
+                $first = $rows->first();
+                $medicine = $first->medicine;
+                if (! $medicine) {
+                    return null;
+                }
+
+                return [
+                    'id' => (int) $medicine->id,
+                    'name' => (string) $medicine->name,
+                    'units_per_pack' => (int) ($first->units_per_pack ?: $medicine->unitsPerPack()),
+                    'total_qty' => (int) $rows->sum('qty_on_hand'),
+                ];
+            })
+            ->filter()
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Batches with stock for a medicine at a location (FEFO: earliest expiry first).
+     *
+     * @return list<array{batch_number: string, qty_on_hand: int, expiry_date: ?string, units_per_pack: int}>
+     */
+    public function batchesForLocation(string $locationType, int $locationId, int $medicineId): array
+    {
+        return Stock::query()
+            ->forLocation($locationType, $locationId)
+            ->where('medicine_id', $medicineId)
+            ->where('qty_on_hand', '>', 0)
+            ->orderByRaw('CASE WHEN expiry_date IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('expiry_date')
+            ->orderBy('batch_number')
+            ->get(['batch_number', 'qty_on_hand', 'expiry_date', 'units_per_pack'])
+            ->map(fn (Stock $stock) => [
+                'batch_number' => (string) $stock->batch_number,
+                'qty_on_hand' => (int) $stock->qty_on_hand,
+                'expiry_date' => optional($stock->expiry_date)?->format('Y-m-d'),
+                'units_per_pack' => max(1, (int) $stock->units_per_pack),
+            ])
+            ->values()
+            ->all();
+    }
+
     /**
      * @return Collection<int, Stock>
      */

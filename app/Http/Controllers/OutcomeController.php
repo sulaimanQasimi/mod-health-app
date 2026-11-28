@@ -49,9 +49,8 @@ class OutcomeController extends Controller
     }
 
     /**
-     * Build the index query (usage per medicine/pharmacy from completed prescriptions) for index and export.
-     * Intentionally avoids GROUP_CONCAT over users — that was scanning every completed
-     * prescription item and made /outcomes extremely slow.
+     * Build the index query (usage per medicine/pharmacy/user from completed prescriptions).
+     * Grouped by completing user so each row's delivered amount belongs only to that user.
      */
     private function buildIndexQuery(Request $request, ?string $dateFrom = null, ?string $dateTo = null)
     {
@@ -67,6 +66,7 @@ class OutcomeController extends Controller
             })
             ->join('prescriptions as p', 'pi.prescription_id', '=', 'p.id')
             ->leftJoin('pharmacies as ph', 'p.pharmacy_id', '=', 'ph.id')
+            ->leftJoin('users as updater', 'p.updated_by', '=', 'updater.id')
             ->whereNull('pi.deleted_at')
             ->whereNull('p.deleted_at')
             ->where('p.is_completed', 1)
@@ -101,17 +101,22 @@ class OutcomeController extends Controller
             $usageSubquery->where('p.created_at', '<=', $toDate->format('Y-m-d 23:59:59'));
         }
 
-        // Sum prescription item amounts (selected alternative amount when present)
-        // for completed prescriptions only — same join cost as COUNT(*), not heavier.
+        // One row per medicine + pharmacy + completing user, with that user's delivered amount only.
         $usageSubquery->select(
             DB::raw('COALESCE(pai.medicine_id, pi.medicine_id) as medicine_id'),
             'p.pharmacy_id',
+            'p.updated_by',
             DB::raw('MAX(ph.name) as pharmacy_name'),
+            DB::raw("TRIM(CONCAT(COALESCE(MAX(updater.name), ''), ' ', COALESCE(MAX(updater.last_name), ''))) as updated_by_name"),
             DB::raw('SUM(COALESCE(COALESCE(pai.amount, pi.amount), 0)) as usage_count'),
             DB::raw('MAX(p.updated_at) as prescription_updated_at')
-        )->groupBy(DB::raw('COALESCE(pai.medicine_id, pi.medicine_id)'), 'p.pharmacy_id');
+        )->groupBy(
+            DB::raw('COALESCE(pai.medicine_id, pi.medicine_id)'),
+            'p.pharmacy_id',
+            'p.updated_by'
+        );
 
-        // Join usage (per medicine, pharmacy) to medicines
+        // Join usage (per medicine, pharmacy, user) to medicines
         $usageSubqueryClone = clone $usageSubquery;
         $query = DB::table(DB::raw('(' . $usageSubqueryClone->toSql() . ') as u'))
             ->mergeBindings($usageSubqueryClone)
@@ -122,6 +127,8 @@ class OutcomeController extends Controller
                 'm.name',
                 'u.pharmacy_id',
                 'u.pharmacy_name',
+                'u.updated_by',
+                'u.updated_by_name',
                 'u.usage_count',
                 'u.prescription_updated_at'
             );
@@ -140,73 +147,13 @@ class OutcomeController extends Controller
             'name' => 'm.name',
             'pharmacy_name' => 'u.pharmacy_name',
             'usage_count' => 'u.usage_count',
+            'updated_by_name' => 'u.updated_by_name',
             'prescription_updated_at' => 'u.prescription_updated_at',
         ];
-        // updated_by_name is hydrated after pagination; fall back to usage_count when sorting by it
         $sortColumn = $validSortColumns[$sortBy] ?? 'u.usage_count';
         $query->orderBy($sortColumn, $sortOrder);
 
         return $query;
-    }
-
-    /**
-     * Hydrate updated_by_name only for the current result set (page/export rows),
-     * instead of computing it across every completed prescription in SQL.
-     *
-     * @param  \Illuminate\Support\Collection<int, object>  $rows
-     * @return \Illuminate\Support\Collection<int, object>
-     */
-    private function attachUpdatedByNames($rows)
-    {
-        $collection = collect($rows);
-        if ($collection->isEmpty()) {
-            return $collection;
-        }
-
-        $pharmacyIds = $collection->pluck('pharmacy_id')->filter()->unique()->values();
-        $medicineIds = $collection->pluck('id')->filter()->unique()->values();
-        $updatedAts = $collection->pluck('prescription_updated_at')->filter()->unique()->values();
-
-        if ($pharmacyIds->isEmpty() || $medicineIds->isEmpty() || $updatedAts->isEmpty()) {
-            return $collection->map(function ($row) {
-                $row->updated_by_name = $row->updated_by_name ?? null;
-                return $row;
-            });
-        }
-
-        $latestUpdaters = DB::table('prescription_items as pi')
-            ->leftJoin('prescription_alternative_items as pai', function ($join) {
-                $join->on('pai.prescription_item_id', '=', 'pi.id')
-                    ->on('pai.prescription_id', '=', 'pi.prescription_id')
-                    ->whereNull('pai.deleted_at')
-                    ->where('pai.is_selected', 1);
-            })
-            ->join('prescriptions as p', 'pi.prescription_id', '=', 'p.id')
-            ->leftJoin('users as updater', 'p.updated_by', '=', 'updater.id')
-            ->whereNull('pi.deleted_at')
-            ->whereNull('p.deleted_at')
-            ->where('p.is_completed', 1)
-            ->whereIn('p.pharmacy_id', $pharmacyIds)
-            ->where(function ($q) use ($medicineIds) {
-                $q->whereIn('pi.medicine_id', $medicineIds)
-                    ->orWhereIn('pai.medicine_id', $medicineIds);
-            })
-            ->whereIn('p.updated_at', $updatedAts)
-            ->select(
-                DB::raw('COALESCE(pai.medicine_id, pi.medicine_id) as medicine_id'),
-                'p.pharmacy_id',
-                'p.updated_at',
-                DB::raw("TRIM(CONCAT(COALESCE(updater.name, ''), ' ', COALESCE(updater.last_name, ''))) as updated_by_name")
-            )
-            ->get()
-            ->groupBy(fn ($row) => $row->pharmacy_id . ':' . $row->medicine_id . ':' . $row->updated_at);
-
-        return $collection->map(function ($row) use ($latestUpdaters) {
-            $key = $row->pharmacy_id . ':' . $row->id . ':' . $row->prescription_updated_at;
-            $match = $latestUpdaters->get($key)?->first();
-            $row->updated_by_name = $match ? trim((string) $match->updated_by_name) : null;
-            return $row;
-        });
     }
 
     public function index(Request $request)
@@ -225,9 +172,6 @@ class OutcomeController extends Controller
                 'date_to' => $dateTo,
             ]
         ));
-
-        $hydrated = $this->attachUpdatedByNames($outcomes->getCollection());
-        $outcomes->setCollection($hydrated);
 
         $canSeeAllPharmacies = $user->hasRole(['admin', 'super_admin']) || $userPharmacies->isEmpty();
         if ($canSeeAllPharmacies) {
@@ -375,7 +319,7 @@ class OutcomeController extends Controller
     {
         [$dateFrom, $dateTo] = $this->resolveIndexDateFilters($request);
         $query = $this->buildIndexQuery($request, $dateFrom, $dateTo);
-        $items = $this->attachUpdatedByNames($query->get());
+        $items = $query->get();
 
         if ($request->get('type') === 'pdf') {
             $html = view('pages.outcomes.index_pdf', compact('items'))->render();

@@ -129,9 +129,11 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div>
                                 <span class="text-muted">
-                                    {{ localize('global.showing') }} {{ $fulfillments->firstItem() ?? 0 }} 
-                                    {{ localize('global.to') }} {{ $fulfillments->lastItem() ?? 0 }} 
-                                    {{ localize('global.of') }} {{ $fulfillments->total() }} 
+                                    {{ localize('global.showing') }} {{ $fulfillments->firstItem() ?? 0 }}
+                                    {{ localize('global.to') }} {{ $fulfillments->lastItem() ?? 0 }}
+                                    @if(method_exists($fulfillments, 'total'))
+                                        {{ localize('global.of') }} {{ $fulfillments->total() }}
+                                    @endif
                                     {{ localize('global.results') }}
                                 </span>
                             </div>
@@ -259,8 +261,10 @@
                         <!-- Enhanced Pagination -->
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <div class="text-muted">
-                                {{ localize('global.page') }} {{ $fulfillments->currentPage() }} 
-                                {{ localize('global.of') }} {{ $fulfillments->lastPage() }}
+                                {{ localize('global.page') }} {{ $fulfillments->currentPage() }}
+                                @if(method_exists($fulfillments, 'lastPage'))
+                                    {{ localize('global.of') }} {{ $fulfillments->lastPage() }}
+                                @endif
                             </div>
                             <div>
                                 {{ $fulfillments->appends(request()->query())->links('pagination::bootstrap-5') }}

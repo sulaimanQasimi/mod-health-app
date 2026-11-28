@@ -60,14 +60,14 @@
                                 @if ($pharmacies && $pharmacies->isNotEmpty())
                                     <div class="col-md-3">
                                         <label for="pharmacy_id" class="form-label">{{ localize('global.pharmacy') }}</label>
-                                        <select class="form-select filter-auto-submit" id="pharmacy_id" name="pharmacy_id">
-                                            <option value="">{{ localize('global.all_pharmacies') }}</option>
+                                        <select class="form-select filter-auto-submit" id="pharmacy_id" name="pharmacy_id" required>
                                             @foreach ($pharmacies as $pharmacy)
-                                                <option value="{{ $pharmacy->id }}" {{ request('pharmacy_id') == $pharmacy->id ? 'selected' : '' }}>
+                                                <option value="{{ $pharmacy->id }}" {{ (string) ($selectedPharmacyId ?? request('pharmacy_id')) === (string) $pharmacy->id ? 'selected' : '' }}>
                                                     {{ $pharmacy->name }}
                                                 </option>
                                             @endforeach
                                         </select>
+                                        <small class="text-muted">{{ localize('global.select_pharmacy_first_for_user') }}</small>
                                     </div>
                                 @endif
 
@@ -130,7 +130,9 @@
                             <span class="text-muted">
                                 {{ localize('global.showing') }} {{ $stockItems->firstItem() ?? 0 }}
                                 {{ localize('global.to') }} {{ $stockItems->lastItem() ?? 0 }}
-                                {{ localize('global.of') }} {{ $stockItems->total() }}
+                                @if(method_exists($stockItems, 'total'))
+                                    {{ localize('global.of') }} {{ $stockItems->total() }}
+                                @endif
                                 {{ localize('global.results') }}
                             </span>
                         </div>
@@ -194,7 +196,9 @@
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <div class="text-muted">
                                 {{ localize('global.page') }} {{ $stockItems->currentPage() }}
-                                {{ localize('global.of') }} {{ $stockItems->lastPage() }}
+                                @if(method_exists($stockItems, 'lastPage'))
+                                    {{ localize('global.of') }} {{ $stockItems->lastPage() }}
+                                @endif
                             </div>
                             <div>
                                 {{ $stockItems->appends(request()->query())->links('pagination::bootstrap-5') }}

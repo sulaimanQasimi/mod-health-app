@@ -54,8 +54,9 @@ class PharmacyFulfillmentController extends Controller
 
         $query = $this->buildIndexQuery($request, $dateFrom, $dateTo);
 
-        $perPage = min(100, max(10, (int) $request->get('per_page', 15)));
-        $fulfillments = $query->paginate($perPage)->appends(array_merge(
+        $perPage = min(50, max(10, (int) $request->get('per_page', 15)));
+        // simplePaginate avoids a second full COUNT(*) query that often 504s on large servers.
+        $fulfillments = $query->simplePaginate($perPage)->appends(array_merge(
             $request->query(),
             [
                 'date_from' => $dateFrom,
@@ -378,7 +379,7 @@ class PharmacyFulfillmentController extends Controller
     {
         $user = Auth::user();
         $userPharmacies = $user->activePharmacies;
-        $allowedPharmacyIds = $userPharmacies->isEmpty() ? [] : $userPharmacies->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $isAdmin = $user->hasRole(['admin', 'super_admin']);
         $stockStats = [
             'total_items' => 0,
             'total_stock' => 0,
@@ -388,166 +389,145 @@ class PharmacyFulfillmentController extends Controller
             'total_out_of_stock' => 0,
         ];
 
-        $isAdmin = $user->hasRole(['admin', 'super_admin']);
+        // Always scope to ONE pharmacy on stock — scanning all pharmacies 504s on production.
+        $pharmacies = $isAdmin
+            ? Pharmacy::orderBy('name')->get(['id', 'name'])
+            : $userPharmacies->sortBy('name')->values();
 
-        // Admin can see all pharmacies, but selecting one avoids scanning every pharmacy.
-        if ($isAdmin) {
-            if ($request->filled('pharmacy_id')) {
-                $allowedPharmacyIds = [(int) $request->pharmacy_id];
-            } else {
-                $allowedPharmacyIds = Pharmacy::query()->pluck('id')->map(fn ($id) => (int) $id)->all();
-            }
+        $selectedPharmacyId = $request->filled('pharmacy_id')
+            ? (int) $request->pharmacy_id
+            : ($pharmacies->first()->id ?? null);
+
+        if ($selectedPharmacyId && !$isAdmin && !$userPharmacies->pluck('id')->contains($selectedPharmacyId)) {
+            abort(403);
         }
 
         $medicines = Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(['id', 'name']);
-        $pharmacies = $isAdmin ? Pharmacy::orderBy('name')->get(['id', 'name']) : null;
 
-        if (empty($allowedPharmacyIds)) {
+        if (!$selectedPharmacyId) {
             $stockItems = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15);
-            return view('pages.pharmacy_fulfillments.stock', compact('stockItems', 'pharmacies', 'userPharmacies', 'stockStats', 'medicines'));
+            return view('pages.pharmacy_fulfillments.stock', compact(
+                'stockItems',
+                'pharmacies',
+                'userPharmacies',
+                'stockStats',
+                'medicines',
+                'selectedPharmacyId'
+            ));
         }
 
-        // Safe integer list for embedding into derived-table SQL (keeps MySQL from scanning all pharmacies first).
-        $pharmacyIdsSql = implode(',', $allowedPharmacyIds);
+        $pharmacyId = (int) $selectedPharmacyId;
 
-        // Outcome = delivered amount from completed prescriptions (aligned with outcomes page).
-        $usageSql = "(SELECT p.pharmacy_id,
-                COALESCE(pai.medicine_id, pi.medicine_id) as medicine_id,
-                SUM(COALESCE(COALESCE(pai.amount, pi.amount), 0)) as total
-            FROM prescription_items pi
-            LEFT JOIN prescription_alternative_items pai
-                ON pai.prescription_item_id = pi.id
-                AND pai.prescription_id = pi.prescription_id
-                AND pai.is_selected = 1
-                AND pai.deleted_at IS NULL
-            JOIN prescriptions p ON pi.prescription_id = p.id
-            WHERE pi.deleted_at IS NULL
-                AND p.deleted_at IS NULL
-                AND p.is_completed = 1
-                AND p.pharmacy_id IN ({$pharmacyIdsSql})
-            GROUP BY p.pharmacy_id, COALESCE(pai.medicine_id, pi.medicine_id))";
-
-        $ftSql = "(SELECT pharmacy_id, medicine_id, SUM(CAST(amount AS UNSIGNED)) as total
-            FROM pharmacy_fulfillments
-            WHERE deleted_at IS NULL
-                AND pharmacy_id IN ({$pharmacyIdsSql})
-            GROUP BY pharmacy_id, medicine_id)";
-
-        // Discover medicine/pharmacy pairs only within allowed pharmacies.
-        $unionSql = "((SELECT pharmacy_id, medicine_id
+        // One CTE pass: income + completed-prescription outcome for a single pharmacy.
+        $stockSql = 'COALESCE(ft.total, 0) - COALESCE(ot.total, 0)';
+        $cte = "
+            WITH ft AS (
+                SELECT pharmacy_id, medicine_id, SUM(CAST(amount AS UNSIGNED)) AS total
                 FROM pharmacy_fulfillments
-                WHERE deleted_at IS NULL AND pharmacy_id IN ({$pharmacyIdsSql}))
-            UNION
-            (SELECT pharmacy_id, medicine_id
-                FROM outcomes
-                WHERE deleted_at IS NULL AND pharmacy_id IN ({$pharmacyIdsSql}))
-            UNION
-            (SELECT p.pharmacy_id as pharmacy_id, COALESCE(pai.medicine_id, pi.medicine_id) as medicine_id
+                WHERE deleted_at IS NULL AND pharmacy_id = {$pharmacyId}
+                GROUP BY pharmacy_id, medicine_id
+            ),
+            ot AS (
+                SELECT p.pharmacy_id,
+                       COALESCE(pai.medicine_id, pi.medicine_id) AS medicine_id,
+                       SUM(COALESCE(COALESCE(pai.amount, pi.amount), 0)) AS total
                 FROM prescription_items pi
                 LEFT JOIN prescription_alternative_items pai
                     ON pai.prescription_item_id = pi.id
                     AND pai.prescription_id = pi.prescription_id
                     AND pai.is_selected = 1
                     AND pai.deleted_at IS NULL
-                JOIN prescriptions p ON pi.prescription_id = p.id
+                INNER JOIN prescriptions p ON pi.prescription_id = p.id
                 WHERE pi.deleted_at IS NULL
-                    AND p.deleted_at IS NULL
-                    AND p.is_completed = 1
-                    AND p.pharmacy_id IN ({$pharmacyIdsSql}))) as u";
+                  AND p.deleted_at IS NULL
+                  AND p.is_completed = 1
+                  AND p.pharmacy_id = {$pharmacyId}
+                GROUP BY p.pharmacy_id, COALESCE(pai.medicine_id, pi.medicine_id)
+            ),
+            pairs AS (
+                SELECT pharmacy_id, medicine_id FROM ft
+                UNION
+                SELECT pharmacy_id, medicine_id FROM ot
+            )
+            SELECT
+                m.id AS medicine_id,
+                m.name AS medicine_name,
+                ph.id AS pharmacy_id,
+                ph.name AS pharmacy_name,
+                COALESCE(ft.total, 0) AS income,
+                COALESCE(ot.total, 0) AS outcome,
+                ({$stockSql}) AS stock
+            FROM pairs u
+            INNER JOIN medicines m ON m.id = u.medicine_id AND m.deleted_at IS NULL
+            INNER JOIN pharmacies ph ON ph.id = u.pharmacy_id AND ph.deleted_at IS NULL
+            LEFT JOIN ft ON ft.pharmacy_id = u.pharmacy_id AND ft.medicine_id = u.medicine_id
+            LEFT JOIN ot ON ot.pharmacy_id = u.pharmacy_id AND ot.medicine_id = u.medicine_id
+        ";
 
-        $stockSql = 'COALESCE(ft.total, 0) - COALESCE(ot.total, 0)';
-
-        $baseQuery = DB::table(DB::raw($unionSql))
-            ->join('medicines as m', 'm.id', '=', 'u.medicine_id')
-            ->join('pharmacies as p', 'p.id', '=', 'u.pharmacy_id')
-            ->leftJoin(DB::raw("{$ftSql} as ft"), function ($j) {
-                $j->on('ft.pharmacy_id', '=', 'u.pharmacy_id')->on('ft.medicine_id', '=', 'u.medicine_id');
-            })
-            ->leftJoin(DB::raw("{$usageSql} as ot"), function ($j) {
-                $j->on('ot.pharmacy_id', '=', 'u.pharmacy_id')->on('ot.medicine_id', '=', 'u.medicine_id');
-            })
-            ->whereIn('u.pharmacy_id', $allowedPharmacyIds)
-            ->whereNull('m.deleted_at')
-            ->whereNull('p.deleted_at');
+        $baseQuery = DB::table(DB::raw("({$cte}) as stock_rows"));
 
         if ($request->filled('search')) {
             $search = $request->search;
             $baseQuery->where(function ($q) use ($search) {
-                $q->where('m.name', 'like', '%' . $search . '%')
-                    ->orWhere('p.name', 'like', '%' . $search . '%');
+                $q->where('medicine_name', 'like', '%' . $search . '%')
+                    ->orWhere('pharmacy_name', 'like', '%' . $search . '%');
             });
         }
         if ($request->filled('medicine_id')) {
-            $baseQuery->where('m.id', (int) $request->medicine_id);
+            $baseQuery->where('medicine_id', (int) $request->medicine_id);
         }
 
         $stockStatus = $request->get('stock_status');
         if ($stockStatus === 'out_of_stock') {
-            $baseQuery->whereRaw("{$stockSql} <= 0");
+            $baseQuery->where('stock', '<=', 0);
         } elseif ($stockStatus === 'low_stock') {
-            $baseQuery->whereRaw("{$stockSql} > 0 AND {$stockSql} <= 10");
+            $baseQuery->where('stock', '>', 0)->where('stock', '<=', 10);
         }
-
-        // Stat cards: income from fulfillments; outcome = completed prescription amounts.
-        $stockStats['total_income'] = (int) DB::table('pharmacy_fulfillments')
-            ->whereNull('deleted_at')
-            ->whereIn('pharmacy_id', $allowedPharmacyIds)
-            ->sum(DB::raw('CAST(amount AS UNSIGNED)'));
-
-        $stockStats['total_outcome'] = (int) DB::table('prescription_items as pi')
-            ->leftJoin('prescription_alternative_items as pai', function ($join) {
-                $join->on('pai.prescription_item_id', '=', 'pi.id')
-                    ->on('pai.prescription_id', '=', 'pi.prescription_id')
-                    ->where('pai.is_selected', 1)
-                    ->whereNull('pai.deleted_at');
-            })
-            ->join('prescriptions as p', 'pi.prescription_id', '=', 'p.id')
-            ->whereNull('pi.deleted_at')
-            ->whereNull('p.deleted_at')
-            ->where('p.is_completed', 1)
-            ->whereIn('p.pharmacy_id', $allowedPharmacyIds)
-            ->sum(DB::raw('COALESCE(COALESCE(pai.amount, pi.amount), 0)'));
 
         $stockStatsResult = (clone $baseQuery)->selectRaw("
             COUNT(*) as total_items,
-            COALESCE(SUM({$stockSql}), 0) as total_stock,
-            SUM(CASE WHEN {$stockSql} > 0 AND {$stockSql} <= 10 THEN 1 ELSE 0 END) as total_low_stock,
-            SUM(CASE WHEN {$stockSql} <= 0 THEN 1 ELSE 0 END) as total_out_of_stock
+            COALESCE(SUM(income), 0) as total_income,
+            COALESCE(SUM(outcome), 0) as total_outcome,
+            COALESCE(SUM(stock), 0) as total_stock,
+            SUM(CASE WHEN stock > 0 AND stock <= 10 THEN 1 ELSE 0 END) as total_low_stock,
+            SUM(CASE WHEN stock <= 0 THEN 1 ELSE 0 END) as total_out_of_stock
         ")->first();
 
         if ($stockStatsResult) {
             $stockStats['total_items'] = (int) $stockStatsResult->total_items;
+            $stockStats['total_income'] = (int) $stockStatsResult->total_income;
+            $stockStats['total_outcome'] = (int) $stockStatsResult->total_outcome;
             $stockStats['total_stock'] = (int) $stockStatsResult->total_stock;
             $stockStats['total_low_stock'] = (int) $stockStatsResult->total_low_stock;
             $stockStats['total_out_of_stock'] = (int) $stockStatsResult->total_out_of_stock;
         }
 
-        $query = (clone $baseQuery)->select(
-            'm.id as medicine_id',
-            'm.name as medicine_name',
-            'p.id as pharmacy_id',
-            'p.name as pharmacy_name',
-            DB::raw('COALESCE(ft.total, 0) as income'),
-            DB::raw('COALESCE(ot.total, 0) as outcome'),
-            DB::raw("{$stockSql} as stock")
-        );
-
         $sortBy = $request->get('sort_by', 'medicine');
         $sortOrder = strtolower($request->get('sort_order', 'asc')) === 'desc' ? 'desc' : 'asc';
         $sortableColumns = [
-            'medicine' => 'm.name',
-            'pharmacy' => 'p.name',
+            'medicine' => 'medicine_name',
+            'pharmacy' => 'pharmacy_name',
             'income' => 'income',
             'outcome' => 'outcome',
             'stock' => 'stock',
         ];
-        $sortColumn = $sortableColumns[$sortBy] ?? 'm.name';
-        $query->orderBy($sortColumn, $sortOrder)->orderBy('m.name')->orderBy('p.name');
+        $sortColumn = $sortableColumns[$sortBy] ?? 'medicine_name';
 
-        $perPage = min(100, max(10, (int) $request->get('per_page', 15)));
-        $stockItems = $query->paginate($perPage, ['*'], 'page', $request->get('page', 1));
+        $perPage = min(50, max(10, (int) $request->get('per_page', 15)));
+        $stockItems = (clone $baseQuery)
+            ->orderBy($sortColumn, $sortOrder)
+            ->orderBy('medicine_name')
+            ->simplePaginate($perPage)
+            ->appends(array_merge($request->query(), ['pharmacy_id' => $selectedPharmacyId]));
 
-        return view('pages.pharmacy_fulfillments.stock', compact('stockItems', 'pharmacies', 'userPharmacies', 'stockStats', 'medicines'));
+        return view('pages.pharmacy_fulfillments.stock', compact(
+            'stockItems',
+            'pharmacies',
+            'userPharmacies',
+            'stockStats',
+            'medicines',
+            'selectedPharmacyId'
+        ));
     }
 
     /**
@@ -556,7 +536,8 @@ class PharmacyFulfillmentController extends Controller
     public function exportReport(Request $request)
     {
         [$dateFrom, $dateTo] = $this->resolveIndexDateFilters($request);
-        $items = $this->buildIndexQuery($request, $dateFrom, $dateTo)->get();
+        // Cap export size to avoid gateway timeouts on production.
+        $items = $this->buildIndexQuery($request, $dateFrom, $dateTo)->limit(2000)->get();
 
         if ($request->get('type') === 'pdf') {
             $html = view('pages.pharmacy_fulfillments.report_pdf', compact('items'))->render();

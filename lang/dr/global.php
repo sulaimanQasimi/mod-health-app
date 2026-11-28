@@ -4455,7 +4455,7 @@ return [
     'please_select_department_and_date_range' => 'لطفا بخش و تاریخ را انتخاب کنید',
     'doctors_directory' => 'دایرکتوری دکتران',
     'medicine_usage_statistics' => 'آمار استفاده از ادویه',
-    'usage_count' => 'تعداد استفاده',
+    'usage_count' => 'تحویل شده',
     'medicine' => 'ادویه',
     'id' => 'شناسه',
     'no_medicine_usage_found' => 'هیچ استفاده از ادویه یی برای نمایش یافت نشد',

@@ -4046,7 +4046,7 @@ return [
     'patient_records' => 'Patients',
     'records' => 'Records',
     'medicine_usage_statistics' => 'Medicine usage statistics',
-    'usage_count' => 'Usage count',
+    'usage_count' => 'Delivered',
     'no_medicine_usage_found' => 'No medicine usage found to display',
     'pharmacy_fulfillments' => 'Pharmacy fulfillments',
     'unit_type' => 'Unit type',

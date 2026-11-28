@@ -4436,7 +4436,7 @@ return [
 'patients' => 'ناروغان',
 'icu_procedure_type_created_successfully.' => 'د ICU د پروسیجر ډول په بریالیتوب سره جوړ شو',
 'medicine_usage_statistics' => 'د درملو د کارولو احصائیې',
-'usage_count' => 'د کارولو شمېره',
+'usage_count' => 'تحویل شوی',
 'no_medicine_usage_found' => 'هیڅ د درمل کارول ونه موندل شول',
 'search_by_medicine' => 'پر درمل لټون',
 'pharmacy_fulfillments' => 'د درملتون بشپړول',

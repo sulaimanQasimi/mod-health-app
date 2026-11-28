@@ -101,11 +101,13 @@ class OutcomeController extends Controller
             $usageSubquery->where('p.created_at', '<=', $toDate->format('Y-m-d 23:59:59'));
         }
 
+        // Sum prescription item amounts (selected alternative amount when present)
+        // for completed prescriptions only — same join cost as COUNT(*), not heavier.
         $usageSubquery->select(
             DB::raw('COALESCE(pai.medicine_id, pi.medicine_id) as medicine_id'),
             'p.pharmacy_id',
             DB::raw('MAX(ph.name) as pharmacy_name'),
-            DB::raw('COUNT(*) as usage_count'),
+            DB::raw('SUM(COALESCE(COALESCE(pai.amount, pi.amount), 0)) as usage_count'),
             DB::raw('MAX(p.updated_at) as prescription_updated_at')
         )->groupBy(DB::raw('COALESCE(pai.medicine_id, pi.medicine_id)'), 'p.pharmacy_id');
 

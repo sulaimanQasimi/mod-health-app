@@ -405,7 +405,7 @@ class PharmacyFulfillmentController extends Controller
         $medicines = Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(['id', 'name']);
 
         if (!$selectedPharmacyId) {
-            $stockItems = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15);
+            $stockItems = new \Illuminate\Pagination\Paginator([], 15);
             return view('pages.pharmacy_fulfillments.stock', compact(
                 'stockItems',
                 'pharmacies',

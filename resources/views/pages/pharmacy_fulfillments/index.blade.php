@@ -267,7 +267,7 @@
                                 @endif
                             </div>
                             <div>
-                                {{ $fulfillments->appends(request()->query())->links('pagination::bootstrap-5') }}
+                                {{ $fulfillments->appends(request()->query())->links('pagination::simple-bootstrap-5') }}
                             </div>
                         </div>
                     </div>

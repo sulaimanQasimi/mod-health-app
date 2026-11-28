@@ -75,10 +75,22 @@
                                 <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                 <div class="input-group input-daterange">
                                     <input autocomplete="off" type="text" name="date_from" placeholder="{{ localize('global.from') }}"
-                                           autocomplete="off" class="form-control datepicker_dari" value="{{ request('date_from') }}" />
+                                           class="form-control datepicker_dari" value="{{ $dateFrom ?? request('date_from') }}" />
                                     <span class="input-group-text">...</span>
                                     <input autocomplete="off" type="text" name="date_to" placeholder="{{ localize('global.to') }}"
-                                           autocomplete="off" class="form-control datepicker_dari" value="{{ request('date_to') }}" />
+                                           class="form-control datepicker_dari" value="{{ $dateTo ?? request('date_to') }}" />
+                                </div>
+                                @if(!empty($usingDefaultDates))
+                                    <small class="text-muted">{{ localize('global.showing_current_month_by_default') }}</small>
+                                @endif
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="all_dates" value="1" id="all_dates"
+                                        {{ request('all_dates') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="all_dates">
+                                        {{ localize('global.all_dates') }}
+                                    </label>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -140,8 +152,15 @@
                                     @csrf
                                     <input type="hidden" name="search" value="{{ request('search') }}">
                                     <input type="hidden" name="pharmacy_id" value="{{ request('pharmacy_id') }}">
-                                    <input type="hidden" name="date_from" value="{{ request('date_from') }}">
-                                    <input type="hidden" name="date_to" value="{{ request('date_to') }}">
+                                    <input type="hidden" name="date_from" value="{{ $dateFrom ?? request('date_from') }}">
+                                    <input type="hidden" name="date_to" value="{{ $dateTo ?? request('date_to') }}">
+                                    <input type="hidden" name="all_dates" value="{{ request('all_dates') ? 1 : 0 }}">
+                                    <input type="hidden" name="unit_type" value="{{ request('unit_type') }}">
+                                    <input type="hidden" name="form_no" value="{{ request('form_no') }}">
+                                    <input type="hidden" name="amount_from" value="{{ request('amount_from') }}">
+                                    <input type="hidden" name="amount_to" value="{{ request('amount_to') }}">
+                                    <input type="hidden" name="user_name" value="{{ request('user_name') }}">
+                                    <input type="hidden" name="created_by_name" value="{{ request('created_by_name') }}">
                                     <input type="hidden" name="sort_by" value="{{ request('sort_by', 'created_at') }}">
                                     <input type="hidden" name="sort_order" value="{{ request('sort_order', 'desc') }}">
                                     <button type="submit" name="type" value="excel" class="btn btn-success btn-sm">

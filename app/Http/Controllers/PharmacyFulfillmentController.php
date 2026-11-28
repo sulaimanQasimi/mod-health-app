@@ -17,114 +17,193 @@ use Mpdf\Mpdf;
 class PharmacyFulfillmentController extends Controller
 {
     /**
+     * Default fulfillments list to the current Jalali month unless dates are set / cleared.
+     *
+     * @return array{0: ?string, 1: ?string, 2: bool}
+     */
+    private function resolveIndexDateFilters(Request $request): array
+    {
+        if ($request->boolean('all_dates')) {
+            return [null, null, false];
+        }
+
+        if ($request->filled('date_from') || $request->filled('date_to')) {
+            return [
+                $request->input('date_from'),
+                $request->input('date_to'),
+                false,
+            ];
+        }
+
+        $start = \Hekmatinasser\Verta\Facades\Verta::now()->startMonth();
+        $end = \Hekmatinasser\Verta\Facades\Verta::now()->endMonth();
+
+        return [
+            $start->format('Y/m/d'),
+            $end->format('Y/m/d'),
+            true,
+        ];
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = $this->buildIndexQuery($request);
+        [$dateFrom, $dateTo, $usingDefaultDates] = $this->resolveIndexDateFilters($request);
 
-        // Pagination
-        $perPage = $request->get('per_page', 15);
-        $fulfillments = $query->paginate($perPage);
+        $query = $this->buildIndexQuery($request, $dateFrom, $dateTo);
 
-        // Get all pharmacies for admin filter
+        $perPage = min(100, max(10, (int) $request->get('per_page', 15)));
+        $fulfillments = $query->paginate($perPage)->appends(array_merge(
+            $request->query(),
+            [
+                'date_from' => $dateFrom,
+                'date_to' => $dateTo,
+            ]
+        ));
+
         $user = Auth::user();
-        $pharmacies = null;
-        if ($user->hasRole('admin')) {
-            $pharmacies = Pharmacy::orderBy('name')->get();
-        }
-
         $userPharmacies = $user->activePharmacies;
+        $pharmacies = $user->hasRole(['admin', 'super_admin'])
+            ? Pharmacy::orderBy('name')->get(['id', 'name'])
+            : null;
 
-        return view('pages.pharmacy_fulfillments.index', compact('fulfillments', 'pharmacies', 'userPharmacies'));
+        return view('pages.pharmacy_fulfillments.index', compact(
+            'fulfillments',
+            'pharmacies',
+            'userPharmacies',
+            'dateFrom',
+            'dateTo',
+            'usingDefaultDates'
+        ));
     }
 
     /**
      * Build the base query for index/export with all filters applied.
      */
-    private function buildIndexQuery(Request $request)
+    private function buildIndexQuery(Request $request, ?string $dateFrom = null, ?string $dateTo = null)
     {
-        $query = PharmacyFulfillment::with(['medicine', 'pharmacy', 'user', 'createdBy']);
-
-        // Get current user's pharmacies
-        $user = Auth::user();
-        $userPharmacies = $user->activePharmacies;
-
-        // Filter by user's pharmacies if user has any
-        if ($userPharmacies->isNotEmpty()) {
-            $query->whereIn('pharmacy_id', $userPharmacies->pluck('id'));
+        if ($dateFrom === null && $dateTo === null && !$request->boolean('all_dates')) {
+            [$dateFrom, $dateTo] = $this->resolveIndexDateFilters($request);
         }
 
-        // Global search (medicine name, form no, unit type)
+        $user = Auth::user();
+        $userPharmacies = $user->activePharmacies;
+        $isAdmin = $user->hasRole(['admin', 'super_admin']);
+
+        // Select only list columns + light eager loads (avoid loading full related models).
+        $query = PharmacyFulfillment::query()
+            ->select([
+                'pharmacy_fulfillments.id',
+                'pharmacy_fulfillments.medicine_id',
+                'pharmacy_fulfillments.unit_type',
+                'pharmacy_fulfillments.amount',
+                'pharmacy_fulfillments.form_no',
+                'pharmacy_fulfillments.date',
+                'pharmacy_fulfillments.form',
+                'pharmacy_fulfillments.pharmacy_id',
+                'pharmacy_fulfillments.user_id',
+                'pharmacy_fulfillments.created_by',
+                'pharmacy_fulfillments.created_at',
+            ])
+            ->with([
+                'medicine:id,name',
+                'pharmacy:id,name',
+                'user:id,name,last_name',
+                'createdBy:id,name,last_name',
+            ]);
+
+        // Scope by pharmacy access first (cheap indexed filter).
+        if ($isAdmin) {
+            if ($request->filled('pharmacy_id')) {
+                $query->where('pharmacy_fulfillments.pharmacy_id', (int) $request->pharmacy_id);
+            }
+        } elseif ($userPharmacies->isNotEmpty()) {
+            $query->whereIn('pharmacy_fulfillments.pharmacy_id', $userPharmacies->pluck('id'));
+        } else {
+            // Non-admin with no pharmacy must not see global data.
+            $query->whereRaw('1 = 0');
+        }
+
+        // Global search — prefer indexed columns; medicine name via EXISTS (cheaper than whereHas).
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('medicine', function ($medicineQuery) use ($search) {
-                    $medicineQuery->where('name', 'like', "%{$search}%");
-                })
-                    ->orWhere('form_no', 'like', "%{$search}%")
-                    ->orWhere('unit_type', 'like', "%{$search}%");
+                $q->where('pharmacy_fulfillments.form_no', 'like', "%{$search}%")
+                    ->orWhere('pharmacy_fulfillments.unit_type', 'like', "%{$search}%")
+                    ->orWhereExists(function ($sub) use ($search) {
+                        $sub->select(DB::raw(1))
+                            ->from('medicines')
+                            ->whereColumn('medicines.id', 'pharmacy_fulfillments.medicine_id')
+                            ->where('medicines.name', 'like', "%{$search}%")
+                            ->whereNull('medicines.deleted_at');
+                    });
             });
         }
 
-        // Filter by medicine (exact)
         if ($request->filled('medicine_id')) {
-            $query->where('medicine_id', $request->medicine_id);
+            $query->where('pharmacy_fulfillments.medicine_id', (int) $request->medicine_id);
         }
 
-        // Filter by unit type
         if ($request->filled('unit_type')) {
-            $query->where('unit_type', 'like', '%' . $request->unit_type . '%');
+            $query->where('pharmacy_fulfillments.unit_type', 'like', '%' . $request->unit_type . '%');
         }
 
-        // Filter by form number
         if ($request->filled('form_no')) {
-            $query->where('form_no', 'like', '%' . $request->form_no . '%');
+            $query->where('pharmacy_fulfillments.form_no', 'like', '%' . $request->form_no . '%');
         }
 
-        // Filter by amount range
         if ($request->filled('amount_from')) {
-            $query->where('amount', '>=', $request->amount_from);
+            $query->where('pharmacy_fulfillments.amount', '>=', $request->amount_from);
         }
         if ($request->filled('amount_to')) {
-            $query->where('amount', '<=', $request->amount_to);
+            $query->where('pharmacy_fulfillments.amount', '<=', $request->amount_to);
         }
 
-        // Filter by user (who fulfilled)
         if ($request->filled('user_name')) {
             $name = $request->user_name;
-            $query->whereHas('user', function ($q) use ($name) {
-                $q->where('name', 'like', '%' . $name . '%');
+            $query->whereExists(function ($sub) use ($name) {
+                $sub->select(DB::raw(1))
+                    ->from('users')
+                    ->whereColumn('users.id', 'pharmacy_fulfillments.user_id')
+                    ->where(function ($uq) use ($name) {
+                        $uq->where('users.name', 'like', '%' . $name . '%')
+                            ->orWhere('users.last_name', 'like', '%' . $name . '%');
+                    });
             });
         }
 
-        // Filter by created_by user name
         if ($request->filled('created_by_name')) {
             $name = $request->created_by_name;
-            $query->whereHas('createdBy', function ($q) use ($name) {
-                $q->where('name', 'like', '%' . $name . '%');
+            $query->whereExists(function ($sub) use ($name) {
+                $sub->select(DB::raw(1))
+                    ->from('users')
+                    ->whereColumn('users.id', 'pharmacy_fulfillments.created_by')
+                    ->where(function ($uq) use ($name) {
+                        $uq->where('users.name', 'like', '%' . $name . '%')
+                            ->orWhere('users.last_name', 'like', '%' . $name . '%');
+                    });
             });
         }
 
-        // Filter by pharmacy (for admin users who can see all pharmacies)
-        if ($request->filled('pharmacy_id') && $user->hasRole('admin')) {
-            $query->where('pharmacy_id', $request->pharmacy_id);
+        // Date range (range compare keeps indexes usable; whereDate() does not).
+        if (!empty($dateFrom)) {
+            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($dateFrom)->datetime()->format('Y-m-d');
+            $query->where('pharmacy_fulfillments.date', '>=', $fromDate);
+        }
+        if (!empty($dateTo)) {
+            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($dateTo)->datetime()->format('Y-m-d');
+            $query->where('pharmacy_fulfillments.date', '<=', $toDate);
         }
 
-        // Filter by date range
-        if ($request->filled('date_from')) {
-            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_from)->datetime();
-            $query->whereDate('date', '>=', $fromDate);
-        }
-        if ($request->filled('date_to')) {
-            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_to)->datetime();
-            $query->whereDate('date', '<=', $toDate);
-        }
-
-        // Sort functionality (allowlisted to prevent ORDER BY injection)
-        $sortBy = safe_sort_column($request->get('sort_by'), ['id', 'date', 'amount', 'created_at', 'updated_at'], 'created_at');
+        $sortBy = safe_sort_column(
+            $request->get('sort_by'),
+            ['id', 'date', 'amount', 'form_no', 'created_at', 'updated_at'],
+            'created_at'
+        );
         $sortOrder = safe_sort_order($request->get('sort_order'), 'desc');
-        $query->orderBy($sortBy, $sortOrder);
+        $query->orderBy('pharmacy_fulfillments.' . $sortBy, $sortOrder);
 
         return $query;
     }
@@ -476,7 +555,8 @@ class PharmacyFulfillmentController extends Controller
      */
     public function exportReport(Request $request)
     {
-        $items = $this->buildIndexQuery($request)->get();
+        [$dateFrom, $dateTo] = $this->resolveIndexDateFilters($request);
+        $items = $this->buildIndexQuery($request, $dateFrom, $dateTo)->get();
 
         if ($request->get('type') === 'pdf') {
             $html = view('pages.pharmacy_fulfillments.report_pdf', compact('items'))->render();
